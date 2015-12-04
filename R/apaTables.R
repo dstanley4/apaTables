@@ -9,7 +9,7 @@
 #'\tabular{ll}{
 #'Package: \tab apaTables\cr
 #'Type: \tab Package\cr
-#'Version: \tab 1.0.4\cr
+#'Version: \tab 1.0.5\cr
 #'Date: \tab 2015-011-20\cr
 #'License: \tab Unlimited\cr
 #'}
@@ -18,7 +18,7 @@
 #'@aliases apaTables
 #'@docType package
 #'@title Create American Psychological Association (APA) Style Tables
-#'@author 
+#'@author
 #'\tabular{ll}{
 #'Author: \tab David J. Stanley \email{dstanley@@uoguelph.ca}\cr
 #'Maintainer: \tab David J. Stanley \email{dstanley@@uoguelph.ca}
@@ -55,7 +55,7 @@ add.sig.stars <- function(string.in,p.values.in) {
           } else if (cur.p.value<.01) {
                string.out[i]<-paste(string.in[i],"**",sep="")
           }
-     }          
+     }
      return(string.out)
 }
 
@@ -63,7 +63,7 @@ txt.ci<- function(cortest.result) {
      ci.interval<-cortest.result$conf.int
      ci.lower<- ci.interval[1]
      ci.upper<- ci.interval[2]
-     
+
      ci.lower.txt <- strip.leading.zero(sprintf("%1.2f",ci.lower))
      ci.upper.txt <- strip.leading.zero(sprintf("%1.2f",ci.upper))
      ci.txt <- sprintf("[%s, %s]",ci.lower.txt,ci.upper.txt)
@@ -89,7 +89,7 @@ txt.R2 <- function(R2.value,p.value) {
      R2.value.txt <- strip.leading.zero(sprintf("%1.3f", R2.value))
      R2.value.txt <- add.sig.stars(R2.value.txt,p.value)
      string.out=sprintf("R2 = %s",R2.value.txt)
-}     
+}
 
 rtf.F <- function(Fvalue,df1,df2) {
      string.out=sprintf("{\\i F}(%d, %d) = %1.2f",df1,df2,Fvalue)
@@ -129,7 +129,7 @@ get.cors <- function(dv.in,pred.in) {
      output$r <- r.values
      output$p <- p.values
      return(output)
-} 
+}
 
 
 # Helper functions
@@ -152,7 +152,7 @@ print.apa.table <- function(x,...) {
 get.ci.mean <- function(x.vector) {
      lower <- stats::t.test(x.vector)$conf.int[1]
      upper <- stats::t.test(x.vector)$conf.int[2]
-     
+
      output <- list()
      output$lower.conf.limit <- sprintf("%1.2f",lower)
      output$upper.conf.limit <- sprintf("%1.2f",upper)
@@ -168,7 +168,7 @@ is.valid.name <- function(sub.name, data.col.names) {
                cat("apa.mean.table error:\n")
                cat(sprintf("%s is not a valid column name.\n\n",as.character(sub.name)))
           }
-     } 
+     }
      return(is.name.valid)
 }
 
