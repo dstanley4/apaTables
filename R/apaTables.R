@@ -10,7 +10,7 @@
 #'Package: \tab apaTables\cr
 #'Type: \tab Package\cr
 #'Version: \tab 1.0.5\cr
-#'Date: \tab 2015-011-20\cr
+#'Date: \tab 2015-12-04\cr
 #'License: \tab Unlimited\cr
 #'}
 #'
