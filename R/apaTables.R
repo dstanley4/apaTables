@@ -11,7 +11,7 @@
 #'Type: \tab Package\cr
 #'Version: \tab 1.0.5\cr
 #'Date: \tab 2015-12-04\cr
-#'License: \tab Unlimited\cr
+#'License: \tab MIT\cr
 #'}
 #'
 #'@name apaTables
