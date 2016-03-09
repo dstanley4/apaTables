@@ -2,15 +2,24 @@ Package: apaTables
 Title: Create American Psychological Association (APA) Style Tables
 Version: 1.0.5
 Authors@R: person("David", "Stanley", , "dstanley@uoguelph.ca", role = c("aut", "cre"))
-Description: A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user.
-Depends: R (>= 3.1.2)
+Description: A common task faced by researchers is the creation of APA style
+    (i.e., American Psychological Association style) tables from statistical
+    output. In R a large number of function calls are often needed to obtain all of
+    the desired information for a single APA style table. As well, the process of
+    manually creating APA style tables in a word processor is prone to transcription
+    errors. This package creates Word files (.doc files) containing APA style tables
+    for several types of analyses. Using this package minimizes transcription errors
+    and reduces the number commands needed by the user.
+Depends:
+    R (>= 3.1.2)
 Date: 2015-12-04
 License: MIT License + file LICENSE
 LazyData: true
 Imports:
-     rockchalk,
-     stats,
-     utils,
-     methods,
-     MBESS,
-     car
+    rockchalk,
+    stats,
+    utils,
+    methods,
+    MBESS,
+    car
+RoxygenNote: 5.0.1

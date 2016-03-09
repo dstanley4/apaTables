@@ -189,16 +189,23 @@ apa.reg.table<-function(...,filename=NA,table.number=NA) {
 }
 
 
-
-
 apa.single.block<-function(regression.results) {
      b.and.se.matrix<-summary(regression.results)$coefficients
      b.values=b.and.se.matrix[,1]
      se.values=b.and.se.matrix[,2]
      t.values=b.and.se.matrix[,3]
      p.values=b.and.se.matrix[,4]
-     beta.values<-rockchalk::standardize(regression.results)$coefficients
-     #rockchalk, could use lm.beta from QuantPsyc package
+
+     col_names <- names(regression.results$model)
+
+     is_weighted <- "(weights)" %in% col_names
+     if (is_weighted==TRUE) {
+          beta.values<-rep(NA,(length(t.values)-1))
+     } else {
+          beta.values<-rockchalk::standardize(regression.results)$coefficients
+
+     }
+
 
      predictor.names.intercept <- names(b.values)[1:length(b.values)] # excludes (Intercept)
      predictor.names <- names(b.values)[2:length(b.values)] # excludes (Intercept)
@@ -270,7 +277,7 @@ apa.single.block<-function(regression.results) {
      Fvalue=regression.results.summary$fstatistic[1]
      df1=regression.results.summary$fstatistic[2]
      df2=regression.results.summary$fstatistic[3]
-     Fvalue.pvalue=1-pf(F,df1,df2,lower.tail=T)
+     Fvalue.pvalue=1-pf(Fvalue,df1,df2,lower.tail=T)
 
      R2.report.rtf <- rtf.R2(R2.value=R2.value,p.value=Fvalue.pvalue)
      R2.report.txt <- txt.R2(R2.value=R2.value,p.value=Fvalue.pvalue)
