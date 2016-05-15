@@ -50,22 +50,29 @@ add.sig.stars <- function(string.in,p.values.in) {
      L <- length(p.values.in)
      for (i in 1:L) {
           cur.p.value<-p.values.in[i]
-          if ((cur.p.value<.05) & (cur.p.value>.01)) {
-               string.out[i]<-paste(string.in[i],"*",sep="")
-          } else if (cur.p.value<.01) {
-               string.out[i]<-paste(string.in[i],"**",sep="")
+          if (!is.na(cur.p.value)) {
+               if ((cur.p.value<.05) & (cur.p.value>.01)) {
+                    string.out[i]<-paste(string.in[i],"*",sep="")
+               } else if (cur.p.value<.01) {
+                    string.out[i]<-paste(string.in[i],"**",sep="")
+               }
           }
      }
      return(string.out)
 }
 
-txt.ci<- function(cortest.result) {
+txt.ci<- function(cortest.result,strip_zero=TRUE) {
      ci.interval<-cortest.result$conf.int
      ci.lower<- ci.interval[1]
      ci.upper<- ci.interval[2]
 
-     ci.lower.txt <- strip.leading.zero(sprintf("%1.2f",ci.lower))
-     ci.upper.txt <- strip.leading.zero(sprintf("%1.2f",ci.upper))
+     ci.lower.txt <- sprintf("%1.2f",ci.lower)
+     ci.upper.txt <- sprintf("%1.2f",ci.upper)
+
+     if (strip_zero==TRUE) {
+          ci.lower.txt <- strip.leading.zero(ci.lower.txt)
+          ci.upper.txt <- strip.leading.zero(ci.upper.txt)
+     }
      ci.txt <- sprintf("[%s, %s]",ci.lower.txt,ci.upper.txt)
      return(ci.txt)
 }
