@@ -66,8 +66,13 @@ txt.ci<- function(cortest.result,strip_zero=TRUE) {
      ci.lower<- ci.interval[1]
      ci.upper<- ci.interval[2]
 
-     ci.lower.txt <- sprintf("%1.2f",ci.lower)
-     ci.upper.txt <- sprintf("%1.2f",ci.upper)
+     output <- txt.ci.brackets(ci.lower,ci.upper,strip_zero = strip_zero)
+     return(output)
+}
+
+txt.ci.brackets<- function(LL,UL,strip_zero=TRUE) {
+     ci.lower.txt <- sprintf("%1.2f",LL)
+     ci.upper.txt <- sprintf("%1.2f",UL)
 
      if (strip_zero==TRUE) {
           ci.lower.txt <- strip.leading.zero(ci.lower.txt)
@@ -76,6 +81,7 @@ txt.ci<- function(cortest.result,strip_zero=TRUE) {
      ci.txt <- sprintf("[%s, %s]",ci.lower.txt,ci.upper.txt)
      return(ci.txt)
 }
+
 
 txt.r <- function(ctest) {
      r.value=ctest$estimate
