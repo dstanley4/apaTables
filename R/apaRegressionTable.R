@@ -206,7 +206,6 @@ apa.single.block<-function(regression.results) {
 
      }
 
-
      predictor.names.intercept <- names(b.values)[1:length(b.values)] # excludes (Intercept)
      predictor.names <- names(b.values)[2:length(b.values)] # excludes (Intercept)
      names(beta.values) <- predictor.names
@@ -377,5 +376,154 @@ is.product.row <- function(row_names) {
      return(is.a.product)
 }
 
+#' @export
+apa.rt<-function(...,filename=NA,table.number=NA) {
+     regression.results.list <- list(...)
+     if (is.na(filename)) {
+          make.file.flag=FALSE
+     } else {
+          make.file.flag=TRUE
+     }
+
+     L=length(regression.results.list)
+     is.same.criterion <- c()
+     first.result <- regression.results.list[[1]]
+     first.criterion <- colnames(first.result$model)[1]
+     for (i in 1:L) {
+          cur.result <- regression.results.list[[i]]
+          cur.criterion.name <- colnames(cur.result$model)[1]
+          is.same.criterion[i] <- first.criterion == cur.criterion.name
+     }
+     if (any(is.same.criterion==FALSE)) {
+          cat("apa.reg.table error:\nAll regression objects (i.e., blocks) must use the same criterion.\n")
+          cat("The regression objects used had different criterion variables.\n\n")
+          return(FALSE)
+     }
 
 
+
+     is.same.predictors<- c()
+     first.result <- regression.results.list[[1]]
+     first.model <- first.result$model
+     last.model.number.predictors <- dim(first.model)[2]
+     last.predictors <- colnames(first.result$model)[2:last.model.number.predictors]
+     for (i in 1:L) {
+          cur.result <- regression.results.list[[i]]
+          cur.model <- cur.result$model
+          cur.model.number.predictors <- dim(cur.model)[2]
+          cur.predictors <- colnames(cur.model)[2:cur.model.number.predictors]
+          is.same.predictors[i] <- all(intersect(last.predictors,cur.predictors) == last.predictors)
+          last.predictors = cur.predictors
+     }
+     if (any(is.same.predictors==FALSE)) {
+          cat("apa.reg.table error:\nEach regression objects (i.e., block) must contain all of the predictors from the preceeding regression object (i.e., block).\n\n")
+          cat("For example:\n")
+          cat("block1 <- lm(y ~ a + b)\n")
+          cat("block2 <- lm(y ~ a + b + c)\n\n")
+          cat("The second block contains all of the predictors from the first block plus additional predictors.\n\n")
+          cat("Therefore the command below will work: \n\n")
+          cat("apa.reg.table(block1, block2)\n\n")
+          return(FALSE)
+     }
+
+
+
+     #get analyses for each block
+     block.results <- list()
+     L=length(regression.results.list)
+     for (i in 1:L) {
+          cur.result <- apa.single.block(regression.results.list[[i]])
+          block.results[[i]] <- cur.result
+     }
+
+
+     is.multiple.blocks = FALSE
+     if (L>1) {
+          is.multiple.blocks = TRUE
+     }
+
+     #get differences between models
+     model.diffs <- list()
+     if (is.multiple.blocks == TRUE) {
+          for (i in 2:L) {
+               model.diffs[[i-1]] <- delta.stats(regression.results.list[[i]],regression.results.list[[i-1]])
+          }
+     }
+
+     blockout.txt <- model.prep.print(model.in=block.results[[1]], model.number=1, rtf.flag=FALSE)
+     blockout.rtf <- model.prep.print(model.in=block.results[[1]], model.number=1, rtf.flag=TRUE)
+
+
+     #Combine blocks
+     if (is.multiple.blocks == TRUE) {
+          for (i in 2:L) {
+               cur.block <- block.results[[i]]
+               cur.block.out.txt <- model.prep.print(model.in=cur.block, model.number=i, past.model.diff = model.diffs[[i-1]], rtf.flag=FALSE)
+               cur.block.out.rtf <- model.prep.print(model.in=cur.block, model.number=i, past.model.diff = model.diffs[[i-1]], rtf.flag=TRUE)
+
+               blockout.txt <- rbind(blockout.txt,cur.block.out.txt)
+               blockout.rtf <- rbind(blockout.rtf,cur.block.out.rtf)
+          }
+     } else {
+          #remove delta fit column
+          blockout.txt.names <- names(blockout.txt)
+          blockout.txt.names[8] <- ""
+          names(blockout.txt) <- blockout.txt.names
+     }
+
+
+     #console table
+     table.title <- sprintf("Regression results using %s as the criterion\n",first.criterion)
+     table.body <- blockout.txt
+     table.note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights; SE represents the standard error of the \nunstandardized regression weights; beta indicates the beta-weights or standardized regression weights; \nsr2 represents the semi-partial correlation squared;r represents the zero-order correlation.\n"
+     tbl.console <- list(table.number = table.number,
+                         table.title = table.title,
+                         table.body = table.body,
+                         table.note = table.note)
+     class(tbl.console) <- "apa.table"
+
+
+
+     if (make.file.flag==TRUE) {
+          table.title <- sprintf("Regression results using %s as the criterion\n",first.criterion)
+          #table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01."
+          table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights; {\\i SE} represents the standard error of the unstandardized regression weights; {\\i beta} indicates the beta-weights or standardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared; {\\i r} represents the zero-order correlation."
+          #set columns widths and names
+          n.col <- .65
+          w.col <- 1
+          w.col2 <- 1.5
+          if (is.multiple.blocks == TRUE) {
+               colwidths <- c(w.col, n.col*1.5, n.col, n.col, n.col, n.col, w.col2,w.col2)
+               new.col.names <- c(" ","{\\i b}","{\\i SE}","{\\i beta}","{\\i sr\\super 2 \\nosupersub}","{\\i r}","Fit","Change in Fit")
+               extend.columns.end <- c(7,8)
+          } else {
+               colwidths <- c(w.col, n.col*1.5, n.col, n.col, n.col, n.col, w.col2)
+               new.col.names <- c(" ","{\\i b}","{\\i SE}","{\\i beta}","{\\i sr\\super 2 \\nosupersub}","{\\i r}","Fit")
+               blockout.rtf <- blockout.rtf[,1:7]
+               extend.columns.end <- c(7)
+          }
+          extend.columns.start <- c(1,2)
+
+          regressionTable.table <- as.matrix(blockout.rtf)
+          colnames(regressionTable.table) <- new.col.names
+
+
+          #Create RTF code
+          rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
+          rtfTable$setTableContent(regressionTable.table)
+          rtfTable$setCellWidthsInches(colwidths)
+          rtfTable$setRowSecondColumnDecimalTab(.4)
+          txt.body <- rtfTable$getTableAsRTF(FALSE,FALSE)
+
+
+          if (is.multiple.blocks==TRUE) {
+               write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note,landscape=TRUE,table.number=table.number)
+          } else {
+               write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note,table.number=table.number)
+          }
+
+     }
+
+
+     return(tbl.console)
+}
