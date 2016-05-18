@@ -4,7 +4,8 @@
 \alias{apa.reg.table}
 \title{Creates a regresion table in APA style}
 \usage{
-apa.reg.table(..., filename = NA, table.number = NA)
+apa.reg.table(..., filename = NA, table.number = NA,
+  is.random.predictors = FALSE)
 }
 \arguments{
 \item{...}{Regression (i.e., lm) result objects. Typically, one for each block in the regression.}

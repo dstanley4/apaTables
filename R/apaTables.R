@@ -45,21 +45,21 @@ strip.leading.zero <- function(string.in) {
 
 
 
-add.sig.stars <- function(string.in,p.values.in) {
-     string.out <- string.in
-     L <- length(p.values.in)
-     for (i in 1:L) {
-          cur.p.value<-p.values.in[i]
-          if (!is.na(cur.p.value)) {
-               if ((cur.p.value<.05) & (cur.p.value>.01)) {
-                    string.out[i]<-paste(string.in[i],"*",sep="")
-               } else if (cur.p.value<.01) {
-                    string.out[i]<-paste(string.in[i],"**",sep="")
-               }
-          }
-     }
-     return(string.out)
-}
+# add.sig.stars <- function(string.in,p.values.in) {
+#      string.out <- string.in
+#      L <- length(p.values.in)
+#      for (i in 1:L) {
+#           cur.p.value<-p.values.in[i]
+#           if (!is.na(cur.p.value)) {
+#                if ((cur.p.value<.05) & (cur.p.value>.01)) {
+#                     string.out[i]<-paste(string.in[i],"*",sep="")
+#                } else if (cur.p.value<.01) {
+#                     string.out[i]<-paste(string.in[i],"**",sep="")
+#                }
+#           }
+#      }
+#      return(string.out)
+# }
 
 txt.ci<- function(cortest.result,strip_zero=TRUE) {
      ci.interval<-cortest.result$conf.int
@@ -69,18 +69,18 @@ txt.ci<- function(cortest.result,strip_zero=TRUE) {
      output <- txt.ci.brackets(ci.lower,ci.upper,strip_zero = strip_zero)
      return(output)
 }
-
-txt.ci.brackets<- function(LL,UL,strip_zero=TRUE) {
-     ci.lower.txt <- sprintf("%1.2f",LL)
-     ci.upper.txt <- sprintf("%1.2f",UL)
-
-     if (strip_zero==TRUE) {
-          ci.lower.txt <- strip.leading.zero(ci.lower.txt)
-          ci.upper.txt <- strip.leading.zero(ci.upper.txt)
-     }
-     ci.txt <- sprintf("[%s, %s]",ci.lower.txt,ci.upper.txt)
-     return(ci.txt)
-}
+#
+# txt.ci.brackets<- function(LL,UL,strip_zero=TRUE) {
+#      ci.lower.txt <- sprintf("%1.2f",LL)
+#      ci.upper.txt <- sprintf("%1.2f",UL)
+#
+#      if (strip_zero==TRUE) {
+#           ci.lower.txt <- strip.leading.zero(ci.lower.txt)
+#           ci.upper.txt <- strip.leading.zero(ci.upper.txt)
+#      }
+#      ci.txt <- sprintf("[%s, %s]",ci.lower.txt,ci.upper.txt)
+#      return(ci.txt)
+# }
 
 
 txt.r <- function(ctest) {
@@ -185,4 +185,166 @@ is.valid.name <- function(sub.name, data.col.names) {
      return(is.name.valid)
 }
 
+add.sig.stars <- function(string.in,p.values.in) {
+     string.out <- string.in
+     L <- length(p.values.in)
+     for (i in 1:L) {
+          cur.p.value<-p.values.in[i]
+          if (!is.na(cur.p.value)) {
+               if ((cur.p.value<.05) & (cur.p.value>.01)) {
+                    string.out[i]<-paste(string.in[i],"*",sep="")
+               } else if (cur.p.value<.01) {
+                    string.out[i]<-paste(string.in[i],"**",sep="")
+               }
+          }
+     }
+     return(string.out)
+}
 
+
+txt.ci.brackets<- function(LL,UL,strip_zero=TRUE) {
+     ci.lower.txt <- sprintf("%1.2f",LL)
+     ci.upper.txt <- sprintf("%1.2f",UL)
+
+     if (strip_zero==TRUE) {
+          ci.lower.txt <- strip.leading.zero(ci.lower.txt)
+          ci.upper.txt <- strip.leading.zero(ci.upper.txt)
+     }
+     ci.txt <- sprintf("[%s, %s]",ci.lower.txt,ci.upper.txt)
+     return(ci.txt)
+}
+
+table_without_intercept_row <- function(df) {
+     #check if predictor
+     predictor_names <- df$predictor
+     is_intercept <- FALSE
+
+     if (predictor_names[1]=="(Intercept)") {
+          is_intercept <- TRUE
+     }
+
+     #make table without intercept
+     if (is_intercept==FALSE) {
+          df_results <- df
+     } else {
+          num_table_rows <- dim(df)[1]
+          df_lower_table <- df[2:num_table_rows,]
+          df_first_row   <- df[1,]
+     }
+
+     output<- list()
+     output$lower_table  <- df_lower_table
+     output$first_row    <- df_first_row
+     output$is_intercept <- is_intercept
+
+     return(output)
+}
+
+correlations_with_criterion <- function(df) {
+     #assumes df is the model data frame from lm output where criterion is the first column
+
+     #remove weights column if present
+     column_names      <- colnames(df)
+     column_names_good <- column_names!="(weights)"
+     column_names      <- column_names[column_names_good]
+     df <- df[,column_names]
+
+     output <- data.frame(predictor=character(),r=numeric(),r_pvalue=numeric())
+
+     for (i in 2:length(column_names)) {
+          cor_output <- stats::cor.test(df[,1],df[,i])
+
+          predictor      <- colnames(df)[i]
+          r              <- cor_output$estimate
+          r_pvalue       <- cor_output$p.value
+
+          output_row <- data.frame(predictor,r,r_pvalue,stringsAsFactors = FALSE)
+          output     <- rbind(output,output_row)
+     }
+     return(output)
+}
+
+
+get_deltaR2_ci <- function(R2_2,R2_1,n){
+
+     r20A <- R2_2
+     r20B <- R2_1
+
+     r0A  <- sqrt(r20A)
+     r0B  <- sqrt(r20B)
+
+     rAB  <- r0B/r0A
+     r2AB <- rAB^2
+
+     var_delta_r2 <- (4*r20A*(1-r20A)^2)/n + (4*r20B*(1-r20B)^2)/n - 8*r0A*r0B*(.5*(2*rAB-r0A*r0B)*(1-r20A - r20B - r2AB)+rAB^3)/n
+
+     LL <- (r20A -r20B) - 1.96*sqrt(var_delta_r2)
+     UL <- (r20A -r20B) + 1.96*sqrt(var_delta_r2)
+
+     output <- list()
+     output$LL <- LL
+     output$UL <- UL
+     return(output)
+}
+
+get_sr2_ci <- function(sr2,R2,n) {
+     R2_2 <- R2
+     R2_1 <- R2-sr2
+     ci <- get_deltaR2_ci(R2_2 = R2_2,R2_1=R2_1,n=n)
+     return(ci)
+}
+
+
+get_empty_row <- function(df) {
+     row <- df[1,]
+     for (i in 1:length(names(df))) {
+          row[,i] <- NA
+     }
+     return(row)
+}
+
+get_blank_row <- function(df) {
+     row <- df[1,]
+     for (i in 1:length(names(df))) {
+          row[,i] <- ""
+     }
+     return(row)
+}
+
+add_row_to_model_summary <- function(df) {
+     new_row <- get_blank_row(df)
+     df <- rbind(df,new_row)
+     return(df)
+}
+
+
+get_delta_R2_blocks <- function(blk2,blk1,summary2,summary1,n) {
+     R2_2 <- summary2$r.squared
+     R2_1 <- summary1$r.squared
+
+     deltaR2 <- R2_2 - R2_1
+     deltaR2_test <- anova(blk2,blk1)
+     deltaR2_p <- deltaR2_test$`Pr(>F)`[2]
+     deltaR2_str <- strip.leading.zero(add.sig.stars(sprintf("%1.2f",deltaR2),deltaR2_p))
+
+     deltaR2_txt <- sprintf("Delta R2 = %s", deltaR2_str)
+     deltaR2_rtf <- sprintf("\\u0916\3{\\i R\\super 2 \\nosupersub}  = %s", deltaR2_str)
+
+
+
+     deltaR2_CI <- get_deltaR2_ci(R2_2 = R2_2, R2_1 = R2_1,n=n)
+     deltaR2_LL_str <- strip.leading.zero(sprintf("%1.2f",deltaR2_CI$LL))
+     deltaR2_UL_str <- strip.leading.zero(sprintf("%1.2f",deltaR2_CI$UL))
+     deltaR2_CI_rtf <- sprintf("{95%% CI}[%s, %s]",deltaR2_LL_str,deltaR2_UL_str)
+     deltaR2_CI_txt <- sprintf("95%% CI[%s, %s]",deltaR2_LL_str,deltaR2_UL_str)
+
+
+     output <- list()
+     output$deltaR2_txt    <- deltaR2_txt
+     output$deltaR2_CI_txt <- deltaR2_CI_txt
+
+     output$deltaR2_rtf <- deltaR2_rtf
+     output$deltaR2_CI_rtf <- deltaR2_CI_rtf
+
+     return(output)
+}
