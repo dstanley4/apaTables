@@ -15,6 +15,9 @@
 \usage{
 data(viagra)
 }
+\description{
+A data set from Field et al (2012)
+}
 \references{
 Field, A., Miles, J., & Field, Z. (2012) Discovering Statistics Using R. Sage: Chicago.
 }

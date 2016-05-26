@@ -1,7 +1,8 @@
 #' Creates a regresion table in APA style
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
-#' @param table.number  Integer to use in table number output line
+#' @param table_number  Integer to use in table number output line
+#' @param is.random.predictors  Indicate if predictors are random (TRUE/FALSE). Default is FALSE.
 #' @return APA table object
 #' @examples
 #' # View top few rows of goggles data set
@@ -38,50 +39,48 @@
 #' apa.reg.table(blk1,filename="exInteraction4.doc")
 #' @export
 apa.reg.table<-function(...,filename=NA,table.number=NA,is.random.predictors=FALSE) {
-     regression.results.list <- list(...)
+     regression_results_list <- list(...)
 
+     table_number <- table.number
      is_random_predictors <- is.random.predictors
+
      if (is.na(filename)) {
-          make.file.flag=FALSE
+          make_file_flag=FALSE
      } else {
-          make.file.flag=TRUE
+          make_file_flag=TRUE
      }
 
-
-
-
-     L=length(regression.results.list)
-     is.same.criterion <- c()
-     first.result <- regression.results.list[[1]]
-     first.criterion <- colnames(first.result$model)[1]
+     L=length(regression_results_list)
+     is_same_criterion <- c()
+     first_result <- regression_results_list[[1]]
+     first_criterion <- colnames(first_result$model)[1]
      for (i in 1:L) {
-          cur.result <- regression.results.list[[i]]
-          cur.criterion.name <- colnames(cur.result$model)[1]
-          is.same.criterion[i] <- first.criterion == cur.criterion.name
+          cur_result <- regression_results_list[[i]]
+          cur_criterion_name <- colnames(cur_result$model)[1]
+          is_same_criterion[i] <- first_criterion == cur_criterion_name
      }
-     if (any(is.same.criterion==FALSE)) {
+     if (any(is_same_criterion == FALSE)) {
           cat("apa.reg.table error:\nAll regression objects (i.e., blocks) must use the same criterion.\n")
           cat("The regression objects used had different criterion variables.\n\n")
           return(FALSE)
      }
 
 
-
-     is.same.predictors<- c()
-     first.result <- regression.results.list[[1]]
-     first.model <- first.result$model
-     last.model.number.predictors <- dim(first.model)[2]
-     last.predictors <- colnames(first.result$model)[2:last.model.number.predictors]
-     n <- dim(first.result$model)[1]
+     is_same_predictors <- c()
+     first_result <- regression_results_list[[1]]
+     first_model  <- first_result$model
+     last_model_number_predictors <- dim(first_model)[2]
+     last_predictors <- colnames(first_result$model)[2:last_model_number_predictors]
+     n <- dim(first_result$model)[1]
      for (i in 1:L) {
-          cur.result <- regression.results.list[[i]]
-          cur.model <- cur.result$model
-          cur.model.number.predictors <- dim(cur.model)[2]
-          cur.predictors <- colnames(cur.model)[2:cur.model.number.predictors]
-          is.same.predictors[i] <- all(intersect(last.predictors,cur.predictors) == last.predictors)
-          last.predictors = cur.predictors
+          cur_result <- regression_results_list[[i]]
+          cur_model  <- cur_result$model
+          cur_model_number_predictors <- dim(cur_model)[2]
+          cur_predictors <- colnames(cur_model)[2:cur_model_number_predictors]
+          is_same_predictors[i] <- all(intersect(last_predictors,cur_predictors) == last_predictors)
+          last_predictors <- cur_predictors
      }
-     if (any(is.same.predictors==FALSE)) {
+     if (any(is_same_predictors==FALSE)) {
           cat("apa.reg.table error:\nEach regression objects (i.e., block) must contain all of the predictors from the preceeding regression object (i.e., block).\n\n")
           cat("For example:\n")
           cat("block1 <- lm(y ~ a + b)\n")
@@ -95,113 +94,112 @@ apa.reg.table<-function(...,filename=NA,table.number=NA,is.random.predictors=FAL
 
 
      #get analyses for each block
-     block.results <- list()
-     L=length(regression.results.list)
+     block_results <- list()
+     L <- length(regression_results_list)
      for (i in 1:L) {
-          cur.result <- apa_single_block(regression.results.list[[i]],is_random_predictors)
-          block.results[[i]] <- cur.result
+          cur_result <- apa_single_block(regression_results_list[[i]],is_random_predictors)
+          block_results[[i]] <- cur_result
      }
 
 
-     is.multiple.blocks = FALSE
+     is_multiple_blocks <- FALSE
      if (L>1) {
-          is.multiple.blocks = TRUE
+          is_multiple_blocks <- TRUE
      }
 
      #Combine blocks
-     block.out.txt <- block.results[[1]]$model_details_txt
-     block.out.rtf <- block.results[[1]]$model_details_rtf
-     last.block.summary <- block.results[[1]]$model_summary_extended
-     last.block.lm <- regression.results.list[[1]]
-     if (is.multiple.blocks == TRUE) {
+     block_out_txt <- block_results[[1]]$model_details_txt
+     block_out_rtf <- block_results[[1]]$model_details_rtf
+
+     first_block_calculate_cor  <- block_results[[1]]$calculate_cor # use later for table note
+     first_block_calculate_beta <- block_results[[1]]$calculate_beta # use later for table note
+
+     last_block_summary <- block_results[[1]]$model_summary_extended
+     last_block_lm <- regression_results_list[[1]]
+     if (is_multiple_blocks == TRUE) {
           for (i in 2:L) {
-               cur.block.lm <- regression.results.list[[i]]
+               cur_block_lm <- regression_results_list[[i]]
 
-               cur.block.summary <- block.results[[i]]$model_summary_extended
+               cur_block_summary <- block_results[[i]]$model_summary_extended
 
-               cur.block.out.txt <- block.results[[i]]$model_details_txt
-               cur.block.out.rtf <- block.results[[i]]$model_details_rtf
+               cur_block_out_txt <- block_results[[i]]$model_details_txt
+               cur_block_out_rtf <- block_results[[i]]$model_details_rtf
 
-               delta_R2_details <- get_delta_R2_blocks(blk2=cur.block.lm,blk1=last.block.lm,summary2=cur.block.summary,summary1=last.block.summary,n)
+               delta_R2_details <- get_delta_R2_blocks(blk2=cur_block_lm,blk1=last_block_lm,summary2=cur_block_summary,summary1=last_block_summary,n)
 
-               num_lines <- dim(cur.block.out.txt)[1]
-               cur.block.out.txt$difference[num_lines-2] <- delta_R2_details$deltaR2_txt
-               cur.block.out.txt$difference[num_lines-1] <- delta_R2_details$deltaR2_CI_txt
+               num_lines <- dim(cur_block_out_txt)[1]
+               cur_block_out_txt$difference[num_lines-2] <- delta_R2_details$deltaR2_txt
+               cur_block_out_txt$difference[num_lines-1] <- delta_R2_details$deltaR2_CI_txt
 
-               cur.block.out.rtf$difference[num_lines-2] <- delta_R2_details$deltaR2_rtf
-               cur.block.out.rtf$difference[num_lines-1] <- delta_R2_details$deltaR2_CI_rtf
+               cur_block_out_rtf$difference[num_lines-2] <- delta_R2_details$deltaR2_rtf
+               cur_block_out_rtf$difference[num_lines-1] <- delta_R2_details$deltaR2_CI_rtf
 
-               last.block.summary <- cur.block.summary
-               last.block.lm <- cur.block.lm
+               last_block_summary <- cur_block_summary
+               last_block_lm <- cur_block_lm
 
-               block.out.txt <- rbind(block.out.txt,cur.block.out.txt)
-               block.out.rtf <- rbind(block.out.rtf,cur.block.out.rtf)
+               block_out_txt <- rbind(block_out_txt,cur_block_out_txt)
+               block_out_rtf <- rbind(block_out_rtf,cur_block_out_rtf)
 
           }
      } else {
-          block.out.txt <- dplyr::select(block.out.txt, -difference)
-          block.out.rtf <- dplyr::select(block.out.rtf, -difference)
+          block_out_txt <- dplyr::select(block_out_txt, -difference)
+          block_out_rtf <- dplyr::select(block_out_rtf, -difference)
      }
 
 
 
 
      #console table
-     table.title <- sprintf("Regression results using %s as the criterion\n",first.criterion)
-     names(block.out.txt) <- get_txt_column_names(block.out.txt)
-     table.body <- block.out.txt
-     table.note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights; SE represents the standard error of the \nunstandardized regression weights; beta indicates the beta-weights or standardized regression weights; \nsr2 represents the semi-partial correlation squared;r represents the zero-order correlation.\n"
-     table.block.results <-  block.results
+     table_title <- sprintf("Regression results using %s as the criterion\n",first_criterion)
+     names(block_out_txt) <- get_txt_column_names(block_out_txt)
+     table_body <- block_out_txt
 
-     tbl.console <- list(table.number = table.number,
-                         table.title = table.title,
-                         table.body = table.body,
-                         table.note = table.note,
-                         table.block.results=table.block.results)
+     table_note <- get_reg_table_note_txt(first_block_calculate_cor, first_block_calculate_beta)
 
-     table.block.results <-  block.results
+     table_block_results <-  block_results
 
-     class(tbl.console) <- "apa.table"
+     tbl_console <- list(table_number = table_number,
+                         table_title = table_title,
+                         table_body = table_body,
+                         table_note = table_note,
+                         table_block_results = table_block_results)
+
+     table_block_results <-  block_results
+
+     class(tbl_console) <- "apa_table"
 
 
 
-     if (make.file.flag==TRUE) {
-          table.title <- sprintf("Regression results using %s as the criterion\n",first.criterion)
-          #table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01."
-          table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights; {\\i SE} represents the standard error of the unstandardized regression weights; {\\i beta} indicates the beta-weights or standardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared; {\\i r} represents the zero-order correlation."
+     if (make_file_flag==TRUE) {
+          table_title <- sprintf("Regression results using %s as the criterion\n",first_criterion)
+          table_note <- get_reg_table_note_rtf(first_block_calculate_cor, first_block_calculate_beta)
+
           #set columns widths and names
-          n.col <- .65
-          w.col <- 1
-          w.col2 <- 1.5
+          colwidths <- get_rtf_column_widths(block_out_rtf)
 
-
-          colwidths <- get_rtf_column_widths(block.out.rtf)
-          extend.columns.end <- c()
-          extend.columns.start <- c()
-
-          regressionTable.table <- as.matrix(block.out.rtf)
-          new.col.names <- get_rtf_column_names(block.out.rtf)
-          colnames(regressionTable.table) <- new.col.names
+          regression_table <- as.matrix(block_out_rtf)
+          new_col_names <- get_rtf_column_names(block_out_rtf)
+          colnames(regression_table) <- new_col_names
 
 
           #Create RTF code
           rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
-          rtfTable$setTableContent(regressionTable.table)
+          rtfTable$setTableContent(regression_table)
           rtfTable$setCellWidthsInches(colwidths)
           rtfTable$setRowSecondColumnDecimalTab(.4)
-          txt.body <- rtfTable$getTableAsRTF(FALSE,FALSE)
+          txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
 
 
-           if (is.multiple.blocks==TRUE) {
-               write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note,landscape=TRUE,table.number=table.number)
+           if (is_multiple_blocks==TRUE) {
+               write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,landscape=TRUE,table.number=table_number)
            } else {
-                write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note,table.number=table.number)
+               write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,table.number=table_number)
            }
 
      }
 
 
-     return(tbl.console)
+     return(tbl_console)
 }
 
 
@@ -217,17 +215,17 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
      is_var_factor  <- is_variable_factor(reg_table_data)
      calculate_beta <- TRUE
      calculate_cor  <- TRUE
-     if (is_weighted==TRUE) {
+     if (is_weighted == TRUE) {
           calculate_beta <- FALSE
      }
-     if (is_var_factor==TRUE) {
+     if (is_var_factor == TRUE) {
           calculate_beta <- FALSE
           calculate_cor  <- FALSE
      }
 
 
      #Summary statistics
-     model_summary_extended <- broom::glance(cur_blk) #glance include lm constant in df
+     model_summary_extended    <- broom::glance(cur_blk) #glance include lm constant in df
      model_summary_extended$df <- summary(cur_blk)$df[1] #use summary information to get df without constant
 
      #Regression table statistics
@@ -235,7 +233,7 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
      names(reg_table) <- c("predictor","b","SE","t","p")
 
      #adjust df
-     if (reg_table$predictor[1]=="(Intercept)") {
+     if (reg_table$predictor[1] == "(Intercept)") {
           model_summary_extended$df[1] <- model_summary_extended$df[1]-1
      }
 
@@ -260,9 +258,9 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
 
 
      #Add b-weight CI's
-     b_CI<-confint(cur_blk)
-     LLb <- b_CI[,c("2.5 %")]
-     ULb <- b_CI[,c("97.5 %")]
+     b_CI <- confint(cur_blk)
+     LLb  <- b_CI[,c("2.5 %")]
+     ULb  <- b_CI[,c("97.5 %")]
 
      reg_table <- dplyr::mutate(reg_table, LLb=LLb, ULb=ULb)
      reg_table <- dplyr::select(reg_table,predictor, b,LLb,ULb,SE,t,p)
@@ -285,9 +283,9 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
           #use delta R2 process for CI
           for (i in 1:number_predictors) {
                sr2 <- reg_table_lower$sr2[i]
-               ci <- get_sr2_ci(sr2=sr2,R2=R2,n=n)
-               LL <- ci$LL
-               UL <- ci$UL
+               ci  <- get_sr2_ci(sr2=sr2,R2=R2,n=n)
+               LL  <- ci$LL
+               UL  <- ci$UL
                reg_table_lower$LLsr2[i] <- LL
                reg_table_lower$ULsr2[i] <- UL
           }
@@ -309,9 +307,9 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
                sd_crit <- stats::sd(reg_table_data[,1],na.rm = TRUE)
                sd_pred <- stats::sd(reg_table_data[,p_name],na.rm = TRUE)
 
-               beta    <- b*(sd_pred/sd_crit)
-               LLbeta  <- LLb*(sd_pred/sd_crit)
-               ULbeta  <- ULb*(sd_pred/sd_crit)
+               beta    <-   b*(sd_pred / sd_crit)
+               LLbeta  <- LLb*(sd_pred / sd_crit)
+               ULbeta  <- ULb*(sd_pred / sd_crit)
 
                reg_table_lower$beta[i]   <- beta
                reg_table_lower$LLbeta[i] <- LLbeta
@@ -329,20 +327,20 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
      intercept_row$p[1]    <- reg_table_first$p[1]
      intercept_row$SE[1]   <- reg_table_first$SE[1]
 
-     model_details_extended <- rbind(intercept_row,reg_table_lower)
+     model_details_extended <- rbind(intercept_row, reg_table_lower)
 
      L <- dim(model_details_extended)[1]
 
-     CIb_str    <- txt.ci.brackets(model_details_extended$LLb,model_details_extended$ULb,strip_zero = FALSE)
-     CIsr2_str  <- txt.ci.brackets(model_details_extended$LLsr2,model_details_extended$ULsr2,strip_zero = TRUE)
+     CIb_str    <- txt.ci.brackets(model_details_extended$LLb, model_details_extended$ULb, strip_zero = FALSE)
+     CIsr2_str  <- txt.ci.brackets(model_details_extended$LLsr2, model_details_extended$ULsr2, strip_zero = TRUE)
 
-     if (calculate_beta==TRUE) {
-          CIbeta_str <- txt.ci.brackets(model_details_extended$LLbeta,model_details_extended$ULbeta,strip_zero = FALSE)
+     if (calculate_beta == TRUE) {
+          CIbeta_str <- txt.ci.brackets(model_details_extended$LLbeta, model_details_extended$ULbeta, strip_zero = FALSE)
      }
 
      model_details         <- model_details_extended[,1,drop=FALSE]
 
-     model_details$b       <- add.sig.stars(sprintf("%1.2f",model_details_extended$b),model_details_extended$p)
+     model_details$b       <- add.sig.stars(sprintf("%1.2f",model_details_extended$b), model_details_extended$p)
      model_details$b_CI    <- CIb_str
 
      if (calculate_beta==TRUE) {
@@ -353,13 +351,13 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
           model_details$beta_CI[1] <- ""
      }
 
-     model_details$sr2     <- strip.leading.zero(sprintf("%1.2f",model_details_extended$sr2))
+     model_details$sr2     <- strip.leading.zero(sprintf("%1.2f", model_details_extended$sr2))
      model_details$sr2[1]  <- ""
      model_details$sr2_CI     <- CIsr2_str
      model_details$sr2_CI[1]  <- ""
 
      if (calculate_cor==TRUE) {
-          model_details$r     <- strip.leading.zero(add.sig.stars(sprintf("%1.2f",model_details_extended$r),model_details_extended$r_pvalue)) #intercept row issue
+          model_details$r     <- strip.leading.zero(add.sig.stars(sprintf("%1.2f",model_details_extended$r), model_details_extended$r_pvalue)) #intercept row issue
           model_details$r[1]  <- ""
 
      }
@@ -377,10 +375,10 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
      model_details_rtf <- model_details_txt
 
      model_details_txt$summary[num_row-2] <- model_summary_txt
-     model_details_txt$summary[num_row-1]   <- model_summary_CI_txt
+     model_details_txt$summary[num_row-1] <- model_summary_CI_txt
 
      model_details_rtf$summary[num_row-2] <- model_summary_rtf
-     model_details_rtf$summary[num_row-1]   <- model_summary_CI_rtf
+     model_details_rtf$summary[num_row-1] <- model_summary_CI_rtf
 
 
      output <- list()
@@ -388,15 +386,16 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
      output$model_details_extended <- model_details_extended
      output$model_details_txt      <- model_details_txt
      output$model_details_rtf      <- model_details_rtf
-
+     output$calculate_beta         <- calculate_beta
+     output$calculate_cor          <- calculate_cor
 
      return(output)
 }
 
 
 is_product_row <- function(row_names) {
-     is_a_colon <- grep(":",row_names)
-     is_a_star <- grep("\\*",row_names)
+     is_a_colon   <- grep(":",row_names)
+     is_a_star    <- grep("\\*",row_names)
      is_a_product <- unique(sort(c(is_a_colon,is_a_star)))
      return(is_a_product)
 }
@@ -415,47 +414,15 @@ is_variable_factor <- function(df) {
 
 
 
-
-
-
-# model_prep_print <- function(model_in=NA, model_number=1,past_model_diff=NA, rtf_flag=FALSE) {
-#      model_in_summary <- model_in$model_summary
-#      num_model_rows   <- dim(model_in_summary)[1]
-#
-#      model_in_summary$variables[1] <- sprintf("Model %d",model.number)
-#
-#
-#      if (rtf_flag == FALSE) {
-#           model_in_summary$fit[num_model_rows-1] <- model_in$model_stats$Fvalue.report.txt # put in F Stuff
-#           model_in_summary$fit[num_model_rows-2] <- model_in$model_stats$R2.report.txt     # put in R Stuff
-#           if (!is.na(past.model.diff[1])) {
-#                model_in_summary$delta[num_model_rows-1] <- past_model_diff$Fout.txt   # put in F Stuff
-#                model_in_summary$delta[num_model_rows-2] <- past_model_diff$R2out.txt # put in R Stuff
-#           }
-#      } else {
-#           model_in_summary$fit[num_model_rows-1] <- model_in$model.stats$Fvalue.report.rtf # put in F Stuff
-#           model_in_summary$fit[num_model_rows-2] <- model_in$model.stats$R2.report.rtf     # put in R Stuff
-#           if (!is.na(past.model.diff[1])) {
-#                model_in_summary$delta[num_model_rows-1] <- past_model_diff$Fout.rtf  # put in F Stuff
-#                model_in_summary$delta[num_model_rows-2] <- past_model_diff$R2out.rtf # put in R Stuff
-#           }
-#      }
-#
-#
-#      return(model.in.summary)
-# }
-
-
-
 output_txt_name <- function(column_name) {
      switch(column_name,
             predictor="Predictor",
             b = "b",
-            b_CI = "b 95%CI",
+            b_CI = "b_95%_CI",
             beta = "beta",
-            beta_CI ="beta 95%CI",
+            beta_CI ="beta_95%_CI",
             sr2="sr2",
-            sr2_CI ="sr2 95%CI",
+            sr2_CI ="sr2_95%_CI",
             r="r",
             summary="Fit",
             difference="Difference")
@@ -521,4 +488,44 @@ get_rtf_column_widths <- function(df) {
           width_out[i] <-output_column_width(n[i])
      }
      return(width_out)
+}
+
+get_reg_table_note_txt <- function(calculate_cor,calculate_beta) {
+     if (calculate_cor==TRUE & calculate_beta==TRUE) {
+
+          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights; beta indicates the standardized regression weights; \nsr2 represents the semi-partial correlation squared; r represents the zero-order correlation.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+
+     } else if (calculate_cor==TRUE & calculate_beta==FALSE) {
+
+          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the semi-partial correlation is also significant.\nb represents unstandardized regression weights; sr2 represents the semi-partial correlation squared;\nr represents the zero-order correlation.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+
+     } else if (calculate_cor==FALSE & calculate_beta==TRUE) {
+
+          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights; beta indicates the standardized regression weights; \nsr2 represents the semi-partial correlation squared.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+     } else {
+          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the semi-partial correlation is also significant.\nb represents unstandardized regression weights; \nsr2 represents the semi-partial correlation squared.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+     }
+     return(table_note)
+
+}
+
+
+get_reg_table_note_rtf <- function(calculate_cor,calculate_beta) {
+     if (calculate_cor==TRUE & calculate_beta==TRUE) {
+
+          table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights; {\\i beta} indicates the standardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared; {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively."
+
+     } else if (calculate_cor==TRUE & calculate_beta==FALSE) {
+
+          table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared; {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively."
+
+     } else if (calculate_cor==FALSE & calculate_beta==TRUE) {
+
+          table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights; {\\i beta} indicates the standardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively."
+
+     } else {
+          table_note <- "* indicates p < .05; ** indicates p < .01. A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively."
+     }
+     return(table_note)
+
 }

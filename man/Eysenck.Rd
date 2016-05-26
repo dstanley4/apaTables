@@ -16,6 +16,9 @@
 \usage{
 data(Eysenck)
 }
+\description{
+A data set from Howell (2012)
+}
 \references{
 Howell, D. (2012). Statistical methods for psychology. Cengage Learning.
 }

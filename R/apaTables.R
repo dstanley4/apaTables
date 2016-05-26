@@ -25,6 +25,10 @@
 #'}
 #'@importFrom "stats" "anova" "cor.test" "median" "na.omit" "pf" "sd" "t.test" "var"
 #'@importFrom "utils" "capture.output"
+#'@importFrom "stats" "confint"
+#'@importFrom "dplyr" "mutate" "select"
+#'@importFrom "broom" "glance" "tidy"
+utils::globalVariables(c("difference", "predictor","SE","p"))
 NULL
 
 
@@ -42,25 +46,6 @@ strip.leading.zero <- function(string.in) {
 }
 
 
-
-
-
-# add.sig.stars <- function(string.in,p.values.in) {
-#      string.out <- string.in
-#      L <- length(p.values.in)
-#      for (i in 1:L) {
-#           cur.p.value<-p.values.in[i]
-#           if (!is.na(cur.p.value)) {
-#                if ((cur.p.value<.05) & (cur.p.value>.01)) {
-#                     string.out[i]<-paste(string.in[i],"*",sep="")
-#                } else if (cur.p.value<.01) {
-#                     string.out[i]<-paste(string.in[i],"**",sep="")
-#                }
-#           }
-#      }
-#      return(string.out)
-# }
-
 txt.ci<- function(cortest.result,strip_zero=TRUE) {
      ci.interval<-cortest.result$conf.int
      ci.lower<- ci.interval[1]
@@ -69,18 +54,6 @@ txt.ci<- function(cortest.result,strip_zero=TRUE) {
      output <- txt.ci.brackets(ci.lower,ci.upper,strip_zero = strip_zero)
      return(output)
 }
-#
-# txt.ci.brackets<- function(LL,UL,strip_zero=TRUE) {
-#      ci.lower.txt <- sprintf("%1.2f",LL)
-#      ci.upper.txt <- sprintf("%1.2f",UL)
-#
-#      if (strip_zero==TRUE) {
-#           ci.lower.txt <- strip.leading.zero(ci.lower.txt)
-#           ci.upper.txt <- strip.leading.zero(ci.upper.txt)
-#      }
-#      ci.txt <- sprintf("[%s, %s]",ci.lower.txt,ci.upper.txt)
-#      return(ci.txt)
-# }
 
 
 txt.r <- function(ctest) {
@@ -161,6 +134,24 @@ print.apa.table <- function(x,...) {
      cat(tbl$table.note,"\n")
      cat("\n")
 }
+
+#' @export
+print.apa_table <- function(x,...) {
+     cat("\n\n")
+     tbl <- x
+     if (!is.na(tbl$table_number)) {
+          cat(sprintf("Table %d",tbl$table_number),"\n")
+          cat("\n")
+     }
+     cat(tbl$table_title,"\n")
+     cat("\n")
+     print(tbl$table_body,row.names=FALSE,quote=FALSE)
+     cat("\n")
+     cat(tbl$table_note,"\n")
+     cat("\n")
+}
+
+
 
 get.ci.mean <- function(x.vector) {
      lower <- stats::t.test(x.vector)$conf.int[1]

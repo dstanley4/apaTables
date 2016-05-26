@@ -10,6 +10,7 @@
 #'   \item{airplay}{Number of times songs from album played on radio week prior to release}
 #'   \item{attract}{Attractiveness rating of band members}
 #' }
+#' @description  A data set from Field et al (2012)
 #' @references Field, A., Miles, J., & Field, Z. (2012) Discovering Statistics Using R. Sage: Chicago.
 #' @source \url{http://studysites.sagepub.com/dsur/study/}
 "album"
