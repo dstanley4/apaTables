@@ -1,7 +1,7 @@
 #' Creates a regresion table in APA style
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
-#' @param table_number  Integer to use in table number output line
+#' @param table.number  Integer to use in table number output line
 #' @param is.random.predictors  Indicate if predictors are random (TRUE/FALSE). Default is FALSE.
 #' @return APA table object
 #' @examples

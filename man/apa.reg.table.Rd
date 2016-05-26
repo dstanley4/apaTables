@@ -12,9 +12,9 @@ apa.reg.table(..., filename = NA, table.number = NA,
 
 \item{filename}{(optional) Output filename document filename (must end in .rtf or .doc only)}
 
-\item{is.random.predictors}{Indicate if predictors are random (TRUE/FALSE). Default is FALSE.}
+\item{table.number}{Integer to use in table number output line}
 
-\item{table_number}{Integer to use in table number output line}
+\item{is.random.predictors}{Indicate if predictors are random (TRUE/FALSE). Default is FALSE.}
 }
 \value{
 APA table object
