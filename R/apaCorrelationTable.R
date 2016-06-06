@@ -17,170 +17,161 @@
 #' @export
 apa.cor.table<-function(data,filename=NA,table.number=NA, show.conf.interval=TRUE,landscape=TRUE) {
 
+     table_number <- table.number
+     show_conf_interval <- show.conf.interval
+
      if (is.na(filename)) {
-          make.file.flag <- FALSE
+          make_file_flag <- FALSE
      } else {
-          make.file.flag <-TRUE
+          make_file_flag <-TRUE
      }
 
-     df.col <- dim(data)[2]
-     column.is.numeric <- c()
-     for (i in 1:df.col) {
-          column.is.numeric[i] <- is.numeric(data[,i])
+     df_col <- dim(data)[2]
+     column_is_numeric <- c()
+     for (i in 1:df_col) {
+          column_is_numeric[i] <- is.numeric(data[,i])
      }
-     data <- data[,column.is.numeric]
+     data <- data[,column_is_numeric]
 
 
-     number.variables <- ncol(data)
-     number.columns <- number.variables -1
+     number_variables <- ncol(data)
+     number_columns   <- number_variables -1
 
-     output.cor <- matrix(" ",number.variables,number.columns)
-     output.cor.rtf <- matrix(" ",number.variables,number.columns)
+     output_cor     <- matrix(" ", number_variables, number_columns)
+     output_cor_rtf <- matrix(" ", number_variables, number_columns)
 
-     output.ci <- matrix(" ",number.variables,number.columns)
-     output.ci.rtf <- matrix(" ",number.variables,number.columns)
+     output_ci     <- matrix(" ", number_variables, number_columns)
+     output_ci_rtf <- matrix(" ", number_variables, number_columns)
 
-     output.descriptives <- matrix(" ",number.variables,2)
-     output.variable.names <- paste(as.character(1:number.variables),". ",names(data),sep="")
+     output_descriptives   <- matrix(" ",number_variables,2)
+     output_variable_names <- paste(as.character(1:number_variables),". ",names(data),sep="")
 
-
-
-     variable.means <- c()
-     variable.sds <- c()
-     for (i in 1:number.variables) {
-          output.descriptives[i,1]=txt.number(mean(data[,i],na.rm=TRUE))
-          output.descriptives[i,2]=txt.number(sd(data[,i],na.rm=TRUE))
-          for(j in 1:number.variables) {
+     for (i in 1:number_variables) {
+          output_descriptives[i,1] <- txt.number(mean(data[,i], na.rm=TRUE))
+          output_descriptives[i,2] <- txt.number(sd(data[,i], na.rm=TRUE))
+          for(j in 1:number_variables) {
                if ((j<i)) {
-                    x=data[,i]
-                    y=data[,j]
-                    ctest <- cor.test(x,y)
-                    cor.string <- txt.r(ctest)
-                    output.cor[i,j] <- cor.string
-                    output.cor.rtf[i,j] <- cor.string
+                    x <- data[,i]
+                    y <- data[,j]
+                    ctest      <- cor.test(x, y)
+                    cor_string <- txt.r(ctest)
+                    output_cor[i,j]     <- cor_string
+                    output_cor_rtf[i,j] <- cor_string
 
-                    cor.ci.string <- txt.ci(ctest)
-                    output.ci[i,j]<-cor.ci.string
-                    output.ci.rtf[i,j] <- paste("{\\fs20",cor.ci.string,"}",sep="")
+                    cor_ci_string  <- txt.ci(ctest)
+                    output_ci[i,j] <- cor_ci_string
+                    output_ci_rtf[i,j] <- paste("{\\fs20",cor_ci_string,"}",sep="")
                } #end lower triangle
           }#end j
      }#end i
 
 
      #weave
-     left.padding <- c(" ", " ", " ")
-     first.line <- c(output.variable.names[1],output.descriptives[1,], output.cor[1,])
-     first.line.rtf <- c(output.variable.names[1],output.descriptives[1,], output.cor.rtf[1,])
+     left_padding   <- c(" ", " ", " ")
+     first_line     <- c(output_variable_names[1], output_descriptives[1,], output_cor[1,])
+     first_line_rtf <- c(output_variable_names[1], output_descriptives[1,], output_cor_rtf[1,])
 
-     second.line <- c(left.padding, output.ci[1,])
-     second.line.rtf <- c(left.padding, output.ci.rtf[1,])
+     second_line     <- c(left_padding, output_ci[1,])
+     second_line_rtf <- c(left_padding, output_ci_rtf[1,])
 
-     third.line <- rep(" ", length(second.line))
+     third_line <- rep(" ", length(second_line))
 
 
-     output.matrix.console <- rbind(first.line,second.line)
-     output.matrix.rtf <- rbind(first.line.rtf,second.line.rtf)
-     for (i in 2:number.variables) {
-          first.line <- c(output.variable.names[i], output.descriptives[i,], output.cor[i,])
-          first.line.rtf <- c(output.variable.names[i], output.descriptives[i,], output.cor.rtf[i,])
+     output_matrix_console <- rbind(first_line, second_line)
+     output_matrix_rtf     <- rbind(first_line_rtf, second_line_rtf)
+     for (i in 2:number_variables) {
+          first_line <- c(output_variable_names[i], output_descriptives[i,], output_cor[i,])
+          first_line_rtf <- c(output_variable_names[i], output_descriptives[i,], output_cor_rtf[i,])
 
-          second.line <- c(left.padding, output.ci[i,])
-          second.line.rtf <- c(left.padding, output.ci.rtf[i,])
+          second_line <- c(left_padding, output_ci[i,])
+          second_line_rtf <- c(left_padding, output_ci_rtf[i,])
 
-          third.line <- rep(" ", length(second.line))
+          third_line <- rep(" ", length(second_line))
 
-          if (show.conf.interval==TRUE) {
-               new.lines <- rbind(first.line,second.line,third.line)
-               new.lines <- rbind(first.line,second.line,third.line)
-               new.lines.rtf <- rbind(first.line.rtf,second.line.rtf,third.line)
+          if (show_conf_interval==TRUE) {
+               new_lines     <- rbind(first_line, second_line, third_line)
+               new_lines     <- rbind(first_line, second_line, third_line)
+               new_lines_rtf <- rbind(first_line_rtf, second_line_rtf, third_line)
           } else {
-               new.lines <- rbind(first.line,third.line)
-               new.lines.rtf <- rbind(first.line.rtf,third.line)
+               new_lines     <- rbind(first_line, third_line)
+               new_lines_rtf <- rbind(first_line_rtf, third_line)
           }
 
-          output.matrix.console <- rbind(output.matrix.console, new.lines)
-          output.matrix.rtf <- rbind(output.matrix.rtf, new.lines.rtf)
+          output_matrix_console <- rbind(output_matrix_console, new_lines)
+          output_matrix_rtf <- rbind(output_matrix_rtf, new_lines_rtf)
      }
 
 
 
-     rownames(output.matrix.console) <- 1:nrow(output.matrix.console)
-     colnames(output.matrix.console) <- c(c("Variable","M","SD"),as.character(1:number.columns))
-     rownames(output.matrix.rtf) <- rownames(output.matrix.console)
-     colnames(output.matrix.rtf) <- colnames(output.matrix.console)
-
+     rownames(output_matrix_console) <- 1:nrow(output_matrix_console)
+     colnames(output_matrix_console) <- c(c("Variable","M","SD"), as.character(1:number_columns))
+     rownames(output_matrix_rtf) <- rownames(output_matrix_console)
+     colnames(output_matrix_rtf) <- colnames(output_matrix_console)
      #done making input
      #now two matrices exist outputMatrixConsole and outputMatrixRTF that need to be printed
-     #r
 
 
-
-
-
-
-     if (show.conf.interval==TRUE) {
-          table.title <- "Means, standard deviations, and correlations with confidence intervals\n"
+     if (show_conf_interval==TRUE) {
+          table_title <- "Means, standard deviations, and correlations with confidence intervals\n"
      } else {
-          table.title <- "Means, standard deviations, and correlations\n"
+          table_title <- "Means, standard deviations, and correlations\n"
      }
 
      #make table
-     row.with.colnames <- colnames(output.matrix.console)
-     #outputMatrixConsole <- rbind(row.with.colnames,outputMatrixConsole)
-     df.temp <- data.frame(output.matrix.console, stringsAsFactors = FALSE)
-     #write.table(df.temp,row.names=FALSE,col.names=FALSE,quote=FALSE)
-     rownames(output.matrix.console) <- rep(" ",length((rownames(output.matrix.console))))
-     table.body <- output.matrix.console
+     row_with_colnames <- colnames(output_matrix_console)
+     df_temp <- data.frame(output_matrix_console, stringsAsFactors = FALSE)
+     rownames(output_matrix_console) <- rep(" ", length((rownames(output_matrix_console))))
+     table_body <- output_matrix_console
 
      #make console output
-     if (show.conf.interval==TRUE) {
-          table.note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval.\nThe confidence interval is a plausible range of population correlations \nthat could have caused the sample correlation (Cumming, 2014).\n"
+     if (show_conf_interval == TRUE) {
+          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval.\nThe confidence interval is a plausible range of population correlations \nthat could have caused the sample correlation (Cumming, 2014).\n"
      } else {
-          table.note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\n"
+          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\n"
      }
-     tbl.console <- list(table.number = table.number,
-                 table.title = table.title,
-                 table.body = table.body,
-                 table.note = table.note)
+
+     tbl.console <- list(table.number = table_number,
+                 table.title = table_title,
+                 table.body = table_body,
+                 table.note = table_note)
      class(tbl.console) <- "apa.table"
 
 
      #make RTF output file
-     if (make.file.flag==TRUE) {
-          colnames(output.matrix.rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number.columns))
+     if (make_file_flag == TRUE) {
+          colnames(output_matrix_rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number_columns))
           #add leading blank line on table
-          number.columns <- dim(output.matrix.rtf)[2]
-          blankLine <- rep("",number.columns)
-          output.matrix.rtf <- rbind(blankLine,output.matrix.rtf)
+          number_columns <- dim(output_matrix_rtf)[2]
+          blankLine <- rep("",number_columns)
+          output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
 
-          if (show.conf.interval==TRUE) {
-               table.title <- "Means, standard deviations, and correlations with confidence intervals"
+          if (show_conf_interval==TRUE) {
+               table_title <- "Means, standard deviations, and correlations with confidence intervals"
                table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation. The confidence interval is a plausible range of population correlations that could have caused the sample correlation (Cumming, 2014)."
 
           } else {
-               table.title <- "Means, standard deviations, and correlations"
-               table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively."
+               table_title <- "Means, standard deviations, and correlations"
+               table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively."
           }
 
           #Create RTF code
           rtfTable <- RtfTable$new(isHeaderRow=TRUE)
-          rtfTable$setTableContent(output.matrix.rtf)
+          rtfTable$setTableContent(output_matrix_rtf)
           rtfTable$setRowFirstColumnJustification("left")
-          txt.body <- rtfTable$getTableAsRTF(FALSE,FALSE)
-#           if (number.columns>5) {
-#                #print("landscape")
-               write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, landscape=landscape,table.number=table.number)
-#           } else {
-#                #print("portrait")
-#                write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note,table.number=table.number)
-#           }
+          txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
+          write.rtf.table(filename = filename,
+                          txt.body = txt_body,
+                          table.title = table_title,
+                          table.note = table_note,
+                          landscape=landscape,
+                          table.number=table_number)
      }
      return(tbl.console)
 }#end function
 
 
-
-
-txt.d <- function() {
-
-}
+#
+#
+# txt.d <- function() {
+#
+# }
