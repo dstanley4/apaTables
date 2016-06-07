@@ -4,272 +4,266 @@
 #' @param data Project data frame name
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number Integer to use in table number output line
-#' @param show.conf.interval  (TRUE/FALSE) Display confidence intervals in table. 
+#' @param show.conf.interval  (TRUE/FALSE) Display confidence intervals in table.
 #' @param landscape (TRUE/FALSE) Make RTF file landscape
 #' @return APA table object
 #' @examples
 #' # View top few rows of viagra data set from Discovering Statistics Using R
 #' head(viagra)
-#' 
+#'
 #' # Use apa.d.table function
 #' apa.d.table(iv=dose,dv=libido,data=viagra,filename="ex.d.Table.doc")
 #' @export
 apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA,show.conf.interval = TRUE, landscape=TRUE){
-     
+     table_number <- table.number
+     show_conf_interval <- show.conf.interval
+
      if (is.na(filename)) {
-          make.file.flag=FALSE
+          make_file_flag=FALSE
      } else {
-          make.file.flag=TRUE
+          make_file_flag=TRUE
      }
-     
+
      if (!is.null(data)) {
-          data.col.names <- colnames(data)
+          data_col_names <- colnames(data)
      } else {
           cat("apa.mean.table error:\n")
           cat("data not specified.\n\n")
           return(FALSE)
      }
-     
-     iv.sub <- substitute(iv)
-     is.iv <- is.valid.name(iv.sub,data.col.names)
 
-     dv.sub <- substitute(dv)
-     is.dv  <- is.valid.name(dv.sub, data.col.names)
-     
-     
-     if (is.dv==FALSE) {
+     iv_sub <- substitute(iv)
+     is_iv <- is.valid.name(iv_sub, data_col_names)
+
+     dv_sub <- substitute(dv)
+     is_dv  <- is.valid.name(dv_sub, data_col_names)
+
+
+     if (is_dv==FALSE) {
           cat("apa.mean.table error:\n")
           cat("A valid dependent variable (dv) must be specified.\n")
           return(FALSE)
      }
-     
-     if (is.iv==FALSE) {
+
+     if (is_iv==FALSE) {
           cat("apa.mean.table error:\n")
           cat("Two valid independent variables (iv's) must be specified.\n\n")
           return(FALSE)
      }
-     iv.name <- deparse(iv.sub)
-     dv.name <- deparse(dv.sub)
-     iv <- as.factor(data[,iv.name])
-     dv <- data[,dv.name]
+     iv_name <- deparse(iv_sub)
+     dv_name <- deparse(dv_sub)
+     iv <- as.factor(data[,iv_name])
+     dv <- data[,dv_name]
 
      #create table
-     iv.levels <- levels(iv)
-     iv.num.levels <- length(iv.levels)
-     number.columns <- iv.num.levels -1
+     iv_levels <- levels(iv)
+     iv_num_levels  <- length(iv_levels)
+     number_columns <- iv_num_levels -1
 
-     output.d <- matrix(" ",iv.num.levels,number.columns)
-     output.d.rtf <- matrix(" ",iv.num.levels,number.columns)
-     output.d.ci <- matrix(" ",iv.num.levels,number.columns)
-     output.d.ci.rtf <- matrix(" ",iv.num.levels,number.columns)
-     output.row.descriptives <- matrix(" ",iv.num.levels,ncol=2)
-     output.variable.names <- paste(as.character(1:iv.num.levels),". ",names(data),sep="")
-     for (c.row in 1:iv.num.levels) {
-          for (c.col in 1:iv.num.levels) {
-               if (c.col<c.row) {
-                    group1.id <- iv == iv.levels[c.row]
-                    group2.id <- iv == iv.levels[c.col]
-                    group1.data <- na.omit(dv[group1.id])
-                    group2.data <- na.omit(dv[group2.id])
-                    group1.n <- length(group1.data)
-                    group2.n <- length(group2.data)
-                    group1.mean <- sprintf("%1.2f",mean(group1.data))
-                    group1.sd <- sprintf("%1.2f",sd(group1.data))
-#                     group2.mean <- sprintf("%1.2f",mean(group2.data))
-#                     group2.sd <- sprintf("%1.2f",sd(group2.data))
+     output_d     <- matrix(" ",iv_num_levels, number_columns)
+     output_d_rtf <- matrix(" ",iv_num_levels, number_columns)
+     output_d_ci     <- matrix(" ",iv_num_levels, number_columns)
+     output_d_ci_rtf <- matrix(" ",iv_num_levels, number_columns)
 
-                    output.row.descriptives[c.row,1] <- group1.mean
-                    output.row.descriptives[c.row,2] <- group1.sd
+     output_row_descriptives <- matrix(" ",iv_num_levels, ncol=2)
+     for (c_row in 1:iv_num_levels) {
+          for (c_col in 1:iv_num_levels) {
+               if (c_col<c_row) {
+                    group1_id <- iv == iv_levels[c_row]
+                    group2_id <- iv == iv_levels[c_col]
+                    group1_data <- na.omit(dv[group1_id])
+                    group2_data <- na.omit(dv[group2_id])
+                    group1_n <- length(group1_data)
+                    group2_n <- length(group2_data)
+                    group1_mean <- sprintf("%1.2f",mean(group1_data))
+                    group1_sd <- sprintf("%1.2f",sd(group1_data))
 
-                    cur.d.value <- get.d.value(group1.data,group2.data)
-                    #cur.d.value <- MBESS::smd(Group.1=group1.data,Group.2=group2.data,Unbiased = TRUE)
-                    cur.d.ci <- MBESS::ci.smd(smd=cur.d.value,n.1=group1.n,n.2=group2.n)
-                    my.t.test.results <- t.test(x=group1.data,y=group2.data,alternative = "two.sided",var.equal = TRUE)
-                    cur.t.p.value <- my.t.test.results$p.value
-                    
-                    d.string <- txt.d(cur.d.value,cur.t.p.value)
-                    d.ci.string <- txt.d.ci(cur.d.ci)
-                    if (is.equal.var(group1.data,group2.data)==FALSE) {
-                         d.string <- "-"
+                    output_row_descriptives[c_row,1] <- group1_mean
+                    output_row_descriptives[c_row,2] <- group1_sd
+
+                    cur_d_value <- get_d_value(group1_data, group2_data)
+                    cur_d_ci <- MBESS::ci.smd(smd=cur_d_value, n.1=group1_n, n.2=group2_n)
+                    my_t_test_results <- t.test(x=group1_data, y=group2_data, alternative="two.sided", var.equal = TRUE)
+                    cur_t_p_value <- my_t_test_results$p.value
+
+                    d_string <- txt_d(cur_d_value, cur_t_p_value)
+                    d.ci.string <- txt_d_ci(cur_d_ci)
+                    if (is_equal_var(group1_data,group2_data) == FALSE) {
+                         d_string <- "-"
                          d.ci.string <- "        [-,-]"
-                         output.d[c.row,c.col] <- d.string
-                         output.d.rtf[c.row,c.col] <- d.string
-                         output.d.ci[c.row,c.col]<-"[-,-]"
-                         output.d.ci.rtf[c.row,c.col] <- paste("{\\fs20",d.ci.string,"}",sep="")
+                         output_d[c_row,c_col] <- d_string
+                         output_d_rtf[c_row,c_col] <- d_string
+                         output_d_ci[c_row,c_col]<-"[-,-]"
+                         output_d_ci_rtf[c_row,c_col] <- paste("{\\fs20",d.ci.string,"}", sep="")
                     } else {
-                         output.d[c.row,c.col] <- d.string
-                         output.d.rtf[c.row,c.col] <- d.string
-                         output.d.ci[c.row,c.col]<-d.ci.string
-                         output.d.ci.rtf[c.row,c.col] <- paste("{\\fs20",d.ci.string,"}",sep="")
+                         output_d[c_row,c_col] <- d_string
+                         output_d_rtf[c_row,c_col] <- d_string
+                         output_d_ci[c_row,c_col]<-d.ci.string
+                         output_d_ci_rtf[c_row,c_col] <- paste("{\\fs20",d.ci.string,"}", sep="")
                     }
-                    
 
-               } 
+
+               }
           }
      }
-     group1.id <- iv == iv.levels[1]
-     group1.data <- na.omit(dv[group1.id])
-     group1.mean <- sprintf("%1.2f",mean(group1.data))
-     group1.sd <- sprintf("%1.2f",sd(group1.data))
-     output.row.descriptives[1,]<-c(group1.mean,group1.sd)
-     
-          
+     group1_id <- iv == iv_levels[1]
+     group1_data <- na.omit(dv[group1_id])
+     group1_mean <- sprintf("%1.2f", mean(group1_data))
+     group1_sd   <- sprintf("%1.2f", sd(group1_data))
+     output_row_descriptives[1,] <- c(group1_mean, group1_sd)
+
+
      #weave
-     iv.levels.numbers <- 1:iv.num.levels
-     iv.levels.periods <- rep(". ", iv.num.levels)
-     iv.levels <- paste(iv.levels.numbers,iv.levels.periods,iv.levels,sep="")
+     iv_levels_numbers <- 1:iv_num_levels
+     iv_levels_periods <- rep(". ", iv_num_levels)
+     iv_levels <- paste(iv_levels_numbers, iv_levels_periods, iv_levels,sep="")
 
-     left.padding <- c(" ", " ", " ")
-     first.line <- c(iv.levels[1],output.row.descriptives[1,], output.d[1,])
-     first.line.rtf <- c(iv.levels[1],output.row.descriptives[1,], output.d.rtf[1,])
-     second.line <- c(left.padding, output.d.ci[1,])
-     second.line.rtf <- c(left.padding, output.d.ci.rtf[1,])
-     third.line <- rep(" ", length(second.line))
+     left_padding <- c(" ", " ", " ")
+     first_line <- c(iv_levels[1], output_row_descriptives[1,], output_d[1,])
+     first_line_rtf <- c(iv_levels[1], output_row_descriptives[1,], output_d_rtf[1,])
+     second_line <- c(left_padding, output_d_ci[1,])
+     second_line_rtf <- c(left_padding, output_d_ci_rtf[1,])
+     third_line <- rep(" ", length(second_line))
 
-     output.matrix.console <- rbind(first.line,second.line)
-     output.matrix.rtf <- rbind(first.line.rtf,second.line.rtf)
-     for (i in 2:iv.num.levels) {
-          first.line <- c(iv.levels[i], output.row.descriptives[i,], output.d[i,])
-          first.line.rtf <- c(iv.levels[i], output.row.descriptives[i,], output.d.rtf[i,])
-          
-          second.line <- c(left.padding, output.d.ci[i,])
-          second.line.rtf <- c(left.padding, output.d.ci.rtf[i,])
-          
-          third.line <- rep(" ", length(second.line))
-          
-          if (show.conf.interval==TRUE) {
-               new.lines <- rbind(first.line,second.line,third.line)
-               new.lines <- rbind(first.line,second.line,third.line)
-               new.lines.rtf <- rbind(first.line.rtf,second.line.rtf,third.line)
+     output_matrix_console <- rbind(first_line,second_line)
+     output_matrix_rtf <- rbind(first_line_rtf,second_line_rtf)
+     for (i in 2:iv_num_levels) {
+          first_line <- c(iv_levels[i], output_row_descriptives[i,], output_d[i,])
+          first_line_rtf <- c(iv_levels[i], output_row_descriptives[i,], output_d_rtf[i,])
+
+          second_line <- c(left_padding, output_d_ci[i,])
+          second_line_rtf <- c(left_padding, output_d_ci_rtf[i,])
+
+          third_line <- rep(" ", length(second_line))
+
+          if (show_conf_interval==TRUE) {
+               new_lines     <- rbind(first_line,second_line,third_line)
+               new_lines     <- rbind(first_line,second_line,third_line)
+               new_lines_rtf <- rbind(first_line_rtf,second_line_rtf,third_line)
           } else {
-               new.lines <- rbind(first.line,third.line)
-               new.lines.rtf <- rbind(first.line.rtf,third.line)
+               new_lines     <- rbind(first_line,third_line)
+               new_lines_rtf <- rbind(first_line_rtf,third_line)
           }
-          
-          output.matrix.console <- rbind(output.matrix.console, new.lines)
-          output.matrix.rtf <- rbind(output.matrix.rtf, new.lines.rtf)
-     }
-     rownames(output.matrix.console) <- 1:nrow(output.matrix.console)
-     colnames(output.matrix.console) <- c(c("Variable","M","SD"),as.character(1:number.columns))
-     rownames(output.matrix.rtf) <- rownames(output.matrix.console)
-     colnames(output.matrix.rtf) <- colnames(output.matrix.console)
 
-     
-     if (show.conf.interval==TRUE) {
-          table.title <- "Means, standard deviations, and d-values with confidence intervals\n"
-     } else {
-          table.title <- "Means, standard deviations, and d-values\n"
+          output_matrix_console <- rbind(output_matrix_console, new_lines)
+          output_matrix_rtf     <- rbind(output_matrix_rtf, new_lines_rtf)
      }
-     
-     #make table    
-     row.with.colnames <- colnames(output.matrix.console)
-     #outputMatrixConsole <- rbind(row.with.colnames,outputMatrixConsole)
-     df.temp <- data.frame(output.matrix.console, stringsAsFactors = FALSE)
-     #write.table(df.temp,row.names=FALSE,col.names=FALSE,quote=FALSE)
-     rownames(output.matrix.console) <- rep(" ",length((rownames(output.matrix.console))))
-     table.body <- output.matrix.console
-     
+     rownames(output_matrix_console) <- 1:nrow(output_matrix_console)
+     colnames(output_matrix_console) <- c(c("Variable","M","SD"),as.character(1:number_columns))
+     rownames(output_matrix_rtf) <- rownames(output_matrix_console)
+     colnames(output_matrix_rtf) <- colnames(output_matrix_console)
+
+
+     if (show_conf_interval==TRUE) {
+          table_title <- "Means, standard deviations, and d-values with confidence intervals\n"
+     } else {
+          table_title <- "Means, standard deviations, and d-values\n"
+     }
+
+     #make table
+     row_with_colnames <- colnames(output_matrix_console)
+     df_temp <- data.frame(output_matrix_console, stringsAsFactors = FALSE)
+     rownames(output_matrix_console) <- rep(" ", length((rownames(output_matrix_console))))
+     table_body <- output_matrix_console
+
      #make console output
-     if (show.conf.interval==TRUE) {
-          table.note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval for each d-value. \nThe confidence interval is a plausible range of population d-values \nthat could have caused the sample d-value (Cumming, 2014). \nd-values are unbiased estimates calculated using formulas 4.18 and 4.19 \nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). \nd-values not calculated if unequal variances prevented pooling.\n"
+     if (show_conf_interval==TRUE) {
+          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval for each d-value. \nThe confidence interval is a plausible range of population d-values \nthat could have caused the sample d-value (Cumming, 2014). \nd-values are unbiased estimates calculated using formulas 4.18 and 4.19 \nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). \nd-values not calculated if unequal variances prevented pooling.\n"
      } else {
-          table.note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nd-values are unbiased estimates calculated using formulas 4.18 and 4.19 \nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). \nd-values not calculated if unequal variances prevented pooling.\n"
+          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nd-values are unbiased estimates calculated using formulas 4.18 and 4.19 \nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). \nd-values not calculated if unequal variances prevented pooling.\n"
      }
-     tbl.console <- list(table.number = table.number,
-                         table.title = table.title,
-                         table.body = table.body,
-                         table.note = table.note)
-     class(tbl.console) <- "apa.table"
-     
-     
+     tbl_console <- list(table.number = table_number,
+                         table.title = table_title,
+                         table.body = table_body,
+                         table.note = table_note)
+     class(tbl_console) <- "apa.table"
+
+
      #make RTF output file
-     if (make.file.flag==TRUE) {
-          colnames(output.matrix.rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number.columns))
+     if (make_file_flag==TRUE) {
+          colnames(output_matrix_rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number_columns))
           #add leading blank line on table
-          number.columns <- dim(output.matrix.rtf)[2]
-          blankLine <- rep("",number.columns)
-          output.matrix.rtf <- rbind(blankLine,output.matrix.rtf)
-          
-          if (show.conf.interval==TRUE) {
-               table.title <- "Means, standard deviations, and d-values with confidence intervals"
-               table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each {\\i d}-value The confidence interval is a plausible range of population {\\i d}-values that could have caused the sample {\\i d}-value (Cumming, 2014). {\\i d}-values are unbiased estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009).  {\\i d}-values not calculated if unequal variances prevented pooling."
-               
+          number_columns <- dim(output_matrix_rtf)[2]
+          blankLine <- rep("",number_columns)
+          output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
+
+          if (show_conf_interval==TRUE) {
+               table_title <- "Means, standard deviations, and d-values with confidence intervals"
+               table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each {\\i d}-value The confidence interval is a plausible range of population {\\i d}-values that could have caused the sample {\\i d}-value (Cumming, 2014). {\\i d}-values are unbiased estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009).  {\\i d}-values not calculated if unequal variances prevented pooling."
+
           } else {
-               table.title <- "Means, standard deviations, and d-values"
-               table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. {\\i d}-values are unbiased estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\\i d}-values not calculated if unequal variances prevented pooling."
+               table_title <- "Means, standard deviations, and d-values"
+               table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. {\\i d}-values are unbiased estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\\i d}-values not calculated if unequal variances prevented pooling."
           }
-          
+
           #Create RTF code
           rtfTable <- RtfTable$new(isHeaderRow=TRUE)
-          rtfTable$setTableContent(output.matrix.rtf)
-          cell.widths.in.inches <-c(1.25,.85,.85,rep(1,iv.num.levels-1))
-          rtfTable$setCellWidthsInches(cell.widths.in.inches)
+          rtfTable$setTableContent(output_matrix_rtf)
+          cell_widths_in_inches <-c(1.25,.85,.85,rep(1,iv_num_levels-1))
+          rtfTable$setCellWidthsInches(cell_widths_in_inches)
           rtfTable$setRowFirstColumnJustification("left")
           txt.body <- rtfTable$getTableAsRTF(FALSE,FALSE)
-          #           if (number.columns>5) {
-          #                #print("landscape")
-          write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, landscape=landscape,table.number=table.number)
-          #           } else {
-          #                #print("portrait")
-          #                write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note,table.number=table.number)
-          #           }
+          write.rtf.table(filename = filename,txt.body = txt.body,table.title = table_title, table.note = table_note, landscape=landscape,table.number=table.number)
      }
-     return(tbl.console)    
+
+     return(tbl_console)
 }
 
 
-txt.d <- function(d.in,p.in) {
-     if (p.in<.01) {
-          star.str <- "**"
-     } else if (p.in<.05) {
-          star.str <- "*"
+txt_d <- function(d_in, p_in) {
+     if (p_in<.01) {
+          star_str <- "**"
+     } else if (p_in<.05) {
+          star_str <- "*"
      } else {
-          star.str <-""
+          star_str <-""
      }
 
-     d.str <- sprintf("%1.2f%s",d.in,star.str)
-     return(d.str)
+     d_str <- sprintf("%1.2f%s",d_in, star_str)
+     return(d_str)
 }
 
 
-txt.d.ci <- function(cur.ci) {
-     my.low.lim <- cur.ci$Lower.Conf.Limit.smd
-     my.up.lim <- cur.ci$Upper.Conf.Limit.smd
-     ci.str <- sprintf("[%1.2f, %1.2f]",my.low.lim,my.up.lim)
-     return(ci.str)
+txt_d_ci <- function(cur_ci) {
+     my_low_lim  <- cur_ci$Lower.Conf.Limit.smd
+     my_up_lim   <- cur_ci$Upper.Conf.Limit.smd
+     ci_str <- sprintf("[%1.2f, %1.2f]",my_low_lim,my_up_lim)
+     return(ci_str)
 }
 
 
-get.d.value <- function(group1.data,group2.data) {
+get_d_value <- function(group1_data,group2_data) {
      #confirm this is the unbiased one
-     m1 <- mean(group1.data)
-     m2 <- mean(group2.data)
-     v1 <- var(group1.data)
-     v2 <- var(group2.data)
-     n1 <- length(group1.data)
-     n2 <- length(group2.data)
+     m1 <- mean(group1_data)
+     m2 <- mean(group2_data)
+     v1 <- var(group1_data)
+     v2 <- var(group2_data)
+     n1 <- length(group1_data)
+     n2 <- length(group2_data)
      sp <- sqrt((v1*(n1-1) + v2*(n2-1))/(n1+n2-2))
-     d.out <- (m1-m2)/sp
-     d.out <- abs(d.out)
-     return(d.out)     
+     d_out <- (m1-m2)/sp
+     d_out <- abs(d_out)
+     return(d_out)
 }
 
-is.equal.var <- function(group1.dv,group2.dv) {
-     iv.1 <- rep(1,length(group1.dv))
-     iv.2 <- rep(2,length(group2.dv))
-     
-     iv <- c(iv.1,iv.2)
-     dv <- c(group1.dv,group2.dv)
-     
-     my.df <- data.frame(iv,dv)
-     my.df$iv <- as.factor(my.df$iv)
-     
-     lev.result <- car::leveneTest(dv~iv,center=median,data=my.df)
-     lev.p <- lev.result$`Pr(>F)`[1]
 
-     b.result <- TRUE
-     if (lev.p<.05) {
-          b.result <- FALSE
+
+is_equal_var <- function(group1_dv,group2_dv) {
+     iv_1 <- rep(1,length(group1_dv))
+     iv_2 <- rep(2,length(group2_dv))
+
+     iv <- c(iv_1,iv_2)
+     dv <- c(group1_dv,group2_dv)
+
+     my_df <- data.frame(iv,dv)
+     my_df$iv <- as.factor(my_df$iv)
+
+     lev_result <- car::leveneTest(dv~iv,center=median,data=my_df)
+     lev_p <- lev_result$`Pr(>F)`[1]
+
+     b_result <- TRUE
+     if (lev_p<.05) {
+          b_result <- FALSE
      }
-     return(b.result)
+     return(b_result)
 }
