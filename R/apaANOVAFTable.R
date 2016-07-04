@@ -3,15 +3,15 @@
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @param conf.level Level of confidence for interval around partial eta-squared (0 to 1). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.
-#' @param type  Type of Sum of Squares. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.
+#' @param type  Sum of Squares Type. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.
 #' @return APA table object
 #' @examples
-#' #Set contrasts as per SPSS
+#' # Example from Fidler & Thompson (2001)
+#' # You must set these contrasts to ensure values match SPSS
 #' options(contrasts = c("contr.sum", "contr.poly"))
-#'
-#' #Example using atypical Type II Sum of Squared from Fidler & Thompson (2001)
 #' lm_output <- lm(dv ~ a*b, data=fidler_thompson)
-#' apa.anova.table(lm_output, type=2)
+#' apa.anova.table(lm_output)
+#'
 #'
 #' @export
 apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=3) {
@@ -64,6 +64,7 @@ apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,typ
           UL_partial_eta_sq[i] <- get.ci.partial.eta.squared(F.value=table_out$Fvalue[i], df1=table_out$df[i],df2=df_error,conf.level = conf_level)$UL
      }
      MSvalue[1] <- table_out$SS[1]/table_out$df[1]
+     MSvalue[num_rows] <- table_out$SS[num_rows]/table_out$df[num_rows]
 
 
      Predictor <- table_out$Predictor

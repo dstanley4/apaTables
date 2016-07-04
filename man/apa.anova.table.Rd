@@ -14,7 +14,7 @@ apa.anova.table(lm_output, filename, table.number = NA, conf.level = 0.9,
 
 \item{conf.level}{Level of confidence for interval around partial eta-squared (0 to 1). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.}
 
-\item{type}{Type of Sum of Squares. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.}
+\item{type}{Sum of Squares Type. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.}
 
 \item{...}{Regression (i.e., lm) result objects. Typically, one for each block in the regression.}
 }
@@ -25,12 +25,12 @@ APA table object
 Creates a ANOVA F table in APA style
 }
 \examples{
-#Set contrasts as per SPSS
+# Example from Fidler & Thompson (2001)
+# You must set these contrasts to ensure values match SPSS
 options(contrasts = c("contr.sum", "contr.poly"))
-
-#Example using atypical Type II Sum of Squared from Fidler & Thompson (2001)
 lm_output <- lm(dv ~ a*b, data=fidler_thompson)
-apa.anova.table(lm_output, type=2)
+apa.anova.table(lm_output)
+
 
 }
 
