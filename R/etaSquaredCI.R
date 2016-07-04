@@ -25,24 +25,21 @@ get.ci.partial.eta.squared <- function(F.value, df1, df2, conf.level=.90) {
      UL_lambda <- F_limits$Upper.Limit
 
 
-     #LL_partial_omega2 <- get_partial_omega2_from_lambda(lambda=LL_lambda, df1=df1, df2=df2)
-     #UL_partial_omega2 <- get_partial_omega2_from_lambda(lambda=UL_lambda, df1=df1, df2=df2)
-
-     LL_partial_omega2 <- get_partial_eta2_from_lambda(lambda=LL_lambda, df1=df1, df2=df2)
-     UL_partial_omega2 <- get_partial_eta2_from_lambda(lambda=UL_lambda, df1=df1, df2=df2)
+     LL_partial_eta2 <- get_partial_eta2_from_lambda(lambda=LL_lambda, df1=df1, df2=df2)
+     UL_partial_eta2 <- get_partial_eta2_from_lambda(lambda=UL_lambda, df1=df1, df2=df2)
 
 
-     if (is.na(LL_partial_omega2)) {
+     if (is.na(LL_partial_eta2)) {
           LL_partial_eta2 <- 0
      }
 
-     if (is.na(UL_partial_omega2)) {
+     if (is.na(UL_partial_eta2)) {
           UL_partial_eta2 <- 1
      }
 
      output <- list()
-     output$LL <- LL_partial_omega2
-     output$UL <- UL_partial_omega2
+     output$LL <- LL_partial_eta2
+     output$UL <- LL_partial_eta2
      return(output)
 }
 
