@@ -39,14 +39,13 @@ get.ci.partial.eta.squared <- function(F.value, df1, df2, conf.level=.90) {
 
      output <- list()
      output$LL <- LL_partial_eta2
-     output$UL <- LL_partial_eta2
+     output$UL <- UL_partial_eta2
      return(output)
 }
 
 
 get_partial_eta2_from_lambda <- function(lambda, df1, df2)  {
-     F_value <- lambda/((df1/df2)*(df1+df2+1))
-     partial_eta2 <- (F_value*df1) / (F_value*df1 + df2)
+     partial_eta2 <- lambda / (lambda + df1 + df2 + 1)
      return(partial_eta2)
 }
 
