@@ -12,7 +12,11 @@
 #' lm_output <- lm(dv ~ a*b, data=fidler_thompson)
 #' apa.anova.table(lm_output)
 #'
-#'
+#' #Example for Field et al. (2012) Discovery Statistics Using R
+#' # You must set these contrasts to ensure values match SPSS
+#' options(contrasts = c("contr.sum", "contr.poly"))
+#' lm_output <- lm(attractiveness ~ gender*alcohol, data=goggles)
+#' apa.anova.table(lm_output)
 #' @export
 apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=3) {
      table_number <- table.number
@@ -77,7 +81,7 @@ apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,typ
      LL_partial_eta_sq <- sprintf("%1.2f",LL_partial_eta_sq)
      UL_partial_eta_sq <- sprintf("%1.2f",UL_partial_eta_sq)
 
-     table_out <- cbind(Predictor,SSvalue,df,MSvalue,Fvalue,partial_eta_sq, LL_partial_eta_sq, UL_partial_eta_sq)
+     table_out <- cbind(Predictor,SSvalue,df,MSvalue,Fvalue,p,partial_eta_sq, LL_partial_eta_sq, UL_partial_eta_sq)
      table_out <- data.frame(table_out,stringsAsFactors = FALSE)
      table_out[table_out=="NA"] <- ""
 
