@@ -25,3 +25,4 @@ Imports:
     broom,
     dplyr
 RoxygenNote: 5.0.1
+Suggests: testthat
