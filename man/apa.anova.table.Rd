@@ -2,7 +2,7 @@
 % Please edit documentation in R/apaANOVAFTable.R
 \name{apa.anova.table}
 \alias{apa.anova.table}
-\title{Creates a ANOVA F table in APA style}
+\title{Creates a fixed-effects ANOVA table in APA style}
 \usage{
 apa.anova.table(lm_output, filename, table.number = NA, conf.level = 0.9,
   type = 3)
@@ -22,7 +22,7 @@ apa.anova.table(lm_output, filename, table.number = NA, conf.level = 0.9,
 APA table object
 }
 \description{
-Creates a ANOVA F table in APA style
+Creates a fixed-effects ANOVA table in APA style
 }
 \examples{
 # Example from Fidler & Thompson (2001)

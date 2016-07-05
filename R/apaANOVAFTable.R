@@ -1,4 +1,4 @@
-#' Creates a ANOVA F table in APA style
+#' Creates a fixed-effects ANOVA table in APA style
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
