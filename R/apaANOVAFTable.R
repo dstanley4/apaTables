@@ -206,8 +206,8 @@ output_column_width_anova <- function(column_name) {
             Predictor = wide,
             SSvalue   = narrow*1.5,
             MSvalue   = narrow*1.5,
-            df        = narrow,
-            Fvalue    = narrow,
+            df        = narrow*.8,
+            Fvalue    = narrow*1.5,
             p         = narrow,
             partial_eta_sq    = wide,
             partial_eta_sq_CI = wide)
