@@ -7,7 +7,7 @@
 #' @return APA table object
 #' @examples
 #' #Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
-#' # You must set these contrasts to ensure values match SPSS
+#' options(contrasts = c("contr.sum", "contr.poly"))
 #' lm_output <- lm(libido ~ dose, data=viagra)
 #' apa.anova.table(lm_output,filename="ex1_anova_table.doc")
 #'
