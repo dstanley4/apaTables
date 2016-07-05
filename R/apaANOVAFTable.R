@@ -19,13 +19,13 @@
 #' # You must set these contrasts to ensure values match SPSS
 #' options(contrasts = c("contr.sum", "contr.poly"))
 #' lm_output <- lm(dv ~ a*b, data=fidler_thompson)
-#' apa.anova.table(lm_output,filename="ex1_anova_table.doc")
+#' apa.anova.table(lm_output,filename="ex2_anova_table.doc")
 #'
 #' #Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 #' # You must set these contrasts to ensure values match SPSS
 #' options(contrasts = c("contr.sum", "contr.poly"))
 #' lm_output <- lm(attractiveness ~ gender*alcohol, data=goggles)
-#' apa.anova.table(lm_output,filename="ex2_anova_table.doc")
+#' apa.anova.table(lm_output,filename="ex3_anova_table.doc")
 #' @export
 apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=3) {
      table_number <- table.number
