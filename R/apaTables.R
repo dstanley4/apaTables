@@ -256,7 +256,9 @@ correlations_with_criterion <- function(df) {
 }
 
 
-get_deltaR2_ci <- function(R2_2,R2_1,n){
+get_deltaR2_ci <- function(R2_2,R2_1,n,conf_level=.95){
+
+     z <- qnorm((1-((1-conf_level)/2)))
 
      r20A <- R2_2
      r20B <- R2_1
@@ -269,8 +271,8 @@ get_deltaR2_ci <- function(R2_2,R2_1,n){
 
      var_delta_r2 <- (4*r20A*(1-r20A)^2)/n + (4*r20B*(1-r20B)^2)/n - 8*r0A*r0B*(.5*(2*rAB-r0A*r0B)*(1-r20A - r20B - r2AB)+rAB^3)/n
 
-     LL <- (r20A -r20B) - 1.96*sqrt(var_delta_r2)
-     UL <- (r20A -r20B) + 1.96*sqrt(var_delta_r2)
+     LL <- (r20A -r20B) - z*sqrt(var_delta_r2)
+     UL <- (r20A -r20B) + z*sqrt(var_delta_r2)
 
      output <- list()
      output$LL <- LL
