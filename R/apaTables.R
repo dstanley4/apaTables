@@ -28,6 +28,7 @@
 #'@importFrom "stats" "confint"
 #'@importFrom "dplyr" "mutate" "select"
 #'@importFrom "broom" "glance" "tidy"
+#'@importFrom "stats" "qnorm" "rnorm"
 utils::globalVariables(c("difference", "predictor","SE","p"))
 NULL
 

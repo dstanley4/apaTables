@@ -34,13 +34,13 @@ apa.anova.table(lm_output,filename="ex1_anova_table.doc")
 # You must set these contrasts to ensure values match SPSS
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(dv ~ a*b, data=fidler_thompson)
-apa.anova.table(lm_output,filename="ex1_anova_table.doc")
+apa.anova.table(lm_output,filename="ex2_anova_table.doc")
 
 #Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 # You must set these contrasts to ensure values match SPSS
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(attractiveness ~ gender*alcohol, data=goggles)
-apa.anova.table(lm_output,filename="ex2_anova_table.doc")
+apa.anova.table(lm_output,filename="ex3_anova_table.doc")
 }
 \references{
 Smithson, M. (2001). Correct confidence intervals for various regression effect sizes and parameters: The importance of noncentral distributions in computing intervals. Educational and Psychological Measurement, 61(4), 605-632.
