@@ -2,7 +2,7 @@
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
-#' @param conf.level Level of confidence for interval around partial eta-squared (0 to 1). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.
+#' @param conf.level Level of confidence for interval around partial eta-squared (.90 or .95). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.
 #' @param type  Sum of Squares Type. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.
 #' @return APA table object
 #' @examples
@@ -21,6 +21,8 @@
 apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=3) {
      table_number <- table.number
      conf_level <- conf.level
+
+     if ((conf_level!=.90)&(conf_level!=.95)) {conf_level=.90}
 
      if (missing(filename)) {
           make_file_flag=FALSE
@@ -72,23 +74,40 @@ apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,typ
 
 
      Predictor <- table_out$Predictor
-     SSvalue <- sprintf("%1.2f",table_out$SS)
-     MSvalue <- sprintf("%1.2f",MSvalue)
-     Fvalue <- sprintf("%1.2f",table_out$Fvalue)
-     df <- table_out$df
-     p <- sprintf("%1.2f",table_out$pvalue)
-     partial_eta_sq <- sprintf("%1.2f",partial_eta_sq)
-     LL_partial_eta_sq <- sprintf("%1.2f",LL_partial_eta_sq)
-     UL_partial_eta_sq <- sprintf("%1.2f",UL_partial_eta_sq)
+     Predictor <- sub(":"," x ", Predictor)
+     SSvalue   <- sprintf("%1.2f",table_out$SS)
+     MSvalue   <- sprintf("%1.2f",MSvalue)
+     Fvalue    <- sprintf("%1.2f",table_out$Fvalue)
+     df        <- table_out$df
+     p         <- sprintf("%1.3f",table_out$pvalue)
+     p         <- strip.leading.zero(p)
 
-     table_out <- cbind(Predictor,SSvalue,df,MSvalue,Fvalue,p,partial_eta_sq, LL_partial_eta_sq, UL_partial_eta_sq)
+     partial_eta_sq    <- strip.leading.zero(sprintf("%1.2f",partial_eta_sq))
+     partial_eta_sq_LL <- strip.leading.zero(sprintf("%1.2f",LL_partial_eta_sq))
+     partial_eta_sq_UL <- strip.leading.zero(sprintf("%1.2f",UL_partial_eta_sq))
+
+     partial_eta_sq_CI <- rep("", num_rows)
+     for (i in 2:(num_rows-1)) {
+          partial_eta_sq_CI[i] <- sprintf("[%s, %s]",partial_eta_sq_LL[i],partial_eta_sq_UL[i])
+     }
+
+     table_out <- cbind(Predictor,SSvalue,df,MSvalue,Fvalue,p,partial_eta_sq, partial_eta_sq_CI)
      table_out <- data.frame(table_out,stringsAsFactors = FALSE)
      table_out[table_out=="NA"] <- ""
 
+     table_out_txt   <- table_out
+     table_out_names <- get_txt_column_names_anova(table_out_txt)
+     if (conf_level==.95) {
+          table_out_names <- sub("CI_partial_eta2","CI_95_partial_eta2",table_out_names)
+     } else {
+          table_out_names <- sub("CI_partial_eta2","CI_90_partial_eta2",table_out_names)
+     }
+     names(table_out_txt) <- table_out_names
+
      #console table
      table_title <- sprintf("ANOVA results using %s as the criterion\n",dv_name)
-     table_body <- table_out
-     table_note <- ""
+     table_body  <- table_out_txt
+     table_note  <- ""
 
      tbl_console <- list(table_number = table_number,
                          table_title = table_title,
@@ -100,104 +119,78 @@ apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,typ
 
 
      if (make_file_flag==TRUE) {
-          table_title <- sprintf("Regression results using %s as the criterion\n",first_criterion)
-          table_note <- get_reg_table_note_rtf(first_block_calculate_cor, first_block_calculate_beta)
+          table_title <- sprintf("Fixed-Effects ANOVA results using %s as the criterion\n",dv_name)
+          table_note <- "Here is the note."
 
           #set columns widths and names
-          colwidths <- get_rtf_column_widths(block_out_rtf)
+          colwidths <- get_rtf_column_widths_anova(table_out)
 
-          regression_table <- as.matrix(block_out_rtf)
-          new_col_names <- get_rtf_column_names(block_out_rtf)
-          colnames(regression_table) <- new_col_names
+          anova_table <- as.matrix(table_out)
+          new_col_names  <- get_rtf_column_names_anova(table_out)
+          if (conf_level==.95) {
+               new_col_names <- sub("xyzzy","95",new_col_names)
+          } else {
+               new_col_names <- sub("xyzzy","90",new_col_names)
+          }
+          colnames(anova_table) <- new_col_names
 
 
           #Create RTF code
           rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
-          rtfTable$setTableContent(regression_table)
+          rtfTable$setTableContent(anova_table)
           rtfTable$setCellWidthsInches(colwidths)
           rtfTable$setRowSecondColumnDecimalTab(.4)
           txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
 
 
-          if (is_multiple_blocks==TRUE) {
-               write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,landscape=TRUE,table.number=table_number)
-          } else {
-               write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,table.number=table_number)
-          }
+          write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,landscape=FALSE,table.number=table_number)
 
      }
-
 
      return(tbl_console)
 }
 
 
-
-
-is_product_row <- function(row_names) {
-     is_a_colon   <- grep(":",row_names)
-     is_a_star    <- grep("\\*",row_names)
-     is_a_product <- unique(sort(c(is_a_colon,is_a_star)))
-     return(is_a_product)
-}
-
-
-is_variable_factor <- function(df) {
-     num_var <- dim(df)[2]
-     is_var_factor <- FALSE
-     for (i in 1:num_var) {
-          cur_col <- df[,i]
-          if ( is.factor(cur_col)) {is_var_factor <- TRUE}
-          if (is.ordered(cur_col)) {is_var_factor <- TRUE}
-     }
-     return(is_var_factor)
-}
-
-
-
-output_txt_name <- function(column_name) {
+output_txt_name_anova <- function(column_name) {
      switch(column_name,
-            predictor="Predictor",
-            b = "b",
-            b_CI = "b_95%_CI",
-            beta = "beta",
-            beta_CI ="beta_95%_CI",
-            sr2="sr2",
-            sr2_CI ="sr2_95%_CI",
-            r="r",
-            summary="Fit",
-            difference="Difference")
+            Predictor="Predictor",
+            SSvalue = "SS",
+            MSvalue = "MS",
+            df = "df",
+            Fvalue = "F",
+            p = "p",
+            partial_eta_sq ="partial_eta2",
+            partial_eta_sq_CI ="CI_partial_eta2")
 }
 
-get_txt_column_names <- function(df) {
+get_txt_column_names_anova <- function(df) {
      n <- names(df)
      names_out <- c()
      for (i in 1:length(n)) {
-          names_out[i] <-output_txt_name(n[i])
+          names_out[i] <-output_txt_name_anova(n[i])
      }
      return(names_out)
 }
 
-output_rtf_name <- function(column_name) {
+output_rtf_name_anova <- function(column_name) {
      switch(column_name,
-            predictor="Predictor",
-            b = "{\\i b}",
-            b_CI = "{{\\i b}\\par}{95% CI\\par}[LL, UL]",
-            beta = "{\\i beta}",
-            beta_CI ="{{\\i beta}\\par}{95% CI\\par}[LL, UL]",
-            sr2="{\\i sr\\super 2 \\nosupersub}",
-            sr2_CI ="{{{\\i sr\\super 2 \\nosupersub}\\par}95% CI\\par}[LL, UL]",
-            r="{\\i r}",
-            summary="Fit",
-            difference="Difference")
+            Predictor="Predictor",
+            SSvalue = "{Sum\\par}{of\\par}Squares",
+            MSvalue = "{Mean\\par}Square",
+            df = "{\\i df}",
+            Fvalue = "{\\i F}",
+            p = "{\\i p}",
+            partial_eta_sq ="{\\sub partial \\nosupersub \\u0951\\ \\super 2\\nosupersub}",
+            partial_eta_sq_CI ="{\\sub partial \\nosupersub \\u0951\\ \\super 2 \\nosupersub \\par xyzzy% CI\\par[LL, UL]}")
+
 }
 
 
-get_rtf_column_names <- function(df) {
+get_rtf_column_names_anova <- function(df) {
      n <- names(df)
      names_out <- c()
      for (i in 1:length(n)) {
-          names_out[i] <-output_rtf_name(n[i])
+          names_out[i] <-output_rtf_name_anova(n[i])
      }
      return(names_out)
 }
@@ -205,28 +198,26 @@ get_rtf_column_names <- function(df) {
 
 
 
-output_column_width <- function(column_name) {
+output_column_width_anova <- function(column_name) {
      narrow <- .60
      wide   <- .95
 
      switch(column_name,
-            predictor=wide,
-            b = wide,
-            b_CI = wide*1.35,
-            beta = narrow,
-            beta_CI =wide,
-            sr2=narrow,
-            sr2_CI =wide*.8,
-            r=narrow,
-            summary=wide*1.3,
-            difference=wide*1.4)
+            Predictor = wide,
+            SSvalue   = narrow*1.5,
+            MSvalue   = narrow*1.5,
+            df        = narrow,
+            Fvalue    = narrow,
+            p         = narrow,
+            partial_eta_sq    = wide,
+            partial_eta_sq_CI = wide)
 }
 
-get_rtf_column_widths <- function(df) {
+get_rtf_column_widths_anova <- function(df) {
      n <- names(df)
      width_out <- c()
      for (i in 1:length(n)) {
-          width_out[i] <-output_column_width(n[i])
+          width_out[i] <-output_column_width_anova(n[i])
      }
      return(width_out)
 }
@@ -236,3 +227,12 @@ get_anova_table_note_txt <- function(calculate_cor,calculate_beta) {
      return(table_note)
 }
 
+
+
+convert_colon_to_x <- function(predictor_strings) {
+     L <- length(predictor_strings)
+     for (i in 1:L) {
+          cur_string <- predictor_strings
+     }
+
+}

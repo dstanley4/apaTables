@@ -12,7 +12,7 @@ apa.anova.table(lm_output, filename, table.number = NA, conf.level = 0.9,
 
 \item{table.number}{Integer to use in table number output line}
 
-\item{conf.level}{Level of confidence for interval around partial eta-squared (0 to 1). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.}
+\item{conf.level}{Level of confidence for interval around partial eta-squared (.90 or .95). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.}
 
 \item{type}{Sum of Squares Type. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.}
 
