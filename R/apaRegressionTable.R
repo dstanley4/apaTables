@@ -37,7 +37,7 @@
 #' blk1<-lm(sales~adverts*airplay,data=album)
 #' apa.reg.table(blk1,filename="exInteraction4.doc")
 #' @export
-apa.reg.table<-function(...,filename=NA,conf.level=.95,table.number=NA) {
+apa.reg.table<-function(...,filename=NA,table.number=NA) {
      regression_results_list <- list(...)
 
      table_number <- table.number
