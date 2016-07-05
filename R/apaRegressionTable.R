@@ -2,7 +2,6 @@
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
-#' @param is.random.predictors  Indicate if predictors are random (TRUE/FALSE). Default is FALSE.
 #' @return APA table object
 #' @examples
 #' # View top few rows of goggles data set
@@ -38,11 +37,11 @@
 #' blk1<-lm(sales~adverts*airplay,data=album)
 #' apa.reg.table(blk1,filename="exInteraction4.doc")
 #' @export
-apa.reg.table<-function(...,filename=NA,table.number=NA,is.random.predictors=FALSE) {
+apa.reg.table<-function(...,filename=NA,conf.level=.95,table.number=NA) {
      regression_results_list <- list(...)
 
      table_number <- table.number
-     is_random_predictors <- is.random.predictors
+     is_random_predictors <- FALSE
 
      if (is.na(filename)) {
           make_file_flag=FALSE
