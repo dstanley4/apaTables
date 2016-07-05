@@ -8,6 +8,8 @@ apa.anova.table(lm_output, filename, table.number = NA, conf.level = 0.9,
   type = 3)
 }
 \arguments{
+\item{lm_output}{Regression (i.e., lm) result objects. Typically, one for each block in the regression.}
+
 \item{filename}{(optional) Output filename document filename (must end in .rtf or .doc only)}
 
 \item{table.number}{Integer to use in table number output line}
@@ -15,8 +17,6 @@ apa.anova.table(lm_output, filename, table.number = NA, conf.level = 0.9,
 \item{conf.level}{Level of confidence for interval around partial eta-squared (.90 or .95). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.}
 
 \item{type}{Sum of Squares Type. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.}
-
-\item{...}{Regression (i.e., lm) result objects. Typically, one for each block in the regression.}
 }
 \value{
 APA table object
@@ -25,16 +25,21 @@ APA table object
 Creates a fixed-effects ANOVA table in APA style
 }
 \examples{
-# Example from Fidler & Thompson (2001)
+#Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
+# You must set these contrasts to ensure values match SPSS
+lm_output <- lm(libido ~ dose, data=viagra)
+apa.anova.table(lm_output,filename="ex1_anova_table.doc")
+
+# Example 2: 2-way from Fidler & Thompson (2001)
 # You must set these contrasts to ensure values match SPSS
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(dv ~ a*b, data=fidler_thompson)
-apa.anova.table(lm_output)
+apa.anova.table(lm_output,filename="ex1_anova_table.doc")
 
-#Example for Field et al. (2012) Discovery Statistics Using R
+#Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 # You must set these contrasts to ensure values match SPSS
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(attractiveness ~ gender*alcohol, data=goggles)
-apa.anova.table(lm_output)
+apa.anova.table(lm_output,filename="ex2_anova_table.doc")
 }
 

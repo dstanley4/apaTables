@@ -32,7 +32,7 @@ RtfTable <- setRefClass("RtfTable",
 
                defaultCellWidthInches <<- .85
                defaultDecimalTableProportionInternal <<- .35
-               
+
                leftAlignment <<- 1
                rightAlignment <<- 2
                centerAlignment <<- 3
@@ -43,7 +43,7 @@ RtfTable <- setRefClass("RtfTable",
                callSuper(...)
                return(TRUE)
           },
-         
+
           setCellWidthsInches = function(cellWidths) {
                cellWidthsInches <<- cellWidths
                cellWidthsTwipsInternal <<- cellWidths * twipsPerInchInternal
@@ -53,25 +53,25 @@ RtfTable <- setRefClass("RtfTable",
                .self$updateDecimalTabs()
                return(TRUE)
          },
-         
-         
+
+
          updateDecimalTabs = function(){
                decimalTabPositionTwipsInternal <<- cellWidthsTwipsInternal * decimalTabProportionInternal
                return(TRUE)
          },
-         
+
          setDecimalTabWidthsProportions = function(decimalTabs){
               decimalTabProportionInternal <<- decimalTabs
               .self$updateDecimalTabs()
               return(TRUE)
          },
-         
+
          getRowContentInRTF = function(rowContent,isExtraSpacing,isCurRowHeaderRow) {
               horizAlignmentFormatCodes <- list(left="\\ql",right="\\qr",center="\\qc")
               rowHorizAlignmentQuad <- unname(unlist(horizAlignmentFormatCodes[rowHorizontalAlignment]))
               headerHorizAlignmentQuad <- unname(unlist(horizAlignmentFormatCodes[headerHorizontalAlignment]))
               headerHorizAlignmentQuad[1]<-rowHorizAlignmentQuad[1]
-              
+
               cellTabs <- sprintf("\\tqdec\\tldot\\tx%d",decimalTabPositionTwipsInternal) #multiple at once
               noTabId <- decimalTabPositionTwipsInternal == 0
               cellTabs[noTabId] <- ""
@@ -80,7 +80,7 @@ RtfTable <- setRefClass("RtfTable",
               } else {
                    spacingAmount <- 0
               }
-              
+
               formattedRow <- c()
               for (i in 1:numberColumnsInternal) {
                    if (cellTabs[i]=="") {
@@ -95,18 +95,18 @@ RtfTable <- setRefClass("RtfTable",
                                                    spacingAmount,spacingAmount,headerHorizAlignmentQuad[i],rowContent[i])
                    }
               }
-              return(formattedRow)   
+              return(formattedRow)
          },
-         
+
          getRowFormatInRTF = function(isLineAbove,isLineBelow,isThinLine) {
               cellRightSide <- as.integer(cellRightSidePositionTwipsInternal)
-              
+
               if (isThinLine == TRUE) {
                    curLineThickness <- lineThicknessInternal/2
               } else {
                    curLineThickness <- lineThicknessInternal/2
               }
-              
+
               tableLineCellDefn <- c()
               outputLineNumber <-1
               isLineAboveInitial <- isLineAbove #new
@@ -114,7 +114,7 @@ RtfTable <- setRefClass("RtfTable",
                    if (any(i==noLineAboveColumns)) {
                         isLineAbove=FALSE #new
                    }
-                   
+
                    if (isLineAbove==TRUE){
                         tableLineCellDefn[outputLineNumber] = sprintf("\\clbrdrt\\brdrw%d\\brdrs",curLineThickness)
                         outputLineNumber <- outputLineNumber + 1
@@ -126,20 +126,20 @@ RtfTable <- setRefClass("RtfTable",
                    if (i==1) {
                         isLineAbove=isLineAboveInitial #new
                    }
-                   
+
                    tableLineCellDefn[outputLineNumber] = sprintf("\\clvertalc\\cellx%d ",cellRightSide[i])
                    outputLineNumber <- outputLineNumber + 1
               }
               return(tableLineCellDefn)
           },
-         
+
           getTableAsRTF = function(isExtraSpacing=FALSE,isLineAbove=FALSE,isLineBelow=FALSE,isThinLine=FALSE) {
-               
+
                if (isHeaderRow==TRUE) {
                     headerRow <- colnames(tableContentInternal)
                     headerRtfRow <- getRow(rowContent=headerRow,isExtraSpacing=isExtraSpacing,isLineAbove=TRUE,isLineBelow=FALSE,isThinLine=isThinLine,isCurRowHeaderRow=TRUE)
                }
-               
+
 
                numberRows <- dim(tableContentInternal)[1]
                if (isHeaderRow==TRUE) {
@@ -147,11 +147,11 @@ RtfTable <- setRefClass("RtfTable",
                } else {
                     rtfTable <- c()
                }
-              
+
                #tableContentInternalWithTabs <- .self$addTabToMatrixCells(tableContentInternal)
                tableContentInternalWithTabs <- tableContentInternal
-               
-               
+
+
                for (i in 1:numberRows) {
                     curRow <- tableContentInternalWithTabs[i,]
                     if (i==1) {
@@ -170,9 +170,9 @@ RtfTable <- setRefClass("RtfTable",
                     }
                }
                return(rtfTable)
-          },  
-              
-         
+          },
+
+
           getRow = function(rowContent,isExtraSpacing,isLineAbove,isLineBelow,isThinLine,isCurRowHeaderRow) {
                rowPrefix <- "{"
                rowStart <- sprintf("\\trowd \\trgaph%d",cellSpaceBorderInternal)
@@ -180,54 +180,54 @@ RtfTable <- setRefClass("RtfTable",
                rtfRowContent <- .self$getRowContentInRTF(rowContent,isExtraSpacing = isExtraSpacing,isCurRowHeaderRow = isCurRowHeaderRow)
                rowEnd <- "\\row"
                rowSuffix <- "}"
-              
+
                rowOut <- c(rowPrefix, rowStart, rowFormat, rtfRowContent,rowEnd,rowSuffix)
                return(rowOut)
           },
-         
+
           setTableContent = function(tableContent) {
                tableContentInternal <<- tableContent
                numberColumnsInternal <<- dim(tableContent)[2]
                .self$setDefaultWidthAlignmentAndTabs()
                return(TRUE)
           },
-         
+
           setDefaultWidthAlignmentAndTabs = function() {
                unitVector <- rep(1,numberColumnsInternal)
-              
+
                cellWidths <- unitVector*defaultCellWidthInches
                cellWidths[1] <- defaultCellWidthInches*1.5
                .self$setCellWidthsInches(cellWidths)
-              
+
                decTabs <- unitVector*defaultDecimalTableProportionInternal
                decTabs[1] <- 0
                .self$setDecimalTabWidthsProportions(decTabs)
-              
+
                horizAlign <- rep(centerAlignment,numberColumnsInternal)
                horizAlign[1] <- rightAlignment
                headerHorizontalAlignment <<- horizAlign
                rowHorizontalAlignment <<- horizAlign
                return(TRUE)
           },
-         
+
           addTabToMatrixCells = function(matrixStringIn) {
                myDims <- dim(matrixStringIn)
                newString <- paste("\\tqdec\\tldot\\tx600",matrixStringIn)
                newString <- matrix(newString,myDims[1],myDims[2])
                return(newString)
           },
-         
-         
+
+
           setRowFirstColumnJustification =function(columnJustificationString) {
                newRowHorizontalAlignment <- rowHorizontalAlignment
                if (columnJustificationString=="center") {
-                    newRowHorizontalAlignment[1] <- centerAlignment          
+                    newRowHorizontalAlignment[1] <- centerAlignment
                } else if (columnJustificationString=="left") {
-                    newRowHorizontalAlignment[1] <- leftAlignment          
+                    newRowHorizontalAlignment[1] <- leftAlignment
                } else {
-                    newRowHorizontalAlignment[1] <- rightAlignment          
+                    newRowHorizontalAlignment[1] <- rightAlignment
                }
-               rowHorizontalAlignment <<- newRowHorizontalAlignment        
+               rowHorizontalAlignment <<- newRowHorizontalAlignment
           },
 
          setRowSecondColumnDecimalTab =function(columnDecimalTabProportion) {
@@ -236,16 +236,22 @@ RtfTable <- setRefClass("RtfTable",
               .self$setDecimalTabWidthsProportions(newRowDecimalTab)
          },
 
-         
+         setRowDecimalTabForColumn =function(columnDecimalTabProportion,columnNumber) {
+              newRowDecimalTab <- decimalTabProportionInternal
+              newRowDecimalTab[columnNumber] <- columnDecimalTabProportion
+              .self$setDecimalTabWidthsProportions(newRowDecimalTab)
+         },
+
+
           setRowLastColumnWidth =function(columnWidth) {
                newCellWidths <- .self$cellWidthsInches
                newCellWidths[.self$numberColumnsInternal] <- columnWidth
                .self$setCellWidthsInches(cellWidths = newCellWidths)
-               
+
           }
 
 
-         
-    )                        
+
+    )
 )
 

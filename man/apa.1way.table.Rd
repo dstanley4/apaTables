@@ -29,11 +29,7 @@ APA table object
 Creates a table of means and standard deviations for a 1-way ANOVA design in APA style
 }
 \examples{
-# View top few rows of viagra data set 
-# from Discovering Statistics Using R
-head(viagra)
-
-# Use apa.1way.table function
-apa.1way.table(iv=dose,dv=libido,data=viagra,filename="ex1wayTable.doc")
+# Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
+apa.1way.table(iv=dose,dv=libido,data=viagra,filename="ex1_desc_table.doc")
 }
 

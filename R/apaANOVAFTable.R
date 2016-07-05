@@ -1,22 +1,27 @@
 #' Creates a fixed-effects ANOVA table in APA style
-#' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
+#' @param lm_output Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @param conf.level Level of confidence for interval around partial eta-squared (.90 or .95). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.
 #' @param type  Sum of Squares Type. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.
 #' @return APA table object
 #' @examples
-#' # Example from Fidler & Thompson (2001)
+#' #Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
+#' # You must set these contrasts to ensure values match SPSS
+#' lm_output <- lm(libido ~ dose, data=viagra)
+#' apa.anova.table(lm_output,filename="ex1_anova_table.doc")
+#'
+#' # Example 2: 2-way from Fidler & Thompson (2001)
 #' # You must set these contrasts to ensure values match SPSS
 #' options(contrasts = c("contr.sum", "contr.poly"))
 #' lm_output <- lm(dv ~ a*b, data=fidler_thompson)
-#' apa.anova.table(lm_output)
+#' apa.anova.table(lm_output,filename="ex1_anova_table.doc")
 #'
-#' #Example for Field et al. (2012) Discovery Statistics Using R
+#' #Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 #' # You must set these contrasts to ensure values match SPSS
 #' options(contrasts = c("contr.sum", "contr.poly"))
 #' lm_output <- lm(attractiveness ~ gender*alcohol, data=goggles)
-#' apa.anova.table(lm_output)
+#' apa.anova.table(lm_output,filename="ex2_anova_table.doc")
 #' @export
 apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=3) {
      table_number <- table.number
@@ -105,9 +110,9 @@ apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,typ
      names(table_out_txt) <- table_out_names
 
      #console table
-     table_title <- sprintf("ANOVA results using %s as the criterion\n",dv_name)
+     table_title <- sprintf("ANOVA results using %s as the dependent variable\n",dv_name)
      table_body  <- table_out_txt
-     table_note  <- ""
+     table_note  <- sprintf("Note: Values in square brackets indicate the bounds of the %d%% confidence interval for partial eta-squared",conf_level*100)
 
      tbl_console <- list(table_number = table_number,
                          table_title = table_title,
@@ -120,7 +125,7 @@ apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,typ
 
      if (make_file_flag==TRUE) {
           table_title <- sprintf("Fixed-Effects ANOVA results using %s as the criterion\n",dv_name)
-          table_note <- "Here is the note."
+          table_note <- "LL and UL represent the lower-limit and upper-limit of the partial \\u0951\\ \\super 2\\nosupersub  confidence interval, respectively."
 
           #set columns widths and names
           colwidths <- get_rtf_column_widths_anova(table_out)
@@ -139,7 +144,13 @@ apa.anova.table<-function(lm_output,filename,table.number=NA, conf.level=.90,typ
           rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
           rtfTable$setTableContent(anova_table)
           rtfTable$setCellWidthsInches(colwidths)
-          rtfTable$setRowSecondColumnDecimalTab(.4)
+          rtfTable$setRowDecimalTabForColumn(.4,2)
+          rtfTable$setRowDecimalTabForColumn(0,3)
+          rtfTable$setRowDecimalTabForColumn(.4,4)
+          rtfTable$setRowDecimalTabForColumn(.4,5)
+          rtfTable$setRowDecimalTabForColumn(0,6)
+          rtfTable$setRowDecimalTabForColumn(0,7)
+          rtfTable$setRowDecimalTabForColumn(0,8)
           txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
 
 
