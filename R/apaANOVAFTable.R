@@ -5,6 +5,10 @@
 #' @param conf.level Level of confidence for interval around partial eta-squared (.90 or .95). A value of .90 is the default, this helps to create consistency between the CI overlapping with zero and conclusions based on the p-value.
 #' @param type  Sum of Squares Type. Type II or Type III; specify, 2 or 3, respectively. Default value is 3.
 #' @return APA table object
+#' @references
+#' Smithson, M. (2001). Correct confidence intervals for various regression effect sizes and parameters: The importance of noncentral distributions in computing intervals. Educational and Psychological Measurement, 61(4), 605-632.
+#'
+#' Fidler, F., & Thompson, B. (2001). Computing correct confidence intervals for ANOVA fixed-and random-effects effect sizes. Educational and Psychological Measurement, 61(4), 575-604.
 #' @examples
 #' #Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
 #' options(contrasts = c("contr.sum", "contr.poly"))

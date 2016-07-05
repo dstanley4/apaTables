@@ -3,6 +3,8 @@
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @return APA table object
+#' @references
+#' Alf Jr, E. F., & Graf, R. G. (1999). Asymptotic confidence limits for the difference between two squared multiple correlations: A simplified approach. Psychological Methods, 4(1), 70.
 #' @examples
 #' # View top few rows of goggles data set
 #' # from Discovering Statistics Using R

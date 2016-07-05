@@ -42,4 +42,9 @@ options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(attractiveness ~ gender*alcohol, data=goggles)
 apa.anova.table(lm_output,filename="ex2_anova_table.doc")
 }
+\references{
+Smithson, M. (2001). Correct confidence intervals for various regression effect sizes and parameters: The importance of noncentral distributions in computing intervals. Educational and Psychological Measurement, 61(4), 605-632.
+
+Fidler, F., & Thompson, B. (2001). Computing correct confidence intervals for ANOVA fixed-and random-effects effect sizes. Educational and Psychological Measurement, 61(4), 575-604.
+}
 

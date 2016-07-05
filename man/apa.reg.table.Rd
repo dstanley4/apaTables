@@ -53,4 +53,7 @@ apa.reg.table(blk1,filename="exInteraction3.doc")
 blk1<-lm(sales~adverts*airplay,data=album)
 apa.reg.table(blk1,filename="exInteraction4.doc")
 }
+\references{
+Alf Jr, E. F., & Graf, R. G. (1999). Asymptotic confidence limits for the difference between two squared multiple correlations: A simplified approach. Psychological Methods, 4(1), 70.
+}
 

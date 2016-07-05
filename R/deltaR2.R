@@ -12,7 +12,6 @@ get_deltaR2_ci <- function(R2_2,R2_1,n,conf_level=.95){
      #Case 2 from paper
 
      z <- qnorm((1-((1-conf_level)/2)))
-     z <- 1.96
 
      r20A <- R2_2
      r20B <- R2_1
