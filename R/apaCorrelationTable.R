@@ -145,9 +145,9 @@ apa.cor.table<-function(data,filename=NA,table.number=NA, show.conf.interval=TRU
           blankLine <- rep("",number_columns)
           output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
 
-          if (show_conf_interval==TRUE) {
+          if (show_conf_interval == TRUE) {
                table_title <- "Means, standard deviations, and correlations with confidence intervals"
-               table.note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation. The confidence interval is a plausible range of population correlations that could have caused the sample correlation (Cumming, 2014)."
+               table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation. The confidence interval is a plausible range of population correlations that could have caused the sample correlation (Cumming, 2014)."
 
           } else {
                table_title <- "Means, standard deviations, and correlations"
