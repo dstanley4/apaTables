@@ -194,7 +194,7 @@ apa.reg.table<-function(...,filename=NA,table.number=NA) {
            if (is_multiple_blocks==TRUE) {
                write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,landscape=TRUE,table.number=table_number)
            } else {
-               write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,table.number=table_number)
+               write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,table.number=table_number,landscape=TRUE)
            }
 
      }
