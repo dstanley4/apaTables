@@ -34,7 +34,7 @@
 #' blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
 #' apa.reg.table(blk1,blk2,blk3,filename="exInteraction2.doc")
 #'
-#' Interaction product-term test with single regression (i.e., semi-partial correlation focus)
+#' #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 #' blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
 #' apa.reg.table(blk1,filename="exInteraction3.doc")
 #'
