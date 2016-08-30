@@ -4,7 +4,10 @@
 #' @param table.number  Integer to use in table number output line
 #' @return APA table object
 #' @references
+#' sr2 and delta R2 confidence intervals calculated via:
+#'
 #' Alf Jr, E. F., & Graf, R. G. (1999). Asymptotic confidence limits for the difference between two squared multiple correlations: A simplified approach. Psychological Methods, 4(1), 70.
+#'
 #' @examples
 #' # View top few rows of goggles data set
 #' # from Discovering Statistics Using R
@@ -31,13 +34,10 @@
 #' blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
 #' apa.reg.table(blk1,blk2,blk3,filename="exInteraction2.doc")
 #'
-#' # V1: Interaction product-term test with single regression (i.e., semi-partial correlation focus)
+#' Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 #' blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
 #' apa.reg.table(blk1,filename="exInteraction3.doc")
 #'
-#' # V2: Interaction product-term test with single regression (i.e., semi-partial correlation focus)
-#' blk1<-lm(sales~adverts*airplay,data=album)
-#' apa.reg.table(blk1,filename="exInteraction4.doc")
 #' @export
 apa.reg.table<-function(...,filename=NA,table.number=NA) {
      regression_results_list <- list(...)
@@ -308,9 +308,14 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
                sd_crit <- stats::sd(reg_table_data[,1],na.rm = TRUE)
                sd_pred <- stats::sd(reg_table_data[,p_name],na.rm = TRUE)
 
-               beta    <-   b*(sd_pred / sd_crit)
-               LLbeta  <- LLb*(sd_pred / sd_crit)
-               ULbeta  <- ULb*(sd_pred / sd_crit)
+
+               beta   <- convert_b_to_beta(b = b  , sd_pred = sd_pred, sd_crit = sd_crit)
+               LLbeta <- convert_b_to_beta(b = LLb, sd_pred = sd_pred, sd_crit = sd_crit)
+               ULbeta <- convert_b_to_beta(b = ULb, sd_pred = sd_pred, sd_crit = sd_crit)
+
+               # beta    <-   b*(sd_pred / sd_crit)
+               # LLbeta  <- LLb*(sd_pred / sd_crit)
+               # ULbeta  <- ULb*(sd_pred / sd_crit)
 
                reg_table_lower$beta[i]   <- beta
                reg_table_lower$LLbeta[i] <- LLbeta
@@ -529,4 +534,12 @@ get_reg_table_note_rtf <- function(calculate_cor,calculate_beta) {
      }
      return(table_note)
 
+}
+
+
+
+
+convert_b_to_beta <- function(b, sd_pred,sd_crit) {
+     beta_value <- b*(sd_pred / sd_crit)
+     return(beta_value)
 }
