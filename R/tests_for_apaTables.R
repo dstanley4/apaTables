@@ -37,8 +37,8 @@ cor_test1 <- function() {
 
 reg_test1 <- function() {
      d <- apaTables::album
-     albumSales3 <- lm (sales ~ adverts + airplay + attract, data = album)
-     beta_value <- convert_b_to_beta(summary(albumSales3)$coefficients[2,1],sd(album$adverts),sd(album$sales))
+     albumSales3 <- lm (sales ~ adverts + airplay + attract, data = d)
+     beta_value <- convert_b_to_beta(summary(albumSales3)$coefficients[2,1],sd(d$adverts),sd(d$sales))
      beta_value <- round(beta_value, 7)
      return(beta_value)
 }
