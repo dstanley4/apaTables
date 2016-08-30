@@ -1,7 +1,7 @@
 Package: apaTables
-Title: Create American Psychological Association (APA) Style Tables
 Version: 1.0.5
 Authors@R: person("David", "Stanley", , "dstanley@uoguelph.ca", role = c("aut", "cre"))
+Title: Create American Psychological Association (APA) Style Tables
 Description: A common task faced by researchers is the creation of APA style
     (i.e., American Psychological Association style) tables from statistical
     output. In R a large number of function calls are often needed to obtain all of
@@ -13,9 +13,6 @@ Description: A common task faced by researchers is the creation of APA style
 URL: https://github.com/dstanley4/apaTables
 Depends:
     R (>= 3.1.2)
-Date: 2015-12-04
-License: MIT License + file LICENSE
-LazyData: true
 Imports:
     rockchalk,
     stats,
@@ -25,5 +22,8 @@ Imports:
     car,
     broom,
     dplyr
-RoxygenNote: 5.0.1
 Suggests: testthat
+RoxygenNote: 5.0.1
+License: MIT License + file LICENSE
+LazyData: true
+Date: 2015-12-04
