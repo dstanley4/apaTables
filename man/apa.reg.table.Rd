@@ -45,15 +45,14 @@ blk2<-lm(sales ~ adverts + airplay + I(adverts*adverts) + I(airplay*airplay), da
 blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
 apa.reg.table(blk1,blk2,blk3,filename="exInteraction2.doc")
 
-# V1: Interaction product-term test with single regression (i.e., semi-partial correlation focus)
+Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
 apa.reg.table(blk1,filename="exInteraction3.doc")
 
-# V2: Interaction product-term test with single regression (i.e., semi-partial correlation focus)
-blk1<-lm(sales~adverts*airplay,data=album)
-apa.reg.table(blk1,filename="exInteraction4.doc")
 }
 \references{
+sr2 and delta R2 confidence intervals calculated via:
+
 Alf Jr, E. F., & Graf, R. G. (1999). Asymptotic confidence limits for the difference between two squared multiple correlations: A simplified approach. Psychological Methods, 4(1), 70.
 }
 
