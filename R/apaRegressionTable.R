@@ -362,11 +362,22 @@ apa_single_block<-function(cur_blk,is_random_predictors) {
      model_details$sr2_CI     <- CIsr2_str
      model_details$sr2_CI[1]  <- ""
 
+
+
+
+
+
+
      if (calculate_cor==TRUE) {
+
           model_details$r     <- strip.leading.zero(add.sig.stars(sprintf("%1.2f",model_details_extended$r), model_details_extended$r_pvalue)) #intercept row issue
           model_details$r[1]  <- ""
 
+          product_rows <- is_product_row(model_details$predictor)
+          model_details$r[product_rows] <- ""
+
      }
+
 
 
      model_details_txt <- model_details
@@ -481,7 +492,7 @@ output_column_width <- function(column_name) {
             beta = narrow,
             beta_CI =wide,
             sr2=narrow,
-            sr2_CI =wide*.8,
+            sr2_CI =wide,
             r=narrow,
             summary=wide*1.3,
             difference=wide*1.4)
