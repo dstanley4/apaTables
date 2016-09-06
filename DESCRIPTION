@@ -23,8 +23,11 @@ Imports:
     car,
     broom,
     dplyr
-Suggests: testthat
+Suggests: testthat,
+    knitr,
+    rmarkdown
 RoxygenNote: 5.0.1
 License: MIT License + file LICENSE
 LazyData: true
 Date: 2015-12-04
+VignetteBuilder: knitr
