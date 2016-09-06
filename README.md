@@ -25,7 +25,7 @@ apa.cor.table(attitude, filename="Table1_APA.doc", table.number=1)
 
 The resulting table is illustrated in Table 1. If confidence intervals are not desired they can be omitted by using the argument show.conf.interval=FALSE in **apa.cor.table** calls.
 
-![Correlation table in MSWord](https://github.com/dstanley4/apaTables/vignettes/Table1.jpg)
+![Correlation table in MSWord](vignettes/Table1.jpg)
 
 ## Regression table (1 block)
 
