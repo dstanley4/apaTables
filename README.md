@@ -2,7 +2,7 @@
 # apaTables
 Development version of apaTables R package. Current stable version is on the CRAN, see ![link here](https://cran.r-project.org/web/packages/apaTables/index.html)
 
-Number of CRAN Downloads: ![](http://cranlogs.r-pkg.org/badges/grand-total/apaTables)
+CRAN apaTables Activity: ![](http://cranlogs.r-pkg.org/badges/grand-total/apaTables)
 
 
 ### Install Stable CRAN Version
