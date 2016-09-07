@@ -22,10 +22,12 @@ Imports:
     MBESS,
     car,
     broom,
-    dplyr
+    dplyr,
+    tidyr
 Suggests: testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    psych
 RoxygenNote: 5.0.1
 License: MIT License + file LICENSE
 LazyData: true
