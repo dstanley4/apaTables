@@ -1,3 +1,5 @@
+![](http://cranlogs.r-pkg.org/badges/grand-total/apaTables)
+
 # apaTables
 Development version of apaTables R package. Current stable version is on the CRAN.
 
