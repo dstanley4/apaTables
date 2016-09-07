@@ -3,6 +3,16 @@
 # apaTables
 Development version of apaTables R package. Current stable version is on the CRAN.
 
+### Install Stable CRAN Version
+install.packages("apaTables",dep=T)
+library(apaTables)
+
+### Install Development Version
+install.packages("devtools")
+devtools::install_github("dstanley4/apaTables")
+library(apaTables)
+
+
 ##Context
 Reprodubility refers to the extent to which the numbers reported in a paper can obtained by others using the original data and analysis scripts. Recent research has revealed a problem with the reproducibility of analyses in many fields. For example, in psychology Nuijten et al. (2015) found that in 50% of articles there was at least once instance of a reported test statistic (e.g., *t*(24)=22.71) being inconsistent with the reported *p*-value (e.g., *p* = .0023). This inconsistency rate suggests there is a major problem with reproduciblity in the psychological literature.
 
