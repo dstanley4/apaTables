@@ -5,11 +5,14 @@ Development version of apaTables R package. Current stable version is on the CRA
 
 ### Install Stable CRAN Version
 install.packages("apaTables",dep=T)
+
 library(apaTables)
 
 ### Install Development Version
 install.packages("devtools")
+
 devtools::install_github("dstanley4/apaTables")
+
 library(apaTables)
 
 
