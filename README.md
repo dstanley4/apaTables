@@ -74,7 +74,7 @@ apa.reg.table(block1, block2, filename="Table3_APA.doc", table.number=3)
 ![Blocks regression table in MSWord](vignettes/Table3.jpg)
 
 
-## 1-way ANOVA and d-value tables
+## 1-way ANOVA and *d*-value tables
 
 There are three function in apaTables that are helpful for 1-way ANOVAs (**apa.anova.table**, **apa.1way.table**, and **apa.d.table**). All three are illustrated below. First, however, the ANOVA must be conducted - I do so using the Viagra data set from Field et al. (2012). When conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contracts are set correctly. 
 
@@ -98,11 +98,11 @@ apa.1way.table(iv=dose,dv=libido,data=viagra,filename="Figure5_APA.doc",table.nu
 ```
 ![1-way M/SD table in MSWord](vignettes/Table5.jpg)
 
-The **apa.d.table** function show a d-value (with confidence interval) for each paired comparison; see Table 6.
+The **apa.d.table** function show a *d*-value (with confidence interval) for each paired comparison; see Table 6.
 ```{r,echo=TRUE,eval=FALSE}
 apa.d.table(iv=dose,dv=libido,data=viagra,filename="Figure6_APA.doc",table.number = 6)
 ```
-![1-way Paired Comparison d-values (with CI) in MSWord](vignettes/Table6.jpg)
+![1-way Paired Comparison *d*-values (with CI) in MSWord](vignettes/Table6.jpg)
 
 
 
@@ -144,8 +144,8 @@ apa.d.table(iv=alcohol,dv=attractiveness,data=goggles.men,filename="Table9_APA.d
 apa.d.table(iv=alcohol,dv=attractiveness,data=goggles.women,filename="Table10_APA.doc",table.number = 10)
 ```
 
-![2-way Male Subgroup Paired Comparison d-values (with CI) in MSWord](vignettes/Table9.jpg)
-![2-way Female Subgroup Paired Comparison d-values (with CI) in MSWord](vignettes/Table10.jpg)
+![2-way Male Subgroup Paired Comparison *d*-values (with CI) in MSWord](vignettes/Table9.jpg)
+![2-way Female Subgroup Paired Comparison *d*-values (with CI) in MSWord](vignettes/Table10.jpg)
 
 ##References
 
