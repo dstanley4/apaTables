@@ -69,17 +69,17 @@ apa.reg.table(block1, block2, filename="Table3_APA.doc", table.number=3)
 
 ## 1-way ANOVA and d-value tables
 
-There are three function in apaTables that are helpful for 1-way ANOVAs (**apa.anova.table**, **apa.1way.table**, and **apa.d.table**). All three are illustrated below. First, however, the ANOVA must be conducted - I do so using the Viagra data set from Field et al. (2012). When conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contracts are set correctly. 
+There are three function in apaTables that are helpful for 1-way ANOVAs (**apa.aov.table**, **apa.1way.table**, and **apa.d.table**). All three are illustrated below. First, however, the ANOVA must be conducted - I do so using the Viagra data set from Field et al. (2012). When conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contracts are set correctly. 
 
 ```{r,echo=TRUE,eval=FALSE}
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(libido ~ dose, data=viagra)
 ```
 
-The **apa.anova.table** function creates a 1-way ANOVA table based on lm_output; see Table 4.
+The **apa.aov.table** function creates a 1-way ANOVA table based on lm_output; see Table 4.
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-apa.anova.table(lm_output,filename="Figure4_APA.doc",table.number = 4)
+apa.aov.table(lm_output,filename="Figure4_APA.doc",table.number = 4)
 ```
 
 ![1-way ANOVA table in MSWord](Table4.jpg)
@@ -107,11 +107,11 @@ options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(attractiveness ~ gender*alcohol, data=goggles)
 ```
 
-The **apa.anova.table** function creates a 2-way ANOVA table based on lm_output; see Table 7.
+The **apa.aov.table** function creates a 2-way ANOVA table based on lm_output; see Table 7.
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-apa.anova.table(lm_output,filename="Figure7_APA.doc",table.number = 7)
+apa.aov.table(lm_output,filename="Figure7_APA.doc",table.number = 7)
 ```
 ![2-way ANOVA table in MSWord](Table7.jpg)
 
