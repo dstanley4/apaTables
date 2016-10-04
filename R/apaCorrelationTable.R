@@ -17,6 +17,7 @@
 #' @export
 apa.cor.table<-function(data,filename=NA,table.number=NA, show.conf.interval=TRUE,landscape=TRUE) {
 
+     data <- as.data.frame(data)
      table_number <- table.number
      show_conf_interval <- show.conf.interval
 

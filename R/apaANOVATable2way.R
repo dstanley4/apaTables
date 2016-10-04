@@ -18,6 +18,9 @@
 #' @export
 apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show.conf.interval = FALSE, show.marginal.means = FALSE, landscape=FALSE){
 
+     data <- as.data.frame(data)
+
+
      if (is.na(filename)) {
           make.file.flag=FALSE
      } else {

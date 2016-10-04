@@ -12,6 +12,7 @@
 #' apa.1way.table(iv=dose,dv=libido,data=viagra,filename="ex1_desc_table.doc")
 #' @export
 apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.interval=FALSE, landscape=FALSE){
+     data <- as.data.frame(data)
 
      if (is.na(filename)) {
           make.file.flag=FALSE

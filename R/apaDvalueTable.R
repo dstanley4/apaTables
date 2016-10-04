@@ -15,6 +15,7 @@
 #' apa.d.table(iv=dose,dv=libido,data=viagra,filename="ex1_d_table.doc")
 #' @export
 apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA,show.conf.interval = TRUE, landscape=TRUE){
+     data <- as.data.frame(data)
      table_number <- table.number
      show_conf_interval <- show.conf.interval
 
