@@ -169,9 +169,9 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA,show.conf.int
 
      #make console output
      if (show_conf_interval==TRUE) {
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval for each d-value. \nThe confidence interval is a plausible range of population d-values \nthat could have caused the sample d-value (Cumming, 2014). \nd-values are unbiased estimates calculated using formulas 4.18 and 4.19 \nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). \nd-values not calculated if unequal variances prevented pooling.\n"
+          table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval for each d-value. \nThe confidence interval is a plausible range of population d-values \nthat could have caused the sample d-value (Cumming, 2014). \nd-values are estimates calculated using formulas 4.18 and 4.19 \nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). \nd-values not calculated if unequal variances prevented pooling.\n"
      } else {
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nd-values are unbiased estimates calculated using formulas 4.18 and 4.19 \nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). \nd-values not calculated if unequal variances prevented pooling.\n"
+          table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\nd-values are estimates calculated using formulas 4.18 and 4.19 \nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). \nd-values not calculated if unequal variances prevented pooling.\n"
      }
      tbl_console <- list(table.number = table_number,
                          table.title = table_title,
@@ -190,11 +190,11 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA,show.conf.int
 
           if (show_conf_interval==TRUE) {
                table_title <- "Means, standard deviations, and d-values with confidence intervals"
-               table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each {\\i d}-value The confidence interval is a plausible range of population {\\i d}-values that could have caused the sample {\\i d}-value (Cumming, 2014). {\\i d}-values are unbiased estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009).  {\\i d}-values not calculated if unequal variances prevented pooling."
+               table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each {\\i d}-value The confidence interval is a plausible range of population {\\i d}-values that could have caused the sample {\\i d}-value (Cumming, 2014). {\\i d}-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009).  {\\i d}-values not calculated if unequal variances prevented pooling."
 
           } else {
                table_title <- "Means, standard deviations, and d-values"
-               table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. {\\i d}-values are unbiased estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\\i d}-values not calculated if unequal variances prevented pooling."
+               table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. {\\i d}-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\\i d}-values not calculated if unequal variances prevented pooling."
           }
 
           #Create RTF code
@@ -212,13 +212,14 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA,show.conf.int
 
 
 txt_d <- function(d_in, p_in) {
-     if (p_in<.01) {
-          star_str <- "**"
-     } else if (p_in<.05) {
-          star_str <- "*"
-     } else {
+     # omit significance testing in this version
+     # if (p_in<.01) {
+     #      star_str <- "**"
+     # } else if (p_in<.05) {
+     #      star_str <- "*"
+     # } else {
           star_str <-""
-     }
+     #}
 
      d_str <- sprintf("%1.2f%s",d_in, star_str)
      return(d_str)
