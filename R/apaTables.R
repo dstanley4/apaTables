@@ -9,8 +9,8 @@
 #'\tabular{ll}{
 #'Package: \tab apaTables\cr
 #'Type: \tab Package\cr
-#'Version: \tab 1.0.5\cr
-#'Date: \tab 2015-12-04\cr
+#'Version: \tab 1.5.0\cr
+#'Date: \tab 2017-03-25\cr
 #'License: \tab MIT\cr
 #'}
 #'
