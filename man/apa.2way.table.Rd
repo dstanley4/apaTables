@@ -40,4 +40,3 @@ apa.2way.table(iv1=a,iv2=b,dv=dv,data=fidler_thompson,landscape=TRUE, filename="
 # Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 apa.2way.table(iv1=gender,iv2=alcohol,dv=attractiveness,data=goggles,filename="ex3_desc_table.doc")
 }
-

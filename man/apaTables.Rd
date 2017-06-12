@@ -35,4 +35,3 @@ Author: \tab David J. Stanley \email{dstanley@uoguelph.ca}\cr
 Maintainer: \tab David J. Stanley \email{dstanley@uoguelph.ca}
 }
 }
-

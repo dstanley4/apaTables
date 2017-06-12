@@ -72,7 +72,7 @@ apa.reg.table(block1, block2, filename="Table3_APA.doc", table.number=3)
 
 ## 1-way ANOVA and d-value tables
 
-There are three functions in apaTables that are helpful for 1-way ANOVA analyses (**apa.aov.table**, **apa.1way.table**, and **apa.d.table**). All three are illustrated below. First, however, the ANOVA must be conducted - I do so using the Viagra data set from Field et al. (2012). When conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contrasts are set correctly. 
+There are three functions in apaTables that are helpful for 1-way ANOVA analyses within predictor variables that are independent (**apa.aov.table**, **apa.1way.table**, and **apa.d.table**). All three are illustrated below. First, however, the ANOVA must be conducted - I do so using the Viagra data set from Field et al. (2012). When conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contrasts are set correctly. Note: repeated measures designs are not currently supported.
 
 ```{r,echo=TRUE,eval=FALSE}
 options(contrasts = c("contr.sum", "contr.poly"))
@@ -102,8 +102,8 @@ apa.d.table(iv=dose,dv=libido,data=viagra,filename="Figure6_APA.doc",table.numbe
 
 
 
-## 2-way ANOVA tables
-The 2-way example is based on the goggles data set from Field et al. (2012). As before, when conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contrasts are set correctly. 
+## N-way ANOVA tables: 2-way Example
+The 2-way example with independent variable predictors is based on the goggles data set from Field et al. (2012). As before, when conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contrasts are set correctly. Note: repeated measures designs are not currently supported.
 
 ```{r,echo=TRUE,eval=FALSE}
 options(contrasts = c("contr.sum", "contr.poly"))
@@ -120,7 +120,7 @@ apa.aov.table(lm_output,filename="Figure7_APA.doc",table.number = 7)
 
 
 
-The **apa.2way.table** function creates a table with the mean and sd for each cell; see Table 8. Marginal means can also be requested -- see the help file (?apa.2way.table).
+The **apa.2way.table** function creates a table with the mean and sd for each cell; see Table 8. Marginal means can also be requested -- see the help file (?apa.2way.table). For higher-order designs (i.e., 3-way or higher) use the *filter* command in the **dplyr** package to select the subset of rows and then use **apa.2way.table** to display cell statistics.
 
 ```{r,echo=TRUE,eval=FALSE}
 apa.2way.table(iv1=gender,iv2=alcohol,dv=attractiveness,data=goggles,filename="Figure8_APA.doc",table.number = 8)

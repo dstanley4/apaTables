@@ -47,4 +47,3 @@ Smithson, M. (2001). Correct confidence intervals for various regression effect 
 
 Fidler, F., & Thompson, B. (2001). Computing correct confidence intervals for ANOVA fixed-and random-effects effect sizes. Educational and Psychological Measurement, 61(4), 575-604.
 }
-

@@ -55,4 +55,3 @@ sr2 and delta R2 confidence intervals calculated via:
 
 Alf Jr, E. F., & Graf, R. G. (1999). Asymptotic confidence limits for the difference between two squared multiple correlations: A simplified approach. Psychological Methods, 4(1), 70.
 }
-

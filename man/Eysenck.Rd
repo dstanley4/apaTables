@@ -23,4 +23,3 @@ A data set from Howell (2012)
 Howell, D. (2012). Statistical methods for psychology. Cengage Learning.
 }
 \keyword{datasets}
-

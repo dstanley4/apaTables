@@ -32,4 +32,3 @@ get.ci.partial.eta.squared(F.value=1.50, df1=1, df2=16, conf.level=.90)
 get.ci.partial.eta.squared(F.value=4.00, df1=3, df2=16, conf.level=.90)
 get.ci.partial.eta.squared(F.value=1.50, df1=3, df2=16, conf.level=.90)
 }
-

@@ -24,4 +24,3 @@ A data set from Field et al (2012)
 Field, A., Miles, J., & Field, Z. (2012) Discovering Statistics Using R. Sage: Chicago.
 }
 \keyword{datasets}
-
