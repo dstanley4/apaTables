@@ -15,8 +15,8 @@
 #'\tabular{ll}{
 #'Package: \tab apaTables\cr
 #'Type: \tab Package\cr
-#'Version: \tab 1.5.0\cr
-#'Date: \tab 2017-03-25\cr
+#'Version: \tab 1.5.1\cr
+#'Date: \tab 2017-06-20\cr
 #'License: \tab MIT\cr
 #'}
 #'
@@ -85,12 +85,12 @@ txt.R2 <- function(R2.value,p.value) {
 }
 
 rtf.F <- function(Fvalue,df1,df2) {
-     string.out=sprintf("{\\i F}(%d, %d) = %1.2f",df1,df2,Fvalue)
+     string.out=sprintf("{\\i F}(%1.0f, %1.0f) = %1.2f",df1,df2,Fvalue)
      return(string.out)
 }
 
 txt.F <- function(Fvalue,df1,df2) {
-     string.out=sprintf("F(%d, %d) = %1.2f",df1,df2,Fvalue)
+     string.out=sprintf("F(%1.0f, %1.0f) = %1.2f",df1,df2,Fvalue)
      return(string.out)
 }
 
@@ -131,7 +131,7 @@ print.apa.table <- function(x,...) {
      cat("\n\n")
      tbl <- x
      if (!is.na(tbl$table.number)) {
-          cat(sprintf("Table %d",tbl$table.number),"\n")
+          cat(sprintf("Table %1.0f",tbl$table.number),"\n")
           cat("\n")
      }
      cat(tbl$table.title,"\n")
@@ -147,7 +147,7 @@ print.apa_table <- function(x,...) {
      cat("\n\n")
      tbl <- x
      if (!is.na(tbl$table_number)) {
-          cat(sprintf("Table %d",tbl$table_number),"\n")
+          cat(sprintf("Table %1.0f",tbl$table_number),"\n")
           cat("\n")
      }
      cat(tbl$table_title,"\n")

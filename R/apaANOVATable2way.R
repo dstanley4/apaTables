@@ -16,7 +16,7 @@
 #' # Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 #' apa.2way.table(iv1=gender,iv2=alcohol,dv=attractiveness,data=goggles,filename="ex3_desc_table.doc")
 #' @export
-apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show.conf.interval = FALSE, show.marginal.means = FALSE, landscape=FALSE){
+apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show.conf.interval = FALSE, show.marginal.means = FALSE, landscape=TRUE){
 
      data <- as.data.frame(data)
 
@@ -80,7 +80,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show
      #make table title
      iv1.num.levels = length(levels(iv1))
      iv2.num.levels = length(levels(iv2))
-     table.title <- sprintf("Means and standard deviations for %s as a function of a %d(%s) X %d(%s) design",dv.name,iv1.num.levels,iv1.name,iv2.num.levels,iv2.name)
+     table.title <- sprintf("Means and standard deviations for %s as a function of a %1.0f(%s) X %1.0f(%s) design",dv.name,iv1.num.levels,iv1.name,iv2.num.levels,iv2.name)
 
      #make table notes console and rtf
      if ((show.marginal.means==TRUE) & (show.conf.interval==FALSE)) {

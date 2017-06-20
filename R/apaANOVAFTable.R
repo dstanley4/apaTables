@@ -116,7 +116,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
      #console table
      table_title <- sprintf("ANOVA results using %s as the dependent variable\n",dv_name)
      table_body  <- table_out_txt
-     table_note  <- sprintf("Note: Values in square brackets indicate the bounds of the %d%% confidence interval for partial eta-squared",conf_level*100)
+     table_note  <- sprintf("Note: Values in square brackets indicate the bounds of the %1.0f%% confidence interval for partial eta-squared",conf_level*100)
 
      tbl_console <- list(table_number = table_number,
                          table_title = table_title,

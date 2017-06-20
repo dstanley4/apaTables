@@ -5,7 +5,7 @@ write.rtf.table <- function(filename,txt.body,landscape=FALSE,paper="us", table.
      doc.type$usportrait <- ""
      doc.type$a4landscape <- "\\paperw16834 \\paperh11909 \\margl1440 \\margr1440 \\margt1440 \\margb1440 \\landscape "
      doc.type$a4portrait <- ""
-     
+
      if (!any(paper == c("us","a4"))) {
           paper <- "us"
      }
@@ -20,18 +20,18 @@ write.rtf.table <- function(filename,txt.body,landscape=FALSE,paper="us", table.
           table.number.str <- "XX"
      } else {
           table.number <- round(table.number)
-          table.number.str <- sprintf("%d",table.number)
+          table.number.str <- sprintf("%1.0f",table.number)
      }
-     
-     
-     
-     #document format     
+
+
+
+     #document format
      doc.spec <- paste(paper,orientation,sep="")
      txt.format <- doc.type[[doc.spec]]
      txt.start <- "{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}"
      txt.end <- "}"
 
-     #Table X, title, and note     
+     #Table X, title, and note
      blank.line <- c("{\\pard  \\par}")
      number.line <-sprintf("{\\pard Table %s \\par}",table.number.str)
      if (is.na(table.title)) {
@@ -45,7 +45,7 @@ write.rtf.table <- function(filename,txt.body,landscape=FALSE,paper="us", table.
           note.line <- sprintf("{\\pard \\par}{\\pard{\\i Note.} %s\\par}",table.note)
      }
      txt.body <- c(number.line,blank.line,title.line, blank.line,txt.body,note.line)
-     
+
 
      file.id <- file(filename,"wt")
      writeLines(txt.start,file.id)

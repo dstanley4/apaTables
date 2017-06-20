@@ -72,7 +72,7 @@ RtfTable <- setRefClass("RtfTable",
               headerHorizAlignmentQuad <- unname(unlist(horizAlignmentFormatCodes[headerHorizontalAlignment]))
               headerHorizAlignmentQuad[1]<-rowHorizAlignmentQuad[1]
 
-              cellTabs <- sprintf("\\tqdec\\tldot\\tx%d",decimalTabPositionTwipsInternal) #multiple at once
+              cellTabs <- sprintf("\\tqdec\\tldot\\tx%1.0f",decimalTabPositionTwipsInternal) #multiple at once
               noTabId <- decimalTabPositionTwipsInternal == 0
               cellTabs[noTabId] <- ""
               if (isExtraSpacing == TRUE) {
@@ -84,14 +84,14 @@ RtfTable <- setRefClass("RtfTable",
               formattedRow <- c()
               for (i in 1:numberColumnsInternal) {
                    if (cellTabs[i]=="") {
-                        formattedRow[i] <- sprintf("\\pard\\sa%d\\sb%d\\intbl%s{%s}\\cell",
+                        formattedRow[i] <- sprintf("\\pard\\sa%1.0f\\sb%1.0f\\intbl%s{%s}\\cell",
                                                    spacingAmount,spacingAmount,rowHorizAlignmentQuad[i],rowContent[i])
                    } else {
-                        formattedRow[i] <- sprintf("\\pard\\sa%d\\sb%d\\intbl%s{%s}\\cell",
+                        formattedRow[i] <- sprintf("\\pard\\sa%1.0f\\sb%1.0f\\intbl%s{%s}\\cell",
                                                    spacingAmount,spacingAmount,cellTabs[i],rowContent[i])
                    }
                    if (isCurRowHeaderRow==TRUE){
-                        formattedRow[i] <- sprintf("\\pard\\sa%d\\sb%d\\intbl%s{%s}\\cell",
+                        formattedRow[i] <- sprintf("\\pard\\sa%1.0f\\sb%1.0f\\intbl%s{%s}\\cell",
                                                    spacingAmount,spacingAmount,headerHorizAlignmentQuad[i],rowContent[i])
                    }
               }
@@ -116,18 +116,18 @@ RtfTable <- setRefClass("RtfTable",
                    }
 
                    if (isLineAbove==TRUE){
-                        tableLineCellDefn[outputLineNumber] = sprintf("\\clbrdrt\\brdrw%d\\brdrs",curLineThickness)
+                        tableLineCellDefn[outputLineNumber] = sprintf("\\clbrdrt\\brdrw%1.0f\\brdrs",curLineThickness)
                         outputLineNumber <- outputLineNumber + 1
                    }
                    if (isLineBelow==TRUE){
-                        tableLineCellDefn[outputLineNumber] = sprintf("\\clbrdrb\\brdrw%d\\brdrs",curLineThickness)
+                        tableLineCellDefn[outputLineNumber] = sprintf("\\clbrdrb\\brdrw%1.0f\\brdrs",curLineThickness)
                         outputLineNumber <- outputLineNumber + 1
                    }
                    if (i==1) {
                         isLineAbove=isLineAboveInitial #new
                    }
 
-                   tableLineCellDefn[outputLineNumber] = sprintf("\\clvertalc\\cellx%d ",cellRightSide[i])
+                   tableLineCellDefn[outputLineNumber] = sprintf("\\clvertalc\\cellx%1.0f ",cellRightSide[i])
                    outputLineNumber <- outputLineNumber + 1
               }
               return(tableLineCellDefn)
@@ -175,7 +175,7 @@ RtfTable <- setRefClass("RtfTable",
 
           getRow = function(rowContent,isExtraSpacing,isLineAbove,isLineBelow,isThinLine,isCurRowHeaderRow) {
                rowPrefix <- "{"
-               rowStart <- sprintf("\\trowd \\trgaph%d",cellSpaceBorderInternal)
+               rowStart <- sprintf("\\trowd \\trgaph%1.0f",cellSpaceBorderInternal)
                rowFormat <- getRowFormatInRTF(isLineAbove = isLineAbove,isLineBelow=isLineBelow, isThinLine=isThinLine)
                rtfRowContent <- .self$getRowContentInRTF(rowContent,isExtraSpacing = isExtraSpacing,isCurRowHeaderRow = isCurRowHeaderRow)
                rowEnd <- "\\row"
