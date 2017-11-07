@@ -1,7 +1,7 @@
 
-# apaTables 1.5.0
+# apaTables 1.5.1
 
-apaTables 1.5.0 includes confidence intervals in all analyses (correlation, regression, and ANOVA).
+apaTables 1.5.1 includes confidence intervals in all analyses (correlation, regression, and ANOVA).
 
 
 The development version of apaTables R package is hosted here on Github. Current stable version is on the CRAN, see apaTables [here.](https://cran.r-project.org/web/packages/apaTables/index.html)
