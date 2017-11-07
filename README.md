@@ -154,7 +154,8 @@ apa.d.table(iv=alcohol,dv=attractiveness,data=goggles.women,filename="Table10_AP
 ![2-way Male Subgroup Paired Comparison *d*-values (with CI) in MSWord](vignettes/Table9.jpg)
 ![2-way Female Subgroup Paired Comparison *d*-values (with CI) in MSWord](vignettes/Table10.jpg)
 
-##References
+
+## References
 
 Field, A., Miles, J., Field, Z. *Discovering statistics using R*.
 Sage: Chicago.
