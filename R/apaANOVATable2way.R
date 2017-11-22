@@ -132,7 +132,10 @@ apa.2way.console.to.rtf <- function(table.initial.console) {
      #process headings for rtf creation
      n.row <- dim(table.initial.console)[1]
      table.body <- table.initial.console[3:n.row,]
+
+
      table.h1 <- names(table.initial.console) # left cell, one big cell / iv2 name
+
      iv2.name <- table.h1[2]
      table.h2 <- table.initial.console[1,] # left cell, several 2*K double width cells /iv2 levels
      table.h2 <- table.h2[1,c(1,seq(2,dim(table.h2)[2],by=2))] #tab
@@ -158,15 +161,33 @@ apa.2way.console.to.rtf <- function(table.initial.console) {
      rtf.table.h2$setTableContent(as.matrix(table.h2))
      rtf.table.h2$setCellWidthsInches(cellWidths = h2.cell.widths)
      rtf.table.h2$setDecimalTabWidthsProportions(rep(0,h2.num.cells)) #no tabs, ensures centering
-     rtf.table.h2$noLineAboveColumns <- c(1)
+     last_column_number <- h2.num.cells
+
+     show.marginal.means <- FALSE
+     if (table.h2[1,h2.num.cells]=="Marginal") {
+          show.marginal.means <- TRUE
+     }
+
+     if (show.marginal.means==TRUE) {
+          rtf.table.h2$noLineAboveColumns <- c(1, last_column_number) # no line first/marginal column
+     } else {
+          rtf.table.h2$noLineAboveColumns <- c(1)
+     }
      txt.h2 <- rtf.table.h2$getTableAsRTF(isExtraSpacing=TRUE,FALSE)
      txt.body <- c(txt.h2,txt.body)
 
      #Create RTF code for IV2 name
      h1.cell.widths <- c(h2.cell.widths[1],sum(h2.cell.widths[2:h2.num.cells]))
      h1.num.cells <- 2
+     h1.text.row <- c(" ",iv2.name)
+     if (show.marginal.means==TRUE) {
+          h1.num.cells <- h1.num.cells + 1
+          h1.cell.widths <- c(h2.cell.widths[1],sum(h2.cell.widths[2:h2.num.cells])-h2.cell.widths[h2.num.cells],h2.cell.widths[h2.num.cells])
+          h1.text.row <- c(" ",iv2.name, " ")
+     }
      rtf.table.h1 <- RtfTable$new(isHeaderRow=FALSE)
-     rtf.table.h1$setTableContent(matrix(c(" ",iv2.name),nrow = 1))
+
+     rtf.table.h1$setTableContent(matrix(h1.text.row,nrow = 1))
      rtf.table.h1$setCellWidthsInches(cellWidths = h1.cell.widths)
      rtf.table.h1$setDecimalTabWidthsProportions(rep(0,h1.num.cells)) #no tabs, ensures centering
      txt.h1 <- rtf.table.h1$getTableAsRTF(isExtraSpacing=TRUE,FALSE)
@@ -363,4 +384,5 @@ my.rbind <- function(df.1,df.2,names.from.table.number) {
 
      return(df.out)
 }
+
 
