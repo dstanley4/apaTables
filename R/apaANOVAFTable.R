@@ -34,15 +34,13 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
      if ((conf_level!=.90)&(conf_level!=.95)) {conf_level=.90}
 
      if (missing(filename)) {
-          make_file_flag=FALSE
+          make_file_flag <- FALSE
      } else {
-          make_file_flag=TRUE
+          make_file_flag <- TRUE
      }
 
      # Add a check using model df to see if variable was factor in lm
      # If not, abort
-
-
 
      dv_name <- names(lm_output$model)[1]
      table_values <- car::Anova(lm_output,type=type)
@@ -83,7 +81,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
 
      Predictor <- table_out$Predictor
-     Predictor <- sub(":"," x ", Predictor)
+     Predictor <- gsub(":"," x ", Predictor)
      SSvalue   <- sprintf("%1.2f",table_out$SS)
      MSvalue   <- sprintf("%1.2f",MSvalue)
      Fvalue    <- sprintf("%1.2f",table_out$Fvalue)
@@ -175,7 +173,15 @@ output_txt_name_anova <- function(column_name) {
             Fvalue = "F",
             p = "p",
             partial_eta_sq ="partial_eta2",
-            partial_eta_sq_CI ="CI_partial_eta2")
+            partial_eta_sq_CI ="CI_partial_eta2",
+            df_num = "df_num",
+            df_den = "df_den",
+            df_num_int = "df_num",
+            df_den_int = "df_den",
+            SS_num = "SS_num",
+            SS_den = "SS_den",
+            Epsilon    = "Epsilon",
+            ges        = "ges")
 }
 
 get_txt_column_names_anova <- function(df) {
@@ -192,9 +198,17 @@ output_rtf_name_anova <- function(column_name) {
             Predictor="Predictor",
             SSvalue = "{Sum\\par}{of\\par}Squares",
             MSvalue = "{Mean\\par}Square",
+            df_num = "{\\i df\\sub Num \\nosupersub}",
+            df_den= "{\\i df\\sub Den \\nosupersub}",
+            df_num_int = "{\\i df\\sub Num \\nosupersub}",
+            df_den_int = "{\\i df\\sub Den \\nosupersub}",
+            SS_num = "{\\i SS\\sub Num \\nosupersub}",
+            SS_den = "{\\i SS\\sub Num \\nosupersub}",
             df = "{\\i df}",
             Fvalue = "{\\i F}",
             p = "{\\i p}",
+            Epsilon = "{\\i Epsilon}",
+            ges ="{\\u0951\\ \\super 2\\nosupersub \\sub g \\nosupersub}",
             partial_eta_sq ="{\\sub partial \\nosupersub \\u0951\\ \\super 2\\nosupersub}",
             partial_eta_sq_CI ="{\\sub partial \\nosupersub \\u0951\\ \\super 2 \\nosupersub \\par xyzzy% CI\\par[LL, UL]}")
 
@@ -211,19 +225,89 @@ get_rtf_column_names_anova <- function(df) {
 }
 
 
+# ezANOVA support ---------------------------------------------------------
+#
+# output_column_width_ezanova <- function(column_name) {
+#      narrow <- .60
+#      wide   <- .95
+#
+#      switch(column_name,
+#             Predictor = wide,
+#             SSvalue   = narrow*1.5,
+#             MSvalue   = narrow*1.5,
+#             df        = narrow*.8,
+#             Fvalue    = narrow*1.5,
+#             p         = narrow,
+#             partial_eta_sq    = wide,
+#             partial_eta_sq_CI = wide)
+# }
+#
+# output_txt_name_ezanova <- function(column_name) {
+#      switch(column_name,
+#             Predictor="Predictor",
+#             SSnumvalue = "SS_num",
+#             SSdenvalue = "SS_den",
+#             dfnumvalue = "df_num",
+#             dfdenvalue = "df_den",
+#             Epsilon = "Epsilon",
+#             Fvalue = "F",
+#             p = "p",
+#             gesvalue ="generalized_eta2")
+# }
+#
+#
+# output_rtf_name_ezanova <- function(column_name) {
+#      switch(column_name,
+#             Predictor="Predictor",
+#             SSnumvalue = "{Sum\\par}{of\\par}{Squares\\par}Numerator",
+#             SSdenvalue = "{Sum\\par}{of\\par}{Squares\\par}Numerator",
+#             dfnumvalue = "{\\i df\\par}Numerator",
+#             dfdenvalue = "{\\i df\\par}Numerator",
+#             Epsilon = "\\u03B5\\",
+#             Fvalue = "{\\i F}",
+#             p = "{\\i p}",
+#             ges ="{\\sub generalized \\nosupersub \\u0951\\ \\super 2\\nosupersub}")
+#
+# }
+#
+
+get_rtf_column_names_anova <- function(df) {
+     n <- names(df)
+     names_out <- c()
+     for (i in 1:length(n)) {
+          names_out[i] <-output_rtf_name_anova(n[i])
+     }
+     return(names_out)
+}
+
+
+# end ezANOVA -------------------------------------------------------------
+
+
+
+
+
+
 
 
 output_column_width_anova <- function(column_name) {
      narrow <- .60
      wide   <- .95
-
      switch(column_name,
-            Predictor = wide,
+            Predictor = wide*2,
             SSvalue   = narrow*1.5,
             MSvalue   = narrow*1.5,
             df        = narrow*.8,
-            Fvalue    = narrow*1.5,
+            Fvalue    = narrow*1.8,
             p         = narrow,
+            ges       = narrow,
+            Epsilon   = narrow*1.2,
+            SS_num    = narrow*1.5,
+            SS_den    = narrow*1.8,
+            df_num    = narrow*1.5,
+            df_den    = narrow*1.5,
+            df_num_int = narrow,
+            df_den_int = narrow,
             partial_eta_sq    = wide,
             partial_eta_sq_CI = wide)
 }
@@ -251,3 +335,8 @@ convert_colon_to_x <- function(predictor_strings) {
      }
 
 }
+
+
+
+
+

@@ -3,4 +3,7 @@
 .RData
 .DS_Store
 ~$ovatest.doc
+.doc
+.docx
+.rtf
 inst/doc
