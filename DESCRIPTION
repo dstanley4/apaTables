@@ -21,7 +21,8 @@ Imports:
     MBESS,
     car,
     broom,
-    dplyr
+    dplyr,
+    boot
 Suggests: testthat,
     knitr,
     rmarkdown,

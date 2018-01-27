@@ -223,7 +223,8 @@ table_without_intercept_row <- function(df) {
 
      #make table without intercept
      if (is_intercept==FALSE) {
-          df_results <- df
+          df_lower_table <- df
+          df_first_row <- NULL
      } else {
           num_table_rows <- dim(df)[1]
           df_lower_table <- df[2:num_table_rows,]
@@ -314,6 +315,7 @@ get_delta_R2_blocks <- function(blk2,blk1,summary2,summary1,n) {
 
      output$deltaR2_rtf <- deltaR2_rtf
      output$deltaR2_CI_rtf <- deltaR2_CI_rtf
-
+     output$deltaR2        <- deltaR2
+     output$deltaR2_pvalue <- deltaR2_p
      return(output)
 }
