@@ -77,16 +77,13 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
 
 
 
-
-
 apa.1way.table.work <- function(iv,dv,iv.name,dv.name, show.conf.interval) {
      iv.levels <- levels(iv)
      iv.level.numbers <- 1:length(iv.levels)
 
      my.means <- matrix(" ",length(iv.levels),1)
      my.sds <- matrix(" ",length(iv.levels),1)
-     my.ci.lower <- matrix(" ",length(iv.levels),1)
-     my.ci.upper <- matrix(" ",length(iv.levels),1)
+     my.ci <- matrix(" ",length(iv.levels),1)
 
      for (iv.cur in iv.levels) {
           is.iv.level <- iv == iv.cur
@@ -98,8 +95,10 @@ apa.1way.table.work <- function(iv,dv,iv.name,dv.name, show.conf.interval) {
 
           my.means[r.num.iv,1] <- sprintf("%1.2f",cell.mean)
           my.sds[r.num.iv,1] <- sprintf("%1.2f",cell.sd)
-          my.ci.lower[r.num.iv,1] <- get.ci.mean(cur.cell)$lower.conf.limit
-          my.ci.upper[r.num.iv,1] <- get.ci.mean(cur.cell)$upper.conf.limit
+          LL <- get.ci.mean(cur.cell)$lower.conf.limit
+          UL <- get.ci.mean(cur.cell)$upper.conf.limit
+          ci_string <- sprintf("[%s, %s]", LL,UL)
+          my.ci[r.num.iv,1] <- ci_string
      }
 
 
@@ -107,13 +106,12 @@ apa.1way.table.work <- function(iv,dv,iv.name,dv.name, show.conf.interval) {
           data.table <- data.frame(my.means,my.sds,stringsAsFactors = FALSE)
           names(data.table) <- c("M","SD")
      } else {
-          data.table <- data.frame(my.means,my.ci.lower,my.ci.upper,my.sds,stringsAsFactors = FALSE)
-          names(data.table) <- c("M","LL","UL","SD")
+          data.table <- data.frame(my.means,my.ci,my.sds,stringsAsFactors = FALSE)
+          names(data.table) <- c("M","CI","SD")
      }
 
      return(data.table)
 }
-
 
 one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.interval=FALSE,table.number,add.blank.header=FALSE) {
      table.out <- apa.1way.table.work(iv=iv,dv=dv,iv.name=iv.name,dv.name=dv.name, show.conf.interval=show.conf.interval)
@@ -122,10 +120,15 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      level.names <- as.data.frame(matrix(levels(iv),ncol=1))
      names(level.names) <- iv.name
      table.out <- cbind(level.names,table.out)
+     names(table.out)[1] <- "IV"
 
      #make console output
      table.title <- sprintf("Descriptive statistics for %s as a function of %s. ",dv.name,iv.name)
+
      table.body <- table.out
+     names(table.body) <- get_oneway_column_names(table.body)
+     names(table.body)[1] <- iv.name
+
      table.note <- "Note. M and SD represent mean and standard deviation, respectively.\n"
      if (show.conf.interval==TRUE) {
           ci.txt <- "LL and UL indicate the lower and upper limits of the 95% confidence interval \nfor the mean, respectively. \nThe confidence interval is a plausible range of population means that could \nhave caused a sample mean (Cumming, 2014)."
@@ -141,18 +144,24 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
 
      #make rtf header row
      table.out.rtf <- table.out
-     names(table.out.rtf) <- sprintf("{\\i %s}",names(table.out))
+     names(table.out.rtf) <- get_oneway_rtf_column_names(table.out)
+     names(table.out.rtf)[1] <- iv.name
+     #names(table.out.rtf) <- sprintf("{\\i %s}",names(table.out))
 
      #make rtf table
      rtfTable <- RtfTable$new(isHeaderRow=TRUE)
      rtfTable$setTableContent(as.matrix(table.out.rtf))
      rtfTable$setRowFirstColumnJustification("right")
-     txt.body <- rtfTable$getTableAsRTF(isExtraSpacing=TRUE,FALSE)
+
+     cell.widths <- get_oneway_rtf_column_widths(table.out)
+     rtfTable$setCellWidthsInches(cellWidths = cell.widths)
+     txt.body <- rtfTable$getTableAsRTF(isExtraSpacing=FALSE,FALSE)
 
      if (add.blank.header==TRUE) {
           #add extra top row
           #Create RTF code for IV2 name
           cell.widths <- sum(rtfTable$cellWidthsInches)
+
           h1.num.cells <- 1
           rtf.table.h1 <- RtfTable$new(isHeaderRow=FALSE)
           rtf.table.h1$setTableContent(matrix(c("placeholder"),nrow = 1))
@@ -171,9 +180,61 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
 }
 
 
+oneway_column_width <- function(column_name) {
+     narrow <- .60
+     wide   <- .95
+
+     switch(column_name,
+            IV = wide*1.5,
+            M = narrow,
+            CI = wide*1.25,
+            SD = narrow)
+}
 
 
 
+get_oneway_rtf_column_widths <- function(df) {
+     n <- names(df)
+     width_out <- c()
+     for (i in 1:length(n)) {
+          width_out[i] <-oneway_column_width(n[i])
+     }
+     return(width_out)
+}
 
 
+oneway_rtf_column_names <- function(column_name) {
+     switch(column_name,
+            IV = "IV",
+            M = "{\\i M}",
+            CI = "{{\\i M}\\par}{95% CI\\par}[LL, UL]",
+            SD = "{\\i SD}")
+}
+
+get_oneway_rtf_column_names <- function(df) {
+     n <- names(df)
+     names_out <- c()
+     for (i in 1:length(n)) {
+          names_out[i] <-oneway_rtf_column_names(n[i])
+     }
+     return(names_out)
+}
+
+
+oneway_column_names <- function(column_name) {
+     switch(column_name,
+            IV = "IV",
+            M = "M",
+            CI = "M_95%_CI",
+            SD = "SD")
+}
+
+get_oneway_column_names <- function(df) {
+     n <- names(df)
+     names_out <- c()
+     for (i in 1:length(n)) {
+          names_out[i] <-oneway_column_names(n[i])
+     }
+     return(names_out)
+}
 
