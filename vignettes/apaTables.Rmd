@@ -143,6 +143,103 @@ apa.d.table(iv=alcohol,dv=attractiveness,data=goggles.women,filename="Table10_AP
 ![2-way Male Subgroup Paired Comparison d-values (with CI) in MSWord](Table9.jpg)
 ![2-way Female Subgroup Paired Comparison d-values (with CI) in MSWord](Table10.jpg)
 
+
+## ezANOVA and apaTables: Repeated measures ANOVA
+
+apaTables also supports repeated measures ANOVA tables and repeated measures by between measures (mixed) ANOVA tables via ezANOVA outtput.
+
+### Repeated Measures: 2-way design
+
+Prior to begining we 'open' the **apaTables**, **tidyverse**, and **ez** packages using the library command as per below.
+
+```{r, warning=FALSE, message=FALSE}
+library(apaTables)
+library(tidyverse)
+library(ez)
+```
+
+In this example, we used the drink_attitude dataset from Field et al. (2012). As before, this data set is built into apaTables so it does not need to be loaded using read_csv or read_sav. The dataset (drink_attitude_wide) can be inspected with the **glimpse** command below (this provides information similar to SPSS variable view). We use the "wide" descriptor in the name of the dataset to remind us that the data is in in the "wide" format where one row contains all the data for one person. There are 20 participants so there are 20 rows.
+
+```{r, warning=FALSE, message=FALSE}
+glimpse(drink_attitude_wide)
+```
+
+An inspection of this output reveals the 10 variables/columns in the dataset. The drink_attitude_wide dataset represents a repeated measures design where the repeated measures variable **drink** has 3 levels (beer, wine, water). The second repeated measures variable **imagery** also has three levels (positive, negative, neutral). The dependent variable is **attitude**. The first column contains a code for each participant (P1, P2, etc.)  Note that the **participants** column is a factor as indicated by the "< fct >" descriptor. The participant column must be a factor which can, as noted previously, be created by the **as.factor** command.
+
+The remaining 9 columns represent values for each cell representing a drink/imagery combination of levels. A 3 drink (beer, wine, water) by 3 imagery (positive, negative, neutral) design has 9 cells hence the nine columns. The naming convention for column names is critical to the workflow we describe below. Each column name represents the level of the **drink** variable separated using an underscore ( _ ) from the level of the imagery variables. For example the first column is called **beer_positive** representing the combination of the beer level of drink and the positive level of imagery. Each value in this column represents **attitude** for a participant in this cell. 
+
+In order to conduct a repeated measures ANOVA we need to convert the dataset from the wide format (where each row represents a person) to the long format (where each row represents a single observation from a person). We do this with a series of commands below.
+
+
+First we rearrange the data so that each row represents a single observation from a person using the **gather** command from the **tidyverse** package. The command creates a new dataset where there is a **participant** column, a **cell** column that indicates the cell an observation came from (e.g., beer_positive) and an **attitude** column that contains the attitude rating. Note that in the command below we use, **beer_positive:water_neutral** to indicate all the columns in the dataset between/including beer_positive to water_neutral (i.e., all nine columns). The columns must be in a block in the dataset without other variables interspersed between them.
+
+```{r}
+drink_attitude_long <- gather(data = drink_attitude_wide,
+                              key = cell, value = attitude,
+                              beer_positive:water_neutral,
+                              factor_key=TRUE)
+```
+
+
+In this new long data set each of the 20 particpants has nine observations (i.e., nine cells) so there are 180 rows. The problem with data resulting from the above command is that the levels of **drink** and **imagery** are combined into a single column called **cell**. That is cell contains the information in the form beer_positive (i.e., the previous column names for each cell). We can split those levels off into their own columns with the names "drink" and "imagery" and turn those columns into factors with the commands below:
+```{r}
+
+drink_attitude_long <- separate(data = drink_attitude_long,
+                                col = cell, into = c("drink","imagery"),
+                                sep = "_", remove = TRUE)
+
+drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
+
+```
+
+We can inspect the final long version of the dataset with glimpse again:
+
+```{r}
+glimpse(drink_attitude_long)
+```
+
+This output reveals the new data structure. There are now only four columns where each row represents a single observation for a participant. As before, the first column is factor column representing **participant**. But each participant is represented nines times in this column now - because each participant has nine observations (i.e., one in each of the nine cells).  Most importantly, we now have a single column indicating level of **drink**, a single column indicating level of **imagery**, and a column indicating the **attitude** rating. 
+
+You can see the first few rows in the more familiar format below:
+
+```{r}
+head(drink_attitude_long)
+```
+
+Prior to conducting the analysis we set the contrasts as per Field et al. (2012).
+```{r}
+alcohol_vs_water <- c(1, 1, -2)
+beer_vs_wine <- c(-1, 1, 0)
+negative_vs_other <- c(1, -2, 1)
+positive_vs_neutral <- c(-1, 0, 1)
+contrasts(drink_attitude_long$drink) <- cbind(alcohol_vs_water, beer_vs_wine)
+contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_neutral)
+```
+
+Then we use the ezANOVA command from the **ez** package to conduct the repeated measures ANOVA. Be sure to include all of the commands below including the options command which ensures that the output has sufficent number of digits (i.e., numbers after the decimal) for apaTables.
+
+```{r}
+options(digits = 10)
+drink_attitude_results <- ezANOVA(data = drink_attitude_long,
+                   dv = .(attitude), wid = .(participant),
+                   within = .(drink, imagery),
+                   type = 3, detailed = TRUE)
+
+```
+
+
+Now we make the table based on the output:
+
+```{r, eval=FALSE}
+apa.ezANOVA.table(drink_attitude_results, 
+                  table.number = 11,
+                  filename="Table_11.doc")
+```
+
+
+![2-way Repeated Measures ANOVA in MSWord](Table11.jpg)
+
 ##References
 
 Field, A., Miles, J., Field, Z. *Discovering statistics using R*.

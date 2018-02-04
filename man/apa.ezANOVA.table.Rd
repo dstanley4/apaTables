@@ -27,7 +27,8 @@ Creates an ANOVA table in APA style based output of ezANOVA command from ez pack
 \examples{
 #
 # ** Example 1: Between Participant Predictors
-#
+# Be sure use the options command, as below, to ensure sufficient digits
+
 library(apaTables)
 print(goggles)
 
@@ -50,7 +51,7 @@ print(goggles_table)
 
 #
 # ** Example 2: Within Participant Predictors
-#
+# Be sure use the options command, as below, to ensure sufficient digits
 
 library(apaTables)
 print(drink_attitude_wide)
@@ -100,7 +101,7 @@ print(drink_table)
 
 #'
 # ** Example 3: Between and Within Participant Predictors
-#
+# Be sure use the options command, as below, to ensure sufficient digits
 
 library(apaTables)
 print(dating_wide)

@@ -1,11 +1,10 @@
-#' Alpha (not complete): Creates a regresion table in APA style
+#' (Beta version) Creates a regresion table in APA style with bootstrap confidence intervals
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @param number_samples Number of samples to create for bootstrap CIs
 #' @param conf.level  Confidence level for confidence intervals. Default is .95.
 #' @return APA table object
-#' @references
 #' @examples
 #' # View top few rows of goggles data set
 #' # from Discovering Statistics Using R

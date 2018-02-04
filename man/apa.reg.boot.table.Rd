@@ -2,7 +2,7 @@
 % Please edit documentation in R/apaRegressionBootTable.R
 \name{apa.reg.boot.table}
 \alias{apa.reg.boot.table}
-\title{Alpha (not complete): Creates a regresion table in APA style}
+\title{(Beta version) Creates a regresion table in APA style with bootstrap confidence intervals}
 \usage{
 apa.reg.boot.table(..., filename = NA, table.number = NA,
   number.samples = 1000, conf.level = 0.95)
@@ -22,7 +22,7 @@ apa.reg.boot.table(..., filename = NA, table.number = NA,
 APA table object
 }
 \description{
-Alpha (not complete): Creates a regresion table in APA style
+(Beta version) Creates a regresion table in APA style with bootstrap confidence intervals
 }
 \examples{
 # View top few rows of goggles data set

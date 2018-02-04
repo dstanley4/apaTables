@@ -8,7 +8,8 @@
 #' @examples
 #' #
 #' # ** Example 1: Between Participant Predictors
-#' #
+#' # Be sure use the options command, as below, to ensure sufficient digits
+#'
 #'library(apaTables)
 #'print(goggles)
 #'
@@ -31,7 +32,7 @@
 #'
 #' #
 #' # ** Example 2: Within Participant Predictors
-#' #
+#' # Be sure use the options command, as below, to ensure sufficient digits
 #'
 #'library(apaTables)
 #'print(drink_attitude_wide)
@@ -81,7 +82,7 @@
 #'
 #' #'
 #' # ** Example 3: Between and Within Participant Predictors
-#' #
+#' # Be sure use the options command, as below, to ensure sufficient digits
 #'
 #'library(apaTables)
 #'print(dating_wide)

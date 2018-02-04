@@ -47,3 +47,54 @@
 #  apa.d.table(iv=alcohol,dv=attractiveness,data=goggles.men,filename="Table9_APA.doc",table.number = 9)
 #  apa.d.table(iv=alcohol,dv=attractiveness,data=goggles.women,filename="Table10_APA.doc",table.number = 10)
 
+## ---- warning=FALSE, message=FALSE---------------------------------------
+library(apaTables)
+library(tidyverse)
+library(ez)
+
+## ---- warning=FALSE, message=FALSE---------------------------------------
+glimpse(drink_attitude_wide)
+
+## ------------------------------------------------------------------------
+drink_attitude_long <- gather(data = drink_attitude_wide,
+                              key = cell, value = attitude,
+                              beer_positive:water_neutral,
+                              factor_key=TRUE)
+
+## ------------------------------------------------------------------------
+
+drink_attitude_long <- separate(data = drink_attitude_long,
+                                col = cell, into = c("drink","imagery"),
+                                sep = "_", remove = TRUE)
+
+drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
+
+
+## ------------------------------------------------------------------------
+glimpse(drink_attitude_long)
+
+## ------------------------------------------------------------------------
+head(drink_attitude_long)
+
+## ------------------------------------------------------------------------
+alcohol_vs_water <- c(1, 1, -2)
+beer_vs_wine <- c(-1, 1, 0)
+negative_vs_other <- c(1, -2, 1)
+positive_vs_neutral <- c(-1, 0, 1)
+contrasts(drink_attitude_long$drink) <- cbind(alcohol_vs_water, beer_vs_wine)
+contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_neutral)
+
+## ------------------------------------------------------------------------
+options(digits = 10)
+drink_attitude_results <- ezANOVA(data = drink_attitude_long,
+                   dv = .(attitude), wid = .(participant),
+                   within = .(drink, imagery),
+                   type = 3, detailed = TRUE)
+
+
+## ---- eval=FALSE---------------------------------------------------------
+#  apa.ezANOVA.table(drink_attitude_results,
+#                    table.number = 11,
+#                    filename="Table_11.doc")
+
