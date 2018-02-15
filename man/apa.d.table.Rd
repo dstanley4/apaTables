@@ -18,7 +18,7 @@ apa.d.table(iv, dv, data, filename = NA, table.number = NA,
 
 \item{table.number}{Integer to use in table number output line}
 
-\item{show.conf.interval}{(TRUE/FALSE) Display confidence intervals in table.}
+\item{show.conf.interval}{(TRUE/FALSE) Display confidence intervals in table. This argument is deprecated and will be removed from later versions.}
 
 \item{landscape}{(TRUE/FALSE) Make RTF file landscape}
 }
@@ -33,5 +33,5 @@ Creates a d-values for all paired comparisons in APA style
 head(viagra)
 
 # Use apa.d.table function
-apa.d.table(iv=dose,dv=libido,data=viagra,filename="ex1_d_table.doc")
+apa.d.table(iv=dose,dv=libido,data=viagra,filename="ex1_d_table. doc")
 }

@@ -4,7 +4,7 @@
 #' @param data Project data frame name
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number Integer to use in table number output line
-#' @param show.conf.interval  (TRUE/FALSE) Display confidence intervals in table.
+#' @param show.conf.interval  (TRUE/FALSE) Display confidence intervals in table. This argument is deprecated and will be removed from later versions.
 #' @param landscape (TRUE/FALSE) Make RTF file landscape
 #' @return APA table object
 #' @examples
@@ -12,11 +12,17 @@
 #' head(viagra)
 #'
 #' # Use apa.d.table function
-#' apa.d.table(iv=dose,dv=libido,data=viagra,filename="ex1_d_table.doc")
+#' apa.d.table(iv=dose,dv=libido,data=viagra,filename="ex1_d_table. doc")
 #' @export
-apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA,show.conf.interval = TRUE, landscape=TRUE){
+apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.interval = TRUE, landscape=TRUE){
      data <- as.data.frame(data)
      table_number <- table.number
+
+
+     if (show.conf.interval==FALSE) {
+          cat("The ability to suppress reporting of reporting confidence intervals has been deprecated in this version.\nThe function arguement show.conf.interval will be removed in a later version.\n")
+     }
+     show.conf.interval = TRUE
      show_conf_interval <- show.conf.interval
 
      if (is.na(filename)) {
