@@ -1,8 +1,8 @@
 
-get_sr2_ci <- function(sr2,R2,n) {
+get_sr2_ci <- function(sr2, R2, n, conf_level) {
      R2_2 <- R2
      R2_1 <- R2-sr2
-     ci <- get_deltaR2_ci(R2_2 = R2_2,R2_1=R2_1,n=n)
+     ci <- get_deltaR2_ci(R2_2 = R2_2,R2_1=R2_1,n=n, conf_level = conf_level)
      return(ci)
 }
 
