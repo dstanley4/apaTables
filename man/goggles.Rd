@@ -6,6 +6,7 @@
 \title{goggles data from textbook}
 \format{A data frame with 48 rows and 3 variables:
 \describe{
+  \item{participant}{Participant identification number}
   \item{gender}{Gender of participant}
   \item{alcohol}{Amount alcohol consumed }
   \item{attractiveness}{Perceived attractiveness}
