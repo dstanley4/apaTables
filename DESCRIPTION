@@ -22,11 +22,14 @@ Imports:
     car,
     broom,
     dplyr,
-    boot
+    boot,
+    tibble
 Suggests: testthat,
     knitr,
     rmarkdown,
-    psych
+    psych,
+    ez,
+    tidyverse
 RoxygenNote: 6.0.1
 License: MIT License + file LICENSE
 LazyData: true
