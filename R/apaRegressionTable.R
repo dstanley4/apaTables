@@ -536,17 +536,17 @@ get_rtf_column_widths <- function(df) {
 get_reg_table_note_txt <- function(calculate_cor,calculate_beta) {
      if (calculate_cor==TRUE & calculate_beta==TRUE) {
 
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights; beta indicates the standardized regression weights; \nsr2 represents the semi-partial correlation squared; r represents the zero-order correlation.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+          table_note <- "Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights. beta indicates the standardized regression weights. \nsr2 represents the semi-partial correlation squared. r represents the zero-order correlation.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n* indicates p < .05. ** indicates p < .01.\n"
 
      } else if (calculate_cor==TRUE & calculate_beta==FALSE) {
 
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the semi-partial correlation is also significant.\nb represents unstandardized regression weights; sr2 represents the semi-partial correlation squared;\nr represents the zero-order correlation.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+          table_note <- "Note. A significant b-weight indicates the semi-partial correlation is also significant.\nb represents unstandardized regression weights. sr2 represents the semi-partial correlation squared.\nr represents the zero-order correlation.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n* indicates p < .05. ** indicates p < .01.\n"
 
      } else if (calculate_cor==FALSE & calculate_beta==TRUE) {
 
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights; beta indicates the standardized regression weights; \nsr2 represents the semi-partial correlation squared.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+          table_note <- "Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights. beta indicates the standardized regression weights. \nsr2 represents the semi-partial correlation squared.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n * indicates p < .05. ** indicates p < .01.\n"
      } else {
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the semi-partial correlation is also significant.\nb represents unstandardized regression weights; \nsr2 represents the semi-partial correlation squared.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+          table_note <- "Note. A significant b-weight indicates the semi-partial correlation is also significant.\nb represents unstandardized regression weights. \nsr2 represents the semi-partial correlation squared.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n* indicates p < .05. ** indicates p < .01.\n"
      }
      return(table_note)
 
@@ -556,18 +556,18 @@ get_reg_table_note_txt <- function(calculate_cor,calculate_beta) {
 get_reg_table_note_rtf <- function(calculate_cor,calculate_beta) {
      if (calculate_cor==TRUE & calculate_beta==TRUE) {
 
-          table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights; {\\i beta} indicates the standardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared; {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively."
+          table_note <- "A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights. {\\i beta} indicates the standardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
 
      } else if (calculate_cor==TRUE & calculate_beta==FALSE) {
 
-          table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared; {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively."
+          table_note <- "A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
 
      } else if (calculate_cor==FALSE & calculate_beta==TRUE) {
 
-          table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights; {\\i beta} indicates the standardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively."
+          table_note <- "A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights. {\\i beta} indicates the standardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
 
      } else {
-          table_note <- "* indicates p < .05; ** indicates p < .01. A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights; {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively."
+          table_note <- "A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates p < .05. ** indicates p < .01."
      }
      return(table_note)
 
