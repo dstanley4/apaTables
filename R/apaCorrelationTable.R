@@ -131,9 +131,9 @@ apa.cor.table<-function(data,filename=NA,table.number=NA, show.conf.interval=TRU
 
      #make console output
      if (show_conf_interval == TRUE) {
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval.\nThe confidence interval is a plausible range of population correlations \nthat could have caused the sample correlation (Cumming, 2014).\n"
+          table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval.\nThe confidence interval is a plausible range of population correlations \nthat could have caused the sample correlation (Cumming, 2014).\n* indicates p < .05. ** indicates p < .01.\n"
      } else {
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nM and SD are used to represent mean and standard deviation, respectively.\n"
+          table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\n* indicates p < .05. ** indicates p < .01.\n"
      }
 
      tbl.console <- list(table.number = table_number,
@@ -153,11 +153,11 @@ apa.cor.table<-function(data,filename=NA,table.number=NA, show.conf.interval=TRU
 
           if (show_conf_interval == TRUE) {
                table_title <- "Means, standard deviations, and correlations with confidence intervals"
-               table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation. The confidence interval is a plausible range of population correlations that could have caused the sample correlation (Cumming, 2014)."
+               table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation. The confidence interval is a plausible range of population correlations that could have caused the sample correlation (Cumming, 2014). * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
 
           } else {
                table_title <- "Means, standard deviations, and correlations"
-               table_note <- "* indicates {\\i p} < .05; ** indicates {\\i p} < .01. {\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively."
+               table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. * indicates {\\i p} < .05. ** indicates {\\i p} < .01. "
           }
 
           #Create RTF code
