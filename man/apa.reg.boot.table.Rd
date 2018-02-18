@@ -14,9 +14,9 @@ apa.reg.boot.table(..., filename = NA, table.number = NA,
 
 \item{table.number}{Integer to use in table number output line}
 
-\item{conf.level}{Confidence level for confidence intervals. Default is .95.}
+\item{number.samples}{Number of samples to create for bootstrap CIs}
 
-\item{number_samples}{Number of samples to create for bootstrap CIs}
+\item{conf.level}{Confidence level for confidence intervals. Default is .95.}
 }
 \value{
 APA table object

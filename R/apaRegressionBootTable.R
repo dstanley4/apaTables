@@ -2,7 +2,7 @@
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
-#' @param number_samples Number of samples to create for bootstrap CIs
+#' @param number.samples Number of samples to create for bootstrap CIs
 #' @param conf.level  Confidence level for confidence intervals. Default is .95.
 #' @return APA table object
 #' @examples
@@ -38,8 +38,9 @@
 #' apa.reg.boot.table(blk1,filename="exInteraction3.doc")
 #'
 #' @export
-apa.reg.boot.table<-function(...,filename=NA,table.number=NA, number.samples = 1000, conf.level = .95) {
+apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 1000, conf.level = .95) {
      print("In development - numbers not correct yet")
+     prop_var_conf_level <- .95
 
      K <- number.samples
      conf_level <- conf.level
@@ -144,7 +145,7 @@ apa.reg.boot.table<-function(...,filename=NA,table.number=NA, number.samples = 1
                cur_block_out_txt <- block_results[[i]]$model_details_txt
                cur_block_out_rtf <- block_results[[i]]$model_details_rtf
 
-               delta_R2_details <- get_delta_R2_blocks(blk2=cur_block_lm,blk1=last_block_lm,summary2=cur_block_summary,summary1=last_block_summary,n)
+               delta_R2_details <- get_delta_R2_blocks(blk2=cur_block_lm,blk1=last_block_lm,summary2=cur_block_summary,summary1=last_block_summary,n, prop_var_conf_level = prop_var_conf_level)
 
                delta_R2_details <- update_with_delta_R2_boot_CI(delta_R2_details, delta_R2_CI[i,])
 
