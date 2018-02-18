@@ -1,7 +1,7 @@
 #' Creates an ANOVA table in APA style based output of ezANOVA command from ez package
 #' @param ez_output Output object from ezANOVA command from ez package
 #' @param correction Type of sphercity correction: sphericity assumed (use "none"), .....
-#' @param show.ss Show sums of squares. (TRUE/FALSE)
+#' @param table.title String containing text for table title
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @return APA table object
@@ -125,10 +125,10 @@
 #'print(dating_table)
 #'
 #' @export
-apa.ezANOVA.table<-function(ez_output,correction="GG", table_title="", filename,table.number=NA) {
+apa.ezANOVA.table<-function(ez_output, correction = "GG", table.title = "", filename, table.number=NA) {
 
      # make sure gg and hf both work
-
+     table_title <- table.title
      table_number <- table.number
 
      if (missing(filename)) {

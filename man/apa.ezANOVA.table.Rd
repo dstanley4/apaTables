@@ -4,7 +4,7 @@
 \alias{apa.ezANOVA.table}
 \title{Creates an ANOVA table in APA style based output of ezANOVA command from ez package}
 \usage{
-apa.ezANOVA.table(ez_output, correction = "GG", table_title = "", filename,
+apa.ezANOVA.table(ez_output, correction = "GG", table.title = "", filename,
   table.number = NA)
 }
 \arguments{
@@ -12,11 +12,11 @@ apa.ezANOVA.table(ez_output, correction = "GG", table_title = "", filename,
 
 \item{correction}{Type of sphercity correction: sphericity assumed (use "none"), .....}
 
+\item{table.title}{String containing text for table title}
+
 \item{filename}{(optional) Output filename document filename (must end in .rtf or .doc only)}
 
 \item{table.number}{Integer to use in table number output line}
-
-\item{show.ss}{Show sums of squares. (TRUE/FALSE)}
 }
 \value{
 APA table object
