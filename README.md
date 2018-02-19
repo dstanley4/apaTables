@@ -10,17 +10,18 @@ CRAN apaTables status: ![](http://cranlogs.r-pkg.org/badges/grand-total/apaTable
 
 
 ### Install Stable CRAN Version
-install.packages("apaTables",dep=T)
 
-library(apaTables)
+    install.packages("apaTables",dep=T)
+
+    library(apaTables)
 
 ### Install Development Version
-install.packages("devtools")
 
-devtools::install_github("dstanley4/apaTables")
+    install.packages("devtools")
 
-library(apaTables)
+    devtools::install_github("dstanley4/apaTables")
 
+    library(apaTables)
 
 ## Context
 
