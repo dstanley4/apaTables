@@ -4,13 +4,13 @@
 \alias{apa.ezANOVA.table}
 \title{Creates an ANOVA table in APA style based output of ezANOVA command from ez package}
 \usage{
-apa.ezANOVA.table(ez_output, correction = "GG", table.title = "", filename,
+apa.ezANOVA.table(ez.output, correction = "GG", table.title = "", filename,
   table.number = NA)
 }
 \arguments{
-\item{ez_output}{Output object from ezANOVA command from ez package}
+\item{ez.output}{Output object from ezANOVA command from ez package}
 
-\item{correction}{Type of sphercity correction: sphericity assumed (use "none"), .....}
+\item{correction}{Type of sphercity correction: "none", "GG", or "HF" corresponding to none, Greenhouse-Geisser and Huynh-Feldt, respectively.}
 
 \item{table.title}{String containing text for table title}
 
@@ -27,14 +27,20 @@ Creates an ANOVA table in APA style based output of ezANOVA command from ez pack
 \examples{
 #
 # ** Example 1: Between Participant Predictors
-# Be sure use the options command, as below, to ensure sufficient digits
+#
 
 library(apaTables)
+library(ez)
+
+# See format where one row represents one PERSON
+# Note that participant, gender, and alcohol are factors
+
 print(goggles)
 
-# Use ezANOVA
 
-library(ez)
+# Use ezANOVA
+# Be sure use the options command, as below, to ensure sufficient digits
+
 options(digits = 10)
 goggles_results <- ezANOVA(data = goggles,
                           dv = attractiveness,
@@ -42,35 +48,48 @@ goggles_results <- ezANOVA(data = goggles,
                           participant ,
                           detailed = TRUE)
 
+
 # Make APA table
 
-goggles_table <- apa.ezANOVA.table(goggles_results)
+goggles_table <- apa.ezANOVA.table(goggles_results,
+                                  filename="ex1_ez_independent.doc")
+
 print(goggles_table)
 
 
 
 #
 # ** Example 2: Within Participant Predictors
-# Be sure use the options command, as below, to ensure sufficient digits
+#
 
 library(apaTables)
+library(tidyverse)
+library(ez)
+
+# See initial wide format where one row represents one PERSON
 print(drink_attitude_wide)
 
-# Convert data from wide format to long format when using within particpant predictors
-
-library(tidyverse)
+# Convert data from wide format to long format where one row represents one OBSERVATION.
+# Wide format column names MUST represent levels of each variable separated by an underscore.
+# See vignette for further details.
 
 drink_attitude_long <- gather(data = drink_attitude_wide,
-                              key = group, value = attitude,
+                              key = cell, value = attitude,
                               beer_positive:water_neutral,
                               factor_key=TRUE)
 
 drink_attitude_long <- separate(data = drink_attitude_long,
-                                col = group, into = c("drink","imagery"),
-                                sep = "_", remove = FALSE)
+                                col = cell, into = c("drink","imagery"),
+                                sep = "_", remove = TRUE)
 
-drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
-drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
+drink_attitude_long$drink <- as_factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
+
+# See new long format of data, where one row is one OBSERVATION.
+# As well, notice that we have two columns (drink, imagery)
+# drink, imagery, and participant are factors
+print(drink_attitude_long)
+
 
 # Set contrasts to match Field et al. (2012) textbook output
 
@@ -83,44 +102,57 @@ contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_n
 
 
 # Use ezANOVA
+# Be sure use the options command, as below, to ensure sufficient digits
 
-library(ez)
 options(digits = 10)
 drink_attitude_results <- ezANOVA(data = drink_attitude_long,
                    dv = .(attitude), wid = .(participant),
                    within = .(drink, imagery),
                    type = 3, detailed = TRUE)
 
+
 # Make APA table
 
-drink_table <- apa.ezANOVA.table(drink_attitude_results)
+drink_table <- apa.ezANOVA.table(drink_attitude_results,
+                                 filename="ex2_repeated_table.doc")
+
 print(drink_table)
 
 
-
-
-#'
+#
 # ** Example 3: Between and Within Participant Predictors
-# Be sure use the options command, as below, to ensure sufficient digits
+#
 
 library(apaTables)
+library(tidyverse)
+library(ez)
+
+# See initial wide format where one row represents one PERSON
 print(dating_wide)
 
-# Convert data from wide format to long format when using within particpant predictors
 
-library(tidyverse)
+# Convert data from wide format to long format where one row represents one OBSERVATION.
+# Wide format column names MUST represent levels of each variable separated by an underscore.
+# See vignette for further details.
 
 dating_long <- gather(data = dating_wide,
-                     key = group, value = date_rating,
+                     key = cell, value = date_rating,
                      attractive_high:ugly_none,
                      factor_key = TRUE)
 
 dating_long <- separate(data = dating_long,
-                       col = group, into = c("looks","personality"),
-                       sep = "_", remove = FALSE)
+                       col = cell, into = c("looks","personality"),
+                       sep = "_", remove = TRUE)
 
-dating_long$looks <- as.factor(dating_long$looks)
-dating_long$personality <- as.factor(dating_long$personality)
+dating_long$looks <- as_factor(dating_long$looks)
+dating_long$personality <- as_factor(dating_long$personality)
+
+
+# See new long format of data, where one row is one OBSERVATION.
+# As well, notice that we have two columns (looks, personality)
+# looks, personality, and participant are factors
+
+print(dating_long)
 
 # Set contrasts to match Field et al. (2012) textbook output
 
@@ -131,6 +163,7 @@ attractive_vs_average <- c(1, -1, 0)
 contrasts(dating_long$personality) <- cbind(some_vs_none, hi_vs_av)
 contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
 
+
 # Use ezANOVA
 
 library(ez)
@@ -139,8 +172,11 @@ dating_results <-ezANOVA(data = dating_long, dv = .(date_rating), wid = .(partic
                         between = .(gender), within = .(looks, personality),
                         type = 3, detailed = TRUE)
 
+
 # Make APA table
-dating_table <- apa.ezANOVA.table(dating_results)
+
+dating_table <- apa.ezANOVA.table(dating_results,
+                                 filename = "ex3_mixed_table.doc")
 print(dating_table)
 
 }

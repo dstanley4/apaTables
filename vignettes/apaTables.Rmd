@@ -63,9 +63,9 @@ The **apa.reg.table** function allows for multiple (i.e., more 2 or more) blocks
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-block1 <- lm(sales ~ adverts + airplay, data=album)
-block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data=album)
-apa.reg.table(block1, block2, filename="Table3_APA.doc", table.number=3)
+block1 <- lm(sales ~ adverts + airplay, data = album)
+block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
+apa.reg.table(block1, block2, filename = "Table3_APA.doc", table.number = 3)
 ```
 ![Blocks regression table in MSWord](Table3.jpg)
 
@@ -76,13 +76,13 @@ There are three functions in apaTables that are helpful for 1-way ANOVA analyses
 
 ```{r,echo=TRUE,eval=FALSE}
 options(contrasts = c("contr.sum", "contr.poly"))
-lm_output <- lm(libido ~ dose, data=viagra)
+lm_output <- lm(libido ~ dose, data = viagra)
 ```
 
 The **apa.aov.table** function creates a 1-way ANOVA table based on lm_output; see Table 4.
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-apa.aov.table(lm_output,filename="Figure4_APA.doc",table.number = 4)
+apa.aov.table(lm_output, filename = "Figure4_APA.doc", table.number = 4)
 ```
 
 ![1-way ANOVA table in MSWord](Table4.jpg)
@@ -90,13 +90,17 @@ apa.aov.table(lm_output,filename="Figure4_APA.doc",table.number = 4)
 
 The **apa.1way.table** function creates a table with the mean and sd for each cell; see Table 5.
 ```{r,echo=TRUE,eval=FALSE}
-apa.1way.table(iv=dose,dv=libido,data=viagra,filename="Figure5_APA.doc",table.number = 5)
+apa.1way.table(iv = dose, dv = libido, data = viagra, 
+               filename = "Figure5_APA.doc", 
+               table.number = 5)
 ```
 ![1-way M/SD table in MSWord](Table5.jpg)
 
 The **apa.d.table** function show a d-value (with confidence interval) for each paired comparison; see Table 6.
 ```{r,echo=TRUE,eval=FALSE}
-apa.d.table(iv=dose,dv=libido,data=viagra,filename="Figure6_APA.doc",table.number = 6)
+apa.d.table(iv = dose, dv = libido, data = viagra, 
+            filename = "Figure6_APA.doc", 
+            table.number = 6)
 ```
 ![1-way Paired Comparison d-values (with CI) in MSWord](Table6.jpg)
 
@@ -107,14 +111,14 @@ The 2-way example with independent variable predictors is based on the goggles d
 
 ```{r,echo=TRUE,eval=FALSE}
 options(contrasts = c("contr.sum", "contr.poly"))
-lm_output <- lm(attractiveness ~ gender*alcohol, data=goggles)
+lm_output <- lm(attractiveness ~ gender*alcohol, data = goggles)
 ```
 
 The **apa.aov.table** function creates a 2-way ANOVA table based on lm_output; see Table 7.
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-apa.aov.table(lm_output,filename="Figure7_APA.doc",table.number = 7)
+apa.aov.table(lm_output, filename = "Figure7_APA.doc", table.number = 7)
 ```
 ![2-way ANOVA table in MSWord](Table7.jpg)
 
@@ -123,7 +127,10 @@ apa.aov.table(lm_output,filename="Figure7_APA.doc",table.number = 7)
 The **apa.2way.table** function creates a table with the mean and sd for each cell; see Table 8. Marginal means can also be requested -- see the help file (?apa.2way.table). For higher-order designs (i.e., 3-way or higher) use the *filter* command in the **dplyr** package to select the subset of rows and then use **apa.2way.table** to display cell statistics.
 
 ```{r,echo=TRUE,eval=FALSE}
-apa.2way.table(iv1=gender,iv2=alcohol,dv=attractiveness,data=goggles,filename="Figure8_APA.doc",table.number = 8)
+apa.2way.table(iv1 = gender,iv2 = alcohol, dv = attractiveness, 
+               data = goggles, 
+               filename = "Figure8_APA.doc", 
+               table.number = 8)
 ```
 ![2-way M/SD table in MSWord](Table8.jpg)
 
@@ -136,8 +143,15 @@ library(dplyr)
 goggles.men   <- filter(goggles,gender=="Male")
 goggles.women <- filter(goggles,gender=="Female")
 
-apa.d.table(iv=alcohol,dv=attractiveness,data=goggles.men,filename="Table9_APA.doc",table.number = 9)
-apa.d.table(iv=alcohol,dv=attractiveness,data=goggles.women,filename="Table10_APA.doc",table.number = 10)
+apa.d.table(iv = alcohol, dv = attractiveness, 
+            data = goggles.men, 
+            filename = "Table9_APA.doc", 
+            table.number = 9)
+
+apa.d.table(iv = alcohol, dv = attractiveness, 
+            data = goggles.women, 
+            filename = "Table10_APA.doc", 
+            table.number = 10)
 ```
 
 ![2-way Male Subgroup Paired Comparison d-values (with CI) in MSWord](Table9.jpg)
