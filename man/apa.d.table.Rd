@@ -33,5 +33,5 @@ Creates a d-values for all paired comparisons in APA style
 head(viagra)
 
 # Use apa.d.table function
-apa.d.table(iv=dose,dv=libido,data=viagra,filename="ex1_d_table.doc")
+apa.d.table(iv = dose, dv = libido, data = viagra, filename = "ex1_d_table.doc")
 }
