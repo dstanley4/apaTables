@@ -315,15 +315,15 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
                correction_text <- "p-values based on assumed sphericity."
           }
           if (ez_detailed==TRUE) {
-               table_note  <- sprintf("Note. df_num and df_den indicate the degrees of freedom for the numerator and denominator, respectively.\n%s \np-values and degrees of freedom in the table incorporate this correction.\nSS_num and SS_den indicate the sum of squares for the numerator and denominator, respectively. \nges indicates generalized eta-squared.\n", correction_text)
+               table_note  <- sprintf("Note. df_num indicates degrees of freedom numerator. df_den indicates degrees of freedom denominator. \n%s \np-values and degrees of freedom in the table incorporate this correction.\nSS_num indicates sum of squares numerator. SS_den indicates sum of squares denominator. \nges indicates generalized eta-squared.\n", correction_text)
           } else {
-               table_note  <- sprintf("Note. df_num and df_den indicate the degrees of freedom for the numerator and denominator, respectively.\n%s \np-values and degrees of freedom in the table incorporate this correction.\nges indicates generalized eta-squared.\n", correction_text)
+               table_note  <- sprintf("Note. df_num indicates degrees of freedom numerator. df_den indicates degrees of freedom denominator. \n%s \np-values and degrees of freedom in the table incorporate this correction.\nges indicates generalized eta-squared.\n", correction_text)
           }
      } else {
           if (ez_detailed==TRUE) {
-               table_note  <- sprintf("Note. df_num and df_den indicate the degrees of freedom for the numerator and denominator, respectively. \nSS_num and SS_den indicate the sum of squares for the numerator and denominator, respectively. \nges indicates generalized eta-squared.\n")
+               table_note  <- sprintf("Note. df_num indicates degrees of freedom numerator. df_den indicates degrees of freedom denominator. \nSS_num indicates sum of squares numerator. SS_den indicates sum of squares denominator. \nges indicates generalized eta-squared.\n")
           } else {
-               table_note  <- sprintf("Note. df_num and df_den indicate the degrees of freedom for the numerator and denominator, respectively. \nges indicates generalized eta-squared.\n")
+               table_note  <- sprintf("Note. df_num indicates degrees of freedom numerator. df_den indicates degrees of freedom denominator. \nges indicates generalized eta-squared.\n")
           }
      }
 
@@ -349,16 +349,16 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
                     correction_text <- "{\\i p}-values based on assumed sphericity."
                }
                if (ez_detailed==TRUE) {
-                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} and {\\i df\\sub Den\\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} and {\\i SS\\sub Den\\nosupersub} indicate the sum of squares for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
+                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
                } else {
-                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} and {\\i df\\sub Den\\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
+                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
                }
 
           } else {
                if (ez_detailed==TRUE) {
-                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} and {\\i df\\sub Den\\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. {\\i SS\\sub Num\\nosupersub} and {\\i SS\\sub Den\\nosupersub} indicate the sum of squares for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
+                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
                } else {
-                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} and {\\i df\\sub Den\\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
+                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
                }
           }
 
