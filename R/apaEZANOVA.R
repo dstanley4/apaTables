@@ -1,21 +1,27 @@
 #' Creates an ANOVA table in APA style based output of ezANOVA command from ez package
-#' @param ez_output Output object from ezANOVA command from ez package
-#' @param correction Type of sphercity correction: sphericity assumed (use "none"), .....
+#' @param ez.output Output object from ezANOVA command from ez package
+#' @param correction Type of sphercity correction: "none", "GG", or "HF" corresponding to none, Greenhouse-Geisser and Huynh-Feldt, respectively.
 #' @param table.title String containing text for table title
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @return APA table object
 #' @examples
-#' #
-#' # ** Example 1: Between Participant Predictors
-#' # Be sure use the options command, as below, to ensure sufficient digits
+#'#
+#'# ** Example 1: Between Participant Predictors
+#'#
 #'
 #'library(apaTables)
+#'library(ez)
+#'
+#'# See format where one row represents one PERSON
+#'# Note that participant, gender, and alcohol are factors
+#'
 #'print(goggles)
 #'
-#' # Use ezANOVA
 #'
-#'library(ez)
+#'# Use ezANOVA
+#'# Be sure use the options command, as below, to ensure sufficient digits
+#'
 #'options(digits = 10)
 #'goggles_results <- ezANOVA(data = goggles,
 #'                           dv = attractiveness,
@@ -23,87 +29,114 @@
 #'                           participant ,
 #'                           detailed = TRUE)
 #'
+#'
 #' # Make APA table
 #'
-#'goggles_table <- apa.ezANOVA.table(goggles_results)
+#'goggles_table <- apa.ezANOVA.table(goggles_results,
+#'                                   filename="ex1_ez_independent.doc")
+#'
 #'print(goggles_table)
 #'
 #'
 #'
 #' #
 #' # ** Example 2: Within Participant Predictors
-#' # Be sure use the options command, as below, to ensure sufficient digits
+#' #
 #'
 #'library(apaTables)
+#'library(tidyverse)
+#'library(ez)
+#'
+#'# See initial wide format where one row represents one PERSON
 #'print(drink_attitude_wide)
 #'
-#' # Convert data from wide format to long format when using within particpant predictors
+#'# Convert data from wide format to long format where one row represents one OBSERVATION.
+#'# Wide format column names MUST represent levels of each variable separated by an underscore.
+#'# See vignette for further details.
 #'
-#' library(tidyverse)
-#'
-#' drink_attitude_long <- gather(data = drink_attitude_wide,
-#'                               key = group, value = attitude,
+#'drink_attitude_long <- gather(data = drink_attitude_wide,
+#'                               key = cell, value = attitude,
 #'                               beer_positive:water_neutral,
 #'                               factor_key=TRUE)
 #'
-#' drink_attitude_long <- separate(data = drink_attitude_long,
-#'                                 col = group, into = c("drink","imagery"),
-#'                                 sep = "_", remove = FALSE)
+#'drink_attitude_long <- separate(data = drink_attitude_long,
+#'                                 col = cell, into = c("drink","imagery"),
+#'                                 sep = "_", remove = TRUE)
 #'
-#' drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
-#' drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
+#'drink_attitude_long$drink <- as_factor(drink_attitude_long$drink)
+#'drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
 #'
-#' # Set contrasts to match Field et al. (2012) textbook output
-#'
-#' alcohol_vs_water <- c(1, 1, -2)
-#' beer_vs_wine <- c(-1, 1, 0)
-#' negative_vs_other <- c(1, -2, 1)
-#' positive_vs_neutral <- c(-1, 0, 1)
-#' contrasts(drink_attitude_long$drink) <- cbind(alcohol_vs_water, beer_vs_wine)
-#' contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_neutral)
+#'# See new long format of data, where one row is one OBSERVATION.
+#'# As well, notice that we have two columns (drink, imagery)
+#'# drink, imagery, and participant are factors
+
+#'print(drink_attitude_long)
 #'
 #'
-#' # Use ezANOVA
+#'# Set contrasts to match Field et al. (2012) textbook output
 #'
-#' library(ez)
-#' options(digits = 10)
-#' drink_attitude_results <- ezANOVA(data = drink_attitude_long,
+#'alcohol_vs_water <- c(1, 1, -2)
+#'beer_vs_wine <- c(-1, 1, 0)
+#'negative_vs_other <- c(1, -2, 1)
+#'positive_vs_neutral <- c(-1, 0, 1)
+#'contrasts(drink_attitude_long$drink) <- cbind(alcohol_vs_water, beer_vs_wine)
+#'contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_neutral)
+#'
+#'
+#'# Use ezANOVA
+#'# Be sure use the options command, as below, to ensure sufficient digits
+#'
+#'options(digits = 10)
+#'drink_attitude_results <- ezANOVA(data = drink_attitude_long,
 #'                    dv = .(attitude), wid = .(participant),
 #'                    within = .(drink, imagery),
 #'                    type = 3, detailed = TRUE)
 #'
-#' # Make APA table
 #'
-#' drink_table <- apa.ezANOVA.table(drink_attitude_results)
-#' print(drink_table)
+#'# Make APA table
+#'
+#'drink_table <- apa.ezANOVA.table(drink_attitude_results,
+#'                                  filename="ex2_repeated_table.doc")
+#'
+#'print(drink_table)
 #'
 #'
-#'
-#'
-#' #'
-#' # ** Example 3: Between and Within Participant Predictors
-#' # Be sure use the options command, as below, to ensure sufficient digits
+#'#
+#'# ** Example 3: Between and Within Participant Predictors
+#'#
 #'
 #'library(apaTables)
+#'library(tidyverse)
+#'library(ez)
+#'
+#'# See initial wide format where one row represents one PERSON
 #'print(dating_wide)
 #'
-#' # Convert data from wide format to long format when using within particpant predictors
 #'
-#'library(tidyverse)
+#'# Convert data from wide format to long format where one row represents one OBSERVATION.
+#'# Wide format column names MUST represent levels of each variable separated by an underscore.
+#'# See vignette for further details.
 #'
 #'dating_long <- gather(data = dating_wide,
-#'                      key = group, value = date_rating,
+#'                      key = cell, value = date_rating,
 #'                      attractive_high:ugly_none,
 #'                      factor_key = TRUE)
 #'
 #'dating_long <- separate(data = dating_long,
-#'                        col = group, into = c("looks","personality"),
-#'                        sep = "_", remove = FALSE)
+#'                        col = cell, into = c("looks","personality"),
+#'                        sep = "_", remove = TRUE)
 #'
-#'dating_long$looks <- as.factor(dating_long$looks)
-#'dating_long$personality <- as.factor(dating_long$personality)
+#'dating_long$looks <- as_factor(dating_long$looks)
+#'dating_long$personality <- as_factor(dating_long$personality)
 #'
-#' # Set contrasts to match Field et al. (2012) textbook output
+#'
+#'# See new long format of data, where one row is one OBSERVATION.
+#'# As well, notice that we have two columns (looks, personality)
+#'# looks, personality, and participant are factors
+#'
+#'print(dating_long)
+#'
+#'# Set contrasts to match Field et al. (2012) textbook output
 #'
 #'some_vs_none <- c(1, 1, -2)
 #'hi_vs_av <- c(1, -1, 0)
@@ -111,6 +144,7 @@
 #'attractive_vs_average <- c(1, -1, 0)
 #'contrasts(dating_long$personality) <- cbind(some_vs_none, hi_vs_av)
 #'contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
+#'
 #'
 #' # Use ezANOVA
 #'
@@ -120,12 +154,17 @@
 #'                         between = .(gender), within = .(looks, personality),
 #'                         type = 3, detailed = TRUE)
 #'
-#' # Make APA table
-#'dating_table <- apa.ezANOVA.table(dating_results)
+#'
+#'# Make APA table
+#'
+#'dating_table <- apa.ezANOVA.table(dating_results,
+#'                                  filename = "ex3_mixed_table.doc")
 #'print(dating_table)
 #'
 #' @export
-apa.ezANOVA.table<-function(ez_output, correction = "GG", table.title = "", filename, table.number=NA) {
+apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", filename, table.number=NA) {
+
+     ez_output <- ez.output
 
      # make sure gg and hf both work
      table_title <- table.title
@@ -310,16 +349,16 @@ apa.ezANOVA.table<-function(ez_output, correction = "GG", table.title = "", file
                     correction_text <- "{\\i p}-values based on assumed sphericity."
                }
                if (ez_detailed==TRUE) {
-                    table_note  <- sprintf("{\\i df\\sub Num \\nosupersub} and {\\i df\\sub Den \\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num \\nosupersub} and {\\i SS\\sub Den \\nosupersub} indicate the sum of squares for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
+                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} and {\\i df\\sub Den\\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} and {\\i SS\\sub Den\\nosupersub} indicate the sum of squares for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
                } else {
-                    table_note  <- sprintf("{\\i df\\sub Num \\nosupersub} and {\\i df\\sub Den \\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
+                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} and {\\i df\\sub Den\\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
                }
 
           } else {
                if (ez_detailed==TRUE) {
-                    table_note  <- sprintf("{\\i df\\sub Num \\nosupersub} and {\\i df\\sub Den \\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. {\\i SS\\sub Num \\nosupersub} and {\\i SS\\sub Den \\nosupersub} indicate the sum of squares for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
+                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} and {\\i df\\sub Den\\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. {\\i SS\\sub Num\\nosupersub} and {\\i SS\\sub Den\\nosupersub} indicate the sum of squares for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
                } else {
-                    table_note  <- sprintf("{\\i df\\sub Num \\nosupersub} and {\\i df\\sub Den \\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
+                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} and {\\i df\\sub Den\\nosupersub} indicate the degrees of freedom for the numerator and denominator, respectively. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
                }
           }
 
