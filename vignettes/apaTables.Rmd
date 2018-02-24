@@ -38,7 +38,7 @@ apa.cor.table(attitude, filename="Table1_APA.doc", table.number=1)
 
 The resulting table is illustrated in Table 1. If confidence intervals are not desired they can be omitted by using the argument show.conf.interval=FALSE in **apa.cor.table** calls.
 
-![Correlation table in MSWord](Table1.jpg)
+![Correlation table in MSWord](Figure1.jpg)
 
 ## Regression table (1 block)
 
@@ -49,10 +49,10 @@ The **apa.reg.table** function creates a regression table with confidence interv
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-basic.reg <- lm(sales ~ adverts + airplay, data=album)
-apa.reg.table(basic.reg, filename="Table2_APA.doc", table.number=2)
+basic.reg <- lm(sales ~ adverts + airplay, data = album)
+apa.reg.table(basic.reg, filename = "Table2_APA.doc", table.number = 2)
 ```
-![Basic regression table in MSWord](Table2.jpg)
+![Basic regression table in MSWord](Figure2.jpg)
 
 ##Blocks regression table
 In many cases, it is more useful for psychology researchers to compare the results of two regression models with common variables. This approach is known to many psychology researchers as block-based regression (likely due to the labeling used in popular software packages). Using regression to "control" for certain variables (e.g., demographic or socio-economic variables) is a common use case. In this scenario, the researcher conducts a regression with the "control" variables that is referred to as *block 1*. Following this, the researcher conducts a second regression with the "control" variables and the substantive variables that is referred to as *block 2*. If *block 2* accounts for significant variance in the criterion above and beyond *block 1* then substantive variables are deemed to be meaningful predictors. 
@@ -67,7 +67,7 @@ block1 <- lm(sales ~ adverts + airplay, data = album)
 block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
 apa.reg.table(block1, block2, filename = "Table3_APA.doc", table.number = 3)
 ```
-![Blocks regression table in MSWord](Table3.jpg)
+![Blocks regression table in MSWord](Figure3.jpg)
 
 
 ## 1-way ANOVA and d-value tables
@@ -82,27 +82,27 @@ lm_output <- lm(libido ~ dose, data = viagra)
 The **apa.aov.table** function creates a 1-way ANOVA table based on lm_output; see Table 4.
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-apa.aov.table(lm_output, filename = "Figure4_APA.doc", table.number = 4)
+apa.aov.table(lm_output, filename = "Table4_APA.doc", table.number = 4)
 ```
 
-![1-way ANOVA table in MSWord](Table4.jpg)
+![1-way ANOVA table in MSWord](Figure4.jpg)
 
 
 The **apa.1way.table** function creates a table with the mean and sd for each cell; see Table 5.
 ```{r,echo=TRUE,eval=FALSE}
 apa.1way.table(iv = dose, dv = libido, data = viagra, 
-               filename = "Figure5_APA.doc", 
+               filename = "Table5_APA.doc", 
                table.number = 5)
 ```
-![1-way M/SD table in MSWord](Table5.jpg)
+![1-way M/SD table in MSWord](Figure5.jpg)
 
 The **apa.d.table** function show a d-value (with confidence interval) for each paired comparison; see Table 6.
 ```{r,echo=TRUE,eval=FALSE}
 apa.d.table(iv = dose, dv = libido, data = viagra, 
-            filename = "Figure6_APA.doc", 
+            filename = "Table6_APA.doc", 
             table.number = 6)
 ```
-![1-way Paired Comparison d-values (with CI) in MSWord](Table6.jpg)
+![1-way Paired Comparison d-values (with CI) in MSWord](Figure6.jpg)
 
 
 
@@ -118,9 +118,9 @@ The **apa.aov.table** function creates a 2-way ANOVA table based on lm_output; s
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-apa.aov.table(lm_output, filename = "Figure7_APA.doc", table.number = 7)
+apa.aov.table(lm_output, filename = "Table7_APA.doc", table.number = 7)
 ```
-![2-way ANOVA table in MSWord](Table7.jpg)
+![2-way ANOVA table in MSWord](Figure7.jpg)
 
 
 
@@ -129,17 +129,17 @@ The **apa.2way.table** function creates a table with the mean and sd for each ce
 ```{r,echo=TRUE,eval=FALSE}
 apa.2way.table(iv1 = gender,iv2 = alcohol, dv = attractiveness, 
                data = goggles, 
-               filename = "Figure8_APA.doc", 
+               filename = "Table8_APA.doc", 
                table.number = 8)
 ```
-![2-way M/SD table in MSWord](Table8.jpg)
+![2-way M/SD table in MSWord](Figure8.jpg)
 
 
 You can use the dplyr package to conducted paired comparisons within each gender again using **apa.d.table**; see Tables 9 and 10.
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-library(dplyr)
+library(tidyverse)
 goggles.men   <- filter(goggles,gender=="Male")
 goggles.women <- filter(goggles,gender=="Female")
 
@@ -154,8 +154,7 @@ apa.d.table(iv = alcohol, dv = attractiveness,
             table.number = 10)
 ```
 
-![2-way Male Subgroup Paired Comparison d-values (with CI) in MSWord](Table9.jpg)
-![2-way Female Subgroup Paired Comparison d-values (with CI) in MSWord](Table10.jpg)
+![Subgroups for Paired Comparison d-values (with CI) in MSWord](Figure9.jpg)
 
 
 ## ezANOVA and apaTables: Repeated measures ANOVA
@@ -248,11 +247,11 @@ Now we make the table based on the output:
 ```{r, eval=FALSE}
 apa.ezANOVA.table(drink_attitude_results, 
                   table.number = 11,
-                  filename="Table_11.doc")
+                  filename="Table11_APA.doc")
 ```
 
 
-![2-way Repeated Measures ANOVA in MSWord](Table11.jpg)
+![2-way Repeated Measures ANOVA in MSWord](Figure10.jpg)
 
 ### Repeated Measures and Independent Groups: 3-way design
 
@@ -295,8 +294,8 @@ dating_long <- separate(data = dating_long,
                        col = cell, into = c("looks","personality"),
                        sep = "_", remove = TRUE)
 
-dating_long$looks <- as.factor(dating_long$looks)
-dating_long$personality <- as.factor(dating_long$personality)
+dating_long$looks <- as_factor(dating_long$looks)
+dating_long$personality <- as_factor(dating_long$personality)
 
 ```
 
@@ -340,10 +339,15 @@ dating_results <-ezANOVA(data = dating_long, dv = .(date_rating), wid = .(partic
 
 Now we make the table based on the output:
 
-```{r}
-dating_table <- apa.ezANOVA.table(dating_results)
+```{r, eval=FALSE, echo=TRUE}
+dating_table <- apa.ezANOVA.table(dating_results, 
+                                  filename = "Table12_APA.doc", 
+                                  table.number = 12)
 print(dating_table)
 ```
+
+![3-way Mixed Measures ANOVA in MSWord](Figure11.jpg)
+
 
 ##References
 
