@@ -13,13 +13,13 @@ vignette: >
 
 Reproducible research is research for which the numbers reported in the paper can obtained by others using the original data and analysis scripts. (Note that this differs from replicability - the extent to which findings are consistent across samples.) Recent research has revealed a problem with the reproducibility of analyses in many fields. For example, in psychology Nuijten et al. (2015) found that in 50% of articles there was at least once instance of a reported test statistic (e.g., *t*(24)=22.71) being inconsistent with the reported *p*-value. This inconsistency rate suggests there is a major problem with reproducibility in the psychological literature.
 
-My objective in creating the **apaTables** package was to automate the process through which tables are created from analyses when using R. Using **apaTables** ensures that the tables in your manuscript are reproducible. 
+My objective in creating the *apaTables* package was to automate the process through which tables are created from analyses when using R. Using *apaTables* ensures that the tables in your manuscript are reproducible. 
 
-Although a number of table generation packages exist for R they are typically not useful for psychology researchers because of the need to report results in the style required by the [American Psychological Association](http://www.apa.org); that is, [APA Style](http://www.apastyle.org/products/asc-landing-page.aspx). Consequently, **apaTables** creates [Microsoft Word](https://products.office.com/en-ca/word) documents (.doc files) that contain tables that conform to APA Style. 
+Although a number of table generation packages exist for R they are typically not useful for psychology researchers because of the need to report results in the style required by the [American Psychological Association](http://www.apa.org); that is, [APA Style](http://www.apastyle.org/products/asc-landing-page.aspx). Consequently, *apaTables* creates [Microsoft Word](https://products.office.com/en-ca/word) documents (.doc files) that contain tables that conform to APA Style. 
 
-In many cases it would be necessary to execute additional R commands to obtain all of the statistics needed for an APA Style table. For example, if conducting a regression using the **lm** command the unstandardized regression (i.e., b) weights are reported. Additional commands are needed to obtain standardized (i.e., beta) weights. **apaTables** automatically executes these additional commands to create a table with the required information in Microsoft Word .doc format^[Technically the tables are in .rtf format. But you should end all files with .doc; this will ensure they are automatically loaded by Microsoft Word].
+In many cases it would be necessary to execute additional R commands to obtain all of the statistics needed for an APA Style table. For example, if conducting a regression using the **lm** command the unstandardized regression (i.e., b) weights are reported. Additional commands are needed to obtain standardized (i.e., beta) weights. *apaTables* automatically executes these additional commands to create a table with the required information in Microsoft Word .doc format^[Technically the tables are in .rtf format. But you should end all files with .doc; this will ensure they are automatically loaded by Microsoft Word].
 
-Additionally, the [American Statistical Association](http://www.amstat.org) recently released a [position paper](https://www.amstat.org/newsroom/pressreleases/P-ValueStatement.pdf) on the use of *p*-values in research. A component of that statement indicated that "*Scientific conclusions and business or policy decisions should not be based only on whether a p-value passes a specific threshold.*" The Executive Director of the [ASA](http://www.amstat.org) suggested that [confidence intervals should be used to interpret data](http://retractionwatch.com/2016/03/07/were-using-a-common-statistical-test-all-wrong-statisticians-want-to-fix-that/). This statement is consistent with the 1999 [position paper](http://www.apa.org/science/leadership/bsa/statistical/tfsi-followup-report.pdf) from the APA Task Force on Statistical Inference. Consequently, the current version of **apaTables** indicates significance using stars but more importantly reports confidence intervals for the reported effect sizes.
+Additionally, the [American Statistical Association](http://www.amstat.org) recently released a [position paper](https://www.amstat.org/newsroom/pressreleases/P-ValueStatement.pdf) on the use of *p*-values in research. A component of that statement indicated that "*Scientific conclusions and business or policy decisions should not be based only on whether a p-value passes a specific threshold.*" The Executive Director of the [ASA](http://www.amstat.org) suggested that [confidence intervals should be used to interpret data](http://retractionwatch.com/2016/03/07/were-using-a-common-statistical-test-all-wrong-statisticians-want-to-fix-that/). This statement is consistent with the 1999 [position paper](http://www.apa.org/science/leadership/bsa/statistical/tfsi-followup-report.pdf) from the APA Task Force on Statistical Inference. Consequently, the current version of *apaTables* indicates significance using stars but more importantly reports confidence intervals for the reported effect sizes.
 
 Bugs and feature requests can be reported at: https://github.com/dstanley4/apaTables/issues
 
@@ -28,7 +28,7 @@ Bugs and feature requests can be reported at: https://github.com/dstanley4/apaTa
 ## Correlation table
 Correlation tables can be constructed using the **apa.cor.table** function. The constructed table includes descriptive statistics (i.e., mean and standard deviation) for each variable and a confidence interval for each correlation. 
 
-The **apa.cor.table** function creates a correlation table with confidence intervals based on a data frame; see Figure 1. The confidence intervals can be suppressed but are on by default.
+The **apa.cor.table** function creates a correlation table with confidence intervals based on a data frame. The example below creates an APA Style correlation table, see Table 1, using the *attitude* dataset built into *R*.
 
 
 ```{r,eval=FALSE}
@@ -36,28 +36,26 @@ library(apaTables)
 apa.cor.table(attitude, filename="Table1_APA.doc", table.number=1)
 ```
 
-The resulting table is illustrated in Table 1. If confidence intervals are not desired they can be omitted by using the argument show.conf.interval=FALSE in **apa.cor.table** calls.
-
-![Correlation table in MSWord](Figure1.jpg)
+![Correlation table in MSWord](Table1.jpg)
 
 ## Regression table (1 block)
 
-Regression tables can be constructed using the **apa.reg.table** function. The constructed table includes the unstandardized regression coefficient (*b* with CI), standardized regression coefficient (*beta* with CI), semi-partial correlation squared ($sr^2$ with CI), the correlation ($r$), and the overall fit of the model (indexed by $R^2$ with CI). The album sales data set from Field et al. (2012) is used to illustrate the **apa.reg.table** function.
+Regression tables can be constructed using the **apa.reg.table** function. The constructed table includes the unstandardized regression coefficient (*b* with CI), standardized regression coefficient (*beta* with CI), semi-partial correlation squared ($sr^2$ with CI), the correlation ($r$), and the overall fit of the model (indexed by $R^2$ with CI). The *album* sales dataset from Field et al. (2012) is used to illustrate the **apa.reg.table** function (also see the **apa.reg.boot.table** function that works similarily but creates bootstrap confidence intervals).
 
 ## Basic regression table
-The **apa.reg.table** function creates a regression table with confidence intervals based on lm output; see Table 2.
+The **apa.reg.table** function creates a regression table with confidence intervals based on **lm** output; see Table 2.
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
 basic.reg <- lm(sales ~ adverts + airplay, data = album)
 apa.reg.table(basic.reg, filename = "Table2_APA.doc", table.number = 2)
 ```
-![Basic regression table in MSWord](Figure2.jpg)
+![Basic regression table in MSWord](Table2.jpg)
 
 ##Blocks regression table
 In many cases, it is more useful for psychology researchers to compare the results of two regression models with common variables. This approach is known to many psychology researchers as block-based regression (likely due to the labeling used in popular software packages). Using regression to "control" for certain variables (e.g., demographic or socio-economic variables) is a common use case. In this scenario, the researcher conducts a regression with the "control" variables that is referred to as *block 1*. Following this, the researcher conducts a second regression with the "control" variables and the substantive variables that is referred to as *block 2*. If *block 2* accounts for significant variance in the criterion above and beyond *block 1* then substantive variables are deemed to be meaningful predictors. 
 
-A second common use of block-based regression in psychology is testing for continuous-variable interactions. Consider a scenario in which a researcher is testing for an interaction between two continuous variables and two regressions are conducted. The first regression includes the two predictors of interest (*block 1*). The second regression includes the two predictors of interest as well as their product term (*block 2*). If *block 2* accounts for significant variance in the criterion above and beyond *block 1* an interaction is deemed to be present. Admittedly interactions could be tested in a single regression; however, using a block-based regression for this analysis is common in psychology. The example below examines whether advertisements and amount of airplay for a song interact to predict album sales. The resulting table is presented in Figure 3. Although this example only uses two blocks, note that any number of blocks can be used with the **apa.reg.table** function. As well, if the predictors in any of the blocks are a product-term, the zero-order correlation will be omitted from the output to prevent interpretation errors common in psychology.
+A second common use of block-based regression in psychology is testing for continuous-variable interactions. Consider a scenario in which a researcher is testing for an interaction between two continuous variables and two regressions are conducted. The first regression includes the two predictors of interest (*block 1*). The second regression includes the two predictors of interest as well as their product term (*block 2*). If *block 2* accounts for significant variance in the criterion above and beyond *block 1* an interaction is deemed to be present. Admittedly interactions could be tested in a single regression; however, using a block-based regression for this analysis is common in psychology. The example below examines whether advertisements and amount of airplay for a song interact to predict album sales. The resulting table is presented in Table 3. Although this example only uses two blocks, note that any number of blocks can be used with the **apa.reg.table** function. As well, if the predictors in any of the blocks are a product-term, the zero-order correlation will be omitted from the output to prevent interpretation errors common in psychology.
 
 The **apa.reg.table** function allows for multiple (i.e., more 2 or more) blocks as per below; see Table 3.
 
@@ -67,12 +65,12 @@ block1 <- lm(sales ~ adverts + airplay, data = album)
 block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
 apa.reg.table(block1, block2, filename = "Table3_APA.doc", table.number = 3)
 ```
-![Blocks regression table in MSWord](Figure3.jpg)
+![Blocks regression table in MSWord](Table3.jpg)
 
 
 ## 1-way ANOVA and d-value tables
 
-There are three functions in apaTables that are helpful for 1-way ANOVA analyses within predictor variables that are independent (**apa.aov.table**, **apa.1way.table**, and **apa.d.table**). All three are illustrated below. First, however, the ANOVA must be conducted - I do so using the Viagra data set from Field et al. (2012). When conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contrasts are set correctly. Note: repeated measures designs are not currently supported.
+There are three functions in apaTables that are helpful for 1-way ANOVA analyses within predictor variables that are independent (**apa.aov.table**, **apa.1way.table**, and **apa.d.table**). All three are illustrated below. First, however, the ANOVA must be conducted - I do so using the Viagra dataset from Field et al. (2012). When conducting an ANOVA in R using the **lm** command you must ensure your independent variables are R factors and that contrasts are set correctly. Note: repeated measures designs are supported via the **apa.ezANOVA.table** command.
 
 ```{r,echo=TRUE,eval=FALSE}
 options(contrasts = c("contr.sum", "contr.poly"))
@@ -85,7 +83,7 @@ library(apaTables)
 apa.aov.table(lm_output, filename = "Table4_APA.doc", table.number = 4)
 ```
 
-![1-way ANOVA table in MSWord](Figure4.jpg)
+![1-way ANOVA table in MSWord](Table4.jpg)
 
 
 The **apa.1way.table** function creates a table with the mean and sd for each cell; see Table 5.
@@ -94,7 +92,7 @@ apa.1way.table(iv = dose, dv = libido, data = viagra,
                filename = "Table5_APA.doc", 
                table.number = 5)
 ```
-![1-way M/SD table in MSWord](Figure5.jpg)
+![1-way M/SD table in MSWord](Table5.jpg)
 
 The **apa.d.table** function show a d-value (with confidence interval) for each paired comparison; see Table 6.
 ```{r,echo=TRUE,eval=FALSE}
@@ -102,12 +100,12 @@ apa.d.table(iv = dose, dv = libido, data = viagra,
             filename = "Table6_APA.doc", 
             table.number = 6)
 ```
-![1-way Paired Comparison d-values (with CI) in MSWord](Figure6.jpg)
+![1-way Paired Comparison d-values (with CI) in MSWord](Table6.jpg)
 
 
 
 ## N-way ANOVA tables: 2-way Example
-The 2-way example with independent variable predictors is based on the goggles data set from Field et al. (2012). As before, when conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contrasts are set correctly. Note: repeated measures designs are not currently supported.
+The 2-way example with independent variable predictors is based on the goggles dataset from Field et al. (2012). As before, when conducting an ANOVA in R using the lm command you must ensure your independent variables are R factors and that contrasts are set correctly. Note: repeated measures designs are supported via the **apa.ezANOVA.table** command.
 
 ```{r,echo=TRUE,eval=FALSE}
 options(contrasts = c("contr.sum", "contr.poly"))
@@ -120,22 +118,23 @@ The **apa.aov.table** function creates a 2-way ANOVA table based on lm_output; s
 library(apaTables)
 apa.aov.table(lm_output, filename = "Table7_APA.doc", table.number = 7)
 ```
-![2-way ANOVA table in MSWord](Figure7.jpg)
+![2-way ANOVA table in MSWord](Table7.jpg)
 
 
 
-The **apa.2way.table** function creates a table with the mean and sd for each cell; see Table 8. Marginal means can also be requested -- see the help file (?apa.2way.table). For higher-order designs (i.e., 3-way or higher) use the *filter* command in the **dplyr** package to select the subset of rows and then use **apa.2way.table** to display cell statistics.
+The **apa.2way.table** function creates a table with the mean and sd for each cell; see Table 8. Marginal means can also be requested -- see the help file (?apa.2way.table). For higher-order designs (i.e., 3-way or higher) use the *filter* command in the *tidyverse* package to select the subset of rows and then use **apa.2way.table** to display cell statistics.
 
 ```{r,echo=TRUE,eval=FALSE}
 apa.2way.table(iv1 = gender,iv2 = alcohol, dv = attractiveness, 
                data = goggles, 
                filename = "Table8_APA.doc", 
+               show.marginal.means = TRUE,
                table.number = 8)
 ```
-![2-way M/SD table in MSWord](Figure8.jpg)
+![2-way M/SD table in MSWord](Table8.jpg)
 
 
-You can use the dplyr package to conducted paired comparisons within each gender again using **apa.d.table**; see Tables 9 and 10.
+You can use the *tidyverse* package to conducted paired comparisons within each gender again using **apa.d.table**; see Tables 9 and 10.
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
@@ -154,16 +153,16 @@ apa.d.table(iv = alcohol, dv = attractiveness,
             table.number = 10)
 ```
 
-![Subgroups for Paired Comparison d-values (with CI) in MSWord](Figure9.jpg)
+![Subgroups for Paired Comparison d-values (with CI) in MSWord](Table9.jpg)
 
 
 ## ezANOVA and apaTables: Repeated measures ANOVA
 
-apaTables also supports repeated measures ANOVA tables and repeated measures by between measures (mixed) ANOVA tables via ezANOVA outtput.
+apaTables also supports repeated measures ANOVA tables and repeated measures by between measures (mixed) ANOVA tables via **ezANOVA** output from the *ez* package.
 
 ### Repeated Measures: 2-way design
 
-Prior to begining we 'open' the **apaTables**, **tidyverse**, and **ez** packages using the library command as per below.
+Prior to begining we 'open' the *apaTables*, *tidyverse*, and *ez* packages using the library command as per below.
 
 ```{r, warning=FALSE, message=FALSE}
 library(apaTables)
@@ -171,20 +170,20 @@ library(tidyverse)
 library(ez)
 ```
 
-In this example, we used the drink_attitude dataset from Field et al. (2012). As before, this data set is built into apaTables so it does not need to be loaded using read_csv or read_sav. The dataset (drink_attitude_wide) can be inspected with the **glimpse** command below (this provides information similar to SPSS variable view). We use the "wide" descriptor in the name of the dataset to remind us that the data is in in the "wide" format where one row contains all the data for one person. There are 20 participants so there are 20 rows.
+In this example, we used the *drink_attitude* dataset from Field et al. (2012). As before, this dataset is built into *apaTables* so it does not need to be loaded using **read_csv** or **read_sav**. The dataset (*drink_attitude_wide*) can be inspected with the **glimpse** command below (this provides information similar to SPSS variable view). We use the "wide" descriptor in the name of the dataset to remind us that the data is in in the "wide" format where one row contains all the data for one person. There are 20 participants so there are 20 rows.
 
 ```{r, warning=FALSE, message=FALSE}
 glimpse(drink_attitude_wide)
 ```
 
 
-The data sets represents an ANOVA with two repeated measures factors. It is a 3 drinks (wine, beer, water) X 3 imagery (positive, negative, neutral) design. The dataset uses 10 columns to represent this design.  The first column contains a code for each participant (P1, P2, etc.)  Note that the **participants** column is a factor as indicated by the "< fct >" descriptor. The participant column must be a factor which can, as noted previously, be created by the **as.factor** command. 
+The dataset represents an ANOVA with two repeated measures factors. It is a 3 *drinks* (wine, beer, water) X 3 *imagery* (positive, negative, neutral) design. The dataset uses 10 columns to represent this design.  The first column contains a code for each participant (P1, P2, etc.)  Note that the *participant* column is a factor as indicated by the "< fct >" descriptor. The *participant* column must be a factor which can, as noted previously, be created by the **as_factor** command. 
 
-Each of the remaining 9 columns contain atittude ratings for a single drink/imagery combination cell. The naming convention for column names is critical to the workflow we describe below. Each column name represents the level of the **drinks** variable separated using an underscore ( _ ) from a level of the **imagery** variable. For example the first column is called **beer_positive** representing the cell with a combination of the the drink level of **beer** and the positive level of **imagery**. Each value in this column represents **attitude** for a participant in this cell. 
+Each of the remaining 9 columns contain atittude ratings for a single *drink/imagery* combination cell. The naming convention for column names is critical to the workflow we describe below. Each column name represents the level of the *drink* variable separated using an underscore ( _ ) from a level of the *imagery* variable. For example the first column is called *beer_positive* representing the cell with a combination of the the *beer* level of *drink* and the positive level of *imagery*. Each value in this column represents *attitude* for a participant in this cell. 
 
 In order to conduct a repeated measures ANOVA we need to convert the dataset from the wide format (where each row represents a person) to the long format (where each row represents a single observation from a person). We do this with a series of commands below.
 
-First we rearrange the data so that each row represents a single observation from a person using the **gather** command from the **tidyverse** package. The command creates a new dataset where there is a **participant** column, a **cell** column that indicates the cell an observation came from (e.g., beer_positive) and an **attitude** column that contains the attitude rating. Note that in the command below we use, **beer_positive:water_neutral** to select all the columns in the dataset between/including beer_positive to water_neutral (i.e., all nine columns). The columns must be in a block in the dataset without other variables interspersed between them.
+First we rearrange the data so that each row represents a single observation from a person using the **gather** command from the *tidyverse* package. The command creates a new dataset where there is a *participant* column, a *cell* column that indicates the cell an observation came from (e.g., beer_positive) and an *attitude* column that contains the attitude rating. Note that in the command below we use, *beer_positive:water_neutral* to select all the columns in the dataset between/including beer_positive to water_neutral (i.e., all nine columns). The columns must be in a block in the dataset without other variables interspersed between them.
 
 ```{r}
 drink_attitude_long <- gather(data = drink_attitude_wide,
@@ -194,15 +193,15 @@ drink_attitude_long <- gather(data = drink_attitude_wide,
 ```
 
 
-In this new long data set each of the 20 particpants has nine observations (i.e., nine cells) so there are 180 rows. The problem with data resulting from the above command is that the levels of **drink** and **imagery** are combined into a single column called **cell**. That is cell contains the information in the form beer_positive (i.e., the previous column names for each cell). We can split those levels off into their own columns with the names "drink" and "imagery" and turn those columns into factors with the commands below:
+In this new long dataset each of the 20 particpants has nine observations (i.e., nine cells) so there are 180 rows. The problem with data resulting from the above command is that the levels of *drink* and *imagery* are combined into a single column called *cell*. That is cell contains the information in the form beer_positive (i.e., the previous column names for each cell). We can split those levels off into their own columns with the names "drink" and "imagery" and turn those columns into factors with the commands below:
 ```{r}
 
 drink_attitude_long <- separate(data = drink_attitude_long,
                                 col = cell, into = c("drink","imagery"),
                                 sep = "_", remove = TRUE)
 
-drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
-drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
+drink_attitude_long$drink <- as_factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
 
 ```
 
@@ -212,7 +211,7 @@ We can inspect the final long version of the dataset with glimpse again:
 glimpse(drink_attitude_long)
 ```
 
-This output reveals the new data structure. There are now only four columns where each row represents a single observation for a participant. As before, the first column is factor column representing **participant**. But each participant is represented nines times in this column now - because each participant has nine observations (i.e., one in each of the nine cells).  Most importantly, we now have a single column indicating level of **drink**, a single column indicating level of **imagery**, and a column indicating the **attitude** rating. 
+This output reveals the new data structure. There are now only four columns where each row represents a single observation for a participant. As before, the first column is factor column representing *participant*. But each participant is represented nines times in this column now - because each participant has nine observations (i.e., one in each of the nine cells).  Most importantly, we now have a single column indicating level of *drink*, a single column indicating level of *imagery*, and a column indicating the *attitude* rating. 
 
 You can see the first few rows in the more familiar format below:
 
@@ -230,7 +229,7 @@ contrasts(drink_attitude_long$drink) <- cbind(alcohol_vs_water, beer_vs_wine)
 contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_neutral)
 ```
 
-Then we use the ezANOVA command from the **ez** package to conduct the repeated measures ANOVA. Be sure to include all of the commands below including the options command which ensures that the output has sufficent number of digits (i.e., numbers after the decimal) for apaTables.
+Then we use the ezANOVA command from the *ez* package to conduct the repeated measures ANOVA. Be sure to include all of the commands below including the options command which ensures that the output has sufficent number of digits (i.e., numbers after the decimal) for *apaTables*.
 
 ```{r}
 options(digits = 10)
@@ -251,31 +250,31 @@ apa.ezANOVA.table(drink_attitude_results,
 ```
 
 
-![2-way Repeated Measures ANOVA in MSWord](Figure10.jpg)
+![2-way Repeated Measures ANOVA in MSWord](Table10.jpg)
 
 ### Repeated Measures and Independent Groups: 3-way design
 
 
-Prior to begining we 'open' the **apaTables**, **tidyverse**, and **ez** packages using the library command as per below.
+Prior to begining we 'open' the *apaTables*, *tidyverse*, and *ez* packages using the library command as per below.
 
 ```{r, warning=FALSE, message=FALSE}
 library(apaTables)
 library(tidyverse)
 library(ez)
 ```
-In this example, we used the drink_attitude dataset from Field et al. (2012). As before, this data set is built into apaTables so it does not need to be loaded using read_csv or read_sav. The dataset (dating_wide) can be inspected with the **glimpse** command below (this provides information similar to SPSS variable view). We use the "wide" descriptor in the name of the dataset to remind us that the data is in in the "wide" format where one row contains all the data for one person. There are 20 participants so there are 20 rows.
+In this example, we used the drink_attitude dataset from Field et al. (2012). As before, this dataset is built into apaTables so it does not need to be loaded using read_csv or read_sav. The dataset (*dating_wide*) can be inspected with the **glimpse** command below (this provides information similar to SPSS variable view). We use the "wide" descriptor in the name of the dataset to remind us that the data is in in the "wide" format where one row contains all the data for one person. There are 20 participants so there are 20 rows.
 
 ```{r, warning=FALSE, message=FALSE}
 glimpse(dating_wide)
 ```
 
-The data sets represents an ANOVA with one independent groups factor and two repeated measures factors. It is a 2 gender (male, female) by 3 looks (attrative, average, ugly) X 3 personality (high, some, none) design. The dataset uses 11 columns to represent this design.  The first column contains a code for each participant (P1, P2, etc.)  Note that the **participants** column is a factor as indicated by the "< fct >" descriptor. The second column is used to indicate the gender of each participant. Both the participant and gender columnsa re factors.
+The dataset represents an ANOVA with one independent groups factor and two repeated measures factors. It is a 2 *gender* (male, female) by 3 *looks* (attrative, average, ugly) X 3 *personality* (high, some, none) design. The dataset uses 11 columns to represent this design.  The first column contains a code for each participant (P1, P2, etc.)  Note that the *participant* column is a factor as indicated by the "< fctr >" descriptor. The second column is used to indicate the gender of each participant. Both the *participant* and *gender* columns are factors.
 
-Each of the remaining 9 columns contain atittude ratings for a single looks/personality combination cell. The naming convention for column names is critical to the workflow we describe below. Each column name represents the level of the **looks** variable separated using an underscore ( _ ) from a level of the **personality** variable. For example the first column is called **attractive_high** representing the cell with a combination of the the attractive level of **looks** and the high level of **personality**. Each value in this column represents **date rating** for a participant in this cell. 
+Each of the remaining 9 columns contain atittude ratings for a single *looks/personality* combination cell. The naming convention for column names is critical to the workflow we describe below. Each column name represents the level of the *looks* variable separated using an underscore ( _ ) from a level of the *personality* variable. For example the first column is called *attractive_high* representing the cell with a combination of the the attractive level of *looks* and the high level of *personality*. Each value in this column represents *date rating* for a participant in this cell. 
 
-In order to conduct a mixed between/within ANOVA we need to convert the dataset from the wide format (where each row represents a person) to the long format (where each row represents a single observation from a person) -- taking into account the independent groups factors (gender). We do this with a series of commands below.
+In order to conduct a mixed between/within ANOVA we need to convert the dataset from the wide format (where each row represents a person) to the long format (where each row represents a single observation from a person) -- taking into account the independent groups factors (*gender*). We do this with a series of commands below.
 
-First we rearrange the data so that each row represents a single observation from a person using the **gather** command from the **tidyverse** package. The command creates a new dataset where there is a **participant** column, a **cell** column that indicates the cell an observation came from (e.g., attractive_high) and an **date_rating** column. Note that in the command below we use, **attractive_high:ugly_none** to select all the columns in the dataset between/including attractive_high to ugly_none (i.e., all nine columns). The columns must be in a block in the dataset without other variables interspersed between them.
+First we rearrange the data so that each row represents a single observation from a person using the **gather** command from the *tidyverse* package. The command creates a new dataset where there is a *participant* column, a *cell* column that indicates the cell an observation came from (e.g., attractive_high) and an *date_rating* column. Note that in the command below we use, *attractive_high:ugly_none* to select all the columns in the dataset between/including *attractive_high* to *ugly_none* (i.e., all nine columns). The columns must be in a block in the dataset without other variables interspersed between them.
 
 ```{r}
 dating_long <- gather(data = dating_wide,
@@ -286,7 +285,7 @@ dating_long <- gather(data = dating_wide,
 
 ```
 
-In this new long data set each of the 20 particpants hasn nine observations (i.e., nine cells) in addition to their gender classification. As a result, there are 180 rows in the long version of this dataset. The problem with data resulting from the above command is that the levels of **looks** and **personality** are combined into a single column called **cell**. That is cell contains the information in the form beer_positive (i.e., the previous column names for each cell). We can split those levels off into their own columns with the names "looks" and "personality" and turn those columns into factors with the commands below:
+In this new long dataset each of the 20 particpants hasn nine observations (i.e., nine cells) in addition to their gender classification. As a result, there are 180 rows in the long version of this dataset. The problem with data resulting from the above command is that the levels of *looks* and *personality* are combined into a single column called *cell*. That is cell contains the information in the form beer_positive (i.e., the previous column names for each cell). We can split those levels off into their own columns with the names "looks" and "personality" and turn those columns into factors with the commands below:
 
 
 ```{r}
@@ -306,7 +305,7 @@ We can inspect the final long version of the dataset with glimpse again:
 glimpse(dating_long)
 ```
 
-This output reveals the new data structure. There are now only five columns where each row represents a single observation for a participant. As before, the first column is factor column representing **participant**. But each participant is represented nines times in this column now - because each participant has nine observations (i.e., one in each of the nine cells). The second column contains the gender factor. The third column indicates the level of **looks**, and the fourth column indicates the level of **personality**. The fith column indicates the **date_rating**. 
+This output reveals the new data structure. There are now only five columns where each row represents a single observation for a participant. As before, the first column is factor column representing *participant*. But each participant is represented nines times in this column now - because each participant has nine observations (i.e., one in each of the nine cells). The second column contains the *gender* factor. The third column indicates the level of *looks*, and the fourth column indicates the level of *personality*. The fith column indicates the *date_rating*. 
 
 You can see the first few rows in the more familiar format below:
 
@@ -326,7 +325,7 @@ contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
 
 ```
 
-Then we use the ezANOVA command from the **ez** package to conduct the repeated measures ANOVA. Be sure to include all of the commands below including the options command which ensures that the output has sufficent number of digits (i.e., numbers after the decimal) for apaTables.
+Then we use the ezANOVA command from the *ez* package to conduct the repeated measures ANOVA. Be sure to include all of the commands below including the options command which ensures that the output has sufficent number of digits (i.e., numbers after the decimal) for apaTables.
 
 
 ```{r}
@@ -346,7 +345,7 @@ dating_table <- apa.ezANOVA.table(dating_results,
 print(dating_table)
 ```
 
-![3-way Mixed Measures ANOVA in MSWord](Figure11.jpg)
+![3-way Mixed Measures ANOVA in MSWord](Table11.jpg)
 
 
 ##References
