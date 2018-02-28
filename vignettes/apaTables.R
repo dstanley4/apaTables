@@ -4,8 +4,8 @@
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  library(apaTables)
-#  basic.reg <- lm(sales ~ adverts + airplay, data=album)
-#  apa.reg.table(basic.reg, filename="Table2_APA.doc", table.number=2)
+#  basic.reg <- lm(sales ~ adverts + airplay, data = album)
+#  apa.reg.table(basic.reg, filename = "Table2_APA.doc", table.number = 2)
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  library(apaTables)
@@ -19,16 +19,16 @@
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  library(apaTables)
-#  apa.aov.table(lm_output, filename = "Figure4_APA.doc", table.number = 4)
+#  apa.aov.table(lm_output, filename = "Table4_APA.doc", table.number = 4)
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  apa.1way.table(iv = dose, dv = libido, data = viagra,
-#                 filename = "Figure5_APA.doc",
+#                 filename = "Table5_APA.doc",
 #                 table.number = 5)
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  apa.d.table(iv = dose, dv = libido, data = viagra,
-#              filename = "Figure6_APA.doc",
+#              filename = "Table6_APA.doc",
 #              table.number = 6)
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
@@ -37,17 +37,18 @@
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  library(apaTables)
-#  apa.aov.table(lm_output, filename = "Figure7_APA.doc", table.number = 7)
+#  apa.aov.table(lm_output, filename = "Table7_APA.doc", table.number = 7)
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  apa.2way.table(iv1 = gender,iv2 = alcohol, dv = attractiveness,
 #                 data = goggles,
-#                 filename = "Figure8_APA.doc",
+#                 filename = "Table8_APA.doc",
+#                 show.marginal.means = TRUE,
 #                 table.number = 8)
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  library(apaTables)
-#  library(dplyr)
+#  library(tidyverse)
 #  goggles.men   <- filter(goggles,gender=="Male")
 #  goggles.women <- filter(goggles,gender=="Female")
 #  
@@ -81,8 +82,8 @@ drink_attitude_long <- separate(data = drink_attitude_long,
                                 col = cell, into = c("drink","imagery"),
                                 sep = "_", remove = TRUE)
 
-drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
-drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
+drink_attitude_long$drink <- as_factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
 
 
 ## ------------------------------------------------------------------------
@@ -110,7 +111,7 @@ drink_attitude_results <- ezANOVA(data = drink_attitude_long,
 ## ---- eval=FALSE---------------------------------------------------------
 #  apa.ezANOVA.table(drink_attitude_results,
 #                    table.number = 11,
-#                    filename="Table_11.doc")
+#                    filename="Table11_APA.doc")
 
 ## ---- warning=FALSE, message=FALSE---------------------------------------
 library(apaTables)
@@ -133,8 +134,8 @@ dating_long <- separate(data = dating_long,
                        col = cell, into = c("looks","personality"),
                        sep = "_", remove = TRUE)
 
-dating_long$looks <- as.factor(dating_long$looks)
-dating_long$personality <- as.factor(dating_long$personality)
+dating_long$looks <- as_factor(dating_long$looks)
+dating_long$personality <- as_factor(dating_long$personality)
 
 
 ## ------------------------------------------------------------------------
@@ -154,12 +155,15 @@ contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
 
 ## ------------------------------------------------------------------------
 options(digits = 10)
-dating_results <-ezANOVA(data = dating_long, dv = .(date_rating), wid = .(participant),
+dating_results <-ezANOVA(data = dating_long, 
+                         dv = .(date_rating), wid = .(participant),
                         between = .(gender), within = .(looks, personality),
                         type = 3, detailed = TRUE)
 
 
-## ------------------------------------------------------------------------
-dating_table <- apa.ezANOVA.table(dating_results)
-print(dating_table)
+## ---- eval=FALSE, echo=TRUE----------------------------------------------
+#  dating_table <- apa.ezANOVA.table(dating_results,
+#                                    filename = "Table12_APA.doc",
+#                                    table.number = 12)
+#  print(dating_table)
 
