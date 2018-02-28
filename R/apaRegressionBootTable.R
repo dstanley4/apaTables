@@ -1,4 +1,4 @@
-#' (Beta version) Creates a regresion table in APA style with bootstrap confidence intervals
+#' Creates a regresion table in APA style with bootstrap confidence intervals (Beta version)
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
@@ -782,14 +782,17 @@ update_with_delta_R2_boot_CI <- function(delta_R2_details, delta_R2_CI, prop_var
      LL <- delta_R2_CI[1]
      UL <- delta_R2_CI[2]
 
+
      #correction from literature
-     if ((deltaR2>0) & (is_sig == FALSE)) {
+     if (is_sig == FALSE) {
           LL <- 0
+          cat("     Delta R2 CI lower bound adjusted to zero as per Algina, Keselman, & Penfield (2008)\n\n")
      }
      prop_var_conf_level_str <- sprintf("%g", round(prop_var_conf_level*100))
 
      delta_R2_details$deltaR2_CI_txt<- sprintf("%s%% CI[%s, %s]", prop_var_conf_level_str, strip.leading.zero(sprintf("%1.2f",LL)), strip.leading.zero(sprintf("%1.2f",UL)))
      delta_R2_details$deltaR2_CI_rtf<- sprintf("{%s%% CI}[%s, %s]",prop_var_conf_level_str, strip.leading.zero(sprintf("%1.2f",LL)), strip.leading.zero(sprintf("%1.2f",UL)))
+
      return(delta_R2_details)
 }
 
