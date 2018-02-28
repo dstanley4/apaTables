@@ -5,7 +5,7 @@
 \title{(Beta version) Creates a regresion table in APA style with bootstrap confidence intervals}
 \usage{
 apa.reg.boot.table(..., filename = NA, table.number = NA,
-  number.samples = 1000, conf.level = 0.95)
+  number.samples = 1000, prop.var.conf.level = 0.95)
 }
 \arguments{
 \item{...}{Regression (i.e., lm) result objects. Typically, one for each block in the regression.}
@@ -15,6 +15,8 @@ apa.reg.boot.table(..., filename = NA, table.number = NA,
 \item{table.number}{Integer to use in table number output line}
 
 \item{number.samples}{Number of samples to create for bootstrap CIs}
+
+\item{prop.var.conf.level}{Level of confidence (.90 or .95, default .95) for interval around sr2, R2, and Delta R2. Use of .90 confidence level helps to create consistency between the CI overlapping with zero and conclusions based on the p-value for that block (or block difference).}
 
 \item{conf.level}{Confidence level for confidence intervals. Default is .95.}
 }
@@ -31,29 +33,34 @@ head(album)
 
 # Single block example
 blk1 <- lm(sales ~ adverts + airplay, data=album)
-apa.reg.boot.table(blk1)
 apa.reg.boot.table(blk1,filename="exRegTable.doc")
 
 # Two block example, more than two blocks can be used
 blk1 <- lm(sales ~ adverts, data=album)
 blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
-apa.reg.boot.table(blk1,blk2)
-apa.reg.boot.table(blk1,blk2,filename="exRegBlocksTable.doc")
+apa.reg.boot.table(blk1,blk2,
+                   filename="exRegBlocksTable.doc",
+                   number.samples = 100) #number.samples > 1000 suggested
 
 # Interaction product-term test with blocks
 blk1 <- lm(sales ~ adverts + airplay, data=album)
 blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-apa.reg.boot.table(blk1,blk2)
-apa.reg.boot.table(blk1,blk2,filename="exInteraction1.doc")
+apa.reg.boot.table(blk1,blk2,
+                   filename="exInter1.doc",
+                   number.samples=100) ##number.samples > 1000 suggested
 
 # Interaction product-term test with blocks and additional product terms
 blk1<-lm(sales ~ adverts + airplay, data=album)
 blk2<-lm(sales ~ adverts + airplay + I(adverts*adverts) + I(airplay*airplay), data=album)
 blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
-apa.reg.boot.table(blk1,blk2,blk3,filename="exInteraction2.doc")
+apa.reg.boot.table(blk1,blk2,blk3,
+                   filename="exInter2.doc",
+                   number.samples=100) #number.samples > 1000 suggested
 
 #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-apa.reg.boot.table(blk1,filename="exInteraction3.doc")
+apa.reg.boot.table(blk1,
+                   filename="exInte3.doc",
+                   number.samples=100) #number.samples > 1000 suggested
 
 }

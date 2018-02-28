@@ -3,6 +3,7 @@
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @param number.samples Number of samples to create for bootstrap CIs
+#' @param prop.var.conf.level Level of confidence (.90 or .95, default .95) for interval around sr2, R2, and Delta R2. Use of .90 confidence level helps to create consistency between the CI overlapping with zero and conclusions based on the p-value for that block (or block difference).
 #' @param conf.level  Confidence level for confidence intervals. Default is .95.
 #' @return APA table object
 #' @examples
@@ -12,38 +13,53 @@
 #'
 #' # Single block example
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
-#' apa.reg.boot.table(blk1)
 #' apa.reg.boot.table(blk1,filename="exRegTable.doc")
 #'
 #' # Two block example, more than two blocks can be used
 #' blk1 <- lm(sales ~ adverts, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
-#' apa.reg.boot.table(blk1,blk2)
-#' apa.reg.boot.table(blk1,blk2,filename="exRegBlocksTable.doc")
+#' apa.reg.boot.table(blk1,blk2,
+#'                    filename="exRegBlocksTable.doc",
+#'                    number.samples = 100) #number.samples > 1000 suggested
 #'
 #' # Interaction product-term test with blocks
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-#' apa.reg.boot.table(blk1,blk2)
-#' apa.reg.boot.table(blk1,blk2,filename="exInteraction1.doc")
+#' apa.reg.boot.table(blk1,blk2,
+#'                    filename="exInter1.doc",
+#'                    number.samples=100) ##number.samples > 1000 suggested
 #'
 #' # Interaction product-term test with blocks and additional product terms
 #' blk1<-lm(sales ~ adverts + airplay, data=album)
 #' blk2<-lm(sales ~ adverts + airplay + I(adverts*adverts) + I(airplay*airplay), data=album)
 #' blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
-#' apa.reg.boot.table(blk1,blk2,blk3,filename="exInteraction2.doc")
+#' apa.reg.boot.table(blk1,blk2,blk3,
+#'                    filename="exInter2.doc",
+#'                    number.samples=100) #number.samples > 1000 suggested
 #'
 #' #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 #' blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-#' apa.reg.boot.table(blk1,filename="exInteraction3.doc")
+#' apa.reg.boot.table(blk1,
+#'                    filename="exInte3.doc",
+#'                    number.samples=100) #number.samples > 1000 suggested
 #'
 #' @export
-apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 1000, conf.level = .95) {
-     print("In development - numbers not correct yet")
+apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 1000, prop.var.conf.level = .95) {
+     #cat("\n\napa.reg.boot.table a beta version.\nPlease report issues at https://github.com/dstanley4/apaTables/issues\n\n")
+
      prop_var_conf_level <- .95
 
      K <- number.samples
+     conf.level <- .95
      conf_level <- conf.level
+
+     if (prop.var.conf.level == .90) {
+          prop_var_conf_level <- .90
+     } else {
+          prop_var_conf_level <- .95
+     }
+
+
 
      regression_results_list <- list(...)
 
@@ -104,7 +120,7 @@ apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 
      L <- length(regression_results_list)
      for (i in 1:L) {
           cat(sprintf("Block %g: Generating %g bootstrap samples\n", i, K))
-          cur_result <- apa_single_boot_block(regression_results_list[[i]],is_random_predictors, K = K, conf_level = conf_level)
+          cur_result <- apa_single_boot_block(regression_results_list[[i]],is_random_predictors, K = K, prop_var_conf_level = prop_var_conf_level)
           block_results[[i]] <- cur_result
      }
      cat(sprintf("Bootstrap for Delta RSQ in progress\n"))
@@ -122,7 +138,7 @@ apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 
           # must do some subtraction b2-b1 (b3-b2) etc... to get Delta's
           delta_R2_data <- calculate_boot_delta_R2(R2_boot_results$t)
           delta_R2_result <- R2_boot_results$t0
-          delta_R2_CI <- get_delta_R2_CI(delta_R2_data, conf_level)
+          delta_R2_CI <- get_delta_R2_CI(delta_R2_data, prop_var_conf_level)
      }
 
 
@@ -147,7 +163,7 @@ apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 
 
                delta_R2_details <- get_delta_R2_blocks(blk2=cur_block_lm,blk1=last_block_lm,summary2=cur_block_summary,summary1=last_block_summary,n, prop_var_conf_level = prop_var_conf_level)
 
-               delta_R2_details <- update_with_delta_R2_boot_CI(delta_R2_details, delta_R2_CI[i,])
+               delta_R2_details <- update_with_delta_R2_boot_CI(delta_R2_details, delta_R2_CI[i,], prop_var_conf_level = prop_var_conf_level)
 
 
                num_lines <- dim(cur_block_out_txt)[1]
@@ -174,7 +190,16 @@ apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 
 
      #console table
      table_title <- sprintf("Regression results using %s as the criterion\n",first_criterion)
-     names(block_out_txt) <- get_txt_column_names(block_out_txt)
+     txt_column_names <- get_txt_column_names(block_out_txt)
+     if (prop_var_conf_level == .95) {
+          txt_column_names <- sub("XX","95",txt_column_names)
+     } else {
+          txt_column_names <- sub("XX","90",txt_column_names)
+     }
+     names(block_out_txt) <- txt_column_names
+
+
+
      table_body <- block_out_txt
 
      table_note <- get_reg_table_note_txt(first_block_calculate_cor, first_block_calculate_beta)
@@ -201,7 +226,15 @@ apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 
           colwidths <- get_rtf_column_widths(block_out_rtf)
 
           regression_table <- as.matrix(block_out_rtf)
-          new_col_names <- get_rtf_column_names(block_out_rtf)
+          rtf_column_names <- get_rtf_column_names(block_out_rtf)
+          if (prop_var_conf_level == .95) {
+               rtf_column_names <- sub("XX","95",rtf_column_names)
+          } else {
+               rtf_column_names <- sub("XX","90",rtf_column_names)
+          }
+          new_col_names <- rtf_column_names
+
+
           colnames(regression_table) <- new_col_names
 
 
@@ -226,7 +259,7 @@ apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 
 }
 
 
-apa_single_boot_block<-function(cur_blk,is_random_predictors, K, conf_level) {
+apa_single_boot_block<-function(cur_blk,is_random_predictors, K, prop_var_conf_level) {
      #Regression data
      reg_table_data <- cur_blk$model
      n              <- dim(reg_table_data)[1]
@@ -273,24 +306,26 @@ apa_single_boot_block<-function(cur_blk,is_random_predictors, K, conf_level) {
      boot_data <- get_boot_data(boot_results = boot_results)
 
 
+     prop_var_conf_level_str <- sprintf("%g", round(prop_var_conf_level*100))
+
      #R2 CI
      # R2CI <- MBESS::ci.R2(R2=R2,df.1=df1,df.2=df2,Random.Predictors = is_random_predictors)
      # R2LL <- R2CI$Lower.Conf.Limit.R2
      # R2UL <- R2CI$Upper.Conf.Limit.R2
-     R2CI_boot <- get_boot_R2_CI(boot_data, conf_level = conf_level)
+     R2CI_boot <- get_boot_R2_CI(boot_data, conf_level = prop_var_conf_level)
      R2LL <- R2CI_boot[1]
      R2UL <- R2CI_boot[2]
      R2_txt     <- strip.leading.zero(add.sig.stars(sprintf("%1.3f",R2),R2_pvalue))
      R2LL_txt   <- strip.leading.zero(sprintf("%1.2f",R2LL))
      R2UL_txt   <- strip.leading.zero(sprintf("%1.2f",R2UL))
      model_summary_txt    <- sprintf("R2 = %s",R2_txt)
-     model_summary_CI_txt <- sprintf("95%% CI[%s,%s]",R2LL_txt,R2UL_txt)
+     model_summary_CI_txt <- sprintf("%s%% CI[%s,%s]",prop_var_conf_level_str, R2LL_txt,R2UL_txt)
      model_summary_rtf    <- sprintf("{\\i R\\super 2 \\nosupersub}  = %s",R2_txt)
-     model_summary_CI_rtf <- sprintf("95%% CI[%s,%s]",R2LL_txt,R2UL_txt)
+     model_summary_CI_rtf <- sprintf("%s%% CI[%s,%s]",prop_var_conf_level_str, R2LL_txt,R2UL_txt)
 
 
      #Add b-weight CI's
-     b_CI_boot <- get_boot_b_CI(boot_data = boot_data, cur_blk = cur_blk, conf_level = conf_level)
+     b_CI_boot <- get_boot_b_CI(boot_data = boot_data, cur_blk = cur_blk, conf_level = .95)
 
      if (!is.null(dim(b_CI_boot))){
           LLb  <- b_CI_boot[,c("LL")]
@@ -340,7 +375,7 @@ apa_single_boot_block<-function(cur_blk,is_random_predictors, K, conf_level) {
      #      reg_table_lower$LLsr2[1] <- R2LL
      #      reg_table_lower$ULsr2[1] <- R2UL
      # }
-     sr2_CI_boot <- get_boot_sr2_CI(boot_data, cur_blk, conf_level)
+     sr2_CI_boot <- get_boot_sr2_CI(boot_data, cur_blk, prop_var_conf_level)
      sr2_CI_boot <- trim_intercept_row(sr2_CI_boot)
      if (!is.null(dim(sr2_CI_boot))){
           reg_table_lower$LLsr2 <- sr2_CI_boot[,c("LL")]
@@ -375,7 +410,7 @@ apa_single_boot_block<-function(cur_blk,is_random_predictors, K, conf_level) {
                # reg_table_lower$LLbeta[i] <- LLbeta
                # reg_table_lower$ULbeta[i] <- ULbeta
           }
-          beta_CI_boot <- get_boot_beta_CI(boot_data, cur_blk, conf_level)
+          beta_CI_boot <- get_boot_beta_CI(boot_data, cur_blk, .95)
           beta_CI_boot <- trim_intercept_row(beta_CI_boot)
           if (!is.null(dim(beta_CI_boot))){
                reg_table_lower$LLbeta <- beta_CI_boot[,c("LL")]
@@ -723,7 +758,7 @@ get_delta_R2_CI <- function(delta_R2_data, conf_level) {
 }
 
 
-update_with_delta_R2_boot_CI <- function(delta_R2_details, delta_R2_CI) {
+update_with_delta_R2_boot_CI <- function(delta_R2_details, delta_R2_CI, prop_var_conf_level) {
      pvalue <- delta_R2_details$deltaR2_pvalue
      deltaR2 <- delta_R2_details$deltaR2
      is_sig <- FALSE
@@ -738,8 +773,11 @@ update_with_delta_R2_boot_CI <- function(delta_R2_details, delta_R2_CI) {
      if ((deltaR2>0) & (is_sig == FALSE)) {
           LL <- 0
      }
+     prop_var_conf_level_str <- sprintf("%g", round(prop_var_conf_level*100))
 
-     delta_R2_details$deltaR2_CI_txt<- sprintf("95%% CI[%s, %s]", strip.leading.zero(sprintf("%1.2f",LL)), strip.leading.zero(sprintf("%1.2f",UL)))
-     delta_R2_details$deltaR2_CI_rtf<- sprintf("{95%% CI}[%s, %s]", strip.leading.zero(sprintf("%1.2f",LL)), strip.leading.zero(sprintf("%1.2f",UL)))
+     delta_R2_details$deltaR2_CI_txt<- sprintf("%s%% CI[%s, %s]", prop_var_conf_level_str, strip.leading.zero(sprintf("%1.2f",LL)), strip.leading.zero(sprintf("%1.2f",UL)))
+     delta_R2_details$deltaR2_CI_rtf<- sprintf("{%s%% CI}[%s, %s]",prop_var_conf_level_str, strip.leading.zero(sprintf("%1.2f",LL)), strip.leading.zero(sprintf("%1.2f",UL)))
      return(delta_R2_details)
 }
+
+
