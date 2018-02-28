@@ -57,4 +57,7 @@ apa.reg.table(blk1,filename="exInteraction3.doc")
 sr2 and delta R2 confidence intervals calculated via:
 
 Alf Jr, E. F., & Graf, R. G. (1999). Asymptotic confidence limits for the difference between two squared multiple correlations: A simplified approach. Psychological Methods, 4(1), 70.
+
+Note that Algina, Keselman, & Penfield (2008) found this approach can under some circumstances lead to inaccurate CIs on proportion of variance values.
+You might consider using the Algina, Keselman, & Penfield (2008) approach via the apa.reg.boot.table function
 }
