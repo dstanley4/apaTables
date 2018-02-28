@@ -9,14 +9,15 @@
 #'   \item Correlation tables - Correlation tables (with confidence intervals and descriptive statistics) are created from data frames using \code{\link{apa.cor.table}}.
 #'   \item Single "block" regression tables - Single "block" regression tables are created from a regression object using \code{\link{apa.reg.table}}.
 #'   \item Multiple "block" regression tables - Multiple "block" regression tables are created from regression objects using \code{\link{apa.reg.table}}.
-#'   \item ANOVA tables - An ANOVA F-table can be created via \code{\link{apa.aov.table}} from a regression object (i.e. lm output). Cell mean/standard deviation tables for 1- and 2-way designs are created from data frames using \code{\link{apa.1way.table}} and \code{\link{apa.2way.table}}.
+#'   \item ANOVA tables - An ANOVA F-table can be created via \code{\link{apa.aov.table}} from a regression object (i.e. lm output or aov output). Cell mean/standard deviation tables for 1- and 2-way designs are created from data frames using \code{\link{apa.1way.table}} and \code{\link{apa.2way.table}}.
+#'   \item ezANOVA tables from ez package - An ANOVA F-table from ezANOVA output can be created via \code{\link{apa.ezANOVA.table}}.
 #'   \item Standardized mean difference (i.e., \emph{d}-value) tables (with confidence intervals and descriptive statistics) illustrating all possible paired comparisons using a single independent variable are created from data frames using \code{\link{apa.d.table}}.
 #'  }
 #'\tabular{ll}{
 #'Package: \tab apaTables\cr
 #'Type: \tab Package\cr
-#'Version: \tab 1.5.1\cr
-#'Date: \tab 2017-06-20\cr
+#'Version: \tab 2.0.0\cr
+#'Date: \tab 2018-02-28\cr
 #'License: \tab MIT\cr
 #'}
 #'

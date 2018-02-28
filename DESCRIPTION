@@ -1,5 +1,5 @@
 Package: apaTables
-Version: 1.5.1
+Version: 2.0.0
 Authors@R: person("David", "Stanley", , "dstanley@uoguelph.ca", role = c("aut", "cre"))
 Title: Create American Psychological Association (APA) Style Tables
 Description: A common task faced by researchers is the creation of APA style
@@ -33,5 +33,5 @@ Suggests: testthat,
 RoxygenNote: 6.0.1
 License: MIT License + file LICENSE
 LazyData: true
-Date: 2017-06-20
+Date: 2018-02-28
 VignetteBuilder: knitr
