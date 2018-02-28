@@ -38,7 +38,7 @@ apa.cor.table(attitude, filename="Table1_APA.doc", table.number=1)
 
 ![Correlation table in MSWord](Table1.jpg)
 
-## Regression table (1 block)
+## Regression table overview
 
 Regression tables can be constructed using the **apa.reg.table** function. The constructed table includes the unstandardized regression coefficient (*b* with CI), standardized regression coefficient (*beta* with CI), semi-partial correlation squared ($sr^2$ with CI), the correlation ($r$), and the overall fit of the model (indexed by $R^2$ with CI). The *album* sales dataset from Field et al. (2012) is used to illustrate the **apa.reg.table** function (also see the **apa.reg.boot.table** function that works similarily but creates bootstrap confidence intervals).
 

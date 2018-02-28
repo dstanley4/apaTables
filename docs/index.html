@@ -78,6 +78,7 @@
     
 <div class="contents">
 <p>apaTables 2.0.0</p>
+<p>A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user.</p>
 <p>The development version of apaTables R package is hosted here on Github. Current stable version is on the CRAN, see apaTables <a href="https://cran.r-project.org/web/packages/apaTables/index.html">here.</a></p>
 <div id="install-stable-cran-version" class="section level3">
 <h3 class="hasAnchor">
@@ -95,31 +96,10 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 
 <span class="kw">library</span>(apaTables)</code></pre></div>
 </div>
-<div id="context" class="section level2">
+<div id="tutorial" class="section level2">
 <h2 class="hasAnchor">
-<a href="#context" class="anchor"></a>Context</h2>
-<p>Reproducible research is research for which the numbers reported in the paper can obtained by others using the original data and analysis scripts. (Note that this differs from replicability - the extent to which findings are consistent across samples.) Recent research has revealed a problem with the reproducibility of analyses in many fields. For example, in psychology Nuijten et al. (2015) found that in 50% of articles there was at least once instance of a reported test statistic (e.g., <em>t</em>(24)=22.71) being inconsistent with the reported <em>p</em>-value. This inconsistency rate suggests there is a major problem with reproducibility in the psychological literature.</p>
-<p>My objective in creating the <strong>apaTables</strong> package was to automate the process through which tables are created from analyses when using R. Using <strong>apaTables</strong> ensures that the tables in your manuscript are reproducible.</p>
-<p>Although a number of table generation packages exist for R they are typically not useful for psychology researchers because of the need to report results in the style required by the <a href="http://www.apa.org">American Psychological Association</a>; that is, <a href="http://www.apastyle.org/products/asc-landing-page.aspx">APA Style</a>. Consequently, <strong>apaTables</strong> creates <a href="https://products.office.com/en-ca/word">Microsoft Word</a> documents (.doc files) that contain tables that conform to APA Style.</p>
-<p>In many cases it would be necessary to execute additional R commands to obtain all of the statistics needed for an APA Style table. For example, if conducting a regression using the <strong>lm</strong> command the unstandardized regression (i.e., b) weights are reported. Additional commands are needed to obtain standardized (i.e., beta) weights. <strong>apaTables</strong> automatically executes these additional commands to create a table with the required information in Microsoft Word .doc format<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>.</p>
-<p>Additionally, the <a href="http://www.amstat.org">American Statistical Association</a> recently released a <a href="https://www.amstat.org/newsroom/pressreleases/P-ValueStatement.pdf">position paper</a> on the use of <em>p</em>-values in research. A component of that statement indicated that “<em>Scientific conclusions and business or policy decisions should not be based only on whether a p-value passes a specific threshold.</em>” The Executive Director of the <a href="http://www.amstat.org">ASA</a> suggested that <a href="http://retractionwatch.com/2016/03/07/were-using-a-common-statistical-test-all-wrong-statisticians-want-to-fix-that/">confidence intervals should be used to interpret data</a>. This statement is consistent with the 1999 <a href="http://www.apa.org/science/leadership/bsa/statistical/tfsi-followup-report.pdf">position paper</a> from the APA Task Force on Statistical Inference. Consequently, the current version of <strong>apaTables</strong> indicates significance using stars but more importantly reports confidence intervals for the reported effect sizes.</p>
-</div>
-<div id="examples" class="section level2">
-<h2 class="hasAnchor">
-<a href="#examples" class="anchor"></a>Examples</h2>
+<a href="#tutorial" class="anchor"></a>Tutorial</h2>
 <p>You can learn how to use apaTables <a href="https://dstanley4.github.io/apaTables/articles/apaTables.html">here</a>.</p>
-</div>
-<div id="references" class="section level2">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
-<p>Field, A., Miles, J., Field, Z. <em>Discovering statistics using R</em>. Sage: Chicago.</p>
-<p>Nuijten, M. B., Hartgerink, C. H. J., van Assen, M. A. L. M., Epskamp, S., &amp; Wicherts, J. M. (2015). The prevalence of statistical reporting errors in psychology (1985-2013). <em>Behavior Research Methods</em>. <a href="http://doi.org/10.3758/s13428-015-0664-2" class="uri">http://doi.org/10.3758/s13428-015-0664-2</a></p>
-</div>
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1"><p>Technically the tables are in .rtf format. But you should end all files with .doc; this will ensure they are automatically loaded by Microsoft Word<a href="#fnref1">↩</a></p></li>
-</ol>
 </div>
 </div>
   </div>
