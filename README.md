@@ -50,7 +50,8 @@ library(apaTables)
 apa.cor.table(attitude, filename="Table1_APA.doc", table.number=1)
 ```
 
-![Correlation table in MSWord](Table1.jpg)
+![Correlation table in MSWord](vignettes/Table1.jpg)
+
 
 Regression table (1 block)
 --------------------------
