@@ -285,7 +285,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
 
 
      #Add b-weight CI's
-     b_CI <- confint(cur_blk)
+     b_CI <- confint(cur_blk) #uses .95 confidence by default
      LLb  <- b_CI[,c("2.5 %")]
      ULb  <- b_CI[,c("97.5 %")]
 
