@@ -50,11 +50,7 @@ library(apaTables)
 apa.cor.table(attitude, filename="Table1_APA.doc", table.number=1)
 ```
 
-``` r
-knitr::include_graphics("vignettes/Figure1.jpg")
-```
-
-![Correlation table in MSWord](vignettes/Figure1.jpg)
+![Correlation table in MSWord](vignettes/Table1.jpg)
 
 Regression table (1 block)
 --------------------------
@@ -72,7 +68,7 @@ basic.reg <- lm(sales ~ adverts + airplay, data = album)
 apa.reg.table(basic.reg, filename = "Table2_APA.doc", table.number = 2)
 ```
 
-![Basic regression table in MSWord](Table2.jpg)
+![Basic regression table in MSWord](vignettes/Table2.jpg)
 
 Blocks regression table
 -----------------------
@@ -90,7 +86,7 @@ block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
 apa.reg.table(block1, block2, filename = "Table3_APA.doc", table.number = 3)
 ```
 
-![Blocks regression table in MSWord](Table3.jpg)
+![Blocks regression table in MSWord](vignettes/Table3.jpg)
 
 1-way ANOVA and d-value tables
 ------------------------------
@@ -109,7 +105,7 @@ library(apaTables)
 apa.aov.table(lm_output, filename = "Table4_APA.doc", table.number = 4)
 ```
 
-![1-way ANOVA table in MSWord](Table4.jpg)
+![1-way ANOVA table in MSWord](vignettes/Table4.jpg)
 
 The **apa.1way.table** function creates a table with the mean and sd for each cell; see Table 5.
 
@@ -119,7 +115,7 @@ apa.1way.table(iv = dose, dv = libido, data = viagra,
                table.number = 5)
 ```
 
-![1-way M/SD table in MSWord](Table5.jpg)
+![1-way M/SD table in MSWord](vignettes/Table5.jpg)
 
 The **apa.d.table** function show a d-value (with confidence interval) for each paired comparison; see Table 6.
 
@@ -129,7 +125,7 @@ apa.d.table(iv = dose, dv = libido, data = viagra,
             table.number = 6)
 ```
 
-![1-way Paired Comparison d-values (with CI) in MSWord](Table6.jpg)
+![1-way Paired Comparison d-values (with CI) in MSWord](vignettes/Table6.jpg)
 
 N-way ANOVA tables: 2-way Example
 ---------------------------------
@@ -148,7 +144,7 @@ library(apaTables)
 apa.aov.table(lm_output, filename = "Table7_APA.doc", table.number = 7)
 ```
 
-![2-way ANOVA table in MSWord](Table7.jpg)
+![2-way ANOVA table in MSWord](vignettes/Table7.jpg)
 
 The **apa.2way.table** function creates a table with the mean and sd for each cell; see Table 8. Marginal means can also be requested with the *show.marginal.means* = TRUE. For higher-order designs (i.e., 3-way or higher) use the **filter** command in the *tidyverse* package to select the subset of rows and then use **apa.2way.table** to display cell statistics.
 
@@ -160,7 +156,7 @@ apa.2way.table(iv1 = gender,iv2 = alcohol, dv = attractiveness,
                table.number = 8)
 ```
 
-![2-way M/SD table in MSWord](Table8.jpg)
+![2-way M/SD table in MSWord](vignettes/Table8.jpg)
 
 You can use the *tidyverse* package to conducted paired comparisons within each gender again using **apa.d.table**; see Tables 9 and 10.
 
@@ -181,7 +177,7 @@ apa.d.table(iv = alcohol, dv = attractiveness,
             table.number = 10)
 ```
 
-![Subgroups for Paired Comparison d-values (with CI) in MSWord](Table9.jpg)
+![Subgroups for Paired Comparison d-values (with CI) in MSWord](vignettes/Table9.jpg)
 
 ezANOVA and apaTables: Repeated measures ANOVA
 ----------------------------------------------
@@ -303,7 +299,7 @@ apa.ezANOVA.table(drink_attitude_results,
                   filename="Table11_APA.doc")
 ```
 
-![2-way Repeated Measures ANOVA in MSWord](Table10.jpg)
+![2-way Repeated Measures ANOVA in MSWord](vignettes/Table10.jpg)
 
 ### Repeated Measures and Independent Groups: 3-way design
 
@@ -423,7 +419,7 @@ dating_table <- apa.ezANOVA.table(dating_results,
 print(dating_table)
 ```
 
-![3-way Mixed Measures ANOVA in MSWord](Table11.jpg)
+![3-way Mixed Measures ANOVA in MSWord](vignettes/Table11.jpg)
 
 References
 ----------

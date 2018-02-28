@@ -64,10 +64,7 @@ library(apaTables)
 apa.cor.table(attitude, filename="Table1_APA.doc", table.number=1)
 ```
 
-```{r, fig.width=3, fig.height=3, dpi=500, fig.cap="Correlation table in MSWord"}
-knitr::include_graphics("vignettes/Figure1.jpg")
-```
-
+![Correlation table in MSWord](Table1.jpg)
 
 ## Regression table (1 block)
 
