@@ -1,0 +1,108 @@
+{\rtf1\ansi\deff0 {\fonttbl {\f0 Times New Roman;}}
+\paperw15840 \paperh12240 \margl1440 \margr1440 \margt1440 \margb1440 \landscape 
+{\pard Table XX \par}
+{\pard  \par}
+{\pard\i Means and standard deviations for attractiveness as a function of a 2(gender) X 3(alcohol) design\par}
+{\pard  \par}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1835 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9179 
+\pard\sa100\sb100\intbl\qr{ }\cell
+\pard\sa100\sb100\intbl\qc{alcohol}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1835 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4284 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6732 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{ }\cell
+\pard\sa100\sb100\intbl\qc{2 Pints}\cell
+\pard\sa100\sb100\intbl\qc{4 Pints}\cell
+\pard\sa100\sb100\intbl\qc{None}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1835 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3060 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4284 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx5508 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6732 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7956 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{gender}\cell
+\pard\sa100\sb100\intbl\qc{{\i M}}\cell
+\pard\sa100\sb100\intbl\qc{{\i SD}}\cell
+\pard\sa100\sb100\intbl\qc{{\i M}}\cell
+\pard\sa100\sb100\intbl\qc{{\i SD}}\cell
+\pard\sa100\sb100\intbl\qc{{\i M}}\cell
+\pard\sa100\sb100\intbl\qc{{\i SD}}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1835 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3060 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4284 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx5508 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6732 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7956 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{Female}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{62.50}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{6.55}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{57.50}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{7.07}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{60.62}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{4.96}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx1835 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx3060 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx4284 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx5508 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx6732 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx7956 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx9180 
+\pard\sa100\sb100\intbl\qr{Male}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{66.88}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{12.52}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{35.62}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{10.84}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{66.88}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{10.33}\cell
+\row
+}
+{\pard \par}{\pard{\i Note.} {\i M} and {\i SD} represent mean and standard deviation, respectively.\par}
+}

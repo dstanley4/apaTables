@@ -1,0 +1,163 @@
+{\rtf1\ansi\deff0 {\fonttbl {\f0 Times New Roman;}}
+\paperw15840 \paperh12240 \margl1440 \margr1440 \margt1440 \margb1440 \landscape 
+{\pard Table XX \par}
+{\pard  \par}
+{\pard\i Means, standard deviations, and d-values with confidence intervals\par}
+{\pard  \par}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1800 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3024 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4248 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx5688 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{Variable}\cell
+\pard\sa0\sb0\intbl\qc{{\i M}}\cell
+\pard\sa0\sb0\intbl\qc{{\i SD}}\cell
+\pard\sa0\sb0\intbl\qc{1}\cell
+\pard\sa0\sb0\intbl\qc{2}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1800 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3024 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4248 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx5688 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{1. High Dose}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{5.00}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.58}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{2. Low Dose}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{3.20}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.30}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{1.24}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{{\fs20[-0.17, 2.59]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{3. Placebo}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{2.20}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.30}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{1.93}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{0.77}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{{\fs20[0.34, 3.44]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{{\fs20[-0.55, 2.04]}}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx1800 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx3024 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx4248 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx5688 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{\pard \par}{\pard{\i Note.} {\i M} indicates mean. {\i SD} indicates standard deviation. {\i d}-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\i d}-values not calculated if unequal variances prevented pooling. Values in square brackets indicate the 95% confidence interval for each {\i d}-value The confidence interval is a plausible range of population {\i d}-values that could have caused the sample {\i d}-value (Cumming, 2014).\par}
+}
