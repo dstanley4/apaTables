@@ -5,7 +5,7 @@
 \title{(Beta version) Creates a regresion table in APA style with bootstrap confidence intervals}
 \usage{
 apa.reg.boot.table(..., filename = NA, table.number = NA,
-  number.samples = 1000, prop.var.conf.level = 0.95)
+  number.samples = 1000)
 }
 \arguments{
 \item{...}{Regression (i.e., lm) result objects. Typically, one for each block in the regression.}
@@ -15,8 +15,6 @@ apa.reg.boot.table(..., filename = NA, table.number = NA,
 \item{table.number}{Integer to use in table number output line}
 
 \item{number.samples}{Number of samples to create for bootstrap CIs}
-
-\item{prop.var.conf.level}{Level of confidence (.90 or .95, default .95) for interval around sr2, R2, and Delta R2. Use of .90 confidence level helps to create consistency between the CI overlapping with zero and conclusions based on the p-value for that block (or block difference).}
 
 \item{conf.level}{Confidence level for confidence intervals. Default is .95.}
 }
@@ -63,4 +61,8 @@ apa.reg.boot.table(blk1,
                    filename="exInte3.doc",
                    number.samples=100) #number.samples > 1000 suggested
 
+}
+\references{
+Algina, J., Keselman, H. J., & Penfield, R. J. (2008). Note on a Confidence Interval for the Squared Semipartial Correlation Coefficient.
+     Educational and Psychological Measurement, 68(5), 734–741. http://doi.org/10.1177/0013164407313371
 }

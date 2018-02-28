@@ -3,7 +3,6 @@
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @param number.samples Number of samples to create for bootstrap CIs
-#' @param prop.var.conf.level Level of confidence (.90 or .95, default .95) for interval around sr2, R2, and Delta R2. Use of .90 confidence level helps to create consistency between the CI overlapping with zero and conclusions based on the p-value for that block (or block difference).
 #' @param conf.level  Confidence level for confidence intervals. Default is .95.
 #' @return APA table object
 #' @examples
@@ -43,8 +42,11 @@
 #'                    filename="exInte3.doc",
 #'                    number.samples=100) #number.samples > 1000 suggested
 #'
+#' @references
+#' Algina, J., Keselman, H. J., & Penfield, R. J. (2008). Note on a Confidence Interval for the Squared Semipartial Correlation Coefficient.
+#'      Educational and Psychological Measurement, 68(5), 734–741. http://doi.org/10.1177/0013164407313371
 #' @export
-apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 1000, prop.var.conf.level = .95) {
+apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 1000) {
      #cat("\n\napa.reg.boot.table a beta version.\nPlease report issues at https://github.com/dstanley4/apaTables/issues\n\n")
 
      prop_var_conf_level <- .95
@@ -53,6 +55,7 @@ apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 
      conf.level <- .95
      conf_level <- conf.level
 
+     prop.var.conf.level = .95
      if (prop.var.conf.level == .90) {
           prop_var_conf_level <- .90
      } else {
@@ -316,6 +319,14 @@ apa_single_boot_block<-function(cur_blk,is_random_predictors, K, prop_var_conf_l
      R2LL <- R2CI_boot[1]
      R2UL <- R2CI_boot[2]
      R2_txt     <- strip.leading.zero(add.sig.stars(sprintf("%1.3f",R2),R2_pvalue))
+
+
+     if (R2_pvalue>= .05) {
+          R2LL <- 0 # Algina, Keselman, & Penfield (2008) Correction
+          cat("     R2 CI lower bound adjusted to zero as per Algina, Keselman, & Penfield (2008)\n\n")
+     }
+
+
      R2LL_txt   <- strip.leading.zero(sprintf("%1.2f",R2LL))
      R2UL_txt   <- strip.leading.zero(sprintf("%1.2f",R2UL))
      model_summary_txt    <- sprintf("R2 = %s",R2_txt)
@@ -375,6 +386,7 @@ apa_single_boot_block<-function(cur_blk,is_random_predictors, K, prop_var_conf_l
      #      reg_table_lower$LLsr2[1] <- R2LL
      #      reg_table_lower$ULsr2[1] <- R2UL
      # }
+
      sr2_CI_boot <- get_boot_sr2_CI(boot_data, cur_blk, prop_var_conf_level)
      sr2_CI_boot <- trim_intercept_row(sr2_CI_boot)
      if (!is.null(dim(sr2_CI_boot))){
@@ -385,6 +397,11 @@ apa_single_boot_block<-function(cur_blk,is_random_predictors, K, prop_var_conf_l
           reg_table_lower$ULsr2 <- sr2_CI_boot[2]
      }
 
+     id_is_ns <- (reg_table_lower$p >= .05)
+     if (sum(id_is_ns) >0) {
+          reg_table_lower$LLsr2[id_is_ns] <- 0
+          cat("     sr2 CI lower bound(s) adjusted to zero as per Algina, Keselman, & Penfield (2008)\n\n")
+     }
 
      #beta
      if (calculate_beta==TRUE) {
@@ -468,10 +485,6 @@ apa_single_boot_block<-function(cur_blk,is_random_predictors, K, prop_var_conf_l
           model_details$sr2[1]  <- ""
           model_details$sr2_CI[1]  <- ""
      }
-
-
-
-
 
 
 
