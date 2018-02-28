@@ -1,4 +1,4 @@
-# apaTable 1.5.x
+# apaTable 2.0.0
 
 ## New features
 
