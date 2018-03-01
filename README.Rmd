@@ -1,9 +1,13 @@
 ---
-title: "apaTables"
-output: github_document
+output:
+  md_document:
+    variant: markdown_github
 ---
+[![CRAN status](https://www.r-pkg.org/badges/version/apaTables)](https://cran.r-project.org/package=apaTables)
 
-Version 2.0.0
+[![](http://cranlogs.r-pkg.org/badges/grand-total/apaTables)
+
+# apaTables Version 2.0.0
 
 A common task faced by researchers is the creation of APA style
 (i.e., American Psychological Association style) tables from statistical
