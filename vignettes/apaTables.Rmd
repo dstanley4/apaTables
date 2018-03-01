@@ -1,6 +1,6 @@
 ---
 title: "apaTables"
-author: "David J. Stanley, University of Guelph"
+author: "David J. Stanley and Jeffrey R. Spence, University of Guelph"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
