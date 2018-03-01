@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Creates a regresion table in APA style with bootstrap confidence intervals (Beta version) — apa.reg.boot.table • apaTables</title>
+<title>Creates a regresion table in APA style with bootstrap confidence intervals — apa.reg.boot.table • apaTables</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -27,9 +27,9 @@
 <script src="../pkgdown.js"></script>
   
   
-<meta property="og:title" content="Creates a regresion table in APA style with bootstrap confidence intervals (Beta version) — apa.reg.boot.table" />
+<meta property="og:title" content="Creates a regresion table in APA style with bootstrap confidence intervals — apa.reg.boot.table" />
 
-<meta property="og:description" content="Creates a regresion table in APA style with bootstrap confidence intervals (Beta version)" />
+<meta property="og:description" content="Creates a regresion table in APA style with bootstrap confidence intervals" />
 <meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -92,11 +92,11 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Creates a regresion table in APA style with bootstrap confidence intervals (Beta version)</h1>
+    <h1>Creates a regresion table in APA style with bootstrap confidence intervals</h1>
     </div>
 
     
-    <p>Creates a regresion table in APA style with bootstrap confidence intervals (Beta version)</p>
+    <p>Creates a regresion table in APA style with bootstrap confidence intervals</p>
     
 
     <pre class="usage"><span class='fu'>apa.reg.boot.table</span>(<span class='no'>...</span>, <span class='kw'>filename</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>table.number</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
@@ -121,25 +121,21 @@
       <th>number.samples</th>
       <td><p>Number of samples to create for bootstrap CIs</p></td>
     </tr>
-    <tr>
-      <th>conf.level</th>
-      <td><p>Confidence level for confidence intervals. Default is .95.</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>APA table object</p>
     
-    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
-
-    <p>Algina, J., Keselman, H. J., &amp; Penfield, R. J. (2008). Note on a Confidence Interval for the Squared Semipartial Correlation Coefficient.
-     Educational and Psychological Measurement, 68(5), 734–741. http://doi.org/10.1177/0013164407313371</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># View top few rows of goggles data set</span>
+    <pre class="examples"><div class='input'>
+<span class='co'>#Note: number.samples = 50 below.</span>
+<span class='co'>#      However, please use a value of 1000 or higher</span>
+
+<span class='co'># View top few rows of goggles data set</span>
 <span class='co'># from Discovering Statistics Using R</span>
+<span class='fu'>set.seed</span>(<span class='fl'>1</span>)
 <span class='fu'>head</span>(<span class='no'>album</span>)</div><div class='output co'>#&gt;    adverts sales airplay attract
 #&gt; 1   10.256   330      43      10
 #&gt; 2  985.685   120      28       7
@@ -149,31 +145,167 @@
 #&gt; 6  568.954   170      19       5</div><div class='input'>
 <span class='co'># Single block example</span>
 <span class='no'>blk1</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exRegTable.doc"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in apa.reg.boot.table(blk1, filename = "exRegTable.doc"): could not find function "apa.reg.boot.table"</span></div><div class='input'>
+<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>)</div><div class='output co'>#&gt; 
+#&gt; 
+#&gt; apa.reg.boot.table is a beta version.
+#&gt; Block 1: Generating 1000 bootstrap samples
+#&gt; Bootstrap for Delta RSQ in progress</div><div class='output co'>#&gt; 
+#&gt; 
+#&gt; Regression results using sales as the criterion
+#&gt;  
+#&gt; 
+#&gt;    Predictor       b       b_95%_CI beta  beta_95%_CI sr2 sr2_95%_CI     r
+#&gt;  (Intercept) 41.12** [21.32, 58.54]                                       
+#&gt;      adverts  0.09**   [0.07, 0.10] 0.52 [0.43, 0.61] .27 [.19, .37] .58**
+#&gt;      airplay  3.59**   [2.95, 4.28] 0.55 [0.46, 0.63] .29 [.21, .39] .60**
+#&gt;                                                                           
+#&gt;                                                                           
+#&gt;                                                                           
+#&gt;              Fit
+#&gt;                 
+#&gt;                 
+#&gt;                 
+#&gt;      R2 = .629**
+#&gt;  95% CI[.56,.70]
+#&gt;                 
+#&gt; 
+#&gt; Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.
+#&gt; b represents unstandardized regression weights. beta indicates the standardized regression weights. 
+#&gt; sr2 represents the semi-partial correlation squared. r represents the zero-order correlation.
+#&gt; Square brackets are used to enclose the lower and upper limits of a confidence interval.
+#&gt; * indicates p &lt; .05. ** indicates p &lt; .01.
+#&gt;  
+#&gt; </div><div class='input'><span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exRegTable.doc"</span>, <span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>50</span>)</div><div class='output co'>#&gt; 
+#&gt; 
+#&gt; apa.reg.boot.table is a beta version.
+#&gt; Block 1: Generating 50 bootstrap samples
+#&gt; Bootstrap for Delta RSQ in progress</div><div class='output co'>#&gt; 
+#&gt; 
+#&gt; Regression results using sales as the criterion
+#&gt;  
+#&gt; 
+#&gt;    Predictor       b       b_95%_CI beta  beta_95%_CI sr2 sr2_95%_CI     r
+#&gt;  (Intercept) 41.12** [28.67, 56.83]                                       
+#&gt;      adverts  0.09**   [0.07, 0.10] 0.52 [0.41, 0.60] .27 [.17, .36] .58**
+#&gt;      airplay  3.59**   [3.01, 4.22] 0.55 [0.46, 0.63] .29 [.20, .39] .60**
+#&gt;                                                                           
+#&gt;                                                                           
+#&gt;                                                                           
+#&gt;              Fit
+#&gt;                 
+#&gt;                 
+#&gt;                 
+#&gt;      R2 = .629**
+#&gt;  95% CI[.56,.69]
+#&gt;                 
+#&gt; 
+#&gt; Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.
+#&gt; b represents unstandardized regression weights. beta indicates the standardized regression weights. 
+#&gt; sr2 represents the semi-partial correlation squared. r represents the zero-order correlation.
+#&gt; Square brackets are used to enclose the lower and upper limits of a confidence interval.
+#&gt; * indicates p &lt; .05. ** indicates p &lt; .01.
+#&gt;  
+#&gt; </div><div class='input'>
 <span class='co'># Two block example, more than two blocks can be used</span>
 <span class='no'>blk1</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
 <span class='no'>blk2</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span> + <span class='no'>attract</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,
-                   <span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exRegBlocksTable.doc"</span>,
-                   <span class='kw'>number.samples</span> <span class='kw'>=</span> <span class='fl'>100</span>) <span class='co'>#number.samples &gt; 1000 suggested</span></div><div class='output co'>#&gt; <span class='error'>Error in apa.reg.boot.table(blk1, blk2, filename = "exRegBlocksTable.doc",     number.samples = 100): could not find function "apa.reg.boot.table"</span></div><div class='input'>
+<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exRegBlocksTable.doc"</span>,<span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>50</span>)</div><div class='output co'>#&gt; 
+#&gt; 
+#&gt; apa.reg.boot.table is a beta version.
+#&gt; Block 1: Generating 50 bootstrap samples
+#&gt; Block 2: Generating 50 bootstrap samples
+#&gt; Bootstrap for Delta RSQ in progress</div><div class='output co'>#&gt; 
+#&gt; 
+#&gt; Regression results using sales as the criterion
+#&gt;  
+#&gt; 
+#&gt;    Predictor        b         b_95%_CI beta  beta_95%_CI sr2 sr2_95%_CI     r
+#&gt;  (Intercept) 134.14** [122.27, 144.07]                                       
+#&gt;      adverts   0.10**     [0.08, 0.11] 0.58 [0.49, 0.65] .33 [.24, .42] .58**
+#&gt;                                                                              
+#&gt;                                                                              
+#&gt;                                                                              
+#&gt;  (Intercept)   -26.61  [-52.02, 14.44]                                       
+#&gt;      adverts   0.08**     [0.07, 0.10] 0.51 [0.45, 0.59] .26 [.19, .34] .58**
+#&gt;      airplay   3.37**     [2.73, 3.95] 0.51 [0.42, 0.59] .25 [.17, .33] .60**
+#&gt;      attract  11.09**    [5.63, 14.44] 0.19 [0.10, 0.28] .04 [.01, .07] .33**
+#&gt;                                                                              
+#&gt;                                                                              
+#&gt;                                                                              
+#&gt;              Fit        Difference
+#&gt;                                   
+#&gt;                                   
+#&gt;      R2 = .335**                  
+#&gt;  95% CI[.24,.42]                  
+#&gt;                                   
+#&gt;                                   
+#&gt;                                   
+#&gt;                                   
+#&gt;                                   
+#&gt;      R2 = .665** Delta R2 = .330**
+#&gt;  95% CI[.59,.73]  95% CI[.25, .41]
+#&gt;                                   
+#&gt; 
+#&gt; Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.
+#&gt; b represents unstandardized regression weights. beta indicates the standardized regression weights. 
+#&gt; sr2 represents the semi-partial correlation squared. r represents the zero-order correlation.
+#&gt; Square brackets are used to enclose the lower and upper limits of a confidence interval.
+#&gt; * indicates p &lt; .05. ** indicates p &lt; .01.
+#&gt;  
+#&gt; </div><div class='input'>
 <span class='co'># Interaction product-term test with blocks</span>
 <span class='no'>blk1</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
 <span class='no'>blk2</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span> + <span class='fu'>I</span>(<span class='no'>adverts</span> * <span class='no'>airplay</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,
-                   <span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exInter1.doc"</span>,
-                   <span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>100</span>) <span class='co'>##number.samples &gt; 1000 suggested</span></div><div class='output co'>#&gt; <span class='error'>Error in apa.reg.boot.table(blk1, blk2, filename = "exInter1.doc", number.samples = 100): could not find function "apa.reg.boot.table"</span></div><div class='input'>
-<span class='co'># Interaction product-term test with blocks and additional product terms</span>
-<span class='no'>blk1</span><span class='kw'>&lt;-</span><span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='no'>blk2</span><span class='kw'>&lt;-</span><span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span> + <span class='fu'>I</span>(<span class='no'>adverts</span>*<span class='no'>adverts</span>) + <span class='fu'>I</span>(<span class='no'>airplay</span>*<span class='no'>airplay</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='no'>blk3</span><span class='kw'>&lt;-</span><span class='fu'>lm</span>(<span class='no'>sales</span>~<span class='no'>adverts</span>+<span class='no'>airplay</span>+<span class='fu'>I</span>(<span class='no'>adverts</span>*<span class='no'>adverts</span>)+<span class='fu'>I</span>(<span class='no'>airplay</span>*<span class='no'>airplay</span>)+<span class='fu'>I</span>(<span class='no'>adverts</span>*<span class='no'>airplay</span>),<span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,<span class='no'>blk3</span>,
-                   <span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exInter2.doc"</span>,
-                   <span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>100</span>) <span class='co'>#number.samples &gt; 1000 suggested</span></div><div class='output co'>#&gt; <span class='error'>Error in apa.reg.boot.table(blk1, blk2, blk3, filename = "exInter2.doc",     number.samples = 100): could not find function "apa.reg.boot.table"</span></div><div class='input'>
-<span class='co'>#Interaction product-term test with single regression (i.e., semi-partial correlation focus)</span>
-<span class='no'>blk1</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span> + <span class='fu'>I</span>(<span class='no'>adverts</span> * <span class='no'>airplay</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,
-                   <span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exInte3.doc"</span>,
-                   <span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>100</span>) <span class='co'>#number.samples &gt; 1000 suggested</span></div><div class='output co'>#&gt; <span class='error'>Error in apa.reg.boot.table(blk1, filename = "exInte3.doc", number.samples = 100): could not find function "apa.reg.boot.table"</span></div><div class='input'>
+<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exInteraction1.doc"</span>,<span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>50</span>)</div><div class='output co'>#&gt; 
+#&gt; 
+#&gt; apa.reg.boot.table is a beta version.
+#&gt; Block 1: Generating 50 bootstrap samples
+#&gt; Block 2: Generating 50 bootstrap samples
+#&gt;      sr2 CI lower bound(s) adjusted to zero as per Algina, Keselman, &amp; Penfield (2008)
+#&gt; 
+#&gt; Bootstrap for Delta RSQ in progress
+#&gt;      Delta R2 CI lower bound adjusted to zero as per Algina, Keselman, &amp; Penfield (2008)
+#&gt; </div><div class='output co'>#&gt; 
+#&gt; 
+#&gt; Regression results using sales as the criterion
+#&gt;  
+#&gt; 
+#&gt;             Predictor       b       b_95%_CI  beta   beta_95%_CI sr2 sr2_95%_CI
+#&gt;           (Intercept) 41.12** [22.44, 58.06]                                   
+#&gt;               adverts  0.09**   [0.08, 0.10]  0.52  [0.45, 0.61] .27 [.20, .37]
+#&gt;               airplay  3.59**   [2.91, 4.51]  0.55  [0.44, 0.62] .29 [.19, .38]
+#&gt;                                                                                
+#&gt;                                                                                
+#&gt;                                                                                
+#&gt;           (Intercept)  28.30*  [5.64, 52.40]                                   
+#&gt;               adverts  0.11**   [0.06, 0.16]  0.69  [0.35, 1.02] .05 [.01, .09]
+#&gt;               airplay  4.02**   [3.14, 4.99]  0.61  [0.44, 0.76] .15 [.08, .22]
+#&gt;  I(adverts * airplay)   -0.00  [-0.00, 0.00] -0.19 [-0.53, 0.22] .00 [.00, .02]
+#&gt;                                                                                
+#&gt;                                                                                
+#&gt;                                                                                
+#&gt;      r             Fit       Difference
+#&gt;                                        
+#&gt;  .58**                                 
+#&gt;  .60**                                 
+#&gt;            R2 = .629**                 
+#&gt;        95% CI[.57,.70]                 
+#&gt;                                        
+#&gt;                                        
+#&gt;  .58**                                 
+#&gt;  .60**                                 
+#&gt;                                        
+#&gt;            R2 = .632**  Delta R2 = .003
+#&gt;        95% CI[.57,.70] 95% CI[.00, .02]
+#&gt;                                        
+#&gt; 
+#&gt; Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.
+#&gt; b represents unstandardized regression weights. beta indicates the standardized regression weights. 
+#&gt; sr2 represents the semi-partial correlation squared. r represents the zero-order correlation.
+#&gt; Square brackets are used to enclose the lower and upper limits of a confidence interval.
+#&gt; * indicates p &lt; .05. ** indicates p &lt; .01.
+#&gt;  
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -182,8 +314,6 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#references">References</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

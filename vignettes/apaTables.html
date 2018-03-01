@@ -94,8 +94,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p class="caption">Correlation table in MSWord</p>
 </div>
 </div>
-<div id="regression-table-1-block" class="section level2">
-<h2>Regression table (1 block)</h2>
+<div id="regression-table-overview" class="section level2">
+<h2>Regression table overview</h2>
 <p>Regression tables can be constructed using the <strong>apa.reg.table</strong> function. The constructed table includes the unstandardized regression coefficient (<em>b</em> with CI), standardized regression coefficient (<em>beta</em> with CI), semi-partial correlation squared (<span class="math inline">\(sr^2\)</span> with CI), the correlation (<span class="math inline">\(r\)</span>), and the overall fit of the model (indexed by <span class="math inline">\(R^2\)</span> with CI). The <em>album</em> sales dataset from Field et al. (2012) is used to illustrate the <strong>apa.reg.table</strong> function (also see the <strong>apa.reg.boot.table</strong> function that works similarily but creates bootstrap confidence intervals).</p>
 </div>
 <div id="basic-regression-table" class="section level2">
@@ -207,7 +207,7 @@ goggles.women &lt;-<span class="st"> </span><span class="kw">filter</span>(goggl
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(drink_attitude_wide)</code></pre></div>
 <pre><code>## Observations: 20
 ## Variables: 10
-## $ participant    &lt;fctr&gt; P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, ...
+## $ participant    &lt;fct&gt; P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P...
 ## $ beer_positive  &lt;int&gt; 1, 43, 15, 40, 8, 17, 30, 34, 34, 26, 1, 7, 22,...
 ## $ beer_negative  &lt;int&gt; 6, 30, 15, 30, 12, 17, 21, 23, 20, 27, -19, -18...
 ## $ beer_neutral   &lt;int&gt; 5, 8, 12, 19, 8, 15, 21, 28, 26, 27, -10, 6, 4,...
@@ -236,22 +236,22 @@ drink_attitude_long<span class="op">$</span>imagery &lt;-<span class="st"> </spa
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(drink_attitude_long)</code></pre></div>
 <pre><code>## Observations: 180
 ## Variables: 4
-## $ participant &lt;fctr&gt; P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12...
-## $ drink       &lt;fctr&gt; beer, beer, beer, beer, beer, beer, beer, beer, b...
-## $ imagery     &lt;fctr&gt; positive, positive, positive, positive, positive,...
+## $ participant &lt;fct&gt; P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12,...
+## $ drink       &lt;fct&gt; beer, beer, beer, beer, beer, beer, beer, beer, be...
+## $ imagery     &lt;fct&gt; positive, positive, positive, positive, positive, ...
 ## $ attitude    &lt;int&gt; 1, 43, 15, 40, 8, 17, 30, 34, 34, 26, 1, 7, 22, 30...</code></pre>
 <p>This output reveals the new data structure. There are now only four columns where each row represents a single observation for a participant. As before, the first column is factor column representing <em>participant</em>. But each participant is represented nines times in this column now - because each participant has nine observations (i.e., one in each of the nine cells). Most importantly, we now have a single column indicating level of <em>drink</em>, a single column indicating level of <em>imagery</em>, and a column indicating the <em>attitude</em> rating.</p>
 <p>You can see the first few rows in the more familiar format below:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(drink_attitude_long)</code></pre></div>
 <pre><code>## # A tibble: 6 x 4
-##   participant  drink  imagery attitude
-##        &lt;fctr&gt; &lt;fctr&gt;   &lt;fctr&gt;    &lt;int&gt;
-## 1          P1   beer positive        1
-## 2          P2   beer positive       43
-## 3          P3   beer positive       15
-## 4          P4   beer positive       40
-## 5          P5   beer positive        8
-## 6          P6   beer positive       17</code></pre>
+##   participant drink imagery  attitude
+##   &lt;fct&gt;       &lt;fct&gt; &lt;fct&gt;       &lt;int&gt;
+## 1 P1          beer  positive        1
+## 2 P2          beer  positive       43
+## 3 P3          beer  positive       15
+## 4 P4          beer  positive       40
+## 5 P5          beer  positive        8
+## 6 P6          beer  positive       17</code></pre>
 <p>Prior to conducting the analysis we set the contrasts as per Field et al. (2012).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">alcohol_vs_water &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="op">-</span><span class="dv">2</span>)
 beer_vs_wine &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)
@@ -284,8 +284,8 @@ drink_attitude_results &lt;-<span class="st"> </span><span class="kw">ezANOVA</s
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(dating_wide)</code></pre></div>
 <pre><code>## Observations: 20
 ## Variables: 11
-## $ participant     &lt;fctr&gt; P01, P02, P03, P04, P05, P06, P07, P08, P09, ...
-## $ gender          &lt;fctr&gt; Male, Male, Male, Male, Male, Male, Male, Mal...
+## $ participant     &lt;fct&gt; P01, P02, P03, P04, P05, P06, P07, P08, P09, P...
+## $ gender          &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Male...
 ## $ attractive_high &lt;int&gt; 86, 91, 89, 89, 80, 80, 89, 100, 90, 89, 89, 8...
 ## $ average_high    &lt;int&gt; 84, 83, 88, 69, 81, 84, 85, 94, 74, 86, 91, 90...
 ## $ ugly_high       &lt;int&gt; 67, 53, 48, 58, 57, 51, 61, 56, 54, 63, 93, 85...
@@ -314,23 +314,23 @@ dating_long<span class="op">$</span>personality &lt;-<span class="st"> </span><s
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(dating_long)</code></pre></div>
 <pre><code>## Observations: 180
 ## Variables: 5
-## $ participant &lt;fctr&gt; P01, P02, P03, P04, P05, P06, P07, P08, P09, P10,...
-## $ gender      &lt;fctr&gt; Male, Male, Male, Male, Male, Male, Male, Male, M...
-## $ looks       &lt;fctr&gt; attractive, attractive, attractive, attractive, a...
-## $ personality &lt;fctr&gt; high, high, high, high, high, high, high, high, h...
+## $ participant &lt;fct&gt; P01, P02, P03, P04, P05, P06, P07, P08, P09, P10, ...
+## $ gender      &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Male, Ma...
+## $ looks       &lt;fct&gt; attractive, attractive, attractive, attractive, at...
+## $ personality &lt;fct&gt; high, high, high, high, high, high, high, high, hi...
 ## $ date_rating &lt;int&gt; 86, 91, 89, 89, 80, 80, 89, 100, 90, 89, 89, 84, 9...</code></pre>
 <p>This output reveals the new data structure. There are now only five columns where each row represents a single observation for a participant. As before, the first column is factor column representing <em>participant</em>. But each participant is represented nines times in this column now - because each participant has nine observations (i.e., one in each of the nine cells). The second column contains the <em>gender</em> factor. The third column indicates the level of <em>looks</em>, and the fourth column indicates the level of <em>personality</em>. The fith column indicates the <em>date_rating</em>.</p>
 <p>You can see the first few rows in the more familiar format below:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(dating_long)</code></pre></div>
 <pre><code>## # A tibble: 6 x 5
-##   participant gender      looks personality date_rating
-##        &lt;fctr&gt; &lt;fctr&gt;     &lt;fctr&gt;      &lt;fctr&gt;       &lt;int&gt;
-## 1         P01   Male attractive        high          86
-## 2         P02   Male attractive        high          91
-## 3         P03   Male attractive        high          89
-## 4         P04   Male attractive        high          89
-## 5         P05   Male attractive        high          80
-## 6         P06   Male attractive        high          80</code></pre>
+##   participant gender looks      personality date_rating
+##   &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;      &lt;fct&gt;             &lt;int&gt;
+## 1 P01         Male   attractive high                 86
+## 2 P02         Male   attractive high                 91
+## 3 P03         Male   attractive high                 89
+## 4 P04         Male   attractive high                 89
+## 5 P05         Male   attractive high                 80
+## 6 P06         Male   attractive high                 80</code></pre>
 <p>Prior to conducting the analysis we set the contrasts as per Field et al. (2012).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">some_vs_none &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="op">-</span><span class="dv">2</span>)
 hi_vs_av &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>)

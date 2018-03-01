@@ -3,7 +3,7 @@ title: "apaTables"
 output: github_document
 ---
 
-apaTables 2.0.0
+Version 2.0.0
 
 A common task faced by researchers is the creation of APA style
 (i.e., American Psychological Association style) tables from statistical

@@ -1,53 +1,40 @@
-#' Creates a regresion table in APA style with bootstrap confidence intervals (Beta version)
+#' Creates a regresion table in APA style with bootstrap confidence intervals
 #' @param ... Regression (i.e., lm) result objects. Typically, one for each block in the regression.
 #' @param filename (optional) Output filename document filename (must end in .rtf or .doc only)
 #' @param table.number  Integer to use in table number output line
 #' @param number.samples Number of samples to create for bootstrap CIs
-#' @param conf.level  Confidence level for confidence intervals. Default is .95.
 #' @return APA table object
+#' @references
+#' Algina, J. Keselman, H.J. & Penfield, R.J. (2008). Note on a confidence interval for the squared semipartial correlation coefficient. Educational and Psychological Measurement, 68, 734-741.
 #' @examples
+#'
+#' #Note: number.samples = 50 below.
+#' #      However, please use a value of 1000 or higher
+#'
 #' # View top few rows of goggles data set
 #' # from Discovering Statistics Using R
+#' set.seed(1)
 #' head(album)
 #'
 #' # Single block example
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
-#' apa.reg.boot.table(blk1,filename="exRegTable.doc")
+#' apa.reg.boot.table(blk1)
+#' apa.reg.boot.table(blk1,filename="exRegTable.doc", number.samples=50)
 #'
 #' # Two block example, more than two blocks can be used
 #' blk1 <- lm(sales ~ adverts, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
-#' apa.reg.boot.table(blk1,blk2,
-#'                    filename="exRegBlocksTable.doc",
-#'                    number.samples = 100) #number.samples > 1000 suggested
+#' apa.reg.boot.table(blk1,blk2,filename="exRegBlocksTable.doc",number.samples=50)
 #'
 #' # Interaction product-term test with blocks
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-#' apa.reg.boot.table(blk1,blk2,
-#'                    filename="exInter1.doc",
-#'                    number.samples=100) ##number.samples > 1000 suggested
+#' apa.reg.boot.table(blk1,blk2,filename="exInteraction1.doc",number.samples=50)
 #'
-#' # Interaction product-term test with blocks and additional product terms
-#' blk1<-lm(sales ~ adverts + airplay, data=album)
-#' blk2<-lm(sales ~ adverts + airplay + I(adverts*adverts) + I(airplay*airplay), data=album)
-#' blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
-#' apa.reg.boot.table(blk1,blk2,blk3,
-#'                    filename="exInter2.doc",
-#'                    number.samples=100) #number.samples > 1000 suggested
-#'
-#' #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
-#' blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-#' apa.reg.boot.table(blk1,
-#'                    filename="exInte3.doc",
-#'                    number.samples=100) #number.samples > 1000 suggested
-#'
-#' @references
-#' Algina, J., Keselman, H. J., & Penfield, R. J. (2008). Note on a Confidence Interval for the Squared Semipartial Correlation Coefficient.
-#'      Educational and Psychological Measurement, 68(5), 734–741. http://doi.org/10.1177/0013164407313371
 #' @export
 apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 1000) {
-     #cat("\n\napa.reg.boot.table a beta version.\nPlease report issues at https://github.com/dstanley4/apaTables/issues\n\n")
+
+     cat("\n\napa.reg.boot.table is a beta version.\n")
 
      prop_var_conf_level <- .95
 
@@ -585,42 +572,6 @@ boot_equation <- function(data, indices, lm_out){
      return(output)
 }
 
-
-# get_boot_results <- function(boot_out, lm_out) {
-#      lm_summary <- summary(lm_out)
-#      predictor_names <- names(lm_summary$coefficients[,colnames(lm_summary$coefficients)=="t value"])
-#
-#      b_names <- paste("b_", predictor_names, sep="")
-#      beta_names <- paste("beta_", predictor_names, sep="")
-#      t_names <- paste("t_", predictor_names, sep="")
-#
-#
-#      boot_data <- boot_out$t
-#      boot_column_names <- names(boot_out$t0)
-#      boot_data <- as.data.frame(boot_data)
-#      names(boot_data) <- boot_column_names
-#      print(names(boot_data))
-#
-#
-#      b_data <- boot_data[, b_names]
-#      beta_data <- boot_data[, beta_names]
-#      t_data <- boot_data[, t_names]
-#      other_data <- boot_data[,c("df2","R2")]
-#      sr2_data <- t_df_to_sr2_df(t_data = t_data, other_data = other_data)
-#
-#
-#
-#
-#      print(head(b_data))
-#      print(head(beta_data))
-#      print("t")
-#      print(head(t_data))
-#      print("other")
-#      print(head(other_data))
-#      print("sr2")
-#      print(head(sr2_data))
-#
-# }
 
 
 t_df_to_sr2_df <- function(t_data, other_data) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/apaRegressionBootTable.R
 \name{apa.reg.boot.table}
 \alias{apa.reg.boot.table}
-\title{Creates a regresion table in APA style with bootstrap confidence intervals (Beta version)}
+\title{Creates a regresion table in APA style with bootstrap confidence intervals}
 \usage{
 apa.reg.boot.table(..., filename = NA, table.number = NA,
   number.samples = 1000)
@@ -15,54 +15,39 @@ apa.reg.boot.table(..., filename = NA, table.number = NA,
 \item{table.number}{Integer to use in table number output line}
 
 \item{number.samples}{Number of samples to create for bootstrap CIs}
-
-\item{conf.level}{Confidence level for confidence intervals. Default is .95.}
 }
 \value{
 APA table object
 }
 \description{
-Creates a regresion table in APA style with bootstrap confidence intervals (Beta version)
+Creates a regresion table in APA style with bootstrap confidence intervals
 }
 \examples{
+
+#Note: number.samples = 50 below.
+#      However, please use a value of 1000 or higher
+
 # View top few rows of goggles data set
 # from Discovering Statistics Using R
+set.seed(1)
 head(album)
 
 # Single block example
 blk1 <- lm(sales ~ adverts + airplay, data=album)
-apa.reg.boot.table(blk1,filename="exRegTable.doc")
+apa.reg.boot.table(blk1)
+apa.reg.boot.table(blk1,filename="exRegTable.doc", number.samples=50)
 
 # Two block example, more than two blocks can be used
 blk1 <- lm(sales ~ adverts, data=album)
 blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
-apa.reg.boot.table(blk1,blk2,
-                   filename="exRegBlocksTable.doc",
-                   number.samples = 100) #number.samples > 1000 suggested
+apa.reg.boot.table(blk1,blk2,filename="exRegBlocksTable.doc",number.samples=50)
 
 # Interaction product-term test with blocks
 blk1 <- lm(sales ~ adverts + airplay, data=album)
 blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-apa.reg.boot.table(blk1,blk2,
-                   filename="exInter1.doc",
-                   number.samples=100) ##number.samples > 1000 suggested
-
-# Interaction product-term test with blocks and additional product terms
-blk1<-lm(sales ~ adverts + airplay, data=album)
-blk2<-lm(sales ~ adverts + airplay + I(adverts*adverts) + I(airplay*airplay), data=album)
-blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
-apa.reg.boot.table(blk1,blk2,blk3,
-                   filename="exInter2.doc",
-                   number.samples=100) #number.samples > 1000 suggested
-
-#Interaction product-term test with single regression (i.e., semi-partial correlation focus)
-blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-apa.reg.boot.table(blk1,
-                   filename="exInte3.doc",
-                   number.samples=100) #number.samples > 1000 suggested
+apa.reg.boot.table(blk1,blk2,filename="exInteraction1.doc",number.samples=50)
 
 }
 \references{
-Algina, J., Keselman, H. J., & Penfield, R. J. (2008). Note on a Confidence Interval for the Squared Semipartial Correlation Coefficient.
-     Educational and Psychological Measurement, 68(5), 734–741. http://doi.org/10.1177/0013164407313371
+Algina, J. Keselman, H.J. & Penfield, R.J. (2008). Note on a confidence interval for the squared semipartial correlation coefficient. Educational and Psychological Measurement, 68, 734-741.
 }
