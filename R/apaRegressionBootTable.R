@@ -298,10 +298,6 @@ apa_single_boot_block<-function(cur_blk,is_random_predictors, K, prop_var_conf_l
 
      prop_var_conf_level_str <- sprintf("%g", round(prop_var_conf_level*100))
 
-     #R2 CI
-     # R2CI <- MBESS::ci.R2(R2=R2,df.1=df1,df.2=df2,Random.Predictors = is_random_predictors)
-     # R2LL <- R2CI$Lower.Conf.Limit.R2
-     # R2UL <- R2CI$Upper.Conf.Limit.R2
      R2CI_boot <- get_boot_R2_CI(boot_data, conf_level = prop_var_conf_level)
      R2LL <- R2CI_boot[1]
      R2UL <- R2CI_boot[2]

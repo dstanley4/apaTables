@@ -22,7 +22,12 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.in
      if (show.conf.interval==FALSE) {
           cat("The ability to suppress reporting of reporting confidence intervals has been deprecated in this version.\nThe function arguement show.conf.interval will be removed in a later version.\n")
      }
-     show.conf.interval = TRUE
+
+     if (requireNamespace("MBESS", quietly = TRUE)) {
+          show.conf.interval = TRUE
+     } else {
+          show.conf.interval = FALSE
+     }
      show_conf_interval <- show.conf.interval
 
      if (is.na(filename)) {

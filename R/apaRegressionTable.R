@@ -272,9 +272,18 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      df2         <- model_summary_extended$df.residual
 
      prop_var_conf_level_str <- sprintf("%g", round(prop_var_conf_level*100))
-     R2CI <- MBESS::ci.R2(R2=R2,df.1=df1,df.2=df2,Random.Predictors = is_random_predictors, conf.level = prop_var_conf_level)
-     R2LL <- R2CI$Lower.Conf.Limit.R2
-     R2UL <- R2CI$Upper.Conf.Limit.R2
+
+     if (requireNamespace("MBESS", quietly = TRUE)) {
+          R2CI <- MBESS::ci.R2(R2=R2,df.1=df1,df.2=df2,Random.Predictors = is_random_predictors, conf.level = prop_var_conf_level)
+          R2LL <- R2CI$Lower.Conf.Limit.R2
+          R2UL <- R2CI$Upper.Conf.Limit.R2
+     } else {
+          R2LL <- NA
+          R2UL <- NA
+          warning("\nMBESS package needs to be installed to calculate R2 confidence intervals.\n")
+     }
+
+
 
      R2_txt     <- strip.leading.zero(add.sig.stars(sprintf("%1.3f",R2),R2_pvalue))
      R2LL_txt   <- strip.leading.zero(sprintf("%1.2f",R2LL))

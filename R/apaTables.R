@@ -16,8 +16,8 @@
 #'\tabular{ll}{
 #'Package: \tab apaTables\cr
 #'Type: \tab Package\cr
-#'Version: \tab 2.0.0\cr
-#'Date: \tab 2018-02-28\cr
+#'Version: \tab 2.0.1\cr
+#'Date: \tab 2018-03-01\cr
 #'License: \tab MIT\cr
 #'}
 #'
