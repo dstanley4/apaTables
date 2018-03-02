@@ -28,6 +28,7 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.in
      } else {
           show.conf.interval = FALSE
      }
+
      show_conf_interval <- show.conf.interval
 
      if (is.na(filename)) {
@@ -94,7 +95,15 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.in
                     output_row_descriptives[c_row,2] <- group1_sd
 
                     cur_d_value <- get_d_value(group1_data, group2_data)
-                    cur_d_ci <- MBESS::ci.smd(smd=cur_d_value, n.1=group1_n, n.2=group2_n)
+
+                    if (requireNamespace("MBESS", quietly = TRUE) == TRUE) {
+                         cur_d_ci <- MBESS::ci.smd(smd=cur_d_value, n.1=group1_n, n.2=group2_n)
+                    } else {
+                         cur_d_ci <- list()
+                         cur_d_ci$Lower.Conf.Limit.smd <- (-99)
+                         cur_d_ci$Upper.Conf.Limit.smd <- (-99)
+                    }
+
                     my_t_test_results <- t.test(x=group1_data, y=group2_data, alternative="two.sided", var.equal = TRUE)
                     cur_t_p_value <- my_t_test_results$p.value
 

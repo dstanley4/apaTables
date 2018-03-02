@@ -280,7 +280,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      } else {
           R2LL <- NA
           R2UL <- NA
-          warning("\nMBESS package needs to be installed to calculate R2 confidence intervals.\n")
+          cat("\nMBESS package needs to be installed to calculate R2 confidence intervals.\n")
      }
 
 
