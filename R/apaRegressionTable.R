@@ -253,6 +253,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      }
 
 
+
      #Summary statistics
      model_summary_extended    <- broom::glance(cur_blk) #glance include lm constant in df
      model_summary_extended$df <- summary(cur_blk)$df[1] #use summary information to get df without constant
@@ -309,10 +310,26 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      reg_table_lower      <- reg_table_components$lower_table
      reg_table_first      <- reg_table_components$first_row #intercept row
 
+     #Check if predictors not data table
+     all_predictor_have_data <- TRUE
+     for (i in 1:length(reg_table_lower$predictor)) {
+          p_name  <- reg_table_lower$predictor[i]
+          is_present <- p_name %in% names(reg_table_data)
+          if (is_present == FALSE) {
+               all_predictor_have_data <- FALSE
+          }
+     }
+     if (all_predictor_have_data == FALSE) {
+          calculate_beta <- FALSE
+          calculate_cor  <- FALSE
+     }
+
+
+
      #correlation
      if (calculate_cor==TRUE) {
           r_with_criterion <- correlations_with_criterion(reg_table_data)
-          reg_table_lower  <- dplyr::inner_join(reg_table_lower,r_with_criterion,by="predictor")
+          reg_table_lower  <- dplyr::full_join(reg_table_lower,r_with_criterion,by="predictor")
      }
 
      #semi-partial correlation squared
