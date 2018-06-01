@@ -26,4 +26,12 @@
 
 
 
+# apaTable 2.0.3
+
+* Avoid calls to tidyverse package on CRAN server checks. 
+
+* Fixed bug with apa.reg.table and categorical predictors.
+
+
+
 
