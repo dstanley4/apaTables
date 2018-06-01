@@ -48,7 +48,7 @@
 
 ## ----echo=TRUE,eval=FALSE------------------------------------------------
 #  library(apaTables)
-#  library(tidyverse)
+#  library(dplyr)
 #  goggles.men   <- filter(goggles,gender=="Male")
 #  goggles.women <- filter(goggles,gender=="Female")
 #  
@@ -62,10 +62,17 @@
 #              filename = "Table10_APA.doc",
 #              table.number = 10)
 
-## ---- warning=FALSE, message=FALSE---------------------------------------
+## ---- warning=FALSE, message=FALSE, eval = TRUE, echo = FALSE------------
 library(apaTables)
-library(tidyverse)
+library(tidyr)
+library(tibble)
+library(forcats)
 library(ez)
+
+## ---- eval = FALSE, echo = TRUE------------------------------------------
+#  library(apaTables)
+#  library(tidyverse)
+#  library(ez)
 
 ## ---- warning=FALSE, message=FALSE---------------------------------------
 glimpse(drink_attitude_wide)
@@ -113,10 +120,17 @@ drink_attitude_results <- ezANOVA(data = drink_attitude_long,
 #                    table.number = 11,
 #                    filename="Table11_APA.doc")
 
-## ---- warning=FALSE, message=FALSE---------------------------------------
+## ---- warning=FALSE, message=FALSE, eval = TRUE, echo = FALSE------------
 library(apaTables)
-library(tidyverse)
+library(tidyr)
+library(tibble)
+library(forcats)
 library(ez)
+
+## ---- eval = FALSE, echo = TRUE------------------------------------------
+#  library(apaTables)
+#  library(tidyverse)
+#  library(ez)
 
 ## ---- warning=FALSE, message=FALSE---------------------------------------
 glimpse(dating_wide)

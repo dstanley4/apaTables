@@ -69,7 +69,7 @@
       <h1>apaTables</h1>
                         <h4 class="author">David J. Stanley and Jeffrey R. Spence, University of Guelph</h4>
             
-            <h4 class="date">2018-03-01</h4>
+            <h4 class="date">2018-06-01</h4>
           </div>
 
     
@@ -176,9 +176,9 @@ lm_output &lt;-<span class="st"> </span><span class="kw">lm</span>(attractivenes
 </div>
 <p>You can use the <em>tidyverse</em> package to conducted paired comparisons within each gender again using <strong>apa.d.table</strong>; see Tables 9 and 10.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(apaTables)
-<span class="kw">library</span>(tidyverse)
-goggles.men   &lt;-<span class="st"> </span><span class="kw">filter</span>(goggles,gender<span class="op">==</span><span class="st">"Male"</span>)
-goggles.women &lt;-<span class="st"> </span><span class="kw">filter</span>(goggles,gender<span class="op">==</span><span class="st">"Female"</span>)
+<span class="kw">library</span>(dplyr)
+goggles.men   &lt;-<span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(goggles,gender<span class="op">==</span><span class="st">"Male"</span>)
+goggles.women &lt;-<span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(goggles,gender<span class="op">==</span><span class="st">"Female"</span>)
 
 <span class="kw"><a href="../reference/apa.d.table.html">apa.d.table</a></span>(<span class="dt">iv =</span> alcohol, <span class="dt">dv =</span> attractiveness, 
             <span class="dt">data =</span> goggles.men, 
@@ -205,7 +205,7 @@ goggles.women &lt;-<span class="st"> </span><span class="kw">filter</span>(goggl
 <span class="kw">library</span>(tidyverse)
 <span class="kw">library</span>(ez)</code></pre></div>
 <p>In this example, we used the <em>drink_attitude</em> dataset from Field et al. (2012). As before, this dataset is built into <em>apaTables</em> so it does not need to be loaded using <strong>read_csv</strong> or <strong>read_sav</strong>. The dataset (<em>drink_attitude_wide</em>) can be inspected with the <strong>glimpse</strong> command below (this provides information similar to SPSS variable view). We use the “wide” descriptor in the name of the dataset to remind us that the data is in in the “wide” format where one row contains all the data for one person. There are 20 participants so there are 20 rows.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(drink_attitude_wide)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://dplyr.tidyverse.org/reference/reexports.html">glimpse</a></span>(drink_attitude_wide)</code></pre></div>
 <pre><code>## Observations: 20
 ## Variables: 10
 ## $ participant    &lt;fct&gt; P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P...
@@ -234,7 +234,7 @@ goggles.women &lt;-<span class="st"> </span><span class="kw">filter</span>(goggl
 drink_attitude_long<span class="op">$</span>drink &lt;-<span class="st"> </span><span class="kw">as_factor</span>(drink_attitude_long<span class="op">$</span>drink)
 drink_attitude_long<span class="op">$</span>imagery &lt;-<span class="st"> </span><span class="kw">as_factor</span>(drink_attitude_long<span class="op">$</span>imagery)</code></pre></div>
 <p>We can inspect the final long version of the dataset with glimpse again:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(drink_attitude_long)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://dplyr.tidyverse.org/reference/reexports.html">glimpse</a></span>(drink_attitude_long)</code></pre></div>
 <pre><code>## Observations: 180
 ## Variables: 4
 ## $ participant &lt;fct&gt; P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12,...
@@ -282,7 +282,7 @@ drink_attitude_results &lt;-<span class="st"> </span><span class="kw"><a href="h
 <span class="kw">library</span>(tidyverse)
 <span class="kw">library</span>(ez)</code></pre></div>
 <p>In this example, we used the drink_attitude dataset from Field et al. (2012). As before, this dataset is built into apaTables. The dataset (<em>dating_wide</em>) can be inspected with the <strong>glimpse</strong> command below (this provides information similar to SPSS variable view). We use the “wide” descriptor in the name of the dataset to remind us that the data is in in the “wide” format where one row contains all the data for one person. There are 20 participants so there are 20 rows.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(dating_wide)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://dplyr.tidyverse.org/reference/reexports.html">glimpse</a></span>(dating_wide)</code></pre></div>
 <pre><code>## Observations: 20
 ## Variables: 11
 ## $ participant     &lt;fct&gt; P01, P02, P03, P04, P05, P06, P07, P08, P09, P...
@@ -312,7 +312,7 @@ drink_attitude_results &lt;-<span class="st"> </span><span class="kw"><a href="h
 dating_long<span class="op">$</span>looks &lt;-<span class="st"> </span><span class="kw">as_factor</span>(dating_long<span class="op">$</span>looks)
 dating_long<span class="op">$</span>personality &lt;-<span class="st"> </span><span class="kw">as_factor</span>(dating_long<span class="op">$</span>personality)</code></pre></div>
 <p>We can inspect the final long version of the dataset with glimpse again:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(dating_long)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="http://dplyr.tidyverse.org/reference/reexports.html">glimpse</a></span>(dating_long)</code></pre></div>
 <pre><code>## Observations: 180
 ## Variables: 5
 ## $ participant &lt;fct&gt; P01, P02, P03, P04, P05, P06, P07, P08, P09, P10, ...

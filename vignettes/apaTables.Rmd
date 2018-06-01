@@ -138,7 +138,7 @@ You can use the *tidyverse* package to conducted paired comparisons within each 
 
 ```{r,echo=TRUE,eval=FALSE}
 library(apaTables)
-library(tidyverse)
+library(dplyr)
 goggles.men   <- filter(goggles,gender=="Male")
 goggles.women <- filter(goggles,gender=="Female")
 
@@ -164,12 +164,18 @@ apaTables also supports repeated measures ANOVA tables and repeated measures by 
 
 Prior to begining we 'open' the *apaTables*, *tidyverse*, and *ez* packages using the library command as per below.
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, eval = TRUE, echo = FALSE}
+library(apaTables)
+library(tidyr)
+library(tibble)
+library(forcats)
+library(ez)
+```
+```{r, eval = FALSE, echo = TRUE}
 library(apaTables)
 library(tidyverse)
 library(ez)
 ```
-
 In this example, we used the *drink_attitude* dataset from Field et al. (2012). As before, this dataset is built into *apaTables* so it does not need to be loaded using **read_csv** or **read_sav**. The dataset (*drink_attitude_wide*) can be inspected with the **glimpse** command below (this provides information similar to SPSS variable view). We use the "wide" descriptor in the name of the dataset to remind us that the data is in in the "wide" format where one row contains all the data for one person. There are 20 participants so there are 20 rows.
 
 ```{r, warning=FALSE, message=FALSE}
@@ -257,11 +263,20 @@ apa.ezANOVA.table(drink_attitude_results,
 
 Prior to begining we 'open' the *apaTables*, *tidyverse*, and *ez* packages using the library command as per below.
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, eval = TRUE, echo = FALSE}
+library(apaTables)
+library(tidyr)
+library(tibble)
+library(forcats)
+library(ez)
+```
+```{r, eval = FALSE, echo = TRUE}
 library(apaTables)
 library(tidyverse)
 library(ez)
 ```
+
+
 In this example, we used the drink_attitude dataset from Field et al. (2012). As before, this dataset is built into apaTables. The dataset (*dating_wide*) can be inspected with the **glimpse** command below (this provides information similar to SPSS variable view). We use the "wide" descriptor in the name of the dataset to remind us that the data is in in the "wide" format where one row contains all the data for one person. There are 20 participants so there are 20 rows.
 
 ```{r, warning=FALSE, message=FALSE}

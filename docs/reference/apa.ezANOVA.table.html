@@ -201,8 +201,7 @@
                           <span class='kw'>dv</span> <span class='kw'>=</span> <span class='no'>attractiveness</span>,
                           <span class='kw'>between</span> <span class='kw'>=</span> <span class='fu'>.</span>(<span class='no'>gender</span>, <span class='no'>alcohol</span>),
                           <span class='no'>participant</span> ,
-                          <span class='kw'>detailed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-
+                          <span class='kw'>detailed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='message'>Coefficient covariances computed by hccm()</span></div><div class='input'>
 
 <span class='co'># Make APA table</span>
 
@@ -231,14 +230,9 @@
 <span class='co'>#</span>
 
 <span class='fu'>library</span>(<span class='no'>apaTables</span>)
-<span class='fu'>library</span>(<span class='no'>tidyverse</span>)</div><div class='output co'>#&gt; <span class='message'>── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></div><div class='output co'>#&gt; <span class='message'>✔ ggplot2 2.2.1     ✔ purrr   0.2.4</span>
-#&gt; <span class='message'>✔ tibble  1.4.2     ✔ dplyr   0.7.4</span>
-#&gt; <span class='message'>✔ tidyr   0.7.2     ✔ stringr 1.2.0</span>
-#&gt; <span class='message'>✔ readr   1.1.1     ✔ forcats 0.2.0</span></div><div class='output co'>#&gt; <span class='message'>── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span>
-#&gt; <span class='message'>✖ dplyr::filter()  masks stats::filter()</span>
-#&gt; <span class='message'>✖ purrr::is_null() masks testthat::is_null()</span>
-#&gt; <span class='message'>✖ dplyr::lag()     masks stats::lag()</span>
-#&gt; <span class='message'>✖ dplyr::matches() masks testthat::matches()</span></div><div class='input'><span class='fu'>library</span>(<span class='no'>ez</span>)
+<span class='fu'>library</span>(<span class='no'>tidyr</span>)
+<span class='fu'>library</span>(<span class='no'>forcats</span>)
+<span class='fu'>library</span>(<span class='no'>ez</span>)
 
 <span class='co'># See initial wide format where one row represents one PERSON</span>
 <span class='fu'>print</span>(<span class='no'>drink_attitude_wide</span>)</div><div class='output co'>#&gt; # A tibble: 20 x 10
@@ -270,24 +264,24 @@
 <span class='co'># Wide format column names MUST represent levels of each variable separated by an underscore.</span>
 <span class='co'># See vignette for further details.</span>
 
-<span class='no'>drink_attitude_long</span> <span class='kw'>&lt;-</span> <span class='fu'>gather</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>drink_attitude_wide</span>,
+<span class='no'>drink_attitude_long</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/tidyr/topics/gather'>gather</a></span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>drink_attitude_wide</span>,
                               <span class='kw'>key</span> <span class='kw'>=</span> <span class='no'>cell</span>, <span class='kw'>value</span> <span class='kw'>=</span> <span class='no'>attitude</span>,
                               <span class='no'>beer_positive</span>:<span class='no'>water_neutral</span>,
                               <span class='kw'>factor_key</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
-<span class='no'>drink_attitude_long</span> <span class='kw'>&lt;-</span> <span class='fu'>separate</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>drink_attitude_long</span>,
+<span class='no'>drink_attitude_long</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/tidyr/topics/separate'>separate</a></span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>drink_attitude_long</span>,
                                 <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>cell</span>, <span class='kw'>into</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"drink"</span>,<span class='st'>"imagery"</span>),
                                 <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"_"</span>, <span class='kw'>remove</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='no'>drink_attitude_long</span>$<span class='no'>drink</span> <span class='kw'>&lt;-</span> <span class='fu'>as_factor</span>(<span class='no'>drink_attitude_long</span>$<span class='no'>drink</span>)
-<span class='no'>drink_attitude_long</span>$<span class='no'>imagery</span> <span class='kw'>&lt;-</span> <span class='fu'>as_factor</span>(<span class='no'>drink_attitude_long</span>$<span class='no'>imagery</span>)
+<span class='no'>drink_attitude_long</span>$<span class='no'>drink</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/forcats/topics/as_factor'>as_factor</a></span>(<span class='no'>drink_attitude_long</span>$<span class='no'>drink</span>)
+<span class='no'>drink_attitude_long</span>$<span class='no'>imagery</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/forcats/topics/as_factor'>as_factor</a></span>(<span class='no'>drink_attitude_long</span>$<span class='no'>imagery</span>)
 
 <span class='co'># See new long format of data, where one row is one OBSERVATION.</span>
 <span class='co'># As well, notice that we have two columns (drink, imagery)</span>
 <span class='co'># drink, imagery, and participant are factors</span>
 <span class='fu'>print</span>(<span class='no'>drink_attitude_long</span>)</div><div class='output co'>#&gt; # A tibble: 180 x 4
 #&gt;    participant drink imagery  attitude
-#&gt;  * &lt;fct&gt;       &lt;fct&gt; &lt;fct&gt;       &lt;int&gt;
+#&gt;    &lt;fct&gt;       &lt;fct&gt; &lt;fct&gt;       &lt;int&gt;
 #&gt;  1 P1          beer  positive        1
 #&gt;  2 P2          beer  positive       43
 #&gt;  3 P3          beer  positive       15
@@ -349,7 +343,8 @@
 <span class='co'>#</span>
 
 <span class='fu'>library</span>(<span class='no'>apaTables</span>)
-<span class='fu'>library</span>(<span class='no'>tidyverse</span>)
+<span class='fu'>library</span>(<span class='no'>tidyr</span>)
+<span class='fu'>library</span>(<span class='no'>forcats</span>)
 <span class='fu'>library</span>(<span class='no'>ez</span>)
 
 <span class='co'># See initial wide format where one row represents one PERSON</span>
@@ -383,17 +378,17 @@
 <span class='co'># Wide format column names MUST represent levels of each variable separated by an underscore.</span>
 <span class='co'># See vignette for further details.</span>
 
-<span class='no'>dating_long</span> <span class='kw'>&lt;-</span> <span class='fu'>gather</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>dating_wide</span>,
+<span class='no'>dating_long</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/tidyr/topics/gather'>gather</a></span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>dating_wide</span>,
                      <span class='kw'>key</span> <span class='kw'>=</span> <span class='no'>cell</span>, <span class='kw'>value</span> <span class='kw'>=</span> <span class='no'>date_rating</span>,
                      <span class='no'>attractive_high</span>:<span class='no'>ugly_none</span>,
                      <span class='kw'>factor_key</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='no'>dating_long</span> <span class='kw'>&lt;-</span> <span class='fu'>separate</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>dating_long</span>,
+<span class='no'>dating_long</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/tidyr/topics/separate'>separate</a></span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>dating_long</span>,
                        <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>cell</span>, <span class='kw'>into</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"looks"</span>,<span class='st'>"personality"</span>),
                        <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"_"</span>, <span class='kw'>remove</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='no'>dating_long</span>$<span class='no'>looks</span> <span class='kw'>&lt;-</span> <span class='fu'>as_factor</span>(<span class='no'>dating_long</span>$<span class='no'>looks</span>)
-<span class='no'>dating_long</span>$<span class='no'>personality</span> <span class='kw'>&lt;-</span> <span class='fu'>as_factor</span>(<span class='no'>dating_long</span>$<span class='no'>personality</span>)
+<span class='no'>dating_long</span>$<span class='no'>looks</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/forcats/topics/as_factor'>as_factor</a></span>(<span class='no'>dating_long</span>$<span class='no'>looks</span>)
+<span class='no'>dating_long</span>$<span class='no'>personality</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/forcats/topics/as_factor'>as_factor</a></span>(<span class='no'>dating_long</span>$<span class='no'>personality</span>)
 
 
 <span class='co'># See new long format of data, where one row is one OBSERVATION.</span>
@@ -402,7 +397,7 @@
 
 <span class='fu'>print</span>(<span class='no'>dating_long</span>)</div><div class='output co'>#&gt; # A tibble: 180 x 5
 #&gt;    participant gender looks      personality date_rating
-#&gt;  * &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;      &lt;fct&gt;             &lt;int&gt;
+#&gt;    &lt;fct&gt;       &lt;fct&gt;  &lt;fct&gt;      &lt;fct&gt;             &lt;int&gt;
 #&gt;  1 P01         Male   attractive high                 86
 #&gt;  2 P02         Male   attractive high                 91
 #&gt;  3 P03         Male   attractive high                 89

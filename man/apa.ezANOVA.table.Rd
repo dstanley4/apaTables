@@ -63,7 +63,8 @@ print(goggles_table)
 #
 
 library(apaTables)
-library(tidyverse)
+library(tidyr)
+library(forcats)
 library(ez)
 
 # See initial wide format where one row represents one PERSON
@@ -124,7 +125,8 @@ print(drink_table)
 #
 
 library(apaTables)
-library(tidyverse)
+library(tidyr)
+library(forcats)
 library(ez)
 
 # See initial wide format where one row represents one PERSON

@@ -44,7 +44,8 @@
 #' #
 #'
 #'library(apaTables)
-#'library(tidyverse)
+#'library(tidyr)
+#'library(forcats)
 #'library(ez)
 #'
 #'# See initial wide format where one row represents one PERSON
@@ -106,7 +107,8 @@
 #'#
 #'
 #'library(apaTables)
-#'library(tidyverse)
+#'library(tidyr)
+#'library(forcats)
 #'library(ez)
 #'
 #'# See initial wide format where one row represents one PERSON

@@ -1,3 +1,4 @@
+
 [![CRAN status](https://www.r-pkg.org/badges/version/apaTables)](https://cran.r-project.org/package=apaTables)
 
 \[![](http://cranlogs.r-pkg.org/badges/grand-total/apaTables)
