@@ -18,19 +18,18 @@
 #'
 #' # Single block example
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
-#' apa.reg.boot.table(blk1)
-#' apa.reg.boot.table(blk1,filename="exRegTable.doc", number.samples=50)
+#' \donttest{apa.reg.boot.table(blk1)}
+#' \donttest{apa.reg.boot.table(blk1,filename="exRegTable.doc")}
 #'
 #' # Two block example, more than two blocks can be used
 #' blk1 <- lm(sales ~ adverts, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
-#' apa.reg.boot.table(blk1,blk2,filename="exRegBlocksTable.doc",number.samples=50)
+#' \donttest{apa.reg.boot.table(blk1,blk2,filename="exRegBlocksTable.doc")}
 #'
 #' # Interaction product-term test with blocks
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-#' apa.reg.boot.table(blk1,blk2,filename="exInteraction1.doc",number.samples=50)
-#'
+#' \donttest{apa.reg.boot.table(blk1,blk2,filename="exInteraction1.doc")}
 #' @export
 apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 1000) {
 
