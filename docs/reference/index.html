@@ -21,13 +21,19 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
+
 <meta property="og:title" content="Function reference" />
+
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -50,8 +56,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">apaTables</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">apaTables</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">2.0.4</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -61,13 +71,13 @@
   </a>
 </li>
 <li>
-  <a href="../articles/apaTables.html">Get Started</a>
+  <a href="../articles/apaTables.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -79,6 +89,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -86,136 +97,132 @@
       
       </header>
 
-      <div class="row">
-  <div class="col-md-9">
+<div class="row">
+  <div class="contents col-md-9">
     <div class="page-header">
-      <h1>
-        Reference
-        <small>version&nbsp;2.0.3</small>
-      </h1>
+      <h1>Reference</h1>
     </div>
 
-    <div class="contents">
-      <table class="ref-index">
+    <table class="ref-index">
 
-      <colgroup>
-        <col class="alias" />
-        <col class="title" />
-      </colgroup>
+    <colgroup>
+      
+      <col class="alias" />
+      <col class="title" />
+    </colgroup>
 
-      <tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-            <p class="section-desc"></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="album.html">data</a></code> </p>
-          </td>
-          <td><p>album data from textbook</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apa.1way.table.html">apa.1way.table</a></code> </p>
-          </td>
-          <td><p>Creates a table of means and standard deviations for a 1-way ANOVA design in APA style</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apa.2way.table.html">apa.2way.table</a></code> </p>
-          </td>
-          <td><p>Creates a table of means and standard deviations for a 2-way ANOVA design in APA style</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apa.aov.table.html">apa.aov.table</a></code> </p>
-          </td>
-          <td><p>Creates a fixed-effects ANOVA table in APA style</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apa.cor.table.html">apa.cor.table</a></code> </p>
-          </td>
-          <td><p>Creates a correlation table in APA style with means and standard deviations</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apa.d.table.html">apa.d.table</a></code> </p>
-          </td>
-          <td><p>Creates a d-values for all paired comparisons in APA style</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apa.ezANOVA.table.html">apa.ezANOVA.table</a></code> </p>
-          </td>
-          <td><p>Creates an ANOVA table in APA style based output of ezANOVA command from ez package</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apa.reg.boot.table.html">apa.reg.boot.table</a></code> </p>
-          </td>
-          <td><p>Creates a regresion table in APA style with bootstrap confidence intervals</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apa.reg.table.html">apa.reg.table</a></code> </p>
-          </td>
-          <td><p>Creates a regresion table in APA style</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apaTables.html">apaTables</a></code> </p>
-          </td>
-          <td><p>Create American Psychological Association (APA) Style Tables</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="dating_wide.html">data</a></code> </p>
-          </td>
-          <td><p>dating data from textbook</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="drink_attitude_wide.html">data</a></code> </p>
-          </td>
-          <td><p>drink attitude data from textbook</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="Eysenck.html">data</a></code> </p>
-          </td>
-          <td><p>Eysenck data</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="fidler_thompson.html">data</a></code> </p>
-          </td>
-          <td><p>Fidler &amp; Thompson (2001) Fixed-Effects ANOVA data</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="get.ci.partial.eta.squared.html">get.ci.partial.eta.squared</a></code> </p>
-          </td>
-          <td><p>Calculates confidence interval for partial eta-squared in a fixed-effects ANOVA</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="goggles.html">data</a></code> </p>
-          </td>
-          <td><p>goggles data from textbook</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="viagra.html">data</a></code> </p>
-          </td>
-          <td><p>viagra data from textbook</p></td>
-        </tr>
-      </tbody>
-      </table>
-    </div>
+    <tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="Eysenck.html">Eysenck</a></code> </p>
+        </td>
+        <td><p>Eysenck data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="album.html">album</a></code> </p>
+        </td>
+        <td><p>album data from textbook</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apa.1way.table.html">apa.1way.table()</a></code> </p>
+        </td>
+        <td><p>Creates a table of means and standard deviations for a 1-way ANOVA design in APA style</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apa.2way.table.html">apa.2way.table()</a></code> </p>
+        </td>
+        <td><p>Creates a table of means and standard deviations for a 2-way ANOVA design in APA style</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apa.aov.table.html">apa.aov.table()</a></code> </p>
+        </td>
+        <td><p>Creates a fixed-effects ANOVA table in APA style</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apa.cor.table.html">apa.cor.table()</a></code> </p>
+        </td>
+        <td><p>Creates a correlation table in APA style with means and standard deviations</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apa.d.table.html">apa.d.table()</a></code> </p>
+        </td>
+        <td><p>Creates a d-values for all paired comparisons in APA style</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apa.ezANOVA.table.html">apa.ezANOVA.table()</a></code> </p>
+        </td>
+        <td><p>Creates an ANOVA table in APA style based output of ezANOVA command from ez package</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apa.reg.boot.table.html">apa.reg.boot.table()</a></code> </p>
+        </td>
+        <td><p>Creates a regresion table in APA style with bootstrap confidence intervals</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apa.reg.table.html">apa.reg.table()</a></code> </p>
+        </td>
+        <td><p>Creates a regresion table in APA style</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="apaTables.html">apaTables</a></code> </p>
+        </td>
+        <td><p>Create American Psychological Association (APA) Style Tables</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="dating_wide.html">dating_wide</a></code> </p>
+        </td>
+        <td><p>dating data from textbook</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="drink_attitude_wide.html">drink_attitude_wide</a></code> </p>
+        </td>
+        <td><p>drink attitude data from textbook</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="fidler_thompson.html">fidler_thompson</a></code> </p>
+        </td>
+        <td><p>Fidler &amp; Thompson (2001) Fixed-Effects ANOVA data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get.ci.partial.eta.squared.html">get.ci.partial.eta.squared()</a></code> </p>
+        </td>
+        <td><p>Calculates confidence interval for partial eta-squared in a fixed-effects ANOVA</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="goggles.html">goggles</a></code> </p>
+        </td>
+        <td><p>goggles data from textbook</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="viagra.html">viagra</a></code> </p>
+        </td>
+        <td><p>viagra data from textbook</p></td>
+      </tr>
+    </tbody>
+    </table>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -238,5 +245,8 @@
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

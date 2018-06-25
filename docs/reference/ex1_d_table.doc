@@ -49,9 +49,9 @@
 \clvertalc\cellx4248 
 \clvertalc\cellx5688 
 \clvertalc\cellx7128 
-\pard\sa0\sb0\intbl\ql{1. High Dose}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{5.00}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.58}\cell
+\pard\sa0\sb0\intbl\ql{1. Placebo}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{2.20}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.30}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
 \row
@@ -80,50 +80,50 @@
 \pard\sa0\sb0\intbl\ql{2. Low Dose}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{3.20}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.30}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx504{1.24}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
-\row
-}
-{
-\trowd \trgaph100
-\clvertalc\cellx1800 
-\clvertalc\cellx3024 
-\clvertalc\cellx4248 
-\clvertalc\cellx5688 
-\clvertalc\cellx7128 
-\pard\sa0\sb0\intbl\ql{ }\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx504{{\fs20[-0.17, 2.59]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
-\row
-}
-{
-\trowd \trgaph100
-\clvertalc\cellx1800 
-\clvertalc\cellx3024 
-\clvertalc\cellx4248 
-\clvertalc\cellx5688 
-\clvertalc\cellx7128 
-\pard\sa0\sb0\intbl\ql{ }\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
-\row
-}
-{
-\trowd \trgaph100
-\clvertalc\cellx1800 
-\clvertalc\cellx3024 
-\clvertalc\cellx4248 
-\clvertalc\cellx5688 
-\clvertalc\cellx7128 
-\pard\sa0\sb0\intbl\ql{3. Placebo}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{2.20}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.30}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx504{1.93}\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx504{0.77}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{{\fs20[-0.55, 2.04]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{ }\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1800 
+\clvertalc\cellx3024 
+\clvertalc\cellx4248 
+\clvertalc\cellx5688 
+\clvertalc\cellx7128 
+\pard\sa0\sb0\intbl\ql{3. High Dose}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{5.00}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx428{1.58}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{1.93}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{1.24}\cell
 \row
 }
 {
@@ -137,7 +137,7 @@
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx428{ }\cell
 \pard\sa0\sb0\intbl\tqdec\tldot\tx504{{\fs20[0.34, 3.44]}}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx504{{\fs20[-0.55, 2.04]}}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx504{{\fs20[-0.17, 2.59]}}\cell
 \row
 }
 {

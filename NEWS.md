@@ -33,5 +33,12 @@
 * Fixed bug with apa.reg.table and categorical predictors.
 
 
+# apaTable 2.0.4
 
+* Fixed a bug to ensure factor coding of data matched Field et al. (2012) book. Specifically, changed viagra and goggles data set factor order.
+
+* Added donottest to bootstrap analyses to avoid CRAN server time check problems
+
+
+ 
 

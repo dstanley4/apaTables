@@ -21,16 +21,22 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
+
 <meta property="og:title" content="Creates a fixed-effects ANOVA table in APA style — apa.aov.table" />
 
 <meta property="og:description" content="Creates a fixed-effects ANOVA table in APA style" />
 <meta name="twitter:card" content="summary" />
+
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -53,8 +59,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">apaTables</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">apaTables</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">2.0.4</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -64,13 +74,13 @@
   </a>
 </li>
 <li>
-  <a href="../articles/apaTables.html">Get Started</a>
+  <a href="../articles/apaTables.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -82,6 +92,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -89,20 +100,24 @@
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Creates a fixed-effects ANOVA table in APA style</h1>
+    <small class="dont-index">Source: <a href='https://github.com/dstanley4/apaTables/blob/master/R/apaAOVTable.R'><code>R/apaAOVTable.R</code></a></small>
+    <div class="hidden name"><code>apa.aov.table.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Creates a fixed-effects ANOVA table in APA style</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>apa.aov.table</span>(<span class='no'>lm_output</span>, <span class='no'>filename</span>, <span class='kw'>table.number</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>conf.level</span> <span class='kw'>=</span> <span class='fl'>0.9</span>,
   <span class='kw'>type</span> <span class='kw'>=</span> <span class='fl'>3</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -139,7 +154,7 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>#Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R</span>
-<span class='fu'>options</span>(<span class='kw'>contrasts</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"contr.sum"</span>, <span class='st'>"contr.poly"</span>))
+<span class='fu'>options</span>(<span class='kw'>contrasts</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"contr.helmert"</span>, <span class='st'>"contr.poly"</span>))
 <span class='no'>lm_output</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>libido</span> ~ <span class='no'>dose</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>viagra</span>)
 <span class='fu'>apa.aov.table</span>(<span class='no'>lm_output</span>, <span class='kw'>filename</span> <span class='kw'>=</span> <span class='st'>"ex1_anova_table.doc"</span>)</div><div class='output co'>#&gt; 
 #&gt; 
@@ -155,7 +170,7 @@
 #&gt; </div><div class='input'>
 <span class='co'># Example 2: 2-way from Fidler &amp; Thompson (2001)</span>
 <span class='co'># You must set these contrasts to ensure values match SPSS</span>
-<span class='fu'>options</span>(<span class='kw'>contrasts</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"contr.sum"</span>, <span class='st'>"contr.poly"</span>))
+<span class='fu'>options</span>(<span class='kw'>contrasts</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"contr.helmert"</span>, <span class='st'>"contr.poly"</span>))
 <span class='no'>lm_output</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>dv</span> ~ <span class='no'>a</span>*<span class='no'>b</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>fidler_thompson</span>)
 <span class='fu'>apa.aov.table</span>(<span class='no'>lm_output</span>,<span class='kw'>filename</span> <span class='kw'>=</span> <span class='st'>"ex2_anova_table.doc"</span>)</div><div class='output co'>#&gt; 
 #&gt; 
@@ -173,7 +188,7 @@
 #&gt; </div><div class='input'>
 <span class='co'>#Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R</span>
 <span class='co'># You must set these contrasts to ensure values match SPSS</span>
-<span class='fu'>options</span>(<span class='kw'>contrasts</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"contr.sum"</span>, <span class='st'>"contr.poly"</span>))
+<span class='fu'>options</span>(<span class='kw'>contrasts</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"contr.helmert"</span>, <span class='st'>"contr.poly"</span>))
 <span class='no'>lm_output</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>attractiveness</span> ~ <span class='no'>gender</span>*<span class='no'>alcohol</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>goggles</span>)
 <span class='fu'>apa.aov.table</span>(<span class='no'>lm_output</span>, <span class='kw'>filename</span> <span class='kw'>=</span> <span class='st'>"ex3_anova_table.doc"</span>)</div><div class='output co'>#&gt; 
 #&gt; 
@@ -223,5 +238,8 @@
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

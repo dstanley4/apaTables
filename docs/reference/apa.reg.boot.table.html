@@ -21,16 +21,22 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
+
 <meta property="og:title" content="Creates a regresion table in APA style with bootstrap confidence intervals — apa.reg.boot.table" />
 
 <meta property="og:description" content="Creates a regresion table in APA style with bootstrap confidence intervals" />
 <meta name="twitter:card" content="summary" />
+
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -53,8 +59,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">apaTables</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">apaTables</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">2.0.4</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -64,13 +74,13 @@
   </a>
 </li>
 <li>
-  <a href="../articles/apaTables.html">Get Started</a>
+  <a href="../articles/apaTables.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -82,6 +92,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -89,20 +100,24 @@
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Creates a regresion table in APA style with bootstrap confidence intervals</h1>
+    <small class="dont-index">Source: <a href='https://github.com/dstanley4/apaTables/blob/master/R/apaRegressionBootTable.R'><code>R/apaRegressionBootTable.R</code></a></small>
+    <div class="hidden name"><code>apa.reg.boot.table.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Creates a regresion table in APA style with bootstrap confidence intervals</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>apa.reg.boot.table</span>(<span class='no'>...</span>, <span class='kw'>filename</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>table.number</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
   <span class='kw'>number.samples</span> <span class='kw'>=</span> <span class='fl'>1000</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -148,8 +163,7 @@
 #&gt; 5  574.513   220      44       5
 #&gt; 6  568.954   170      19       5</div><div class='input'>
 <span class='co'># Single block example</span>
-<span class='no'>blk1</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>)</div><div class='output co'>#&gt; 
+<span class='no'>blk1</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)</div><div class='input'><span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>)</div><div class='output co'>#&gt; 
 #&gt; 
 #&gt; apa.reg.boot.table is a beta version.
 #&gt; Block 1: Generating 1000 bootstrap samples
@@ -179,19 +193,19 @@
 #&gt; Square brackets are used to enclose the lower and upper limits of a confidence interval.
 #&gt; * indicates p &lt; .05. ** indicates p &lt; .01.
 #&gt;  
-#&gt; </div><div class='input'><span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exRegTable.doc"</span>, <span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>50</span>)</div><div class='output co'>#&gt; 
+#&gt; </div><div class='input'><span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exRegTable.doc"</span>)</div><div class='output co'>#&gt; 
 #&gt; 
 #&gt; apa.reg.boot.table is a beta version.
-#&gt; Block 1: Generating 50 bootstrap samples
+#&gt; Block 1: Generating 1000 bootstrap samples
 #&gt; Bootstrap for Delta RSQ in progress</div><div class='output co'>#&gt; 
 #&gt; 
 #&gt; Regression results using sales as the criterion
 #&gt;  
 #&gt; 
 #&gt;    Predictor       b       b_95%_CI beta  beta_95%_CI sr2 sr2_95%_CI     r
-#&gt;  (Intercept) 41.12** [28.67, 56.83]                                       
-#&gt;      adverts  0.09**   [0.07, 0.10] 0.52 [0.41, 0.60] .27 [.17, .36] .58**
-#&gt;      airplay  3.59**   [3.01, 4.22] 0.55 [0.46, 0.63] .29 [.20, .39] .60**
+#&gt;  (Intercept) 41.12** [22.68, 56.86]                                       
+#&gt;      adverts  0.09**   [0.07, 0.10] 0.52 [0.43, 0.60] .27 [.18, .36] .58**
+#&gt;      airplay  3.59**   [2.99, 4.22] 0.55 [0.46, 0.63] .29 [.21, .40] .60**
 #&gt;                                                                           
 #&gt;                                                                           
 #&gt;                                                                           
@@ -200,7 +214,7 @@
 #&gt;                 
 #&gt;                 
 #&gt;      R2 = .629**
-#&gt;  95% CI[.56,.69]
+#&gt;  95% CI[.56,.70]
 #&gt;                 
 #&gt; 
 #&gt; Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.
@@ -212,27 +226,26 @@
 #&gt; </div><div class='input'>
 <span class='co'># Two block example, more than two blocks can be used</span>
 <span class='no'>blk1</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='no'>blk2</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span> + <span class='no'>attract</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exRegBlocksTable.doc"</span>,<span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>50</span>)</div><div class='output co'>#&gt; 
+<span class='no'>blk2</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span> + <span class='no'>attract</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)</div><div class='input'><span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exRegBlocksTable.doc"</span>)</div><div class='output co'>#&gt; 
 #&gt; 
 #&gt; apa.reg.boot.table is a beta version.
-#&gt; Block 1: Generating 50 bootstrap samples
-#&gt; Block 2: Generating 50 bootstrap samples
+#&gt; Block 1: Generating 1000 bootstrap samples
+#&gt; Block 2: Generating 1000 bootstrap samples
 #&gt; Bootstrap for Delta RSQ in progress</div><div class='output co'>#&gt; 
 #&gt; 
 #&gt; Regression results using sales as the criterion
 #&gt;  
 #&gt; 
 #&gt;    Predictor        b         b_95%_CI beta  beta_95%_CI sr2 sr2_95%_CI     r
-#&gt;  (Intercept) 134.14** [122.27, 144.07]                                       
-#&gt;      adverts   0.10**     [0.08, 0.11] 0.58 [0.49, 0.65] .33 [.24, .42] .58**
+#&gt;  (Intercept) 134.14** [118.96, 149.22]                                       
+#&gt;      adverts   0.10**     [0.08, 0.11] 0.58 [0.48, 0.66] .33 [.23, .44] .58**
 #&gt;                                                                              
 #&gt;                                                                              
 #&gt;                                                                              
-#&gt;  (Intercept)   -26.61  [-52.02, 14.44]                                       
-#&gt;      adverts   0.08**     [0.07, 0.10] 0.51 [0.45, 0.59] .26 [.19, .34] .58**
-#&gt;      airplay   3.37**     [2.73, 3.95] 0.51 [0.42, 0.59] .25 [.17, .33] .60**
-#&gt;      attract  11.09**    [5.63, 14.44] 0.19 [0.10, 0.28] .04 [.01, .07] .33**
+#&gt;  (Intercept)   -26.61  [-54.63, 10.71]                                       
+#&gt;      adverts   0.08**     [0.07, 0.10] 0.51 [0.42, 0.59] .26 [.17, .35] .58**
+#&gt;      airplay   3.37**     [2.72, 3.96] 0.51 [0.43, 0.60] .25 [.17, .34] .60**
+#&gt;      attract  11.09**    [6.04, 14.82] 0.19 [0.10, 0.27] .04 [.01, .07] .33**
 #&gt;                                                                              
 #&gt;                                                                              
 #&gt;                                                                              
@@ -240,14 +253,14 @@
 #&gt;                                   
 #&gt;                                   
 #&gt;      R2 = .335**                  
-#&gt;  95% CI[.24,.42]                  
+#&gt;  95% CI[.23,.44]                  
 #&gt;                                   
 #&gt;                                   
 #&gt;                                   
 #&gt;                                   
 #&gt;                                   
 #&gt;      R2 = .665** Delta R2 = .330**
-#&gt;  95% CI[.59,.73]  95% CI[.25, .41]
+#&gt;  95% CI[.60,.73]  95% CI[.23, .43]
 #&gt;                                   
 #&gt; 
 #&gt; Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.
@@ -259,12 +272,11 @@
 #&gt; </div><div class='input'>
 <span class='co'># Interaction product-term test with blocks</span>
 <span class='no'>blk1</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='no'>blk2</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span> + <span class='fu'>I</span>(<span class='no'>adverts</span> * <span class='no'>airplay</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)
-<span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exInteraction1.doc"</span>,<span class='kw'>number.samples</span><span class='kw'>=</span><span class='fl'>50</span>)</div><div class='output co'>#&gt; 
+<span class='no'>blk2</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>sales</span> ~ <span class='no'>adverts</span> + <span class='no'>airplay</span> + <span class='fu'>I</span>(<span class='no'>adverts</span> * <span class='no'>airplay</span>), <span class='kw'>data</span><span class='kw'>=</span><span class='no'>album</span>)</div><div class='input'><span class='fu'>apa.reg.boot.table</span>(<span class='no'>blk1</span>,<span class='no'>blk2</span>,<span class='kw'>filename</span><span class='kw'>=</span><span class='st'>"exInteraction1.doc"</span>)</div><div class='output co'>#&gt; 
 #&gt; 
 #&gt; apa.reg.boot.table is a beta version.
-#&gt; Block 1: Generating 50 bootstrap samples
-#&gt; Block 2: Generating 50 bootstrap samples
+#&gt; Block 1: Generating 1000 bootstrap samples
+#&gt; Block 2: Generating 1000 bootstrap samples
 #&gt;      sr2 CI lower bound(s) adjusted to zero as per Algina, Keselman, &amp; Penfield (2008)
 #&gt; 
 #&gt; Bootstrap for Delta RSQ in progress
@@ -275,16 +287,16 @@
 #&gt;  
 #&gt; 
 #&gt;             Predictor       b       b_95%_CI  beta   beta_95%_CI sr2 sr2_95%_CI
-#&gt;           (Intercept) 41.12** [22.44, 58.06]                                   
-#&gt;               adverts  0.09**   [0.08, 0.10]  0.52  [0.45, 0.61] .27 [.20, .37]
-#&gt;               airplay  3.59**   [2.91, 4.51]  0.55  [0.44, 0.62] .29 [.19, .38]
+#&gt;           (Intercept) 41.12** [21.93, 59.02]                                   
+#&gt;               adverts  0.09**   [0.07, 0.10]  0.52  [0.43, 0.60] .27 [.18, .36]
+#&gt;               airplay  3.59**   [2.97, 4.21]  0.55  [0.45, 0.63] .29 [.20, .39]
 #&gt;                                                                                
 #&gt;                                                                                
 #&gt;                                                                                
-#&gt;           (Intercept)  28.30*  [5.64, 52.40]                                   
-#&gt;               adverts  0.11**   [0.06, 0.16]  0.69  [0.35, 1.02] .05 [.01, .09]
-#&gt;               airplay  4.02**   [3.14, 4.99]  0.61  [0.44, 0.76] .15 [.08, .22]
-#&gt;  I(adverts * airplay)   -0.00  [-0.00, 0.00] -0.19 [-0.53, 0.22] .00 [.00, .02]
+#&gt;           (Intercept)  28.30* [-3.47, 54.37]                                   
+#&gt;               adverts  0.11**   [0.06, 0.16]  0.69  [0.38, 0.97] .05 [.01, .09]
+#&gt;               airplay  4.02**   [3.06, 5.17]  0.61  [0.47, 0.77] .15 [.08, .23]
+#&gt;  I(adverts * airplay)   -0.00  [-0.00, 0.00] -0.19 [-0.52, 0.16] .00 [.00, .02]
 #&gt;                                                                                
 #&gt;                                                                                
 #&gt;                                                                                
@@ -293,14 +305,14 @@
 #&gt;  .58**                                 
 #&gt;  .60**                                 
 #&gt;            R2 = .629**                 
-#&gt;        95% CI[.57,.70]                 
+#&gt;        95% CI[.56,.70]                 
 #&gt;                                        
 #&gt;                                        
 #&gt;  .58**                                 
 #&gt;  .60**                                 
 #&gt;                                        
 #&gt;            R2 = .632**  Delta R2 = .003
-#&gt;        95% CI[.57,.70] 95% CI[.00, .02]
+#&gt;        95% CI[.56,.70] 95% CI[.00, .02]
 #&gt;                                        
 #&gt; 
 #&gt; Note. A significant b-weight indicates the beta-weight and semi-partial correlation are also significant.
@@ -309,8 +321,7 @@
 #&gt; Square brackets are used to enclose the lower and upper limits of a confidence interval.
 #&gt; * indicates p &lt; .05. ** indicates p &lt; .01.
 #&gt;  
-#&gt; </div><div class='input'>
-</div></pre>
+#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -339,5 +350,8 @@
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

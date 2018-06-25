@@ -24,9 +24,9 @@
 \clvertalc\cellx2915 
 \clbrdrt\brdrw15\brdrs
 \clvertalc\cellx3779 
-\pard\sa0\sb0\intbl\qr{High Dose}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx302{5.00}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx302{1.58}\cell
+\pard\sa0\sb0\intbl\qr{Placebo}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{2.20}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{1.30}\cell
 \row
 }
 {
@@ -47,9 +47,9 @@
 \clvertalc\cellx2915 
 \clbrdrb\brdrw15\brdrs
 \clvertalc\cellx3779 
-\pard\sa0\sb0\intbl\qr{Placebo}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx302{2.20}\cell
-\pard\sa0\sb0\intbl\tqdec\tldot\tx302{1.30}\cell
+\pard\sa0\sb0\intbl\qr{High Dose}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{5.00}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{1.58}\cell
 \row
 }
 {\pard \par}{\pard{\i Note.} {\i M} and {\i SD} represent mean and standard deviation, respectively.\par}

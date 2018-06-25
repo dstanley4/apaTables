@@ -24,9 +24,9 @@
 \clbrdrt\brdrw15\brdrs
 \clvertalc\cellx9180 
 \pard\sa100\sb100\intbl\qr{ }\cell
+\pard\sa100\sb100\intbl\qc{None}\cell
 \pard\sa100\sb100\intbl\qc{2 Pints}\cell
 \pard\sa100\sb100\intbl\qc{4 Pints}\cell
-\pard\sa100\sb100\intbl\qc{None}\cell
 \row
 }
 {
@@ -71,12 +71,12 @@
 \clbrdrt\brdrw15\brdrs
 \clvertalc\cellx9180 
 \pard\sa100\sb100\intbl\qr{Female}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{60.62}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{4.96}\cell
 \pard\sa100\sb100\intbl\tqdec\tldot\tx428{62.50}\cell
 \pard\sa100\sb100\intbl\tqdec\tldot\tx428{6.55}\cell
 \pard\sa100\sb100\intbl\tqdec\tldot\tx428{57.50}\cell
 \pard\sa100\sb100\intbl\tqdec\tldot\tx428{7.07}\cell
-\pard\sa100\sb100\intbl\tqdec\tldot\tx428{60.62}\cell
-\pard\sa100\sb100\intbl\tqdec\tldot\tx428{4.96}\cell
 \row
 }
 {
@@ -97,11 +97,11 @@
 \clvertalc\cellx9180 
 \pard\sa100\sb100\intbl\qr{Male}\cell
 \pard\sa100\sb100\intbl\tqdec\tldot\tx428{66.88}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{10.33}\cell
+\pard\sa100\sb100\intbl\tqdec\tldot\tx428{66.88}\cell
 \pard\sa100\sb100\intbl\tqdec\tldot\tx428{12.52}\cell
 \pard\sa100\sb100\intbl\tqdec\tldot\tx428{35.62}\cell
 \pard\sa100\sb100\intbl\tqdec\tldot\tx428{10.84}\cell
-\pard\sa100\sb100\intbl\tqdec\tldot\tx428{66.88}\cell
-\pard\sa100\sb100\intbl\tqdec\tldot\tx428{10.33}\cell
 \row
 }
 {\pard \par}{\pard{\i Note.} {\i M} and {\i SD} represent mean and standard deviation, respectively.\par}
