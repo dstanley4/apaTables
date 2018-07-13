@@ -203,7 +203,7 @@ output_rtf_name_anova <- function(column_name) {
             df_num_int = "{\\i df\\sub Num \\nosupersub}",
             df_den_int = "{\\i df\\sub Den \\nosupersub}",
             SS_num = "{\\i SS\\sub Num \\nosupersub}",
-            SS_den = "{\\i SS\\sub Num \\nosupersub}",
+            SS_den = "{\\i SS\\sub Den \\nosupersub}",
             df = "{\\i df}",
             Fvalue = "{\\i F}",
             p = "{\\i p}",
