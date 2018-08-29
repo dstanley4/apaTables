@@ -30,7 +30,5 @@ head(attitude)
 
 # Use apa.cor.table function
 apa.cor.table(attitude)
-apa.cor.table(attitude, show.conf.interval=FALSE)
 apa.cor.table(attitude, filename="ex.CorTable1.doc")
-apa.cor.table(attitude, show.conf.interval=FALSE, filename="ex.CorTable2.doc")
 }
