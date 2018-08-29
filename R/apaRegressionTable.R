@@ -180,7 +180,7 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
 
      tbl_console <- list(table_number = table_number,
                          table_title = table_title,
-                         table_body = table_body,
+                         table_body = as.data.frame(table_body),
                          table_note = table_note,
                          table_block_results = table_block_results)
 
@@ -262,7 +262,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      reg_table <- broom::tidy(cur_blk)
      names(reg_table) <- c("predictor","b","SE","t","p")
 
-     #adjust df
+     #adjust df xyzzy
      if (reg_table$predictor[1] == "(Intercept)") {
           model_summary_extended$df[1] <- model_summary_extended$df[1]-1
      }
@@ -334,7 +334,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
 
      #semi-partial correlation squared
      reg_table_lower   <- dplyr::mutate(reg_table_lower, sr2=(t*t)*(1-R2)/df2, LLsr2=-999,ULsr2=-999)
-     number_predictors <- length(reg_table_lower[,1])
+     number_predictors <- dim(reg_table_lower[,1])[1]
      if (number_predictors>1) {
           #use delta R2 process for CI
           for (i in 1:number_predictors) {
@@ -354,6 +354,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
 
      #beta
      if (calculate_beta==TRUE) {
+          reg_table_lower   <- dplyr::mutate(reg_table_lower, beta = -999, LLbeta=-999,ULbeta=-999)
           for (i in 1:number_predictors) {
                p_name  <- reg_table_lower$predictor[i]
                b       <- reg_table_lower$b[i]
