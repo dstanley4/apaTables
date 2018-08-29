@@ -39,6 +39,10 @@
 
 * Added donottest to bootstrap analyses to avoid CRAN server time check problems
 
+# apaTable 2.0.5
 
- 
+* Fixed a bug with apaTables so it can work with current version of imported packages (e.g., tibble). This appeared to only impact apa.reg.table and apa.reg.boot.table. Both work again.
+
+* Updated documentation to apa.cor.table
+
 

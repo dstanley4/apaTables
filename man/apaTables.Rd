@@ -25,8 +25,8 @@ Currently, the following tables can be created:
 \tabular{ll}{
 Package: \tab apaTables\cr
 Type: \tab Package\cr
-Version: \tab 2.0.4\cr
-Date: \tab 2018-06-25\cr
+Version: \tab 2.0.5\cr
+Date: \tab 2018-08-29\cr
 License: \tab MIT\cr
 }
 }
