@@ -31,7 +31,7 @@ Suggests: testthat,
     tidyr,
     forcats,
     MBESS
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 License: MIT License + file LICENSE
 LazyData: true
 Date: 2018-06-25

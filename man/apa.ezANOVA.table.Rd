@@ -4,8 +4,8 @@
 \alias{apa.ezANOVA.table}
 \title{Creates an ANOVA table in APA style based output of ezANOVA command from ez package}
 \usage{
-apa.ezANOVA.table(ez.output, correction = "GG", table.title = "", filename,
-  table.number = NA)
+apa.ezANOVA.table(ez.output, correction = "GG", table.title = "",
+  filename, table.number = NA)
 }
 \arguments{
 \item{ez.output}{Output object from ezANOVA command from ez package}
