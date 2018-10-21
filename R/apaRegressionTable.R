@@ -150,9 +150,13 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
                last_block_summary <- cur_block_summary
                last_block_lm <- cur_block_lm
 
+               if (has_beta_cols(block_out_txt) == TRUE & (has_beta_cols(cur_block_out_txt) == FALSE)) {
+                    block_out_txt <- block_out_txt %>% select(-beta, -beta_CI, -r)
+                    block_out_rtf <- block_out_rtf %>% select(-beta, -beta_CI, -r)
+               }
+
                block_out_txt <- rbind(block_out_txt,cur_block_out_txt)
                block_out_rtf <- rbind(block_out_rtf,cur_block_out_rtf)
-
           }
      } else {
           block_out_txt <- dplyr::select(block_out_txt, -difference)
@@ -389,7 +393,9 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      intercept_row$p[1]    <- reg_table_first$p[1]
      intercept_row$SE[1]   <- reg_table_first$SE[1]
 
+     print("one rbind")
      model_details_extended <- rbind(intercept_row, reg_table_lower)
+     print("end one rbind")
 
      L <- dim(model_details_extended)[1]
 
@@ -647,3 +653,9 @@ get_delta_R2_blocks <- function(blk2,blk1,summary2,summary1,n, prop_var_conf_lev
      output$deltaR2_pvalue <- deltaR2_p
      return(output)
 }
+
+
+has_beta_cols <- function(df) {
+     return("beta" %in% names(df))
+}
+
