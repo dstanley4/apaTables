@@ -393,9 +393,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      intercept_row$p[1]    <- reg_table_first$p[1]
      intercept_row$SE[1]   <- reg_table_first$SE[1]
 
-     print("one rbind")
      model_details_extended <- rbind(intercept_row, reg_table_lower)
-     print("end one rbind")
 
      L <- dim(model_details_extended)[1]
 
