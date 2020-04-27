@@ -64,11 +64,13 @@ txt.ci<- function(cortest.result,strip_zero=TRUE) {
 }
 
 
-txt.r <- function(ctest) {
+txt.r <- function(ctest, show_stars = TRUE) {
      r.value=ctest$estimate
      p.value=ctest$p.value
      r.value.txt <- strip.leading.zero(sprintf("%1.2f", r.value))
-     r.value.txt <- add.sig.stars(r.value.txt,p.value)
+     if (show_stars == TRUE) {
+             r.value.txt <- add.sig.stars(r.value.txt,p.value)
+     }
      string.out=sprintf("%s",r.value.txt)
      return(string.out)
 }
