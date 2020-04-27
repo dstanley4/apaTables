@@ -4,8 +4,14 @@
 \alias{apa.cor.table}
 \title{Creates a correlation table in APA style with means and standard deviations}
 \usage{
-apa.cor.table(data, filename = NA, table.number = NA,
-  show.conf.interval = TRUE, landscape = TRUE)
+apa.cor.table(
+  data,
+  filename = NA,
+  table.number = NA,
+  show.conf.interval = TRUE,
+  show.sig.stars = TRUE,
+  landscape = TRUE
+)
 }
 \arguments{
 \item{data}{Project data frame}
@@ -15,6 +21,8 @@ apa.cor.table(data, filename = NA, table.number = NA,
 \item{table.number}{Integer to use in table number output line}
 
 \item{show.conf.interval}{(TRUE/FALSE) Display confidence intervals in table. This argument is deprecated and will be removed from later versions.}
+
+\item{show.sig.stars}{(TRUE/FALSE) Display stars for significance in table.}
 
 \item{landscape}{(TRUE/FALSE) Make RTF file landscape}
 }

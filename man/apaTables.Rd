@@ -3,7 +3,6 @@
 \docType{package}
 \name{apaTables}
 \alias{apaTables}
-\alias{apaTables-package}
 \title{Create American Psychological Association (APA) Style Tables}
 \description{
 A common task faced by researchers is the creation of APA style (i.e., \emph{American Psychological Association} style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user. Examples are provided in this documentation and at \url{http://www.StatsCanBeFun.com}.
@@ -13,7 +12,7 @@ Bugs and feature requests can be reported at: \url{https://github.com/dstanley4/
 
 A package overview can be obtained using the command: \code{vignette("apaTables")}
 
-Currently, the following tables can be created:
+   Currently, the following tables can be created:
 \itemize{
   \item Correlation tables - Correlation tables (with confidence intervals and descriptive statistics) are created from data frames using \code{\link{apa.cor.table}}.
   \item Single "block" regression tables - Single "block" regression tables are created from a regression object using \code{\link{apa.reg.table}}.

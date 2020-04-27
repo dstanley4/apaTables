@@ -4,8 +4,12 @@
 \alias{apa.reg.boot.table}
 \title{Creates a regresion table in APA style with bootstrap confidence intervals}
 \usage{
-apa.reg.boot.table(..., filename = NA, table.number = NA,
-  number.samples = 1000)
+apa.reg.boot.table(
+  ...,
+  filename = NA,
+  table.number = NA,
+  number.samples = 1000
+)
 }
 \arguments{
 \item{...}{Regression (i.e., lm) result objects. Typically, one for each block in the regression.}

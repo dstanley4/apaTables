@@ -4,12 +4,14 @@
 \name{Eysenck}
 \alias{Eysenck}
 \title{Eysenck data}
-\format{A data frame with 100 rows and 3 variables:
+\format{
+A data frame with 100 rows and 3 variables:
 \describe{
   \item{Age}{Young or Old}
   \item{Condition}{Experimental learning condition}
   \item{Recall}{Level of word recall}
-}}
+}
+}
 \source{
 \url{http://www.uvm.edu/~dhowell/methods7/DataFiles/Tab13-2.dat}
 }

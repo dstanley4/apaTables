@@ -4,8 +4,13 @@
 \alias{apa.aov.table}
 \title{Creates a fixed-effects ANOVA table in APA style}
 \usage{
-apa.aov.table(lm_output, filename, table.number = NA, conf.level = 0.9,
-  type = 3)
+apa.aov.table(
+  lm_output,
+  filename,
+  table.number = NA,
+  conf.level = 0.9,
+  type = 3
+)
 }
 \arguments{
 \item{lm_output}{Regression (i.e., lm) result objects. Typically, one for each block in the regression.}

@@ -4,12 +4,14 @@
 \name{fidler_thompson}
 \alias{fidler_thompson}
 \title{Fidler & Thompson (2001) Fixed-Effects ANOVA data}
-\format{A data frame with 24 rows and 3 variables:
+\format{
+A data frame with 24 rows and 3 variables:
 \describe{
   \item{a}{Independent variable: a}
   \item{b}{Independent variable: b}
   \item{dv}{Dependent variable: dv}
-}}
+}
+}
 \usage{
 data(fidler_thompson)
 }

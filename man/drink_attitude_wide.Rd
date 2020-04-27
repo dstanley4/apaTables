@@ -4,7 +4,8 @@
 \name{drink_attitude_wide}
 \alias{drink_attitude_wide}
 \title{drink attitude data from textbook}
-\format{A data frame with 20 rows and 10 columns. Drink and Imagery are within subject variables. Particpant is a factor.
+\format{
+A data frame with 20 rows and 10 columns. Drink and Imagery are within subject variables. Particpant is a factor.
 \describe{
   \item{participant}{Factor: Participant ID number}
   \item{beer_positive}{Attitude where drink=beer and imagery=positive}
@@ -16,7 +17,8 @@
   \item{water_positive}{Attitude where drink=water and imagery=positive}
   \item{water_negative}{Attitude where drink=water and imagery=negative}
   \item{water_neutral}{Attitude where drink=water and imagery=neutral}
-}}
+}
+}
 \source{
 \url{http://studysites.sagepub.com/dsur/study/}
 }

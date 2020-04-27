@@ -4,7 +4,8 @@
 \name{dating_wide}
 \alias{dating_wide}
 \title{dating data from textbook}
-\format{A data frame with 20 rows and 11 columns. Gender is a between subjects variable. Looks and Personality are within subject variables. Both gender and particpant are factors.
+\format{
+A data frame with 20 rows and 11 columns. Gender is a between subjects variable. Looks and Personality are within subject variables. Both gender and particpant are factors.
 \describe{
   \item{participant}{Factor: Participant ID number}
   \item{gender}{Factor: Gender: Male/Female}
@@ -17,7 +18,8 @@
   \item{attractive_none}{Date rating where looks=attractive and personality=none}
   \item{average_none}{Date rating where looks=average and personality=none}
   \item{ugly_none}{Date rating where looks=ugly and personality=none}
-}}
+}
+}
 \source{
 \url{http://studysites.sagepub.com/dsur/study/}
 }

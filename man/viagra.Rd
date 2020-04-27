@@ -4,11 +4,13 @@
 \name{viagra}
 \alias{viagra}
 \title{viagra data from textbook}
-\format{A data frame with 15 rows and 2 variables:
+\format{
+A data frame with 15 rows and 2 variables:
 \describe{
   \item{dose}{Level of viagra dose}
   \item{libido}{Libido after taking viagra}
-}}
+}
+}
 \source{
 \url{http://studysites.sagepub.com/dsur/study/}
 }

@@ -4,8 +4,15 @@
 \alias{apa.1way.table}
 \title{Creates a table of means and standard deviations for a 1-way ANOVA design in APA style}
 \usage{
-apa.1way.table(iv, dv, data, filename = NA, table.number = NA,
-  show.conf.interval = FALSE, landscape = FALSE)
+apa.1way.table(
+  iv,
+  dv,
+  data,
+  filename = NA,
+  table.number = NA,
+  show.conf.interval = FALSE,
+  landscape = FALSE
+)
 }
 \arguments{
 \item{iv}{Name of independent variable column in data frame}

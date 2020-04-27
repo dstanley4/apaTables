@@ -4,8 +4,15 @@
 \alias{apa.d.table}
 \title{Creates a d-values for all paired comparisons in APA style}
 \usage{
-apa.d.table(iv, dv, data, filename = NA, table.number = NA,
-  show.conf.interval = TRUE, landscape = TRUE)
+apa.d.table(
+  iv,
+  dv,
+  data,
+  filename = NA,
+  table.number = NA,
+  show.conf.interval = TRUE,
+  landscape = TRUE
+)
 }
 \arguments{
 \item{iv}{Name of independent variable column in data frame for all paired comparisons}
