@@ -63,7 +63,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
                     x <- data[,i]
                     y <- data[,j]
                     ctest      <- psych::corr.test(x, y, method=cor.method)
-                    cor_string <- txt.r_ext(ctest, show_stars)
+                    cor_string <- txt.r_esk(ctest, show_stars)
                     output_cor[i,j]     <- cor_string
                     output_cor_rtf[i,j] <- cor_string
 
