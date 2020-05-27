@@ -10,7 +10,8 @@ apa.cor.table(
   table.number = NA,
   show.conf.interval = TRUE,
   show.sig.stars = TRUE,
-  landscape = TRUE
+  landscape = TRUE,
+  cor.method = "pearson"
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ apa.cor.table(
 \item{show.sig.stars}{(TRUE/FALSE) Display stars for significance in table.}
 
 \item{landscape}{(TRUE/FALSE) Make RTF file landscape}
+
+\item{cor.method}{("pearson"/"spearman"/"kendall") The method used in the call to psych::corr.test}
 }
 \value{
 APA table object

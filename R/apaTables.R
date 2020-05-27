@@ -53,7 +53,6 @@ strip.leading.zero <- function(string.in) {
      return(string.out)
 }
 
-
 txt.ci<- function(cortest.result,strip_zero=TRUE) {
      ci.interval<-cortest.result$conf.int
      ci.lower<- ci.interval[1]
@@ -63,6 +62,14 @@ txt.ci<- function(cortest.result,strip_zero=TRUE) {
      return(output)
 }
 
+txt.ci_esk <- function(ctest,strip_zero=TRUE) {
+        #ci.interval<-cortest.result$conf.int
+        ci.lower<- ctest$ci$lower
+        ci.upper<- ctest$ci$upper
+
+        output <- txt.ci.brackets(ci.lower,ci.upper,strip_zero = strip_zero)
+        return(output)
+}
 
 txt.r <- function(ctest, show_stars = TRUE) {
      r.value=ctest$estimate
@@ -73,6 +80,17 @@ txt.r <- function(ctest, show_stars = TRUE) {
      }
      string.out=sprintf("%s",r.value.txt)
      return(string.out)
+}
+
+txt.r_esk <- function(ctest, show_stars = TRUE) {
+    r.value=ctest$ci$r
+    p.value=ctest$ci$p
+    r.value.txt <- strip.leading.zero(sprintf("%1.2f", r.value))
+    if (show_stars == TRUE) {
+            r.value.txt <- add.sig.stars(r.value.txt,p.value)
+    }
+    string.out=sprintf("%s",r.value.txt)
+    return(string.out)
 }
 
 rtf.R2 <- function(R2.value,p.value) {
