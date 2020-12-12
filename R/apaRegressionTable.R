@@ -13,6 +13,7 @@
 #' You might consider using the Algina, Keselman, & Penfield (2008) approach via the apa.reg.boot.table function
 #'
 #' @examples
+#' \dontrun{
 #' # View top few rows of goggles data set
 #' # from Discovering Statistics Using R
 #' head(album)
@@ -41,7 +42,7 @@
 #' #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 #' blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
 #' apa.reg.table(blk1,filename="exInteraction3.doc")
-#'
+#' }
 #' @export
 apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .95) {
      regression_results_list <- list(...)
@@ -151,8 +152,8 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
                last_block_lm <- cur_block_lm
 
                if (has_beta_cols(block_out_txt) == TRUE & (has_beta_cols(cur_block_out_txt) == FALSE)) {
-                    block_out_txt <- block_out_txt %>% select(-beta, -beta_CI, -r)
-                    block_out_rtf <- block_out_rtf %>% select(-beta, -beta_CI, -r)
+                    block_out_txt <- select(block_out_txt, -beta, -beta_CI, -r)
+                    block_out_rtf <- select(block_out_rtf, -beta, -beta_CI, -r)
                }
 
                block_out_txt <- rbind(block_out_txt,cur_block_out_txt)

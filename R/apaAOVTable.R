@@ -10,6 +10,7 @@
 #'
 #' Fidler, F., & Thompson, B. (2001). Computing correct confidence intervals for ANOVA fixed-and random-effects effect sizes. Educational and Psychological Measurement, 61(4), 575-604.
 #' @examples
+#' \dontrun{
 #' #Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
 #' options(contrasts = c("contr.helmert", "contr.poly"))
 #' lm_output <- lm(libido ~ dose, data = viagra)
@@ -26,6 +27,7 @@
 #' options(contrasts = c("contr.helmert", "contr.poly"))
 #' lm_output <- lm(attractiveness ~ gender*alcohol, data = goggles)
 #' apa.aov.table(lm_output, filename = "ex3_anova_table.doc")
+#' }
 #' @export
 apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=3) {
      table_number <- table.number

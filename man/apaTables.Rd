@@ -10,7 +10,6 @@ A common task faced by researchers is the creation of APA style (i.e., \emph{Ame
 \details{
 Bugs and feature requests can be reported at: \url{https://github.com/dstanley4/apaTables/issues}
 
-A package overview can be obtained using the command: \code{vignette("apaTables")}
 
    Currently, the following tables can be created:
 \itemize{
@@ -24,8 +23,8 @@ A package overview can be obtained using the command: \code{vignette("apaTables"
 \tabular{ll}{
 Package: \tab apaTables\cr
 Type: \tab Package\cr
-Version: \tab 2.0.5\cr
-Date: \tab 2018-08-29\cr
+Version: \tab 2.0.6\cr
+Date: \tab 2020-12-14\cr
 License: \tab MIT\cr
 }
 }

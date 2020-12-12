@@ -27,6 +27,7 @@ APA table object
 Creates a regresion table in APA style
 }
 \examples{
+\dontrun{
 # View top few rows of goggles data set
 # from Discovering Statistics Using R
 head(album)
@@ -55,7 +56,7 @@ apa.reg.table(blk1,blk2,blk3,filename="exInteraction2.doc")
 #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
 apa.reg.table(blk1,filename="exInteraction3.doc")
-
+}
 }
 \references{
 sr2 and delta R2 confidence intervals calculated via:

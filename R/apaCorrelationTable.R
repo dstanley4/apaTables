@@ -7,12 +7,14 @@
 #' @param landscape (TRUE/FALSE) Make RTF file landscape
 #' @return APA table object
 #' @examples
+#' \dontrun{
 #' # View top few rows of attitude data set
 #' head(attitude)
 #'
 #' # Use apa.cor.table function
 #' apa.cor.table(attitude)
 #' apa.cor.table(attitude, filename="ex.CorTable1.doc")
+#' }
 #' @export
 apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interval = TRUE, show.sig.stars = TRUE, landscape = TRUE) {
 

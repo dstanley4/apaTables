@@ -8,11 +8,13 @@
 #' @param landscape (TRUE/FALSE) Make RTF file landscape
 #' @return APA table object
 #' @examples
+#' \dontrun{
 #' # View top few rows of viagra data set from Discovering Statistics Using R
 #' head(viagra)
 #'
 #' # Use apa.d.table function
 #' apa.d.table(iv = dose, dv = libido, data = viagra, filename = "ex1_d_table.doc")
+#' }
 #' @export
 apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.interval = TRUE, landscape=TRUE){
      data <- as.data.frame(data)

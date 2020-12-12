@@ -7,7 +7,7 @@
 #' @references
 #' Algina, J. Keselman, H.J. & Penfield, R.J. (2008). Note on a confidence interval for the squared semipartial correlation coefficient. Educational and Psychological Measurement, 68, 734-741.
 #' @examples
-#'
+#' \dontrun{
 #' #Note: number.samples = 50 below.
 #' #      However, please use a value of 1000 or higher
 #'
@@ -18,18 +18,19 @@
 #'
 #' # Single block example
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
-#' \donttest{apa.reg.boot.table(blk1)}
-#' \donttest{apa.reg.boot.table(blk1,filename="exRegTable.doc")}
+#' apa.reg.boot.table(blk1)
+#' apa.reg.boot.table(blk1,filename="exRegTable.doc")
 #'
 #' # Two block example, more than two blocks can be used
 #' blk1 <- lm(sales ~ adverts, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
-#' \donttest{apa.reg.boot.table(blk1,blk2,filename="exRegBlocksTable.doc")}
+#' apa.reg.boot.table(blk1,blk2,filename="exRegBlocksTable.doc")
 #'
 #' # Interaction product-term test with blocks
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-#' \donttest{apa.reg.boot.table(blk1,blk2,filename="exInteraction1.doc")}
+#' apa.reg.boot.table(blk1,blk2,filename="exInteraction1.doc")
+#' }
 #' @export
 apa.reg.boot.table<-function(...,filename=NA, table.number=NA, number.samples = 1000) {
 

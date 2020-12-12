@@ -30,7 +30,7 @@ APA table object
 Creates an ANOVA table in APA style based output of ezANOVA command from ez package
 }
 \examples{
-#
+\dontrun{
 # ** Example 1: Between Participant Predictors
 #
 
@@ -185,5 +185,5 @@ dating_results <-ezANOVA(data = dating_long, dv = .(date_rating), wid = .(partic
 dating_table <- apa.ezANOVA.table(dating_results,
                                  filename = "ex3_mixed_table.doc")
 print(dating_table)
-
+}
 }

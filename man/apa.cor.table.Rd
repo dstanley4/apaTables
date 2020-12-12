@@ -33,10 +33,12 @@ APA table object
 Creates a correlation table in APA style with means and standard deviations
 }
 \examples{
+\dontrun{
 # View top few rows of attitude data set
 head(attitude)
 
 # Use apa.cor.table function
 apa.cor.table(attitude)
 apa.cor.table(attitude, filename="ex.CorTable1.doc")
+}
 }

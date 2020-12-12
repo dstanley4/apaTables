@@ -6,7 +6,7 @@
 #' @param table.number  Integer to use in table number output line
 #' @return APA table object
 #' @examples
-#'#
+#' \dontrun{
 #'# ** Example 1: Between Participant Predictors
 #'#
 #'
@@ -162,7 +162,7 @@
 #'dating_table <- apa.ezANOVA.table(dating_results,
 #'                                  filename = "ex3_mixed_table.doc")
 #'print(dating_table)
-#'
+#'}
 #' @export
 apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", filename, table.number=NA) {
 

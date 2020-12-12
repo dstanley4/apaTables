@@ -36,9 +36,11 @@ APA table object
 Creates a d-values for all paired comparisons in APA style
 }
 \examples{
+\dontrun{
 # View top few rows of viagra data set from Discovering Statistics Using R
 head(viagra)
 
 # Use apa.d.table function
 apa.d.table(iv = dose, dv = libido, data = viagra, filename = "ex1_d_table.doc")
+}
 }
