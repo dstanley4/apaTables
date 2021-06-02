@@ -11,6 +11,6 @@
 #' }
 #' @description  A data set from Howell (2012)
 #' @references Howell, D. (2012). Statistical methods for psychology. Cengage Learning.
-#' @source \url{http://www.uvm.edu/~dhowell/methods7/DataFiles/Tab13-2.dat}
+#' @source \url{https://www.uvm.edu/~statdhtx/methods8/DataFiles/Tab13-2.dat}
 "Eysenck"
 NULL

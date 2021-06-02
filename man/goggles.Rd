@@ -14,7 +14,7 @@ A data frame with 48 rows and 3 variables:
 }
 }
 \source{
-\url{http://studysites.sagepub.com/dsur/study/}
+\url{https://studysites.sagepub.com/dsur/study/}
 }
 \usage{
 data(goggles)

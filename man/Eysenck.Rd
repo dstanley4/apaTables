@@ -13,7 +13,7 @@ A data frame with 100 rows and 3 variables:
 }
 }
 \source{
-\url{http://www.uvm.edu/~dhowell/methods7/DataFiles/Tab13-2.dat}
+\url{https://www.uvm.edu/~statdhtx/methods8/DataFiles/Tab13-2.dat}
 }
 \usage{
 data(Eysenck)

@@ -20,7 +20,7 @@ A data frame with 20 rows and 10 columns. Drink and Imagery are within subject v
 }
 }
 \source{
-\url{http://studysites.sagepub.com/dsur/study/}
+\url{https://studysites.sagepub.com/dsur/study/}
 }
 \usage{
 data(drink_attitude_wide)

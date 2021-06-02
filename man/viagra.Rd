@@ -12,7 +12,7 @@ A data frame with 15 rows and 2 variables:
 }
 }
 \source{
-\url{http://studysites.sagepub.com/dsur/study/}
+\url{https://studysites.sagepub.com/dsur/study/}
 }
 \usage{
 data(viagra)

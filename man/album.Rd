@@ -14,7 +14,7 @@ A data frame with 200 rows and 4 variables:
 }
 }
 \source{
-\url{http://studysites.sagepub.com/dsur/study/}
+\url{https://studysites.sagepub.com/dsur/study/}
 }
 \usage{
 data(album)

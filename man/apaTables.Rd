@@ -10,6 +10,7 @@ A common task faced by researchers is the creation of APA style (i.e., \emph{Ame
 \details{
 Bugs and feature requests can be reported at: \url{https://github.com/dstanley4/apaTables/issues}
 
+ Tutorial at: \url{https://dstanley4.github.io/apaTables/articles/apaTables.html}
 
    Currently, the following tables can be created:
 \itemize{
@@ -23,8 +24,8 @@ Bugs and feature requests can be reported at: \url{https://github.com/dstanley4/
 \tabular{ll}{
 Package: \tab apaTables\cr
 Type: \tab Package\cr
-Version: \tab 2.0.6\cr
-Date: \tab 2020-12-14\cr
+Version: \tab 2.0.8\cr
+Date: \tab 2020-12-18\cr
 License: \tab MIT\cr
 }
 }

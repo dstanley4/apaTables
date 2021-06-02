@@ -45,4 +45,8 @@
 
 * Updated documentation to apa.cor.table
 
+# apaTable 2.0.7
+
+* Minor fixes
+
 

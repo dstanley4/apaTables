@@ -21,7 +21,7 @@ A data frame with 20 rows and 11 columns. Gender is a between subjects variable.
 }
 }
 \source{
-\url{http://studysites.sagepub.com/dsur/study/}
+\url{https://studysites.sagepub.com/dsur/study/}
 }
 \usage{
 data(dating_wide)
