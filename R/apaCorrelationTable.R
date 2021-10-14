@@ -5,6 +5,7 @@
 #' @param show.conf.interval  (TRUE/FALSE) Display confidence intervals in table. This argument is deprecated and will be removed from later versions.
 #' @param show.sig.stars  (TRUE/FALSE) Display stars for significance in table.
 #' @param landscape (TRUE/FALSE) Make RTF file landscape
+#' @param cor.method ("pearson"/"spearman"/"kendall") The method used in the call to psych::corr.test
 #' @return APA table object
 #' @examples
 #' \dontrun{
@@ -16,7 +17,7 @@
 #' apa.cor.table(attitude, filename="ex.CorTable1.doc")
 #' }
 #' @export
-apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interval = TRUE, show.sig.stars = TRUE, landscape = TRUE) {
+apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interval = TRUE, show.sig.stars = TRUE, landscape = TRUE, cor.method="pearson") {
 
      # test git tower April 23
      data <- as.data.frame(data)
@@ -63,12 +64,12 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
                if ((j<i)) {
                     x <- data[,i]
                     y <- data[,j]
-                    ctest      <- cor.test(x, y)
-                    cor_string <- txt.r(ctest, show_stars)
+                    ctest      <- psych::corr.test(x, y, method=cor.method)
+                    cor_string <- txt.r_esk(ctest, show_stars)
                     output_cor[i,j]     <- cor_string
                     output_cor_rtf[i,j] <- cor_string
 
-                    cor_ci_string  <- txt.ci(ctest)
+                    cor_ci_string  <- txt.ci_esk(ctest)
                     output_ci[i,j] <- cor_ci_string
                     output_ci_rtf[i,j] <- paste("{\\fs20",cor_ci_string,"}",sep="")
                } #end lower triangle
