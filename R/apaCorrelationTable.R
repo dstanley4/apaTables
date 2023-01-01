@@ -16,7 +16,7 @@
 #' apa.cor.table(attitude, filename="ex.CorTable1.doc")
 #' }
 #' @export
-apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interval = TRUE, show.sig.stars = TRUE, landscape = TRUE) {
+apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interval = TRUE, show.sig.stars = TRUE, landscape = TRUE, cor.method = "pearson", cor.exact = NULL, cor.conf.level = 0.95) {
 
      # test git tower April 23
      data <- as.data.frame(data)
@@ -26,7 +26,12 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
           cat("The ability to suppress reporting of reporting confidence intervals has been deprecated in this version.\nThe function argument show.conf.interval will be removed in a later version.\n")
      }
 
-     show.conf.interval = TRUE
+	 if (cor.method != "pearson") {
+		show.conf.interval = FALSE
+	 } else {
+		show.conf.interval = TRUE
+	 }
+	 
      show_conf_interval <- show.conf.interval
      show_stars <- show.sig.stars
 
@@ -63,14 +68,16 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
                if ((j<i)) {
                     x <- data[,i]
                     y <- data[,j]
-                    ctest      <- cor.test(x, y)
+                    ctest      <- cor.test(x, y, method = cor.method, exact = cor.exact, conf.level = cor.conf.level)
                     cor_string <- txt.r(ctest, show_stars)
                     output_cor[i,j]     <- cor_string
                     output_cor_rtf[i,j] <- cor_string
 
-                    cor_ci_string  <- txt.ci(ctest)
-                    output_ci[i,j] <- cor_ci_string
-                    output_ci_rtf[i,j] <- paste("{\\fs20",cor_ci_string,"}",sep="")
+                    if (show_conf_interval==TRUE) {
+						cor_ci_string  <- txt.ci(ctest)
+						output_ci[i,j] <- cor_ci_string
+						output_ci_rtf[i,j] <- paste("{\\fs20",cor_ci_string,"}",sep="")
+					}
                } #end lower triangle
           }#end j
      }#end i
@@ -122,9 +129,9 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
 
      if (show_conf_interval==TRUE) {
-          table_title <- "Means, standard deviations, and correlations with confidence intervals\n"
+          table_title <- paste0("Means, standard deviations, and correlations with confidence intervals [alpha = ",cor.conf.level,"]")
      } else {
-          table_title <- "Means, standard deviations, and correlations\n"
+          table_title <- paste0("Means, standard deviations, and correlations [alpha = ",cor.conf.level,"]")
      }
 
      #make table
@@ -160,11 +167,11 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
           output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
 
           if (show_conf_interval == TRUE) {
-               table_title <- "Means, standard deviations, and correlations with confidence intervals"
+               table_title <- paste0("Means, standard deviations, and correlations with confidence intervals [alpha = ",cor.conf.level,"]")
                table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation. The confidence interval is a plausible range of population correlations that could have caused the sample correlation (Cumming, 2014)."
 
           } else {
-               table_title <- "Means, standard deviations, and correlations"
+               table_title <- paste0("Means, standard deviations, and correlations [alpha = ",cor.conf.level,"]")
                table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively."
           }
 
