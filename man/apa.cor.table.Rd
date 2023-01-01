@@ -10,7 +10,10 @@ apa.cor.table(
   table.number = NA,
   show.conf.interval = TRUE,
   show.sig.stars = TRUE,
-  landscape = TRUE
+  landscape = TRUE,
+  cor.method = "pearson",
+  cor.exact = NULL,
+  cor.conf.level = 0.95
 )
 }
 \arguments{
@@ -25,6 +28,12 @@ apa.cor.table(
 \item{show.sig.stars}{(TRUE/FALSE) Display stars for significance in table.}
 
 \item{landscape}{(TRUE/FALSE) Make RTF file landscape}
+
+\item{cor.method}{("pearson", "kendall", "spearman") Correlation method to use - see cor.test for details}
+
+\item{cor.exact}{(TRUE/FALSE) a logical indicating whether an exact p-value should be computed - see cor.test for details}
+
+\item{cor.conf.level}{Confidence level to use - see cor.test for details}
 }
 \value{
 APA table object
