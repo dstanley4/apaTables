@@ -20,21 +20,28 @@ get.ci.partial.eta.squared <- function(F.value, df1, df2, conf.level=.90) {
 
      conf_level <- conf.level
 
-     F_limits <- MBESS::conf.limits.ncf(F=F_value, df.1=df1, df.2=df2, conf.level=conf_level)
-     LL_lambda <- F_limits$Lower.Limit
-     UL_lambda <- F_limits$Upper.Limit
+     LL_partial_eta2 <- NA
+     UL_partial_eta2 <- NA
+
+     if (requireNamespace("MBESS", quietly = TRUE)) {
+          F_limits <- MBESS::conf.limits.ncf(F=F_value, df.1=df1, df.2=df2, conf.level=conf_level)
+          LL_lambda <- F_limits$Lower.Limit
+          UL_lambda <- F_limits$Upper.Limit
 
 
-     LL_partial_eta2 <- get_partial_eta2_from_lambda(lambda=LL_lambda, df1=df1, df2=df2)
-     UL_partial_eta2 <- get_partial_eta2_from_lambda(lambda=UL_lambda, df1=df1, df2=df2)
+          LL_partial_eta2 <- get_partial_eta2_from_lambda(lambda=LL_lambda, df1=df1, df2=df2)
+          UL_partial_eta2 <- get_partial_eta2_from_lambda(lambda=UL_lambda, df1=df1, df2=df2)
 
 
-     if (is.na(LL_partial_eta2)) {
-          LL_partial_eta2 <- 0
-     }
+          if (is.na(LL_partial_eta2)) {
+               LL_partial_eta2 <- 0
+          }
 
-     if (is.na(UL_partial_eta2)) {
-          UL_partial_eta2 <- 1
+          if (is.na(UL_partial_eta2)) {
+               UL_partial_eta2 <- 1
+          }
+     } else {
+               cat("\nMBESS package needs to be installed to calculate eta-squared confidence intervals.\n")
      }
 
      output <- list()
