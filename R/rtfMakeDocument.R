@@ -9,6 +9,7 @@ write.rtf.table <- function(filename,txt.body,landscape=FALSE,paper="us", table.
      if (!any(paper == c("us","a4"))) {
           paper <- "us"
      }
+
      if (landscape == TRUE) {
           orientation <- "landscape"
      } else {

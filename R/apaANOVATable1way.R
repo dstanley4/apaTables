@@ -10,7 +10,8 @@
 #' @examples
 #' \dontrun{
 #' # Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
-#' apa.1way.table(iv=dose,dv=libido,data=viagra,filename="ex1_desc_table.doc")
+#' apa.1way.table(iv = dose,d v= libido,
+#'                data = viagra)
 #' }
 #' @export
 apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.interval=FALSE, landscape=FALSE){
@@ -65,7 +66,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
           table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
 
           if (show.conf.interval==TRUE) {
-               ci.txt <- "{\\i LL} and {\\i UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively. The confidence interval is a plausible range of population means that could have created a sample mean (Cumming, 2014)."
+               ci.txt <- "{\\i LL} and {\\i UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively."
                table.note <- paste(table.note,ci.txt)
           }
 

@@ -26,7 +26,7 @@ Imports:
     MBESS
 Suggests: testthat,
     knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 License: MIT License + file LICENSE
 LazyData: true
 Date: 2020-12-18
