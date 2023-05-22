@@ -26,6 +26,7 @@ Imports:
     MBESS
 Suggests: testthat,
     knitr
+Encoding: UTF-8
 RoxygenNote: 7.2.3
 License: MIT License + file LICENSE
 LazyData: true
