@@ -185,6 +185,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
                           landscape=landscape,
                           table.number=table_number)
      }
+
      return(tbl.console)
 }#end function
 

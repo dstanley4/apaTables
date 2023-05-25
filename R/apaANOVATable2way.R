@@ -104,6 +104,8 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show
                          table.title = table.title,
                          table.body = table.initial.console,
                          table.note = table.note.txt)
+
+
      class(tbl.console) <- "apa.table"
 
 
@@ -117,6 +119,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show
           }
           write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, table.number=table.number, landscape=landscape)
      }
+
 
      return(tbl.console)
 }

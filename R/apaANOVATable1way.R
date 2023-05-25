@@ -59,7 +59,6 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
      tables.out = one.way.table.console.and.rtf(iv=iv,dv=dv,iv.name=iv.name,dv.name=dv.name,show.conf.interval = show.conf.interval,table.number)
      tbl.console <- tables.out$tbl.console
      txt.body <- tables.out$txt.body
-     tbl.console$txt.body <- txt.body
 
      if (is.na(table.number)) {
           table.number = 0
@@ -67,21 +66,25 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
      }
 
 
-     if (make.file.flag == TRUE) {
           #Create RTF code
-          table.title <- sprintf("Descriptive statistics for %s as a function of %s. ",dv.name,iv.name)
-          table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
+     table.title <- sprintf("Descriptive statistics for %s as a function of %s. ",dv.name,iv.name)
+     table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
 
-          if (show.conf.interval==TRUE) {
-               ci.txt <- "{\\i LL} and {\\i UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively."
-               table.note <- paste(table.note,ci.txt)
-          }
-
-          #print("portrait")
-          write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, table.number=table.number,landscape=landscape)
+     if (show.conf.interval==TRUE) {
+          ci.txt <- "{\\i LL} and {\\i UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively."
+          table.note <- paste(table.note,ci.txt)
      }
 
-     tbl.console$landscape = landscape
+      if (make.file.flag == TRUE) {
+               write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, table.number=table.number,landscape=landscape)
+     }
+
+     tbl.console$rtf.body         <- txt.body
+     tbl.console$rtf.table.title  <- table.title
+     tbl.console$rtf.table.note   <- table.note
+
+     tbl.console$landscape      <- landscape
+
      return(tbl.console)
 }
 

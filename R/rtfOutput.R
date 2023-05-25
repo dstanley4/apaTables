@@ -86,13 +86,13 @@ get_start_page_txt <- function(list_of_tables, cur_table_number, paper) {
      number_of_tables <- length(list_of_tables)
 
      if (cur_table_number == 1) {
-          start_page_txt <- " "
+          start_page_txt <- ""
      } else {
           cur_is_landscape = list_of_tables[[cur_table_number]]$landscape
           prev_is_landscape = list_of_tables[[cur_table_number-1]]$landscape
 
           if (cur_is_landscape == prev_is_landscape) {
-               start_page_txt <- " "
+               start_page_txt <- ""
           } else {
                # new section
                if (cur_is_landscape) {
@@ -134,18 +134,18 @@ convert_single_table_to_txt <- function(cur_table_object){
      #Table X, title, and note
      blank.line <- c("{\\pard  \\par}")
      number.line <-sprintf("{\\pard Table %s \\par}",table.number.str)
-     if (is.na(cur_table_object$table.title)) {
+     if (is.na(cur_table_object$rtf.table.title)) {
           title.line <- sprintf("{\\pard\\i Table title goes here \\par}")
      } else {
-          title.line <- sprintf("{\\pard\\i %s\\par}",cur_table_object$table.title)
+          title.line <- sprintf("{\\pard\\i %s\\par}",cur_table_object$rtf.table.title)
      }
      if (is.na(cur_table_object$table.note)) {
           note.line <- sprintf("{\\i Table note goes here}")
      } else {
-          note.line <- sprintf("{\\pard \\par}{\\pard{\\i Note.} %s\\par}",cur_table_object$table.note)
+          note.line <- sprintf("{\\pard \\par}{\\pard{\\i Note.} %s\\par}",cur_table_object$rtf.table.note)
      }
 
-     txt.body <- cur_table_object$txt.body
+     txt.body <- cur_table_object$rtf.body
 
 
      txt.body <- c(number.line,blank.line,title.line, blank.line,txt.body,note.line)

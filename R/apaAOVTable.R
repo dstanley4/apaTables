@@ -162,6 +162,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
      }
 
+
      return(tbl_console)
 }
 
