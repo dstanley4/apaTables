@@ -10,7 +10,7 @@
 #' @examples
 #' \dontrun{
 #' # Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
-#' apa.1way.table(iv = dose,d v= libido,
+#' apa.1way.table(iv = dose, dv = libido,
 #'                data = viagra)
 #' }
 #' @export
@@ -59,6 +59,13 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
      tables.out = one.way.table.console.and.rtf(iv=iv,dv=dv,iv.name=iv.name,dv.name=dv.name,show.conf.interval = show.conf.interval,table.number)
      tbl.console <- tables.out$tbl.console
      txt.body <- tables.out$txt.body
+     tbl.console$txt.body <- txt.body
+
+     if (is.na(table.number)) {
+          table.number = 0
+          tbl.console$table.number = 0
+     }
+
 
      if (make.file.flag == TRUE) {
           #Create RTF code
@@ -74,7 +81,8 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
           write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, table.number=table.number,landscape=landscape)
      }
 
-          return(tbl.console)
+     tbl.console$landscape = landscape
+     return(tbl.console)
 }
 
 

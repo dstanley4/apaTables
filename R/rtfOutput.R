@@ -49,30 +49,23 @@ write.rtf.document <- function(filename, list_of_tables, paper="us") {
 }
 
 
-convert_tables_to_rtf_txt <- function(list_of_tables, paper) {
+convert_tables_to_rtf_txt <- function(list_of_tables, paper = "us") {
 
-     txt.body = "" #output text
+     txt_for_pages <- ""
 
      number_of_tables <- length(list_of_tables)
-     page_details <- list()
+
 
      for(cur_table_number in 1:number_of_tables) {
 
-          # to do: write function that get table_txt from each table
-          cur_page_details <- list(page_start1 = get_start_page_txt(list_of_tables, cur_table_number, paper),
-                                   page_start2 = "{",
-                                   table_txt = convert_single_table_to_txt(list_of_tables[[cur_table_number]]),
-                                   page_end1 = get_end_page_txt(list_of_tables, cur_table_number),
-                                   page_end2 = "}")
+          start_page_txt <- get_start_page_txt(list_of_tables, cur_table_number, paper)
+          end_page_txt <- get_end_page_txt(list_of_tables, cur_table_number)
+          table_for_page_txt <- convert_single_table_to_txt(list_of_tables[[cur_table_number]])
 
-          page_details[cur_table_number] <- cur_page_details
+          new_txt_for_pages <- c(start_page_txt, "{", table_for_page_txt, end_page_txt, "}")
+          txt_for_pages <- c(txt_for_pages, new_txt_for_pages)
 
      }
-
-     txt_for_pages <- ""
-     # converts page details to txt for set of pages
-     #txt_for_pages <- convert_page_details_to_txt(page_details)
-
      return(txt_for_pages)
 
 }
@@ -94,14 +87,15 @@ get_start_page_txt <- function(list_of_tables, cur_table_number, paper) {
 
 
      number_of_tables <- length(list_of_tables)
+
      if (cur_table_number == 1) {
           start_page_txt <- " "
      } else {
-          cur_is_landscape = list_of_tables[[cur_table_number]]$is_landscape
-          prev_is_landscape = list_of_tables[[cur_table_number-1]]$is_landscape
+          cur_is_landscape = list_of_tables[[cur_table_number]]$landscape
+          prev_is_landscape = list_of_tables[[cur_table_number-1]]$landscape
 
           if (cur_is_landscape == prev_is_landscape) {
-               start_page_txt <- ""
+               start_page_txt <- " "
           } else {
                # new section
                if (cur_is_landscape) {
@@ -117,11 +111,12 @@ get_start_page_txt <- function(list_of_tables, cur_table_number, paper) {
 
 get_end_page_txt <- function(list_of_tables, cur_table_number) {
      number_of_tables <- length(list_of_tables)
+
      if (cur_table_number == number_of_tables) {
           end_page_txt <- " "
      } else {
-          cur_is_landscape = list_of_tables[[cur_table_number]]$is_landscape
-          next_is_landscape = list_of_tables[[cur_table_number+1]]$is_landscape
+          cur_is_landscape = list_of_tables[[cur_table_number]]$landscape
+          next_is_landscape = list_of_tables[[cur_table_number+1]]$landscape
 
           if (cur_is_landscape == next_is_landscape) {
                end_page_txt <- "\\page"
@@ -135,15 +130,9 @@ get_end_page_txt <- function(list_of_tables, cur_table_number) {
 
 convert_single_table_to_txt <- function(cur_table_object){
 
-     txt.body <- cur_table_object$txt.body
 
-     table.number.str <- ""
-     if (is.na(cur_table_object$table.number)) {
-          table.number.str <- "XX"
-     } else {
-          table.number <- round(table.number)
-          table.number.str <- sprintf("%1.0f",table.number)
-     }
+     table.number<- cur_table_object$table.number
+     table.number.str <- sprintf("%1.0f",table.number)
 
      #Table X, title, and note
      blank.line <- c("{\\pard  \\par}")
@@ -158,6 +147,10 @@ convert_single_table_to_txt <- function(cur_table_object){
      } else {
           note.line <- sprintf("{\\pard \\par}{\\pard{\\i Note.} %s\\par}",cur_table_object$table.note)
      }
+
+     txt.body <- cur_table_object$txt.body
+
+
      txt.body <- c(number.line,blank.line,title.line, blank.line,txt.body,note.line)
 
      return(txt.body)

@@ -38,7 +38,7 @@ Creates a table of means and standard deviations for a 1-way ANOVA design in APA
 \examples{
 \dontrun{
 # Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
-apa.1way.table(iv = dose,d v= libido,
+apa.1way.table(iv = dose, dv = libido,
                data = viagra)
 }
 }
