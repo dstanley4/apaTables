@@ -79,6 +79,17 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
                write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, table.number=table.number,landscape=landscape)
      }
 
+
+     # Ver 3.0 add ons
+     markdown.table.note <- "$M$ and $SD$ represent mean and standard deviation, respectively. "
+     if (show.conf.interval==TRUE) {
+          markdown.ci.txt <- "$LL$ and $UL$ indicate the lower and upper limits of the 95 confidence interval for the mean, respectively."
+          markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
+     }
+
+     tbl.console$markdown.table.note <- markdown.table.note
+     tbl.console$markdown.table.title <- sprintf("*Descriptive statistics for %s as a function of %s*",dv.name,iv.name)
+
      tbl.console$rtf.body         <- txt.body
      tbl.console$rtf.table.title  <- table.title
      tbl.console$rtf.table.note   <- table.note
