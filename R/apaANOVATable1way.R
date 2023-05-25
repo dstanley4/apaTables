@@ -8,10 +8,16 @@
 #' @param landscape (TRUE/FALSE) Make RTF file landscape
 #' @return APA table object
 #' @examples
-#' \dontrun{
 #' # Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
-#' apa.1way.table(iv = dose, dv = libido,
-#'                data = viagra)
+#'
+#' table1 <- apa.1way.table(iv = dose, dv = libido,
+#'                data = viagra, table.number = 1)
+#'
+#' apaTables:::apa.save(filename = "table1.doc", table1)
+#'
+#' # delete demo file
+#' if (file.exists("table1.doc")) {
+#'      file.remove("table1.doc")
 #' }
 #' @export
 apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.interval=FALSE, landscape=FALSE){
