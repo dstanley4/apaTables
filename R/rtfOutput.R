@@ -153,4 +153,39 @@ convert_single_table_to_txt <- function(cur_table_object){
      return(txt.body)
 }
 
+apa.knit.table.for.pdf <- function(table_object){
 
+     table_type = table_object$table.type
+
+     if (table_type == "oneway") {
+          table_out <- apa.knit.oneway.for.pdf(table_object)
+
+     }
+
+
+     return(table_out)
+}
+
+
+apa.knit.oneway.for.pdf <- function(table_object){
+
+     table_df <- table_object$table.body
+
+     table_column_labels <- table_object$markdown.column.labels
+     table_column_center <- table_object$markdown.column.centering
+     table_note          <- table_object$markdown.table.note
+     table_title         <- table_object$markdown.table.title
+
+
+     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+                                  col.names = table_column_labels,
+                                  format = "latex",
+                                  align = table_column_center,
+                                  caption = table_title)
+
+     table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
+
+     table_out <- kableExtra::footnote(table_out, general = table_note, general_title = " Note.", threeparttable = T)
+
+     return(table_out)
+}

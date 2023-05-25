@@ -87,20 +87,24 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
 
 
      # Ver 3.0 add ons
-     markdown.table.note <- "$M$ and $SD$ represent mean and standard deviation, respectively. "
+     markdown.table.note <- "M and SD represent mean and standard deviation, respectively. "
      if (show.conf.interval==TRUE) {
-          markdown.ci.txt <- "$LL$ and $UL$ indicate the lower and upper limits of the 95 confidence interval for the mean, respectively."
+          markdown.ci.txt <- "LL and UL indicate the lower and upper limits of the 95% confidence interval for the mean, respectively."
           markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
      }
 
+     tbl.console$markdown.column.labels <-tables.out$markdown.column.labels
+     tbl.console$markdown.column.centering <- make_markdown_column_alignment(tables.out$markdown.column.labels)
      tbl.console$markdown.table.note <- markdown.table.note
-     tbl.console$markdown.table.title <- sprintf("*Descriptive statistics for %s as a function of %s*",dv.name,iv.name)
+     tbl.console$markdown.table.title <- sprintf("Descriptive statistics for %s as a function of %s",dv.name,iv.name)
 
      tbl.console$rtf.body         <- txt.body
      tbl.console$rtf.table.title  <- table.title
      tbl.console$rtf.table.note   <- table.note
 
      tbl.console$landscape      <- landscape
+     tbl.console$table.type      <- "oneway"
+
 
      return(tbl.console)
 }
@@ -153,6 +157,10 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      table.out <- cbind(level.names,table.out)
      names(table.out)[1] <- "IV"
 
+
+     #make markdown column names
+     markdown.column.labels <- get_oneway_markdown_column_names(table.out)
+
      #make console output
      table.title <- sprintf("Descriptive statistics for %s as a function of %s. ",dv.name,iv.name)
 
@@ -204,9 +212,11 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      }
 
 
+
      output <- list()
      output$tbl.console <- tbl.console
      output$txt.body <- txt.body
+     output$markdown.column.labels <- markdown.column.labels
      return(output)
 }
 
@@ -242,6 +252,24 @@ oneway_rtf_column_names <- function(column_name) {
             SD = "{\\i SD}")
 }
 
+oneway_markdown_column_names <- function(column_name) {
+     switch(column_name,
+            IV = "IV",
+            M = "$M$",
+            CI = "95\\% CI [LL, UL]",
+            SD = "$SD$")
+}
+
+get_oneway_markdown_column_names <- function(df) {
+     n <- names(df)
+     names_out <- c()
+     for (i in 1:length(n)) {
+          names_out[i] <-oneway_markdown_column_names(n[i])
+     }
+     return(names_out)
+}
+
+
 get_oneway_rtf_column_names <- function(df) {
      n <- names(df)
      names_out <- c()
@@ -269,3 +297,10 @@ get_oneway_column_names <- function(df) {
      return(names_out)
 }
 
+
+make_markdown_column_alignment <- function(column_names) {
+     N = length(column_names)
+     output = rep("c", N)
+     output[1] <- "l"
+     return(output)
+}
