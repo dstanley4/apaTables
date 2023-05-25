@@ -1,9 +1,6 @@
-apa.save <- function(filename, ...) {
-     tables_in <- list(...)
-     # create document
-     num_tables = length(tables_in)
-     for (cur_table in 1:num_tables) {
-     }
+apa.save <- function(filename, ..., paper = "us") {
+     list_of_tables <- list(...)
+     write.rtf.document(filename, list_of_tables, paper)
 }
 
 write.rtf.document <- function(filename, list_of_tables, paper="us") {
