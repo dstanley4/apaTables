@@ -87,9 +87,9 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
 
 
      # Ver 3.0 add ons
-     markdown.table.note <- "M and SD represent mean and standard deviation, respectively. "
+     markdown.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
      if (show.conf.interval==TRUE) {
-          markdown.ci.txt <- "LL and UL indicate the lower and upper limits of the 95% confidence interval for the mean, respectively."
+          markdown.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively."
           markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
      }
 
@@ -256,7 +256,7 @@ oneway_markdown_column_names <- function(column_name) {
      switch(column_name,
             IV = "IV",
             M = "$M$",
-            CI = "95\\% CI [LL, UL]",
+            CI = "[LL, UL]",
             SD = "$SD$")
 }
 

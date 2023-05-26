@@ -183,9 +183,9 @@ apa.knit.oneway.for.pdf <- function(table_object){
                                   align = table_column_center,
                                   caption = table_title)
 
+     table_out <- kableExtra::add_header_above(table_out, c(" " = 2, "95\\\\% CI" =1, " "), escape = FALSE)
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-
-     table_out <- kableExtra::footnote(table_out, general = table_note, general_title = " Note.", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
 
      return(table_out)
 }
