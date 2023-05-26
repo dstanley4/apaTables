@@ -171,10 +171,10 @@ apa.knit.oneway.for.pdf <- function(table_object){
 
      table_df <- table_object$table.body
 
-     table_column_labels <- table_object$markdown.column.labels
-     table_column_center <- table_object$markdown.column.centering
-     table_note          <- table_object$markdown.table.note
-     table_title         <- table_object$markdown.table.title
+     table_column_labels <- table_object$latex.column.labels
+     table_column_center <- table_object$latex.column.centering
+     table_note          <- table_object$latex.table.note
+     table_title         <- table_object$latex.table.title
 
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,

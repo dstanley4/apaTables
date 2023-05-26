@@ -93,10 +93,10 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
           markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
      }
 
-     tbl.console$markdown.column.labels <-tables.out$markdown.column.labels
-     tbl.console$markdown.column.centering <- make_markdown_column_alignment(tables.out$markdown.column.labels)
-     tbl.console$markdown.table.note <- markdown.table.note
-     tbl.console$markdown.table.title <- sprintf("Descriptive statistics for %s as a function of %s",dv.name,iv.name)
+     tbl.console$latex.column.labels <-tables.out$markdown.column.labels
+     tbl.console$latex.column.centering <- make_markdown_column_alignment(tables.out$markdown.column.labels)
+     tbl.console$latex.table.note <- markdown.table.note
+     tbl.console$latex.table.title <- sprintf("Descriptive statistics for %s as a function of %s",dv.name,iv.name)
 
      tbl.console$rtf.body         <- txt.body
      tbl.console$rtf.table.title  <- table.title
