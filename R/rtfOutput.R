@@ -155,13 +155,15 @@ convert_single_table_to_txt <- function(cur_table_object){
 
 apa.knit.table.for.pdf <- function(table_object){
 
-     table_type = table_object$table.type
+     table_type <- table_object$table.type
+
+     table_out <- " "
 
      if (table_type == "oneway") {
           table_out <- apa.knit.oneway.for.pdf(table_object)
+     } else if (table_type == "twoway") {
 
      }
-
 
      return(table_out)
 }

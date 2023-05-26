@@ -14,25 +14,23 @@
 #'
 #' table2 <- apa.2way.table(iv1 = a, iv2 = b, dv = dv,
 #'                           data = fidler_thompson,
-#'                           landscape = TRUE)
+#'                           landscape = TRUE,
+#'                           table.number = 2)
 #'
-#' apaTables:::apa.save(filename = "table2.doc", table2)
-#'
-#' # delete demo file
-#' if (file.exists("table2.doc")) {
-#'      file.remove("table2.doc")
-#' }
 #'
 #' # Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 #'
 #' table3 <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
-#'                          data = goggles)
+#'                          data = goggles, table.number = 3)
 #'
-#' apaTables:::apa.save(filename = "table3.doc", table3)
+#'
+#' # Save both Table 2 and Table 3 in the same document
+#'
+#' apaTables:::apa.save(filename = "my_tables.doc", table2, table3)
 #'
 #' # delete demo file
-#' if (file.exists("table3.doc")) {
-#'      file.remove("table3.doc")
+#' if (file.exists("my_tables.doc")) {
+#'      file.remove("my_tables.doc")
 #' }
 #' @export
 apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show.conf.interval = FALSE, show.marginal.means = FALSE, landscape=TRUE){
@@ -91,9 +89,13 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show
           txt.body <- apa.2way.console.to.rtf(table.initial.console)
 
      } else {
-          output <- apa.2way.table.ci.work(iv1=iv1,iv2=iv2,dv=dv,iv1.name=iv1.name,iv2.name=iv2.name,dv.name=dv.name,table.number=table.number)
-          txt.body <- output$rtf
-          table.initial.console <- output$console
+          # output <- apa.2way.table.ci.work(iv1=iv1,iv2=iv2,dv=dv,iv1.name=iv1.name,iv2.name=iv2.name,dv.name=dv.name,table.number=table.number)
+          # txt.body <- output$rtf
+          # table.initial.console <- output$console
+          output.information <- apa.2way.table.ci.work(iv1=iv1,iv2=iv2,dv=dv,iv1.name=iv1.name,iv2.name=iv2.name,dv.name=dv.name,table.number=table.number)
+          txt.body <- output.information$rtf
+          table.initial.console <- output.information$console
+
      }
 
      #make table title
@@ -126,17 +128,50 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename=NA, table.number=NA,show
      class(tbl.console) <- "apa.table"
 
 
-     if (make.file.flag == TRUE) {
-          rtf.title <- table.title
-          table.title <- rtf.title
-          table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
-          if (show.conf.interval==TRUE) {
-               ci.txt <- "{\\i LL} and {\\i UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively. The confidence interval is a plausible range of population means that could have created a sample mean (Cumming, 2014)."
-               table.note <- paste(table.note,ci.txt)
-          }
-          write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, table.number=table.number, landscape=landscape)
+     rtf.title <- table.title
+     table.title <- rtf.title
+     table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
+     if (show.conf.interval==TRUE) {
+          ci.txt <- "{\\i LL} and {\\i UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively. The confidence interval is a plausible range of population means that could have created a sample mean (Cumming, 2014)."
+          table.note <- paste(table.note,ci.txt)
      }
 
+     if (make.file.flag == TRUE) {
+               write.rtf.table(filename = filename,txt.body = txt.body,table.title = table.title, table.note = table.note, table.number=table.number, landscape=landscape)
+     }
+
+     # Ver 3.0 add ons
+     if (is.na(table.number)) {
+          table.number = 0
+          tbl.console$table.number = 0
+     }
+
+     markdown.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
+     if (show.conf.interval==TRUE) {
+          markdown.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
+          markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
+     }
+
+     tbl.console$latex.column.labels <-output.information$markdown.column.labels
+     tbl.console$latex.column.centering <- make_markdown_column_alignment(output.information$markdown.column.labels)
+     tbl.console$latex.table.note <- markdown.table.note
+     tbl.console$latex.table.title <- sprintf("Means and standard deviations for %s as a function of a %1.0f(%s) X %1.0f(%s) design",dv.name,iv1.num.levels,iv1.name,iv2.num.levels,iv2.name)
+
+     tbl.console$rtf.body         <- txt.body
+     tbl.console$rtf.table.title  <- table.title
+     tbl.console$rtf.table.note   <- table.note
+
+     tbl.console$landscape      <- landscape
+
+     if (show.conf.interval == FALSE) {
+          if (show.marginal.means == TRUE) {
+               tbl.console$table.type     <- "twoway-marginal"
+          } else {
+               tbl.console$table.type     <- "twoway-nomarginal"
+          }
+     } else {
+          tbl.console$table.type     <- "twoway-ci-nomarginal"
+     }
 
      return(tbl.console)
 }

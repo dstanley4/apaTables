@@ -46,24 +46,22 @@ Creates a table of means and standard deviations for a 2-way ANOVA design in APA
 
 table2 <- apa.2way.table(iv1 = a, iv2 = b, dv = dv,
                           data = fidler_thompson,
-                          landscape = TRUE)
+                          landscape = TRUE,
+                          table.number = 2)
 
-apaTables:::apa.save(filename = "table2.doc", table2)
-
-# delete demo file
-if (file.exists("table2.doc")) {
-     file.remove("table2.doc")
-}
 
 # Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 
 table3 <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
-                         data = goggles)
+                         data = goggles, table.number = 3)
 
-apaTables:::apa.save(filename = "table3.doc", table3)
+
+# Save both Table 2 and Table 3 in the same document
+
+apaTables:::apa.save(filename = "my_tables.doc", table2, table3)
 
 # delete demo file
-if (file.exists("table3.doc")) {
-     file.remove("table3.doc")
+if (file.exists("my_tables.doc")) {
+     file.remove("my_tables.doc")
 }
 }
