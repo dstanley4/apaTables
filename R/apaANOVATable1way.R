@@ -89,7 +89,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
      # Ver 3.0 add ons
      markdown.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
      if (show.conf.interval==TRUE) {
-          markdown.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively."
+          markdown.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
           markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
      }
 
@@ -170,7 +170,7 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
 
      table.note <- "Note. M and SD represent mean and standard deviation, respectively.\n"
      if (show.conf.interval==TRUE) {
-          ci.txt <- "LL and UL indicate the lower and upper limits of the 95% confidence interval \nfor the mean, respectively. \nThe confidence interval is a plausible range of population means that could \nhave caused a sample mean (Cumming, 2014)."
+          ci.txt <- "LL and UL indicate the lower and upper limits of the 95% confidence interval \nfor the mean, respectively."
           table.note <- paste(table.note,ci.txt,sep="")
      }
      tbl.console <- list()
