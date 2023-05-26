@@ -15,6 +15,10 @@
 #'
 #' apaTables:::apa.save(filename = "table1.doc", table1)
 #'
+#' # Create a table for your PDF
+#' # Include the line below in your Rmarkdown or Quarto document
+#' apaTables:::apa.knit.table.for.pdf(table1)
+#'
 #' # delete demo file
 #' if (file.exists("table1.doc")) {
 #'      file.remove("table1.doc")
