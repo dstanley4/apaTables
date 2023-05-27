@@ -304,7 +304,7 @@ get_oneway_column_names <- function(df) {
 
 make_markdown_column_alignment <- function(column_names) {
      N = length(column_names)
-     output = rep("c", N)
+     output = rep("r", N)
      output[1] <- "l"
      return(output)
 }

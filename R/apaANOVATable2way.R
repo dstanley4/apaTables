@@ -82,11 +82,29 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
      dv <- data[,dv.name]
 
      if (show.conf.interval==FALSE) {
-          output.information <- apa.2way.table.work(iv1=iv1,iv2=iv2,dv=dv,iv1.name=iv1.name,iv2.name=iv2.name,dv.name=dv.name,show.marginal.means=show.marginal.means,show.conf.interval=show.conf.interval)
+          output.information <- apa.2way.table.work(iv1 = iv1, iv2 = iv2, dv = dv,
+                                                    iv1.name = iv1.name, iv2.name = iv2.name, dv.name = dv.name,
+                                                    show.marginal.means = show.marginal.means,
+                                                    show.conf.interval = show.conf.interval)
 
           #store output unaltered for console output
           table.initial.console <- output.information
           txt.body <- apa.2way.console.to.rtf(table.initial.console)
+
+
+          # create latex table
+          rows.columns.out <- dim(output.information)[1]
+          latex.body <- output.information[3:rows.columns.out,]
+          latex.body.names = output.information[2,]
+          names(latex.body) <- latex.body.names
+          if (show.marginal.means == FALSE) {
+               latex.extra.header1 = c(" ", levels(iv2))
+          } else {
+               latex.extra.header1 = c(" ", levels(iv2), "Marginal")
+          }
+
+          latex.extra.header2 = iv2.name
+
 
      } else {
           # output <- apa.2way.table.ci.work(iv1=iv1,iv2=iv2,dv=dv,iv1.name=iv1.name,iv2.name=iv2.name,dv.name=dv.name,table.number=table.number)
@@ -146,15 +164,22 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
           tbl.console$table.number = 0
      }
 
-     markdown.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
+     latex.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
      if (show.conf.interval==TRUE) {
           markdown.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
           markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
      }
 
-     tbl.console$latex.column.labels <-output.information$markdown.column.labels
-     tbl.console$latex.column.centering <- make_markdown_column_alignment(output.information$markdown.column.labels)
-     tbl.console$latex.table.note <- markdown.table.note
+
+     # V3
+
+     tbl.console$latex.body <- latex.body
+     tbl.console$latex.extra.header1 <- latex.extra.header1
+     tbl.console$latex.extra.header2 <- iv2.name
+     tbl.console$latex.column.labels <- get_oneway_latex_column_names(latex.body)
+     tbl.console$latex.column.labels[1] <- " "
+     tbl.console$latex.column.centering <- make_markdown_column_alignment(tbl.console$latex.column.labels)
+     tbl.console$latex.table.note <- latex.table.note
      tbl.console$latex.table.title <- sprintf("Means and standard deviations for %s as a function of a %1.0f(%s) X %1.0f(%s) design",dv.name,iv1.num.levels,iv1.name,iv2.num.levels,iv2.name)
 
      tbl.console$rtf.body         <- txt.body
@@ -164,13 +189,9 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
      tbl.console$landscape      <- landscape
 
      if (show.conf.interval == FALSE) {
-          if (show.marginal.means == TRUE) {
-               tbl.console$table.type     <- "twoway-marginal"
-          } else {
-               tbl.console$table.type     <- "twoway-nomarginal"
-          }
+               tbl.console$table.type     <- "twoway"
      } else {
-          tbl.console$table.type     <- "twoway-ci-nomarginal"
+          tbl.console$table.type     <- "twoway-ci"
      }
 
      return(tbl.console)
@@ -286,9 +307,6 @@ apa.2way.table.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,show.margin
                columns.out <- rbind(columns.out,iv2.marginal.strung.out)
           }
      }
-
-
-
 
 
      #add labels for m and sd as row
