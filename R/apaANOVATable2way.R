@@ -105,15 +105,27 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
 
           latex.extra.header2 = iv2.name
 
+          latex.group.names = ""
+          latex.group.num.per.group = 0
 
      } else {
           # output <- apa.2way.table.ci.work(iv1=iv1,iv2=iv2,dv=dv,iv1.name=iv1.name,iv2.name=iv2.name,dv.name=dv.name,table.number=table.number)
           # txt.body <- output$rtf
           # table.initial.console <- output$console
-          output.information <- apa.2way.table.ci.work(iv1=iv1,iv2=iv2,dv=dv,iv1.name=iv1.name,iv2.name=iv2.name,dv.name=dv.name,table.number=table.number)
+          output.information <- apa.2way.table.ci.work(iv1 = iv1, iv2 = iv2, dv = dv,
+                                                       iv1.name = iv1.name, iv2.name = iv2.name,
+                                                       dv.name = dv.name,
+                                                       table.number = table.number)
           txt.body <- output.information$rtf
           table.initial.console <- output.information$console
 
+          # create latex table
+          latex.body.temp <- output.information$latex.body
+          rows.columns.out <- dim(latex.body.temp)[1]
+          latex.body <- latex.body.temp
+          latex.group.names = paste0(paste0(iv2.name, ": "), levels(iv2))
+          latex.group.num.per.group = length(levels(iv1))
+          latex.extra.header1 <- " "
      }
 
      #make table title
@@ -166,12 +178,15 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
 
      latex.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
      if (show.conf.interval==TRUE) {
-          markdown.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
-          markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
+          latex.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
+          latex.table.note <- paste(latex.table.note, latex.ci.txt)
      }
 
 
      # V3
+
+     tbl.console$latex.group.names <- latex.group.names
+     tbl.console$latex.group.num.per.group <- latex.group.num.per.group
 
      tbl.console$latex.body <- latex.body
      tbl.console$latex.extra.header1 <- latex.extra.header1
@@ -187,6 +202,9 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
      tbl.console$rtf.table.note   <- table.note
 
      tbl.console$landscape      <- landscape
+
+
+
 
      if (show.conf.interval == FALSE) {
                tbl.console$table.type     <- "twoway"
@@ -384,13 +402,17 @@ apa.2way.table.ci.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,table.nu
           cur.dv <- dv[iv2==cur.iv2.level]
           cur.iv <- iv1[iv2==cur.iv2.level]
 
-          tables.out = one.way.table.console.and.rtf(iv=cur.iv,dv=cur.dv,iv.name=iv1.name,dv.name=dv.name,show.conf.interval = TRUE,table.number,add.blank.header=TRUE)
+          tables.out = one.way.table.console.and.rtf(iv = cur.iv, dv = cur.dv, iv.name = iv1.name,
+                                                     dv.name = dv.name,
+                                                     show.conf.interval = TRUE,
+                                                     table.number, add.blank.header = TRUE)
 
           #console
 
           if (count==1) {
                tbl.console.output <- tables.out$tbl.console
                tbl.console <- tbl.console.output$table.body
+               latex.body <- tbl.console
 
                tbl.console <- add.blank.first.row(tbl.console)
                tbl.console[1,1] <- sprintf("%s",iv1.name)
@@ -400,6 +422,7 @@ apa.2way.table.ci.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,table.nu
                console.data <- tbl.console
           } else {
                tbl.console <- tables.out$tbl.console$table.body
+               latex.cur.body <- tbl.console
 
                tbl.console <- add.blank.first.row(tbl.console)
                tbl.console[1,1] <- sprintf("%s",iv1.name)
@@ -409,6 +432,7 @@ apa.2way.table.ci.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,table.nu
                tbl.console <- add.blank.first.row(tbl.console)
 
                console.data <- my.rbind(console.data,tbl.console,1)
+               latex.body <- rbind(latex.body, latex.cur.body)
           }
           my.col.names <- colnames(console.data)
           my.col.names[1] <- ""
@@ -426,9 +450,14 @@ apa.2way.table.ci.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,table.nu
      }
      final.count <- count
 
+     latex.names <- names(latex.body)
+     latex.names[3] <- "CI"
+     names(latex.body) <- latex.names
+
      output <- list()
      output$rtf <- rtf.data
      output$console <- tbl.console.output$table.body
+     output$latex.body <- latex.body
      return(output)
 }
 

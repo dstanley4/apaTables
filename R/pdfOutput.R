@@ -8,7 +8,47 @@ apa.knit.table.for.pdf <- function(table_object){
           table_out <- apa.knit.oneway.for.pdf(table_object)
      } else if (table_type == "twoway") {
           table_out <- apa.knit.twoway.for.pdf(table_object)
+     } else if (table_type == "twoway-ci") {
+          table_out <- apa.knit.twoway.ci.for.pdf(table_object)
      }
+     return(table_out)
+}
+
+
+apa.knit.twoway.ci.for.pdf <- function(table_object){
+
+     table_df <- table_object$latex.body
+     rownames(table_df) <- NULL
+
+     latex_group_names <- table_object$latex.group.names
+     latex_num_groups <- length(latex_group_names)
+     latex_group_num_per_group <- table_object$latex.group.num.per.group
+
+     table_column_labels <- table_object$latex.column.labels
+     table_column_center <- table_object$latex.column.centering
+     table_note          <- table_object$latex.table.note
+     table_title         <- table_object$latex.table.title
+
+
+
+     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+                                  col.names = table_column_labels,
+                                  format = "latex",
+                                  align = c("l","r","c","r"),
+                                  caption = table_title)
+
+     group_rows <- c(1, latex_group_num_per_group)
+     for (i in 1:latex_num_groups) {
+          cur_level_name <- latex_group_names[i]
+          cur_group_rows <- group_rows + (i-1)*latex_group_num_per_group
+          table_out <- kableExtra::pack_rows(table_out, cur_level_name, cur_group_rows[1], cur_group_rows[2], bold = FALSE)
+     }
+
+     table_out <- kableExtra::add_header_above(table_out, c(" " = 2, "95\\\\% CI", " "), escape = FALSE)
+
+     table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+
 
      return(table_out)
 }
