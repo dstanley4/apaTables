@@ -177,7 +177,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
      tbl.console$latex.extra.header1 <- latex.extra.header1
      tbl.console$latex.extra.header2 <- iv2.name
      tbl.console$latex.column.labels <- get_oneway_latex_column_names(latex.body)
-     tbl.console$latex.column.labels[1] <- " "
+     tbl.console$latex.column.labels[1] <- iv1.name
      tbl.console$latex.column.centering <- make_markdown_column_alignment(tbl.console$latex.column.labels)
      tbl.console$latex.table.note <- latex.table.note
      tbl.console$latex.table.title <- sprintf("Means and standard deviations for %s as a function of a %1.0f(%s) X %1.0f(%s) design",dv.name,iv1.num.levels,iv1.name,iv2.num.levels,iv2.name)
