@@ -97,7 +97,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
           markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
      }
 
-     tbl.console$latex.column.labels <-tables.out$markdown.column.labels
+     tbl.console$latex.column.labels <-tables.out$latex.column.labels
      tbl.console$latex.column.centering <- make_markdown_column_alignment(tables.out$markdown.column.labels)
      tbl.console$latex.table.note <- markdown.table.note
      tbl.console$latex.table.title <- sprintf("Descriptive statistics for %s as a function of %s",dv.name,iv.name)
@@ -162,8 +162,8 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      names(table.out)[1] <- "IV"
 
 
-     #make markdown column names
-     markdown.column.labels <- get_oneway_markdown_column_names(table.out)
+     #make latex column names
+     latex.column.labels <- get_oneway_latex_column_names(table.out)
 
      #make console output
      table.title <- sprintf("Descriptive statistics for %s as a function of %s. ",dv.name,iv.name)
@@ -220,7 +220,7 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      output <- list()
      output$tbl.console <- tbl.console
      output$txt.body <- txt.body
-     output$markdown.column.labels <- markdown.column.labels
+     output$latex.column.labels <- latex.column.labels
      return(output)
 }
 
@@ -256,7 +256,7 @@ oneway_rtf_column_names <- function(column_name) {
             SD = "{\\i SD}")
 }
 
-oneway_markdown_column_names <- function(column_name) {
+oneway_latex_column_names <- function(column_name) {
      switch(column_name,
             IV = "IV",
             M = "$M$",
@@ -264,11 +264,11 @@ oneway_markdown_column_names <- function(column_name) {
             SD = "$SD$")
 }
 
-get_oneway_markdown_column_names <- function(df) {
+get_oneway_latex_column_names <- function(df) {
      n <- names(df)
      names_out <- c()
      for (i in 1:length(n)) {
-          names_out[i] <-oneway_markdown_column_names(n[i])
+          names_out[i] <-oneway_latex_column_names(n[i])
      }
      return(names_out)
 }
