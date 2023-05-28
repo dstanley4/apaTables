@@ -19,8 +19,8 @@ d_value_test2 <- function() {
 cor_test1 <- function() {
      a <- datasets::attitude
      x <- apa.cor.table(a)
-     r_apa <- x$table.body[3,4] # should be string .83**
-     r_CI  <- x$table.body[4,4] # should be string [.66, .91]
+     r_apa <- x$table.body[5,4] # should be string .83**
+     r_CI  <- x$table.body[6,4] # should be string [.66, .91]
 
      apa_m  <- x$table.body[1,2]
      apa_sd <- x$table.body[1,3]

@@ -4,31 +4,44 @@
 #' @param table.number  Integer to use in table number output line
 #' @param show.conf.interval  (TRUE/FALSE) Display confidence intervals in table. This argument is deprecated and will be removed from later versions.
 #' @param show.sig.stars  (TRUE/FALSE) Display stars for significance in table.
+#' @param show.pvalue  (TRUE/FALSE) Display p-value in table.
 #' @param landscape (TRUE/FALSE) Make RTF file landscape
 #' @return APA table object
 #' @examples
-#' \dontrun{
 #' # View top few rows of attitude data set
 #' head(attitude)
 #'
 #' # Use apa.cor.table function
-#' apa.cor.table(attitude)
-#' apa.cor.table(attitude, filename="ex.CorTable1.doc")
+#' table1 <- apa.cor.table(attitude)
+#'
+#'
+#' # Save Table 1 in a .doc document
+#' apaTables:::apa.save(filename = "table1.doc", table1)
+#'
+#'
+#' # Create a table for your PDF
+#' # Include the lines below in your rmarkdown or Quarto document
+#' apaTables:::apa.knit.table.for.pdf(table1)
+#' # For better results:
+#' # BEFORE the code chunk adjust the line spacing to 0.5
+#' # \renewcommand{\arraystretch}{.5}
+#' # AFTER the code chunk adjust the line spacing back to 1.0
+#' # \renewcommand{\arraystretch}{1}
+#'
+#' # delete demo file
+#' if (file.exists("table1.doc")) {
+#'      file.remove("table1.doc")
 #' }
 #' @export
-apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interval = TRUE, show.sig.stars = TRUE, landscape = TRUE) {
+apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interval = TRUE, show.sig.stars = TRUE, show.pvalue = TRUE, landscape = TRUE) {
 
      # test git tower April 23
      data <- as.data.frame(data)
      table_number <- table.number
 
-     if (show.conf.interval==FALSE) {
-          cat("The ability to suppress reporting of reporting confidence intervals has been deprecated in this version.\nThe function argument show.conf.interval will be removed in a later version.\n")
-     }
-
-     show.conf.interval = TRUE
      show_conf_interval <- show.conf.interval
      show_stars <- show.sig.stars
+     show_pvalue <- show.pvalue
 
      if (is.na(filename)) {
           make_file_flag <- FALSE
@@ -49,9 +62,16 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      output_cor     <- matrix(" ", number_variables, number_columns)
      output_cor_rtf <- matrix(" ", number_variables, number_columns)
+     output_cor_latex <- matrix(" ", number_variables, number_columns)
+
+     output_pvalue     <- matrix(" ", number_variables, number_columns)
+     output_pvalue_rtf <- matrix(" ", number_variables, number_columns)
+     output_pvalue_latex <- matrix(" ", number_variables, number_columns)
+
 
      output_ci     <- matrix(" ", number_variables, number_columns)
      output_ci_rtf <- matrix(" ", number_variables, number_columns)
+     output_ci_latex <- matrix(" ", number_variables, number_columns)
 
      output_descriptives   <- matrix(" ",number_variables,2)
      output_variable_names <- paste(as.character(1:number_variables),". ",names(data),sep="")
@@ -64,13 +84,21 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
                     x <- data[,i]
                     y <- data[,j]
                     ctest      <- cor.test(x, y)
+
                     cor_string <- txt.r(ctest, show_stars)
-                    output_cor[i,j]     <- cor_string
-                    output_cor_rtf[i,j] <- cor_string
+                    output_cor[i,j]        <- cor_string
+                    output_cor_rtf[i,j]    <- cor_string
+                    output_cor_latex[i,j]    <- cor_string
+
+                    output_pvalue[i,j]       <- txt.r.p.console(ctest)
+                    output_pvalue_rtf[i,j]   <- paste("{\\fs20",txt.r.p.rtf(ctest),"}",sep="")
+                    output_pvalue_latex[i,j] <- txt.r.p.latex(ctest)
 
                     cor_ci_string  <- txt.ci(ctest)
                     output_ci[i,j] <- cor_ci_string
                     output_ci_rtf[i,j] <- paste("{\\fs20",cor_ci_string,"}",sep="")
+                    output_ci_latex[i,j] <- cor_ci_string
+
                } #end lower triangle
           }#end j
      }#end i
@@ -80,34 +108,90 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
      left_padding   <- c(" ", " ", " ")
      first_line     <- c(output_variable_names[1], output_descriptives[1,], output_cor[1,])
      first_line_rtf <- c(output_variable_names[1], output_descriptives[1,], output_cor_rtf[1,])
+     first_line_latex     <- c(output_variable_names[1], output_descriptives[1,], output_cor[1,])
 
      second_line     <- c(left_padding, output_ci[1,])
      second_line_rtf <- c(left_padding, output_ci_rtf[1,])
+     second_line_latex    <- c(left_padding, output_ci[1,])
+
+     extra_line <- c(left_padding, output_pvalue[1,])
+     extra_line_rtf <- c(left_padding, output_pvalue_rtf[1,])
+     extra_line_latex <- c(left_padding, output_pvalue[1,])
 
      third_line <- rep(" ", length(second_line))
 
 
-     output_matrix_console <- rbind(first_line, second_line)
-     output_matrix_rtf     <- rbind(first_line_rtf, second_line_rtf)
+     new_lines <- first_line
+     new_lines_rtf <- first_line_rtf
+     new_lines_latex <- first_line_latex
+
+     if (show_conf_interval==TRUE) {
+          new_lines     <- rbind(new_lines, second_line)
+          new_lines_rtf <- rbind(new_lines_rtf, second_line_rtf)
+          new_lines_latex <- rbind(new_lines_latex, second_line_latex)
+     }
+
+     if (show_pvalue==TRUE) {
+          new_lines     <- rbind(new_lines, extra_line)
+          new_lines_rtf <- rbind(new_lines_rtf, extra_line_rtf)
+          new_lines_latex <- rbind(new_lines_latex, extra_line_latex)
+     }
+
+     new_lines       <- rbind(new_lines, third_line)
+     new_lines_rtf   <- rbind(new_lines_rtf, third_line)
+     new_lines_latex <- rbind(new_lines_latex, third_line)
+
+     output_matrix_console <- new_lines
+     output_matrix_rtf <-  new_lines_rtf
+     output_matrix_latex <-  new_lines_latex
+
+     # output_matrix_console <- rbind(first_line, second_line)
+     # output_matrix_rtf     <- rbind(first_line_rtf, second_line_rtf)
      for (i in 2:number_variables) {
           first_line <- c(output_variable_names[i], output_descriptives[i,], output_cor[i,])
           first_line_rtf <- c(output_variable_names[i], output_descriptives[i,], output_cor_rtf[i,])
+          first_line_latex <- c(output_variable_names[i], output_descriptives[i,], output_cor_latex[i,])
 
           second_line <- c(left_padding, output_ci[i,])
           second_line_rtf <- c(left_padding, output_ci_rtf[i,])
+          second_line_latex <- c(left_padding, output_ci_latex[i,])
+
+          extra_line <- c(left_padding, output_pvalue[i,])
+          extra_line_rtf <- c(left_padding, output_pvalue_rtf[i,])
+          extra_line_latex <- c(left_padding, output_pvalue_latex[i,])
 
           third_line <- rep(" ", length(second_line))
 
+          new_lines <- first_line
+          new_lines_rtf <- first_line_rtf
+          new_lines_latex <- first_line_latex
           if (show_conf_interval==TRUE) {
-               new_lines     <- rbind(first_line, second_line, third_line)
-               new_lines     <- rbind(first_line, second_line, third_line)
-               new_lines_rtf <- rbind(first_line_rtf, second_line_rtf, third_line)
-          } else {
-               new_lines     <- rbind(first_line, third_line)
-               new_lines_rtf <- rbind(first_line_rtf, third_line)
+               new_lines     <- rbind(new_lines, second_line)
+               new_lines_rtf <- rbind(new_lines_rtf, second_line_rtf)
+               new_lines_latex     <- rbind(new_lines_latex, second_line_latex)
           }
 
+          if (show_pvalue==TRUE) {
+               new_lines     <- rbind(new_lines, extra_line)
+               new_lines_rtf <- rbind(new_lines_rtf, extra_line_rtf)
+               new_lines_latex     <- rbind(new_lines_latex, extra_line_latex)
+          }
+
+          new_lines     <- rbind(new_lines, third_line)
+          new_lines_rtf <- rbind(new_lines_rtf, third_line)
+          new_lines_latex     <- rbind(new_lines_latex, third_line)
+
+          # if (show_conf_interval==TRUE) {
+          #      new_lines     <- rbind(first_line, second_line, third_line)
+          #      new_lines     <- rbind(first_line, second_line, third_line)
+          #      new_lines_rtf <- rbind(first_line_rtf, second_line_rtf, third_line)
+          # } else {
+          #      new_lines     <- rbind(first_line, third_line)
+          #      new_lines_rtf <- rbind(first_line_rtf, third_line)
+          # }
+
           output_matrix_console <- rbind(output_matrix_console, new_lines)
+          output_matrix_latex <- rbind(output_matrix_latex, new_lines_latex)
           output_matrix_rtf <- rbind(output_matrix_rtf, new_lines_rtf)
      }
 
@@ -115,17 +199,18 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      rownames(output_matrix_console) <- 1:nrow(output_matrix_console)
      colnames(output_matrix_console) <- c(c("Variable","M","SD"), as.character(1:number_columns))
+
+     rownames(output_matrix_latex) <- rownames(output_matrix_console)
+     colnames(output_matrix_latex) <- colnames(output_matrix_console)
+
      rownames(output_matrix_rtf) <- rownames(output_matrix_console)
      colnames(output_matrix_rtf) <- colnames(output_matrix_console)
      #done making input
      #now two matrices exist outputMatrixConsole and outputMatrixRTF that need to be printed
 
 
-     if (show_conf_interval==TRUE) {
-          table_title <- "Means, standard deviations, and correlations with confidence intervals\n"
-     } else {
-          table_title <- "Means, standard deviations, and correlations\n"
-     }
+     table_title <- "Means, standard deviations, and correlations\n"
+
 
      #make table
      row_with_colnames <- colnames(output_matrix_console)
@@ -135,7 +220,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      #make console output
      if (show_conf_interval == TRUE) {
-          table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval.\nThe confidence interval is a plausible range of population correlations \nthat could have caused the sample correlation (Cumming, 2014).\n"
+          table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval.\n"
      } else {
           table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\n"
      }
@@ -152,32 +237,39 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
 
      #make RTF output file
-     if (make_file_flag == TRUE) {
-          colnames(output_matrix_rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number_columns))
-          #add leading blank line on table
-          number_columns <- dim(output_matrix_rtf)[2]
-          blankLine <- rep("",number_columns)
-          output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
 
-          if (show_conf_interval == TRUE) {
-               table_title <- "Means, standard deviations, and correlations with confidence intervals"
-               table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation. The confidence interval is a plausible range of population correlations that could have caused the sample correlation (Cumming, 2014)."
+     colnames(output_matrix_rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number_columns))
+     #add leading blank line on table
+     number_columns <- dim(output_matrix_rtf)[2]
+     blankLine <- rep("",number_columns)
+     output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
 
-          } else {
-               table_title <- "Means, standard deviations, and correlations"
-               table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively."
-          }
-
-          if (show_stars == TRUE) {
-                  table_note <- paste(table_note, "* indicates {\\i p} < .05. ** indicates {\\i p} < .01.")
-          }
+     if (show_conf_interval == TRUE) {
+          table_title <- "Means, standard deviations, and correlations with confidence intervals"
+          table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation."
+          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} and  \\\\textit{SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95\\\\% confidence interval for each correlation."
 
 
-          #Create RTF code
-          rtfTable <- RtfTable$new(isHeaderRow=TRUE)
-          rtfTable$setTableContent(output_matrix_rtf)
-          rtfTable$setRowFirstColumnJustification("left")
+     } else {
+          table_title <- "Means, standard deviations, and correlations"
+          table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively."
+          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} and  \\\\textit{SD} are used to represent mean and standard deviation, respectively."
+
+     }
+
+     if (show_stars == TRUE) {
+             table_note <- paste(table_note, "* indicates {\\i p} < .05. ** indicates {\\i p} < .01.")
+             table_note_latex <- paste(table_note_latex, "* indicates \\\\textit{p} < .05. ** indicates \\\\textit{p} < .01.")
+     }
+
+
+     #Create RTF code
+     rtfTable <- RtfTable$new(isHeaderRow=TRUE)
+     rtfTable$setTableContent(output_matrix_rtf)
+     rtfTable$setRowFirstColumnJustification("left")
           txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
+
+     if (make_file_flag == TRUE) {
           write.rtf.table(filename = filename,
                           txt.body = txt_body,
                           table.title = table_title,
@@ -185,6 +277,18 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
                           landscape=landscape,
                           table.number=table_number)
      }
+
+
+     tbl.console$rtf.body         <- txt_body
+     tbl.console$rtf.table.title  <- table_title
+     tbl.console$rtf.table.note   <- table_note
+     tbl.console$landscape   <- landscape
+
+     tbl.console$latex.body <- output_matrix_latex
+     tbl.console$latex.table.title <- table_title
+     tbl.console$latex.table.note  <- table_note_latex
+     tbl.console$table.type        <- "correlation"
+
 
      return(tbl.console)
 }#end function

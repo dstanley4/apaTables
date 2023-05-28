@@ -23,10 +23,10 @@ Imports:
     dplyr,
     boot,
     tibble,
-    kableExtra,
-    knitr
+    kableExtra
 Suggests: testthat,
-    MBESS
+    MBESS,
+    knitr
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 License: MIT License + file LICENSE

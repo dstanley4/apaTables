@@ -10,6 +10,7 @@ apa.cor.table(
   table.number = NA,
   show.conf.interval = TRUE,
   show.sig.stars = TRUE,
+  show.pvalue = TRUE,
   landscape = TRUE
 )
 }
@@ -24,6 +25,8 @@ apa.cor.table(
 
 \item{show.sig.stars}{(TRUE/FALSE) Display stars for significance in table.}
 
+\item{show.pvalue}{(TRUE/FALSE) Display p-value in table.}
+
 \item{landscape}{(TRUE/FALSE) Make RTF file landscape}
 }
 \value{
@@ -33,12 +36,28 @@ APA table object
 Creates a correlation table in APA style with means and standard deviations
 }
 \examples{
-\dontrun{
 # View top few rows of attitude data set
 head(attitude)
 
 # Use apa.cor.table function
-apa.cor.table(attitude)
-apa.cor.table(attitude, filename="ex.CorTable1.doc")
+table1 <- apa.cor.table(attitude)
+
+
+# Save Table 1 in a .doc document
+apaTables:::apa.save(filename = "table1.doc", table1)
+
+
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apaTables:::apa.knit.table.for.pdf(table1)
+# For better results:
+# BEFORE the code chunk adjust the line spacing to 0.5
+# \renewcommand{\arraystretch}{.5}
+# AFTER the code chunk adjust the line spacing back to 1.0
+# \renewcommand{\arraystretch}{1}
+
+# delete demo file
+if (file.exists("table1.doc")) {
+     file.remove("table1.doc")
 }
 }

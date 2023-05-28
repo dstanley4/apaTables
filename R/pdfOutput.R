@@ -12,9 +12,49 @@ apa.knit.table.for.pdf <- function(table_object, table_note = NULL, table_title 
           table_out <- apa.knit.twoway.ci.for.pdf(table_object, table_note, table_title)
      } else if (table_type == "aovstats") {
           table_out <- apa.knit.aov.for.pdf(table_object, table_note, table_title)
+     } else if (table_type == "correlation") {
+          table_out <- apa.knit.correlation.for.pdf(table_object, table_note, table_title)
      }
      return(table_out)
 }
+
+
+apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title){
+     table_df <- table_object$latex.body
+     rownames(table_df) <- NULL
+
+     if (is.null(table_note)) {
+          table_note          <- table_object$latex.table.note
+     }
+
+     if (is.null(table_title)) {
+          table_title         <- table_object$latex.table.title
+     }
+
+     num_columns = dim(table_df)[2]
+
+     table_column_labels <- colnames(table_df)
+     table_column_labels[2] <- "$M$"
+     table_column_labels[3] <- "$SD$"
+
+     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+                                  col.names = table_column_labels,
+                                  format = "latex",
+                                  align = c("l", "r", "r", rep("c", num_columns-3)),
+                                  caption = table_title)
+
+     table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+
+     if (table_object$landscape == TRUE) {
+          table_out <- kableExtra::landscape(table_out)
+     }
+
+
+     return(table_out)
+}
+
+
 
 
 apa.knit.aov.for.pdf <- function(table_object, table_note, table_title){

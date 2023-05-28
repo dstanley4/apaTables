@@ -72,6 +72,64 @@ txt.r <- function(ctest, show_stars = TRUE) {
      return(string.out)
 }
 
+txt.r.p.console <- function(ctest) {
+     r.value=ctest$estimate
+     p.value=ctest$p.value
+
+     p_is_small <- FALSE
+     if (p.value < .001) {
+          p_is_small <- TRUE
+     }
+
+     p.value=round(p.value, 3)
+     p.value.txt <- strip.leading.zero(sprintf("%1.3f", p.value))
+     if (p_is_small == TRUE) {
+          p.value.txt <- "p < .001"
+     } else {
+          p.value.txt <- paste0("p = ", p.value.txt)
+     }
+     return(p.value.txt)
+}
+
+txt.r.p.latex <- function(ctest) {
+     r.value=ctest$estimate
+     p.value=ctest$p.value
+
+     p_is_small <- FALSE
+     if (p.value < .001) {
+          p_is_small <- TRUE
+     }
+
+     p.value=round(p.value, 3)
+     p.value.txt <- strip.leading.zero(sprintf("%1.3f", p.value))
+     if (p_is_small == TRUE) {
+          p.value.txt <- "$p$ < .001"
+     } else {
+          p.value.txt <- paste0("$p$ = ", p.value.txt)
+     }
+     return(p.value.txt)}
+
+txt.r.p.rtf <- function(ctest) {
+     r.value=ctest$estimate
+     p.value=ctest$p.value
+
+     p_is_small <- FALSE
+     if (p.value < .001) {
+          p_is_small <- TRUE
+     }
+
+     p.value=round(p.value, 3)
+     p.value.txt <- strip.leading.zero(sprintf("%1.3f", p.value))
+     if (p_is_small == TRUE) {
+          p.value.txt <- "{\\i p} < .001"
+     } else {
+          p.value.txt <- paste0("{\\i p} = ", p.value.txt)
+     }
+     return(p.value.txt)
+}
+
+
+
 rtf.R2 <- function(R2.value,p.value) {
      R2.value.txt <- strip.leading.zero(sprintf("%1.3f", R2.value))
      R2.value.txt <- add.sig.stars(R2.value.txt,p.value)
