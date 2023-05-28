@@ -1,5 +1,5 @@
 Package: apaTables
-Version: 2.0.8
+Version: 3.0.0
 Authors@R: person("David", "Stanley", , "dstanley@uoguelph.ca", role = c("aut", "cre"))
 Title: Create American Psychological Association (APA) Style Tables
 Description: A common task faced by researchers is the creation of APA style
@@ -7,7 +7,7 @@ Description: A common task faced by researchers is the creation of APA style
     output. In R a large number of function calls are often needed to obtain all of
     the desired information for a single APA style table. As well, the process of
     manually creating APA style tables in a word processor is prone to transcription
-    errors. This package creates Word files (.doc files) containing APA style tables
+    errors. This package creates Word files (.doc files) and latex code containing APA style tables
     for several types of analyses. Using this package minimizes transcription errors
     and reduces the number commands needed by the user.
 URL: https://github.com/dstanley4/apaTables
@@ -31,4 +31,4 @@ Encoding: UTF-8
 RoxygenNote: 7.2.3
 License: MIT License + file LICENSE
 LazyData: true
-Date: 2020-12-18
+Date: 2023-6-29

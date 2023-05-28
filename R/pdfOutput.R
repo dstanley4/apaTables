@@ -1,21 +1,76 @@
-apa.knit.table.for.pdf <- function(table_object){
+apa.knit.table.for.pdf <- function(table_object, table_note = NULL, table_title = NULL){
 
      table_type <- table_object$table.type
 
      table_out <- " "
 
      if (table_type == "oneway") {
-          table_out <- apa.knit.oneway.for.pdf(table_object)
+          table_out <- apa.knit.oneway.for.pdf(table_object, table_note, table_title)
      } else if (table_type == "twoway") {
-          table_out <- apa.knit.twoway.for.pdf(table_object)
+          table_out <- apa.knit.twoway.for.pdf(table_object, table_note, table_title)
      } else if (table_type == "twoway-ci") {
-          table_out <- apa.knit.twoway.ci.for.pdf(table_object)
+          table_out <- apa.knit.twoway.ci.for.pdf(table_object, table_note, table_title)
+     } else if (table_type == "aovstats") {
+          table_out <- apa.knit.aov.for.pdf(table_object, table_note, table_title)
      }
      return(table_out)
 }
 
 
-apa.knit.twoway.ci.for.pdf <- function(table_object){
+apa.knit.aov.for.pdf <- function(table_object, table_note, table_title){
+
+     table_df <- table_object$latex.body
+     rownames(table_df) <- NULL
+
+     if (is.null(table_note)) {
+          table_note          <- table_object$latex.table.note
+     }
+
+     if (is.null(table_title)) {
+          table_title         <- table_object$latex.table.title
+     }
+
+
+
+     table_column_labels <- c("Predictor",
+                              "$SS$",
+                              "$df$",
+                              "$MS$",
+                              "$F$",
+                              "$p$",
+                              "$\\eta_{partial}^2$",
+                              "[$LL$, $UL$]")
+
+     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+                                  col.names = table_column_labels,
+                                  format = "latex",
+                                  align = c("l", rep("r", 6), "c"),
+                                  caption = table_title)
+
+     if (table_object$ci.conf.level == .95) {
+          table_out <- kableExtra::add_header_above(table_out, c(" " = 7, "$\\\\eta_{partial}^2$ 95\\\\% CI " = 1), escape = FALSE)
+     } else {
+          table_out <- kableExtra::add_header_above(table_out, c(" " = 7, "$\\\\eta_{partial}^2$ 90\\\\% CI " = 1), escape = FALSE)
+     }
+
+     table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+
+
+     return(table_out)
+}
+
+apa.knit.twoway.ci.for.pdf <- function(table_object, table_note, table_title){
+
+     if (is.null(table_note)) {
+          table_note          <- table_object$latex.table.note
+     }
+
+     if (is.null(table_title)) {
+          table_title         <- table_object$latex.table.title
+     }
+
+
 
      table_df <- table_object$latex.body
      rownames(table_df) <- NULL
@@ -26,8 +81,6 @@ apa.knit.twoway.ci.for.pdf <- function(table_object){
 
      table_column_labels <- table_object$latex.column.labels
      table_column_center <- table_object$latex.column.centering
-     table_note          <- table_object$latex.table.note
-     table_title         <- table_object$latex.table.title
 
 
 
@@ -53,7 +106,16 @@ apa.knit.twoway.ci.for.pdf <- function(table_object){
      return(table_out)
 }
 
-apa.knit.twoway.for.pdf <- function(table_object){
+apa.knit.twoway.for.pdf <- function(table_object, table_note, table_title){
+
+
+     if (is.null(table_note)) {
+          table_note          <- table_object$latex.table.note
+     }
+
+     if (is.null(table_title)) {
+          table_title         <- table_object$latex.table.title
+     }
 
      table_df <- table_object$latex.body
      rownames(table_df) <- NULL
@@ -83,8 +145,6 @@ apa.knit.twoway.for.pdf <- function(table_object){
 
      table_column_labels <- table_object$latex.column.labels
      table_column_center <- table_object$latex.column.centering
-     table_note          <- table_object$latex.table.note
-     table_title         <- table_object$latex.table.title
 
 
 
@@ -108,14 +168,21 @@ apa.knit.twoway.for.pdf <- function(table_object){
 }
 
 
-apa.knit.oneway.for.pdf <- function(table_object){
+apa.knit.oneway.for.pdf <- function(table_object, table_note, table_title){
+
+
+     if (is.null(table_note)) {
+          table_note          <- table_object$latex.table.note
+     }
+
+     if (is.null(table_title)) {
+          table_title         <- table_object$latex.table.title
+     }
 
      table_df <- table_object$table.body
 
      table_column_labels <- table_object$latex.column.labels
      table_column_center <- table_object$latex.column.centering
-     table_note          <- table_object$latex.table.note
-     table_title         <- table_object$latex.table.title
 
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,

@@ -44,7 +44,7 @@ table1 <- apa.1way.table(iv = dose, dv = libido,
 apaTables:::apa.save(filename = "table1.doc", table1)
 
 # Create a table for your PDF
-# Include the line below in your Rmarkdown or Quarto document
+# Include the line below in your rmarkdown or Quarto document
 apaTables:::apa.knit.table.for.pdf(table1)
 
 # delete demo file

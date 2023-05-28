@@ -10,24 +10,43 @@
 #'
 #' Fidler, F., & Thompson, B. (2001). Computing correct confidence intervals for ANOVA fixed-and random-effects effect sizes. Educational and Psychological Measurement, 61(4), 575-604.
 #' @examples
-#' \dontrun{
+#'
 #' #Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
 #' options(contrasts = c("contr.helmert", "contr.poly"))
 #' lm_output <- lm(libido ~ dose, data = viagra)
-#' apa.aov.table(lm_output, filename = "ex1_anova_table.doc")
+#' table1 <- apa.aov.table(lm_output, table.number = 4)
+#'
 #'
 #' # Example 2: 2-way from Fidler & Thompson (2001)
 #' # You must set these contrasts to ensure values match SPSS
 #' options(contrasts = c("contr.helmert", "contr.poly"))
 #' lm_output <- lm(dv ~ a*b, data = fidler_thompson)
-#' apa.aov.table(lm_output,filename = "ex2_anova_table.doc")
+#' table2 <- apa.aov.table(lm_output, table.number = 5)
+#'
 #'
 #' #Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 #' # You must set these contrasts to ensure values match SPSS
 #' options(contrasts = c("contr.helmert", "contr.poly"))
 #' lm_output <- lm(attractiveness ~ gender*alcohol, data = goggles)
-#' apa.aov.table(lm_output, filename = "ex3_anova_table.doc")
+#' table3 <- apa.aov.table(lm_output, table.number = 6)
+#'
+#'
+#' # Save all three table in the same .doc document
+#' apaTables:::apa.save(filename = "my_tables.doc", table1, table2, table3)
+#'
+#'
+#' # Create a table for your PDF
+#' # Include the lines below in your rmarkdown or Quarto document
+#' apaTables:::apa.knit.table.for.pdf(table1)
+#' apaTables:::apa.knit.table.for.pdf(table2)
+#' apaTables:::apa.knit.table.for.pdf(table3)
+#'
+#'
+#' # delete demo file
+#' if (file.exists("my_tables.doc")) {
+#'      file.remove("my_tables.doc")
 #' }
+#'
 #' @export
 apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=3) {
      table_number <- table.number
@@ -90,6 +109,10 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
      df        <- table_out$df
      p         <- sprintf("%1.3f",table_out$pvalue)
      p         <- strip.leading.zero(p)
+     idp0 <- p == ".000"
+     p[idp0] <- "<.001"
+
+
 
      partial_eta_sq    <- strip.leading.zero(sprintf("%1.2f",partial_eta_sq))
      partial_eta_sq_LL <- strip.leading.zero(sprintf("%1.2f",LL_partial_eta_sq))
@@ -127,40 +150,54 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
 
 
-     if (make_file_flag==TRUE) {
-          table_title <- sprintf("Fixed-Effects ANOVA results using %s as the criterion\n",dv_name)
-          table_note <- "LL and UL represent the lower-limit and upper-limit of the partial \\u0951\\ \\super 2\\nosupersub  confidence interval, respectively."
+     table_title <- sprintf("Fixed-Effects ANOVA results using %s as the criterion\n",dv_name)
+     table_note <- "LL and UL represent the lower-limit and upper-limit of the partial \\u0951\\ \\super 2\\nosupersub  confidence interval, respectively."
 
-          #set columns widths and names
-          colwidths <- get_rtf_column_widths_anova(table_out)
+     #set columns widths and names
+     colwidths <- get_rtf_column_widths_anova(table_out)
 
-          anova_table <- as.matrix(table_out)
-          new_col_names  <- get_rtf_column_names_anova(table_out)
-          if (conf_level==.95) {
-               new_col_names <- sub("xyzzy","95",new_col_names)
-          } else {
-               new_col_names <- sub("xyzzy","90",new_col_names)
-          }
-          colnames(anova_table) <- new_col_names
-
-
-          #Create RTF code
-          rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
-          rtfTable$setTableContent(anova_table)
-          rtfTable$setCellWidthsInches(colwidths)
-          rtfTable$setRowDecimalTabForColumn(.6,2)
-          rtfTable$setRowDecimalTabForColumn(0,3)
-          rtfTable$setRowDecimalTabForColumn(.6,4)
-          rtfTable$setRowDecimalTabForColumn(.4,5)
-          rtfTable$setRowDecimalTabForColumn(0,6)
-          rtfTable$setRowDecimalTabForColumn(0,7)
-          rtfTable$setRowDecimalTabForColumn(0,8)
-          txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
-
-
-          write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,landscape=FALSE,table.number=table_number)
-
+     anova_table <- as.matrix(table_out)
+     new_col_names  <- get_rtf_column_names_anova(table_out)
+     if (conf_level==.95) {
+          new_col_names <- sub("xyzzy","95",new_col_names)
+     } else {
+          new_col_names <- sub("xyzzy","90",new_col_names)
      }
+     colnames(anova_table) <- new_col_names
+
+
+     #Create RTF code
+     rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
+     rtfTable$setTableContent(anova_table)
+     rtfTable$setCellWidthsInches(colwidths)
+     rtfTable$setRowDecimalTabForColumn(.6,2)
+     rtfTable$setRowDecimalTabForColumn(0,3)
+     rtfTable$setRowDecimalTabForColumn(.6,4)
+     rtfTable$setRowDecimalTabForColumn(.4,5)
+     rtfTable$setRowDecimalTabForColumn(0,6)
+     rtfTable$setRowDecimalTabForColumn(0,7)
+     rtfTable$setRowDecimalTabForColumn(0,8)
+     txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
+
+     if (make_file_flag==TRUE) {
+               write.rtf.table(filename = filename, txt.body = txt_body, table.title = table_title,
+                               table.note = table_note, landscape=FALSE, table.number = table_number)
+     }
+
+     # Ver 3.0 add ons
+
+     tbl_console$ci.conf.level = conf.level
+     latex_note <- "\\\\textit{Note}. \\\\textit{LL} and \\\\textit{UL} represent the lower-limit and upper-limit of the $\\\\eta_{partial}^2$  confidence interval, respectively."
+     tbl_console$latex.table.note <- latex_note
+     tbl_console$latex.table.title <- table_title
+     tbl_console$latex.body         <- table_body
+
+     tbl_console$rtf.body         <- txt_body
+     tbl_console$rtf.table.title  <- table_title
+     tbl_console$rtf.table.note   <- table_note
+
+     tbl_console$landscape      <- FALSE
+     tbl_console$table.type      <- "aovstats"
 
 
      return(tbl_console)

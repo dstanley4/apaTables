@@ -16,7 +16,7 @@
 #' apaTables:::apa.save(filename = "table1.doc", table1)
 #'
 #' # Create a table for your PDF
-#' # Include the line below in your Rmarkdown or Quarto document
+#' # Include the line below in your rmarkdown or Quarto document
 #' apaTables:::apa.knit.table.for.pdf(table1)
 #'
 #' # delete demo file
@@ -91,15 +91,15 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
 
 
      # Ver 3.0 add ons
-     markdown.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
+     latex.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
      if (show.conf.interval==TRUE) {
-          markdown.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
-          markdown.table.note <- paste(markdown.table.note, markdown.ci.txt)
+          latex.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
+          latex.table.note <- paste(latex.table.note, latex.ci.txt)
      }
 
      tbl.console$latex.column.labels <-tables.out$latex.column.labels
-     tbl.console$latex.column.centering <- make_markdown_column_alignment(tables.out$markdown.column.labels)
-     tbl.console$latex.table.note <- markdown.table.note
+     tbl.console$latex.column.centering <- make_markdown_column_alignment(tables.out$latex.column.labels)
+     tbl.console$latex.table.note <- latex.table.note
      tbl.console$latex.table.title <- sprintf("Descriptive statistics for %s as a function of %s",dv.name,iv.name)
 
      tbl.console$rtf.body         <- txt.body

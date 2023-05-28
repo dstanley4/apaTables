@@ -127,6 +127,11 @@ get_end_page_txt <- function(list_of_tables, cur_table_number) {
 
 convert_single_table_to_txt <- function(cur_table_object){
 
+     if (is.null(cur_table_object$table.number)) {
+          cur_table_object$table.number <- cur_table_object$table_number
+          cur_table_object$table.note <- cur_table_object$table_note
+     }
+
      table.number<- cur_table_object$table.number
      table.number.str <- sprintf("%1.0f",table.number)
 
