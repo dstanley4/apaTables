@@ -72,6 +72,18 @@ txt.r <- function(ctest, show_stars = TRUE) {
      return(string.out)
 }
 
+txt.r.latex <- function(ctest, show_stars = TRUE) {
+     r.value=ctest$estimate
+     p.value=ctest$p.value
+     r.value.txt <- strip.leading.zero(sprintf("%1.2f", r.value))
+     if (show_stars == TRUE) {
+          r.value.txt <- add.sig.stars.latex(r.value.txt,p.value)
+     }
+     string.out=sprintf("%s",r.value.txt)
+     return(string.out)
+}
+
+
 txt.r.p.console <- function(ctest) {
      r.value=ctest$estimate
      p.value=ctest$p.value
@@ -257,6 +269,21 @@ add.sig.stars <- function(string.in,p.values.in) {
      return(string.out)
 }
 
+add.sig.stars.latex <- function(string.in,p.values.in) {
+     string.out <- string.in
+     L <- length(p.values.in)
+     for (i in 1:L) {
+          cur.p.value<-p.values.in[i]
+          if (!is.na(cur.p.value)) {
+               if ((cur.p.value<.05) & (cur.p.value>.01)) {
+                    string.out[i]<-paste(string.in[i],"$^{*}$",sep="")
+               } else if (cur.p.value<.01) {
+                    string.out[i]<-paste(string.in[i],"$^{**}$",sep="")
+               }
+          }
+     }
+     return(string.out)
+}
 
 txt.ci.brackets<- function(LL,UL,strip_zero=TRUE) {
      ci.lower.txt <- sprintf("%1.2f",LL)

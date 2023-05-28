@@ -50,11 +50,6 @@ apaTables:::apa.save(filename = "table1.doc", table1)
 # Create a table for your PDF
 # Include the lines below in your rmarkdown or Quarto document
 apaTables:::apa.knit.table.for.pdf(table1)
-# For better results:
-# BEFORE the code chunk adjust the line spacing to 0.5
-# \renewcommand{\arraystretch}{.5}
-# AFTER the code chunk adjust the line spacing back to 1.0
-# \renewcommand{\arraystretch}{1}
 
 # delete demo file
 if (file.exists("table1.doc")) {

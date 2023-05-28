@@ -41,7 +41,7 @@ apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title){
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = c("l", "r", "r", rep("c", num_columns-3)),
-                                  caption = table_title)
+                                  caption = table_title, linesep = "")
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
      table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
@@ -50,6 +50,12 @@ apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title){
           table_out <- kableExtra::landscape(table_out)
      }
 
+
+
+     table_spacing <- "\\renewcommand{\\arraystretch}{0.6}"
+     end_spacing <- "\n\\renewcommand{\\arraystretch}{1}\n "
+
+     table_out[1] <- paste0(table_spacing, table_out[1], end_spacing)
 
      return(table_out)
 }

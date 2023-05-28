@@ -22,11 +22,6 @@
 #' # Create a table for your PDF
 #' # Include the lines below in your rmarkdown or Quarto document
 #' apaTables:::apa.knit.table.for.pdf(table1)
-#' # For better results:
-#' # BEFORE the code chunk adjust the line spacing to 0.5
-#' # \renewcommand{\arraystretch}{.5}
-#' # AFTER the code chunk adjust the line spacing back to 1.0
-#' # \renewcommand{\arraystretch}{1}
 #'
 #' # delete demo file
 #' if (file.exists("table1.doc")) {
@@ -88,7 +83,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
                     cor_string <- txt.r(ctest, show_stars)
                     output_cor[i,j]        <- cor_string
                     output_cor_rtf[i,j]    <- cor_string
-                    output_cor_latex[i,j]    <- cor_string
+                    output_cor_latex[i,j]    <- txt.r.latex(ctest, show_stars)
 
                     output_pvalue[i,j]       <- txt.r.p.console(ctest)
                     output_pvalue_rtf[i,j]   <- paste("{\\fs20",txt.r.p.rtf(ctest),"}",sep="")
