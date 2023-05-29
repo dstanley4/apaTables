@@ -162,11 +162,11 @@ apa.knit.aov.for.pdf <- function(table_object, table_note, table_title, line_spa
                                   align = c("l", rep("r", 6), "c"),
                                   caption = table_title)
 
-     if (table_object$ci.conf.level == .95) {
-          table_out <- kableExtra::add_header_above(table_out, c(" " = 7, "$\\\\eta_{partial}^2$ 95\\\\% CI " = 1), escape = FALSE)
-     } else {
-          table_out <- kableExtra::add_header_above(table_out, c(" " = 7, "$\\\\eta_{partial}^2$ 90\\\\% CI " = 1), escape = FALSE)
-     }
+     # if (table_object$ci.conf.level == .95) {
+     #      table_out <- kableExtra::add_header_above(table_out, c(" " = 7, "$\\\\eta_{partial}^2$ 95\\\\% CI " = 1), escape = FALSE)
+     # } else {
+     #      table_out <- kableExtra::add_header_above(table_out, c(" " = 7, "$\\\\eta_{partial}^2$ 90\\\\% CI " = 1), escape = FALSE)
+     # }
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
      table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
