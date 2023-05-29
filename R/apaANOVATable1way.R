@@ -162,8 +162,6 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      names(table.out)[1] <- "IV"
 
 
-     #make latex column names
-     latex.column.labels <- get_oneway_latex_column_names(table.out)
 
      #make console output
      table.title <- sprintf("Descriptive statistics for %s as a function of %s. ",dv.name,iv.name)
@@ -190,6 +188,9 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      names(table.out.rtf) <- get_oneway_rtf_column_names(table.out)
      names(table.out.rtf)[1] <- iv.name
      #names(table.out.rtf) <- sprintf("{\\i %s}",names(table.out))
+     #make latex column names
+     latex.column.labels <- get_oneway_latex_column_names(table.out)
+     latex.column.labels[1] <- iv.name
 
      #make rtf table
      rtfTable <- RtfTable$new(isHeaderRow=TRUE)
@@ -252,7 +253,7 @@ oneway_rtf_column_names <- function(column_name) {
      switch(column_name,
             IV = "IV",
             M = "{\\i M}",
-            CI = "{{\\i M}\\par}{95% CI\\par}[LL, UL]",
+            CI = "95% CI",
             SD = "{\\i SD}")
 }
 
@@ -260,7 +261,7 @@ oneway_latex_column_names <- function(column_name) {
      switch(column_name,
             IV = "IV",
             M = "$M$",
-            CI = "[LL, UL]",
+            CI = "95\\% CI",
             SD = "$SD$")
 }
 

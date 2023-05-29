@@ -139,6 +139,12 @@ apa.knit.aov.for.pdf <- function(table_object, table_note, table_title, line_spa
           table_title         <- table_object$latex.table.title
      }
 
+     if (table_object$ci.conf.level == .95) {
+          ci_txt_str <-  "95\\% CI"
+     } else {
+          ci_txt_str <-  "90\\% CI"
+     }
+
 
 
      table_column_labels <- c("Predictor",
@@ -148,7 +154,7 @@ apa.knit.aov.for.pdf <- function(table_object, table_note, table_title, line_spa
                               "$F$",
                               "$p$",
                               "$\\eta_{partial}^2$",
-                              "[$LL$, $UL$]")
+                              ci_txt_str)
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,
@@ -211,7 +217,7 @@ apa.knit.twoway.ci.for.pdf <- function(table_object, table_note, table_title, li
           table_out <- kableExtra::pack_rows(table_out, cur_level_name, cur_group_rows[1], cur_group_rows[2], bold = FALSE)
      }
 
-     table_out <- kableExtra::add_header_above(table_out, c(" " = 2, "95\\\\% CI", " "), escape = FALSE)
+     #table_out <- kableExtra::add_header_above(table_out, c(" " = 2, "95\\\\% CI", " "), escape = FALSE)
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
      table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
@@ -316,9 +322,9 @@ apa.knit.oneway.for.pdf <- function(table_object, table_note, table_title, line_
                                   align = table_column_center,
                                   caption = table_title)
 
-     if (dim(table_df)[2]>3) {
-          table_out <- kableExtra::add_header_above(table_out, c(" " = 2, "95\\\\% CI" =1, " "), escape = FALSE)
-     }
+     # if (dim(table_df)[2]>3) {
+     #      table_out <- kableExtra::add_header_above(table_out, c(" " = 2, "95\\\\% CI" =1, " "), escape = FALSE)
+     # }
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
      table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
 
