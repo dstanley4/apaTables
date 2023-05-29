@@ -282,7 +282,10 @@ apa.knit.twoway.for.pdf <- function(table_object, table_note, table_title, line_
      table_out <- kableExtra::add_header_above(table_out, header1_spacing, escape = FALSE)
      table_out <- kableExtra::add_header_above(table_out, header2_spacing, escape = FALSE)
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-     table_out <- kableExtra::row_spec(table_out, (y.num.columns-1), hline_after = TRUE)
+
+     if (is_marginal_means == TRUE) {
+      table_out <- kableExtra::row_spec(table_out, (y.num.columns-1), hline_after = TRUE)
+     }
      table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
 
      if (table_object$landscape == TRUE) {
