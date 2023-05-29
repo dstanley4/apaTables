@@ -1,27 +1,27 @@
-apa.knit.table.for.pdf <- function(table_object, table_note = NULL, table_title = NULL){
+apa.knit.table.for.pdf <- function(table_object, table_note = NULL, table_title = NULL, line_spacing = 1){
 
      table_type <- table_object$table.type
 
      table_out <- " "
 
      if (table_type == "oneway") {
-          table_out <- apa.knit.oneway.for.pdf(table_object, table_note, table_title)
+          table_out <- apa.knit.oneway.for.pdf(table_object, table_note, table_title, line_spacing)
      } else if (table_type == "twoway") {
-          table_out <- apa.knit.twoway.for.pdf(table_object, table_note, table_title)
+          table_out <- apa.knit.twoway.for.pdf(table_object, table_note, table_title, line_spacing)
      } else if (table_type == "twoway-ci") {
-          table_out <- apa.knit.twoway.ci.for.pdf(table_object, table_note, table_title)
+          table_out <- apa.knit.twoway.ci.for.pdf(table_object, table_note, table_title, line_spacing)
      } else if (table_type == "aovstats") {
-          table_out <- apa.knit.aov.for.pdf(table_object, table_note, table_title)
+          table_out <- apa.knit.aov.for.pdf(table_object, table_note, table_title, line_spacing)
      } else if (table_type == "correlation") {
-          table_out <- apa.knit.correlation.for.pdf(table_object, table_note, table_title)
+          table_out <- apa.knit.correlation.for.pdf(table_object, table_note, table_title, line_spacing)
      } else if (table_type == "regression") {
-          table_out <- apa.knit.regression.for.pdf(table_object, table_note, table_title)
+          table_out <- apa.knit.regression.for.pdf(table_object, table_note, table_title, line_spacing)
      }
 
      return(table_out)
 }
 
-apa.knit.regression.for.pdf <- function(table_object, table_note, table_title){
+apa.knit.regression.for.pdf <- function(table_object, table_note, table_title, line_spacing){
 
      table_df <- table_object$latex.body
      rownames(table_df) <- NULL
@@ -48,15 +48,18 @@ apa.knit.regression.for.pdf <- function(table_object, table_note, table_title){
                               "Fit",
                               "$\\Delta$ Fit")
 
+     column_alignment = c("l","r", "r", "c", "r","c","r","c","c","c")
+
      if (num_columns == 9) {
           table_column_labels <- table_column_labels[1:9]
+          column_alignment <- column_alignment[1:9]
      }
 
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
-                                  align = c("l", "r", "r", rep("c", num_columns-3)),
+                                  align = column_alignment,
                                   caption = table_title, linesep = "")
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
@@ -66,10 +69,10 @@ apa.knit.regression.for.pdf <- function(table_object, table_note, table_title){
           table_out <- kableExtra::landscape(table_out)
      }
 
-
-     table_spacing <- "\\renewcommand{\\arraystretch}{0.6}"
+     #adjust line spacing
+     table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
+     table_spacing <- gsub(pattern = "XX", replacement = as.character(line_spacing), table_spacing)
      end_spacing <- "\n\\renewcommand{\\arraystretch}{1}\n "
-
      table_out[1] <- paste0(table_spacing, table_out[1], end_spacing)
 
      return(table_out)
@@ -79,7 +82,7 @@ apa.knit.regression.for.pdf <- function(table_object, table_note, table_title){
 
 
 
-apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title){
+apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title, line_spacing){
      table_df <- table_object$latex.body
      rownames(table_df) <- NULL
 
@@ -111,10 +114,10 @@ apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title){
      }
 
 
-
-     table_spacing <- "\\renewcommand{\\arraystretch}{0.6}"
+     #adjust line spacing
+     table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
+     table_spacing <- gsub(pattern = "XX", replacement = as.character(line_spacing), table_spacing)
      end_spacing <- "\n\\renewcommand{\\arraystretch}{1}\n "
-
      table_out[1] <- paste0(table_spacing, table_out[1], end_spacing)
 
      return(table_out)
@@ -123,7 +126,7 @@ apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title){
 
 
 
-apa.knit.aov.for.pdf <- function(table_object, table_note, table_title){
+apa.knit.aov.for.pdf <- function(table_object, table_note, table_title, line_spacing){
 
      table_df <- table_object$latex.body
      rownames(table_df) <- NULL
@@ -162,11 +165,16 @@ apa.knit.aov.for.pdf <- function(table_object, table_note, table_title){
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
      table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
 
+     #adjust line spacing
+     table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
+     table_spacing <- gsub(pattern = "XX", replacement = as.character(line_spacing), table_spacing)
+     end_spacing <- "\n\\renewcommand{\\arraystretch}{1}\n "
+     table_out[1] <- paste0(table_spacing, table_out[1], end_spacing)
 
      return(table_out)
 }
 
-apa.knit.twoway.ci.for.pdf <- function(table_object, table_note, table_title){
+apa.knit.twoway.ci.for.pdf <- function(table_object, table_note, table_title, line_spacing){
 
      if (is.null(table_note)) {
           table_note          <- table_object$latex.table.note
@@ -208,11 +216,16 @@ apa.knit.twoway.ci.for.pdf <- function(table_object, table_note, table_title){
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
      table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
 
+     #adjust line spacing
+     table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
+     table_spacing <- gsub(pattern = "XX", replacement = as.character(line_spacing), table_spacing)
+     end_spacing <- "\n\\renewcommand{\\arraystretch}{1}\n "
+     table_out[1] <- paste0(table_spacing, table_out[1], end_spacing)
 
      return(table_out)
 }
 
-apa.knit.twoway.for.pdf <- function(table_object, table_note, table_title){
+apa.knit.twoway.for.pdf <- function(table_object, table_note, table_title, line_spacing){
 
 
      if (is.null(table_note)) {
@@ -270,11 +283,17 @@ apa.knit.twoway.for.pdf <- function(table_object, table_note, table_title){
           table_out <- kableExtra::landscape(table_out)
      }
 
+     #adjust line spacing
+     table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
+     table_spacing <- gsub(pattern = "XX", replacement = as.character(line_spacing), table_spacing)
+     end_spacing <- "\n\\renewcommand{\\arraystretch}{1}\n "
+     table_out[1] <- paste0(table_spacing, table_out[1], end_spacing)
+
      return(table_out)
 }
 
 
-apa.knit.oneway.for.pdf <- function(table_object, table_note, table_title){
+apa.knit.oneway.for.pdf <- function(table_object, table_note, table_title, line_spacing){
 
 
      if (is.null(table_note)) {
@@ -302,6 +321,12 @@ apa.knit.oneway.for.pdf <- function(table_object, table_note, table_title){
      }
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
      table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+
+     #adjust line spacing
+     table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
+     table_spacing <- gsub(pattern = "XX", replacement = as.character(line_spacing), table_spacing)
+     end_spacing <- "\n\\renewcommand{\\arraystretch}{1}\n "
+     table_out[1] <- paste0(table_spacing, table_out[1], end_spacing)
 
      return(table_out)
 }
