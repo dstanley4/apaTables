@@ -125,6 +125,20 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
      block_out_txt <- block_results[[1]]$model_details_txt
      block_out_rtf <- block_results[[1]]$model_details_rtf
 
+
+     if (is_multiple_blocks == TRUE) {
+          cur_block_label <- "Model 1"
+
+          model_label_line <- get_blank_row(block_out_txt)
+          model_label_line[1,1] <- cur_block_label
+          block_out_txt <- rbind(model_label_line, block_out_txt)
+
+          model_label_line_rtf <- get_blank_row(block_out_rtf)
+          model_label_line_rtf[1,1] <- cur_block_label
+          block_out_rtf <- rbind(model_label_line_rtf, block_out_rtf)
+     }
+
+
      first_block_calculate_cor  <- block_results[[1]]$calculate_cor # use later for table note
      first_block_calculate_beta <- block_results[[1]]$calculate_beta # use later for table note
 
@@ -156,8 +170,14 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
                     block_out_rtf <- select(block_out_rtf, -beta, -beta_CI, -r)
                }
 
-               block_out_txt <- rbind(block_out_txt,cur_block_out_txt)
-               block_out_rtf <- rbind(block_out_rtf,cur_block_out_rtf)
+               cur_block_label <- sprintf("Model %g",i)
+               model_label_line <- get_blank_row(cur_block_out_txt)
+               model_label_line[1,1] <- cur_block_label
+               model_label_line_rtf <- get_blank_row(cur_block_out_rtf)
+               model_label_line_rtf[1,1] <- cur_block_label
+
+               block_out_txt <- rbind(block_out_txt, model_label_line, cur_block_out_txt)
+               block_out_rtf <- rbind(block_out_rtf,model_label_line, cur_block_out_rtf)
           }
      } else {
           block_out_txt <- dplyr::select(block_out_txt, -difference)
@@ -168,7 +188,11 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
 
 
      #console table
-     table_title <- sprintf("Regression results using %s as the criterion\n",first_criterion)
+     if (is_multiple_blocks == TRUE) {
+          table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",first_criterion)
+     } else {
+          table_title <- sprintf("Regression Predicting %s\n",first_criterion)
+     }
      txt_column_names <- get_txt_column_names(block_out_txt)
      if (prop_var_conf_level == .95) {
           txt_column_names <- sub("XX","95",txt_column_names)
@@ -196,7 +220,12 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
 
 
      if (make_file_flag==TRUE) {
-          table_title <- sprintf("Regression results using %s as the criterion\n",first_criterion)
+          if (is_multiple_blocks == TRUE) {
+               table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",first_criterion)
+          } else {
+               table_title <- sprintf("Regression Predicting %s\n",first_criterion)
+          }
+
           table_note <- get_reg_table_note_rtf(first_block_calculate_cor, first_block_calculate_beta)
 
           #set columns widths and names
@@ -499,11 +528,11 @@ output_txt_name <- function(column_name) {
             b_CI = "b_95%_CI",
             beta = "beta",
             beta_CI ="beta_95%_CI",
-            sr2="sr2",
-            sr2_CI ="sr2_XX%_CI",
+            sr2="Unique_R2",
+            sr2_CI ="Unique_XX%_CI",
             r="r",
             summary="Fit",
-            difference="Difference")
+            difference="Delta_Fit")
 }
 
 get_txt_column_names <- function(df) {
@@ -519,14 +548,14 @@ output_rtf_name <- function(column_name) {
      switch(column_name,
             predictor="Predictor",
             b = "{\\i b}",
-            b_CI = "{{\\i b}\\par}{95% CI\\par}[LL, UL]",
+            b_CI = "{95% CI\\par}[LL, UL]",
             beta = "{\\i beta}",
-            beta_CI ="{{\\i beta}\\par}{95% CI\\par}[LL, UL]",
-            sr2="{\\i sr\\super 2 \\nosupersub}",
-            sr2_CI ="{{{\\i sr\\super 2 \\nosupersub}\\par}XX% CI\\par}[LL, UL]",
+            beta_CI ="{95% CI\\par}[LL, UL]",
+            sr2="Unique {\\i R\\super 2 \\nosupersub}",
+            sr2_CI ="{XX% CI\\par}[LL, UL]",
             r="{\\i r}",
             summary="Fit",
-            difference="Difference")
+            difference="\\u0916\3Fit")
 }
 
 
