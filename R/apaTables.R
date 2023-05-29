@@ -36,6 +36,7 @@
 #'@importFrom "dplyr" "mutate" "select"
 #'@importFrom "broom" "glance" "tidy"
 #'@importFrom "stats" "qnorm" "rnorm" "lm"
+#'@importFrom "stringr" "str_to_sentence"
 utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI"))
 NULL
 

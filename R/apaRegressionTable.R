@@ -86,6 +86,7 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
      last_model_number_predictors <- dim(first_model)[2]
      last_predictors <- colnames(first_result$model)[2:last_model_number_predictors]
      n <- dim(first_result$model)[1]
+
      for (i in 1:L) {
           cur_result <- regression_results_list[[i]]
           cur_model  <- cur_result$model
@@ -124,6 +125,7 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
      #Combine blocks
      block_out_txt <- block_results[[1]]$model_details_txt
      block_out_rtf <- block_results[[1]]$model_details_rtf
+     block_out_latex <- block_results[[1]]$model_details_latex
 
 
      if (is_multiple_blocks == TRUE) {
@@ -136,6 +138,10 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
           model_label_line_rtf <- get_blank_row(block_out_rtf)
           model_label_line_rtf[1,1] <- cur_block_label
           block_out_rtf <- rbind(model_label_line_rtf, block_out_rtf)
+
+          model_label_line_latex <- get_blank_row(block_out_latex)
+          model_label_line_latex[1,1] <- cur_block_label
+          block_out_latex <- rbind(model_label_line_latex, block_out_latex)
      }
 
 
@@ -152,15 +158,20 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
 
                cur_block_out_txt <- block_results[[i]]$model_details_txt
                cur_block_out_rtf <- block_results[[i]]$model_details_rtf
+               cur_block_out_latex <- block_results[[i]]$model_details_latex
 
                delta_R2_details <- get_delta_R2_blocks(blk2=cur_block_lm,blk1=last_block_lm,summary2=cur_block_summary,summary1=last_block_summary,n, prop_var_conf_level = prop_var_conf_level)
 
                num_lines <- dim(cur_block_out_txt)[1]
+
                cur_block_out_txt$difference[num_lines-2] <- delta_R2_details$deltaR2_txt
                cur_block_out_txt$difference[num_lines-1] <- delta_R2_details$deltaR2_CI_txt
 
                cur_block_out_rtf$difference[num_lines-2] <- delta_R2_details$deltaR2_rtf
                cur_block_out_rtf$difference[num_lines-1] <- delta_R2_details$deltaR2_CI_rtf
+
+               cur_block_out_latex$difference[num_lines-2] <- delta_R2_details$deltaR2_latex
+               cur_block_out_latex$difference[num_lines-1] <- delta_R2_details$deltaR2_CI_latex
 
                last_block_summary <- cur_block_summary
                last_block_lm <- cur_block_lm
@@ -168,30 +179,43 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
                if (has_beta_cols(block_out_txt) == TRUE & (has_beta_cols(cur_block_out_txt) == FALSE)) {
                     block_out_txt <- select(block_out_txt, -beta, -beta_CI, -r)
                     block_out_rtf <- select(block_out_rtf, -beta, -beta_CI, -r)
+                    block_out_latex <- select(block_out_latex, -beta, -beta_CI, -r)
                }
 
                cur_block_label <- sprintf("Model %g",i)
+
                model_label_line <- get_blank_row(cur_block_out_txt)
                model_label_line[1,1] <- cur_block_label
+
                model_label_line_rtf <- get_blank_row(cur_block_out_rtf)
                model_label_line_rtf[1,1] <- cur_block_label
 
+               model_label_line_latex <- get_blank_row(cur_block_out_latex)
+               model_label_line_latex[1,1] <- cur_block_label
+
                block_out_txt <- rbind(block_out_txt, model_label_line, cur_block_out_txt)
                block_out_rtf <- rbind(block_out_rtf,model_label_line, cur_block_out_rtf)
+               block_out_latex <- rbind(block_out_latex,model_label_line, cur_block_out_latex)
           }
      } else {
           block_out_txt <- dplyr::select(block_out_txt, -difference)
           block_out_rtf <- dplyr::select(block_out_rtf, -difference)
+          block_out_latex <- dplyr::select(block_out_latex, -difference)
+
      }
 
+
+     block_out_txt$predictor <- clean_predictor_names(block_out_txt$predictor)
+     block_out_rtf$predictor <- clean_predictor_names(block_out_rtf$predictor)
+     block_out_latex$predictor <- clean_predictor_names(block_out_latex$predictor)
 
 
 
      #console table
      if (is_multiple_blocks == TRUE) {
-          table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",first_criterion)
+          table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",stringr::str_to_sentence(first_criterion))
      } else {
-          table_title <- sprintf("Regression Predicting %s\n",first_criterion)
+          table_title <- sprintf("Regression Predicting %s\n",stringr::str_to_sentence(first_criterion))
      }
      txt_column_names <- get_txt_column_names(block_out_txt)
      if (prop_var_conf_level == .95) {
@@ -200,6 +224,7 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
           txt_column_names <- sub("XX","90",txt_column_names)
      }
      names(block_out_txt) <- txt_column_names
+
 
      table_body <- block_out_txt
 
@@ -219,39 +244,42 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
 
 
 
+     if (is_multiple_blocks == TRUE) {
+          table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",    stringr::str_to_sentence(first_criterion))
+          table_title_latex <- sprintf("Hierarchical Multiple Regression Predicting %s",stringr::str_to_sentence(first_criterion))
+     } else {
+          table_title <- sprintf("Regression Predicting %s\n",    stringr::str_to_sentence(first_criterion))
+          table_title_latex <- sprintf("Regression Predicting %s",stringr::str_to_sentence(first_criterion))
+     }
+
+     table_note <- get_reg_table_note_rtf(first_block_calculate_cor, first_block_calculate_beta)
+     table_note_latex <- get_reg_table_note_latex(first_block_calculate_cor, first_block_calculate_beta)
+
+     #set columns widths and names
+     colwidths <- get_rtf_column_widths(block_out_rtf)
+
+     regression_table <- as.matrix(block_out_rtf)
+
+     rtf_column_names <- get_rtf_column_names(block_out_rtf)
+     if (prop_var_conf_level == .95) {
+          rtf_column_names <- sub("XX","95",rtf_column_names)
+     } else {
+          rtf_column_names <- sub("XX","90",rtf_column_names)
+     }
+     new_col_names <- rtf_column_names
+
+
+     colnames(regression_table) <- new_col_names
+
+
+     #Create RTF code
+     rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
+     rtfTable$setTableContent(regression_table)
+     rtfTable$setCellWidthsInches(colwidths)
+     rtfTable$setRowSecondColumnDecimalTab(.4)
+     txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
+
      if (make_file_flag==TRUE) {
-          if (is_multiple_blocks == TRUE) {
-               table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",first_criterion)
-          } else {
-               table_title <- sprintf("Regression Predicting %s\n",first_criterion)
-          }
-
-          table_note <- get_reg_table_note_rtf(first_block_calculate_cor, first_block_calculate_beta)
-
-          #set columns widths and names
-          colwidths <- get_rtf_column_widths(block_out_rtf)
-
-          regression_table <- as.matrix(block_out_rtf)
-
-          rtf_column_names <- get_rtf_column_names(block_out_rtf)
-          if (prop_var_conf_level == .95) {
-               rtf_column_names <- sub("XX","95",rtf_column_names)
-          } else {
-               rtf_column_names <- sub("XX","90",rtf_column_names)
-          }
-          new_col_names <- rtf_column_names
-
-
-          colnames(regression_table) <- new_col_names
-
-
-          #Create RTF code
-          rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
-          rtfTable$setTableContent(regression_table)
-          rtfTable$setCellWidthsInches(colwidths)
-          rtfTable$setRowSecondColumnDecimalTab(.4)
-          txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
-
 
            if (is_multiple_blocks==TRUE) {
                write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,landscape=TRUE,table.number=table_number)
@@ -261,6 +289,16 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
 
      }
 
+     tbl_console$rtf.body         <- txt_body
+     tbl_console$rtf.table.title  <- table_title
+     tbl_console$rtf.table.note   <- table_note
+
+     tbl_console$latex.body         <- block_out_latex
+     tbl_console$latex.table.title  <- table_title_latex
+     tbl_console$latex.table.note   <- table_note_latex
+
+     tbl_console$landscape       <- TRUE
+     tbl_console$table.type      <- "regression"
 
      return(tbl_console)
 }
@@ -330,6 +368,8 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      model_summary_rtf    <- sprintf("{\\i R\\super 2 \\nosupersub}  = %s",R2_txt)
      model_summary_CI_rtf <- sprintf("%s%% CI[%s,%s]",prop_var_conf_level_str, R2LL_txt,R2UL_txt)
 
+     model_summary_latex    <- sprintf("$R^2$ = %s",R2_txt)
+     model_summary_CI_latex <- sprintf("%s\\%% CI[%s,%s]",prop_var_conf_level_str, R2LL_txt,R2UL_txt)
 
      #Add b-weight CI's
      b_CI <- confint(cur_blk) #uses .95 confidence by default
@@ -448,6 +488,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      }
 
      model_details$sr2     <- strip.leading.zero(sprintf("%1.2f", model_details_extended$sr2))
+     model_details$sr2    <- add.sig.stars(model_details$sr2, model_details_extended$p)
      model_details$sr2[1]  <- ""
      model_details$sr2_CI     <- CIsr2_str
      model_details$sr2_CI[1]  <- ""
@@ -480,6 +521,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
 
      num_row <- dim(model_details_txt)[1]
      model_details_rtf <- model_details_txt
+     model_details_latex <- model_details_txt
 
      model_details_txt$summary[num_row-2] <- model_summary_txt
      model_details_txt$summary[num_row-1] <- model_summary_CI_txt
@@ -487,12 +529,16 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      model_details_rtf$summary[num_row-2] <- model_summary_rtf
      model_details_rtf$summary[num_row-1] <- model_summary_CI_rtf
 
+     model_details_latex$summary[num_row-2] <- model_summary_latex
+     model_details_latex$summary[num_row-1] <- model_summary_CI_latex
+
 
      output <- list()
      output$model_summary_extended <- model_summary_extended
      output$model_details_extended <- model_details_extended
      output$model_details_txt      <- model_details_txt
      output$model_details_rtf      <- model_details_rtf
+     output$model_details_latex    <- model_details_latex
      output$calculate_beta         <- calculate_beta
      output$calculate_cor          <- calculate_cor
 
@@ -638,6 +684,26 @@ get_reg_table_note_rtf <- function(calculate_cor,calculate_beta) {
 }
 
 
+get_reg_table_note_latex <- function(calculate_cor,calculate_beta) {
+     if (calculate_cor==TRUE & calculate_beta==TRUE) {
+
+          table_note <- "A significant $b$-weight indicates the beta-weight and semi-partial correlation are also significant. $b$ represents unstandardized regression weights. {\\i beta} indicates the standardized regression weights. Unique $R^2$ represents the semi-partial correlation squared (i.e., $sr^2$. $r$ represents the zero-order correlation. $LL$ and $UL$ indicate the lower and upper limits of a confidence interval, respectively. * indicates $p$ < .05. ** indicates $p$ < .01."
+
+     } else if (calculate_cor==TRUE & calculate_beta==FALSE) {
+
+          table_note <- "A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
+
+     } else if (calculate_cor==FALSE & calculate_beta==TRUE) {
+
+          table_note <- "A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights. {\\i beta} indicates the standardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
+
+     } else {
+          table_note <- "A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates p < .05. ** indicates p < .01."
+     }
+     return(table_note)
+
+}
+
 
 
 convert_b_to_beta <- function(b, sd_pred,sd_crit) {
@@ -658,6 +724,7 @@ get_delta_R2_blocks <- function(blk2,blk1,summary2,summary1,n, prop_var_conf_lev
 
      deltaR2_txt <- sprintf("Delta R2 = %s", deltaR2_str)
      deltaR2_rtf <- sprintf("\\u0916\3{\\i R\\super 2 \\nosupersub}  = %s", deltaR2_str)
+     deltaR2_latex <- sprintf("$\\Delta R^2$  = %s", deltaR2_str)
 
 
 
@@ -669,6 +736,7 @@ get_delta_R2_blocks <- function(blk2,blk1,summary2,summary1,n, prop_var_conf_lev
      prop_var_conf_level_str <- sprintf("%g", round(prop_var_conf_level*100))
      deltaR2_CI_rtf <- sprintf("{%s%% CI}[%s, %s]",prop_var_conf_level_str, deltaR2_LL_str,deltaR2_UL_str)
      deltaR2_CI_txt <- sprintf("%s%% CI[%s, %s]",prop_var_conf_level_str, deltaR2_LL_str,deltaR2_UL_str)
+     deltaR2_CI_latex <- sprintf("%s\\%% CI[%s, %s]",prop_var_conf_level_str, deltaR2_LL_str,deltaR2_UL_str)
 
 
      output <- list()
@@ -677,6 +745,8 @@ get_delta_R2_blocks <- function(blk2,blk1,summary2,summary1,n, prop_var_conf_lev
 
      output$deltaR2_rtf <- deltaR2_rtf
      output$deltaR2_CI_rtf <- deltaR2_CI_rtf
+     output$deltaR2_latex <- deltaR2_latex
+     output$deltaR2_CI_latex <- deltaR2_CI_latex
      output$deltaR2        <- deltaR2
      output$deltaR2_pvalue <- deltaR2_p
      return(output)
@@ -687,3 +757,26 @@ has_beta_cols <- function(df) {
      return("beta" %in% names(df))
 }
 
+clean_predictor_names <- function(x) {
+     N <- length(x)
+     for (i in 1:N) {
+          x[i] <- remove_product_chars(x[i])
+     }
+ return(x)
+}
+
+
+remove_product_chars <- function(original_string) {
+     modified_string <- gsub("I\\(", "", original_string)
+     modified_string <- gsub("\\)", "", modified_string)
+     modified_string <- gsub("\\(", "", modified_string)
+     modified_string <- gsub("\\s", "", modified_string)
+     modified_string <- gsub("\\*", " x ", modified_string)
+     modified_string <- gsub("Intercept", "(Intercept)", modified_string)
+
+     pattern <- "Model(\\d+)"
+     replacement <- "Model \\1"
+     modified_string <- gsub(pattern = pattern, replacement = replacement, modified_string)
+
+     return(modified_string)
+}

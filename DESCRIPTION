@@ -23,7 +23,8 @@ Imports:
     dplyr,
     boot,
     tibble,
-    kableExtra
+    kableExtra,
+    stringr
 Suggests: testthat,
     MBESS,
     knitr
