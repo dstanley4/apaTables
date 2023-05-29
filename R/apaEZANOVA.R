@@ -301,7 +301,7 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
 
      #console table
      if (table_title=="") {
-          table_title <- sprintf("ANOVA results\n")
+          table_title <- sprintf("ANOVA Results\n")
      }
      table_body  <- table_out_txt
 

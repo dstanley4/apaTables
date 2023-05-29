@@ -178,9 +178,9 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.in
 
 
      if (show_conf_interval==TRUE) {
-          table_title <- "Means, standard deviations, and d-values with confidence intervals\n"
+          table_title <- "Descriptive Statistics and d-values\n"
      } else {
-          table_title <- "Means, standard deviations, and d-values\n"
+          table_title <- "Descriptive Statistics and d-values\n"
      }
 
      #make table
