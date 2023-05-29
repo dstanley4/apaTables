@@ -137,7 +137,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
      names(table_out_txt) <- table_out_names
 
      #console table
-     table_title <- sprintf("ANOVA results using %s as the dependent variable\n",dv_name)
+     table_title <- sprintf("ANOVA Results for %s\n",stringr::str_to_sentence(dv_name))
      table_body  <- table_out_txt
      table_note  <- sprintf("Note: Values in square brackets indicate the bounds of the %1.0f%% confidence interval for partial eta-squared",conf_level*100)
 
@@ -150,7 +150,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
 
 
-     table_title <- sprintf("Fixed-Effects ANOVA results using %s as the criterion\n",dv_name)
+     table_title <- sprintf("Fixed-Effects ANOVA Results for %s\n",stringr::str_to_sentence(dv_name))
      table_note <- "LL and UL represent the lower-limit and upper-limit of the partial \\u0951\\ \\super 2\\nosupersub  confidence interval, respectively."
 
      #set columns widths and names

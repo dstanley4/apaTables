@@ -135,7 +135,8 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
      #make table title
      iv1.num.levels = length(levels(iv1))
      iv2.num.levels = length(levels(iv2))
-     table.title <- sprintf("Means and standard deviations for %s as a function of a %1.0f(%s) X %1.0f(%s) design",dv.name,iv1.num.levels,iv1.name,iv2.num.levels,iv2.name)
+     table.title <- sprintf("Descriptive Statistics For %s In a %1.0f(%s) X %1.0f(%s) Design",stringr::str_to_sentence(dv.name),iv1.num.levels,stringr::str_to_sentence(iv1.name),iv2.num.levels,stringr::str_to_sentence(iv2.name))
+     latex.table.title <- table.title
 
      #make table notes console and rtf
      if ((show.marginal.means==TRUE) & (show.conf.interval==FALSE)) {
@@ -199,7 +200,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
      tbl.console$latex.column.labels[1] <- iv1.name
      tbl.console$latex.column.centering <- make_markdown_column_alignment(tbl.console$latex.column.labels)
      tbl.console$latex.table.note <- latex.table.note
-     tbl.console$latex.table.title <- sprintf("Means and standard deviations for %s as a function of a %1.0f(%s) X %1.0f(%s) design",dv.name,iv1.num.levels,iv1.name,iv2.num.levels,iv2.name)
+     tbl.console$latex.table.title <- latex.table.title
 
      tbl.console$rtf.body         <- txt.body
      tbl.console$rtf.table.title  <- table.title

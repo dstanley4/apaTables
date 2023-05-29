@@ -204,7 +204,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
      #now two matrices exist outputMatrixConsole and outputMatrixRTF that need to be printed
 
 
-     table_title <- "Means, standard deviations, and correlations\n"
+     table_title <- "Descriptive Statistics and Correlations\n"
 
 
      #make table
@@ -240,13 +240,13 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
      output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
 
      if (show_conf_interval == TRUE) {
-          table_title <- "Means, standard deviations, and correlations with confidence intervals"
+          table_title <- "Descriptive Statistics and Correlations"
           table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation."
           table_note_latex <- "\\\\textit{Note}. \\\\textit{M} and  \\\\textit{SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95\\\\% confidence interval for each correlation."
 
 
      } else {
-          table_title <- "Means, standard deviations, and correlations"
+          table_title <- "Descriptive Statistics and Correlations"
           table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively."
           table_note_latex <- "\\\\textit{Note}. \\\\textit{M} and  \\\\textit{SD} are used to represent mean and standard deviation, respectively."
 

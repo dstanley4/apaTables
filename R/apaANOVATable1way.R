@@ -77,7 +77,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
 
 
           #Create RTF code
-     table.title <- sprintf("Descriptive statistics for %s as a function of %s. ",dv.name,iv.name)
+     table.title <- sprintf("Descriptive Statistics for %s For Each Level of %s. ", stringr::str_to_sentence(dv.name), stringr::str_to_sentence(iv.name))
      table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
 
      if (show.conf.interval==TRUE) {
@@ -100,7 +100,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
      tbl.console$latex.column.labels <-tables.out$latex.column.labels
      tbl.console$latex.column.centering <- make_markdown_column_alignment(tables.out$latex.column.labels)
      tbl.console$latex.table.note <- latex.table.note
-     tbl.console$latex.table.title <- sprintf("Descriptive statistics for %s as a function of %s",dv.name,iv.name)
+     tbl.console$latex.table.title <- sprintf("Descriptive Statistics for %s For Each Level of %s. ",stringr::str_to_sentence(dv.name),stringr::str_to_sentence(iv.name))
 
      tbl.console$rtf.body         <- txt.body
      tbl.console$rtf.table.title  <- table.title
@@ -164,7 +164,7 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
 
 
      #make console output
-     table.title <- sprintf("Descriptive statistics for %s as a function of %s. ",dv.name,iv.name)
+     table.title <- sprintf("Descriptive Statistics for %s For Each Level of %s. ",stringr::str_to_sentence(dv.name),stringr::str_to_sentence(iv.name))
 
      table.body <- table.out
      names(table.body) <- get_oneway_column_names(table.body)
