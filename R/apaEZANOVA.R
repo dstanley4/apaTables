@@ -334,6 +334,8 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
                          table_body = table_body,
                          table_note = table_note)
 
+     latex_body = table_body
+
      class(tbl_console) <- "apa_table"
 
 
@@ -341,23 +343,30 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
      if (is_within == TRUE) {
           if (correction=="GG") {
                correction_text <- "Epsilon indicates Greenhouse-Geisser multiplier for degrees of freedom,"
+               correction_text_latex <- "Epsilon indicates Greenhouse-Geisser multiplier for degrees of freedom,"
 
           } else if (correction=="HF") {
                correction_text <- "Epsilon indicates Huynh-Feldt multiplier for degrees of freedom,"
+               correction_text_latex <- "Epsilon indicates Huynh-Feldt multiplier for degrees of freedom,"
           } else {
                correction_text <- "{\\i p}-values based on assumed sphericity."
+               correction_text_latex <- "$p$-values based on assumed sphericity."
           }
           if (ez_detailed==TRUE) {
                table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
+               table_note_latex  <- sprintf("$df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.", correction_text)
           } else {
                table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
+               table_note_latex  <- sprintf("$df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $eta_{g}^2$ indicates generalized eta-squared.", correction_text)
           }
 
      } else {
           if (ez_detailed==TRUE) {
                table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
+               table_note_latex  <- sprintf("$df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.")
           } else {
                table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
+               table_note_latex  <- sprintf("$df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.")
           }
      }
 
@@ -417,12 +426,12 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
      tbl_console$rtf.table.title  <- table_title
      tbl_console$rtf.table.note   <- table_note
 
-     # tbl_console$latex.body         <- block_out_latex
-     # tbl_console$latex.table.title  <- table_title_latex
-     # tbl_console$latex.table.note   <- table_note_latex
+     tbl_console$latex.body         <- latex_body
+     tbl_console$latex.table.title  <- "ANOVA Results"
+     tbl_console$latex.table.note   <- table_note_latex
 
      tbl_console$landscape       <- TRUE
-     tbl_console$table.type      <- "regression"
+     tbl_console$table.type      <- "ezanova"
 
      return(tbl_console)
 }
