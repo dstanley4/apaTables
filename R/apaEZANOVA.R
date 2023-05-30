@@ -70,7 +70,6 @@
 #'# See new long format of data, where one row is one OBSERVATION.
 #'# As well, notice that we have two columns (drink, imagery)
 #'# drink, imagery, and participant are factors
-
 #'print(drink_attitude_long)
 #'
 #'
@@ -338,83 +337,92 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
      class(tbl_console) <- "apa_table"
 
 
+     correction_text <- ""
+     if (is_within == TRUE) {
+          if (correction=="GG") {
+               correction_text <- "Epsilon indicates Greenhouse-Geisser multiplier for degrees of freedom,"
 
-     if (make_file_flag==TRUE) {
-          correction_text <- ""
-          if (is_within == TRUE) {
-               if (correction=="GG") {
-                    correction_text <- "Epsilon indicates Greenhouse-Geisser multiplier for degrees of freedom,"
-
-               } else if (correction=="HF") {
-                    correction_text <- "Epsilon indicates Huynh-Feldt multiplier for degrees of freedom,"
-               } else {
-                    correction_text <- "{\\i p}-values based on assumed sphericity."
-               }
-               if (ez_detailed==TRUE) {
-                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
-               } else {
-                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
-               }
-
+          } else if (correction=="HF") {
+               correction_text <- "Epsilon indicates Huynh-Feldt multiplier for degrees of freedom,"
           } else {
-               if (ez_detailed==TRUE) {
-                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
-               } else {
-                    table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
-               }
+               correction_text <- "{\\i p}-values based on assumed sphericity."
+          }
+          if (ez_detailed==TRUE) {
+               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
+          } else {
+               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
           }
 
-          #set columns widths and names
-          colwidths <- get_rtf_column_widths_anova(table_out)
+     } else {
+          if (ez_detailed==TRUE) {
+               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
+          } else {
+               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
+          }
+     }
 
-          anova_table <- as.matrix(table_out)
-          new_col_names  <- get_rtf_column_names_anova(table_out)
-          colnames(anova_table) <- new_col_names
+     #set columns widths and names
+     colwidths <- get_rtf_column_widths_anova(table_out)
+
+     anova_table <- as.matrix(table_out)
+     new_col_names  <- get_rtf_column_names_anova(table_out)
+     colnames(anova_table) <- new_col_names
 
 
-          if (is_within == FALSE) {
+     if (is_within == FALSE) {
+          rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
+          rtfTable$setTableContent(anova_table)
+          rtfTable$setCellWidthsInches(colwidths)
+          rtfTable$setRowDecimalTabForColumn(0,2) #df1
+          rtfTable$setRowDecimalTabForColumn(0,3)  #df2
+          rtfTable$setRowDecimalTabForColumn(.6,4) #F
+          rtfTable$setRowDecimalTabForColumn(.1,5) #pvalue
+          rtfTable$setRowDecimalTabForColumn(.2,6) #ges
+     } else {
+          if (ez_detailed == FALSE) {
                rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
                rtfTable$setTableContent(anova_table)
                rtfTable$setCellWidthsInches(colwidths)
-               rtfTable$setRowDecimalTabForColumn(0,2) #df1
-               rtfTable$setRowDecimalTabForColumn(0,3)  #df2
-               rtfTable$setRowDecimalTabForColumn(.6,4) #F
-               rtfTable$setRowDecimalTabForColumn(.1,5) #pvalue
-               rtfTable$setRowDecimalTabForColumn(.2,6) #ges
+               rtfTable$setRowDecimalTabForColumn(.3,2) #df 1
+               rtfTable$setRowDecimalTabForColumn(.4,3)  #df  2
+               rtfTable$setRowDecimalTabForColumn(.2,4) #Epsilon
+               rtfTable$setRowDecimalTabForColumn(.6,5) #F
+               rtfTable$setRowDecimalTabForColumn(.1,6)  #pvalue
+               rtfTable$setRowDecimalTabForColumn(.2,7) #ges
           } else {
-               if (ez_detailed == FALSE) {
-                    rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
-                    rtfTable$setTableContent(anova_table)
-                    rtfTable$setCellWidthsInches(colwidths)
-                    rtfTable$setRowDecimalTabForColumn(.3,2) #df 1
-                    rtfTable$setRowDecimalTabForColumn(.4,3)  #df  2
-                    rtfTable$setRowDecimalTabForColumn(.2,4) #Epsilon
-                    rtfTable$setRowDecimalTabForColumn(.6,5) #F
-                    rtfTable$setRowDecimalTabForColumn(.1,6)  #pvalue
-                    rtfTable$setRowDecimalTabForColumn(.2,7) #ges
-               } else {
-                    rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
-                    rtfTable$setTableContent(anova_table)
-                    rtfTable$setCellWidthsInches(colwidths)
-                    rtfTable$setRowDecimalTabForColumn(.3,2) #df1
-                    rtfTable$setRowDecimalTabForColumn(.4,3) #df2
-                    rtfTable$setRowDecimalTabForColumn(.3,4) #Epsilon
-                    rtfTable$setRowDecimalTabForColumn(.6,5) #SS1
-                    rtfTable$setRowDecimalTabForColumn(.6,6)  #SS2
-                    rtfTable$setRowDecimalTabForColumn(.6,7)  #F
-                    rtfTable$setRowDecimalTabForColumn(.1,8)  #pvalue
-                    rtfTable$setRowDecimalTabForColumn(.2,9) #ges
-               }
+               rtfTable <- RtfTable$new(isHeaderRow=TRUE, defaultDecimalTableProportionInternal=.15)
+               rtfTable$setTableContent(anova_table)
+               rtfTable$setCellWidthsInches(colwidths)
+               rtfTable$setRowDecimalTabForColumn(.3,2) #df1
+               rtfTable$setRowDecimalTabForColumn(.4,3) #df2
+               rtfTable$setRowDecimalTabForColumn(.3,4) #Epsilon
+               rtfTable$setRowDecimalTabForColumn(.6,5) #SS1
+               rtfTable$setRowDecimalTabForColumn(.6,6)  #SS2
+               rtfTable$setRowDecimalTabForColumn(.6,7)  #F
+               rtfTable$setRowDecimalTabForColumn(.1,8)  #pvalue
+               rtfTable$setRowDecimalTabForColumn(.2,9) #ges
           }
+     }
 
 
-          #Create RTF code
-          txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
+     #Create RTF code
+     txt_body <- rtfTable$getTableAsRTF(FALSE,FALSE)
 
-
-          write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,landscape=TRUE,table.number=table_number)
+     if (make_file_flag==TRUE) {
+               write.rtf.table(filename = filename,txt.body = txt_body,table.title = table_title, table.note = table_note,landscape=TRUE,table.number=table_number)
 
      }
+
+     tbl_console$rtf.body         <- txt_body
+     tbl_console$rtf.table.title  <- table_title
+     tbl_console$rtf.table.note   <- table_note
+
+     # tbl_console$latex.body         <- block_out_latex
+     # tbl_console$latex.table.title  <- table_title_latex
+     # tbl_console$latex.table.note   <- table_note_latex
+
+     tbl_console$landscape       <- TRUE
+     tbl_console$table.type      <- "regression"
 
      return(tbl_console)
 }
