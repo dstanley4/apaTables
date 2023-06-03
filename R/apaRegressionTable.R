@@ -664,7 +664,7 @@ get_rtf_column_widths <- function(df) {
 
 get_reg_table_note_txt <- function(calculate_cor,calculate_beta) {
 
-     table_note <- "Note. b = unstandardized regression weight. beta = standardized regression weight. Unique R2 = semipartial correlation squared. r = zero-order correlation. CI = confidence interval. p < .05. ** indicates p < .01.\n"
+     table_note <- "Note. b = unstandardized regression weight. beta = standardized regression weight. Unique R2 = semipartial correlation squared. r = zero-order correlation. CI = confidence interval.  * indicates p < .05. ** indicates p < .01.\n"
 
      return(table_note)
 
@@ -672,13 +672,13 @@ get_reg_table_note_txt <- function(calculate_cor,calculate_beta) {
 
 
 get_reg_table_note_rtf <- function(calculate_cor,calculate_beta) {
-     table_note <- "Note. {\\i b} = unstandardized regression weight. {\\i beta} = standardized regression weight. Unique {\\i R\\super 2\\nosupersub} = semipartial correlation squared. {\\i r} = zero-order correlation. CI = confidence interval. p < .05. ** indicates p < .01.\n"
+     table_note <- "Note. {\\i b} = unstandardized regression weight. {\\i beta} = standardized regression weight. Unique {\\i R\\super 2\\nosupersub} = semipartial correlation squared. {\\i r} = zero-order correlation. CI = confidence interval.  * indicates p < .05. ** indicates p < .01.\n"
      return(table_note)
 }
 
 
 get_reg_table_note_latex <- function(calculate_cor,calculate_beta) {
-     table_note <- "\\\\textit{Note}. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. $p$ < .05. ** indicates $p$ < .01."
+     table_note <- "\\\\textit{Note}. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \\\\newline  * indicates $p$ < .05. ** indicates $p$ < .01."
      return(table_note)
 }
 

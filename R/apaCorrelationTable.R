@@ -241,8 +241,8 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      if (show_conf_interval == TRUE) {
           table_title <- "Descriptive Statistics and Correlations"
-          table_note <- "{\\i M} = mean. {\\i SD} = standard deviation. Values in square brackets indicate the 95% confidence interval."
-          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. Values in square brackets indicate the 95\\\\% confidence interval."
+          table_note <- "{\\i M} = mean. {\\i SD} = standard deviation. Square brackets = 95% confidence interval."
+          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. Square brackets = 95\\\\% confidence interval."
 
 
      } else {
@@ -254,7 +254,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      if (show_stars == TRUE) {
              table_note <- paste(table_note, "* indicates {\\i p} < .05. ** indicates {\\i p} < .01.")
-             table_note_latex <- paste(table_note_latex, "* indicates \\\\textit{p} < .05. ** indicates \\\\textit{p} < .01.")
+             table_note_latex <- paste(table_note_latex, "\\\\newline  * indicates $p$ < .05. ** indicates $p$ < .01.")
      }
 
 
