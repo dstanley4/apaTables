@@ -140,14 +140,14 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
 
      #make table notes console and rtf
      if ((show.marginal.means==TRUE) & (show.conf.interval==FALSE)) {
-          table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively. Marginal indicates the means and standard deviations pertaining to main effects."
-          table.note.txt <- "Note. M and SD represent mean and standard deviation, respectively. \nMarginal indicates the means and standard deviations pertaining to main effects."
+          table.note <- "{\\i M} = mean. {\\i SD} = standard deviation. Marginal indicates the means and standard deviations pertaining to main effects."
+          table.note.txt <- "Note. M = mean. SD = standard deviation. \nMarginal indicates the means and standard deviations pertaining to main effects."
      } else {
-          table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
-          table.note.txt <- "Note. M and SD represent mean and standard deviation, respectively."
+          table.note <- "{\\i M} = mean. {\\i SD} = standard deviation."
+          table.note.txt <- "Note. M = mean. SD = standard deviation."
      }
      if (show.conf.interval==TRUE) {
-          ci.txt <- "\nCI indicates confidence interval for the mean."
+          ci.txt <- "\nCI = confidence interval."
           table.note.txt <- paste(table.note.txt,ci.txt)
      }
 
@@ -165,9 +165,9 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
 
      rtf.title <- table.title
      table.title <- rtf.title
-     table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
+     table.note <- "{\\i M} = mean. {\\i SD} = standard deviation."
      if (show.conf.interval==TRUE) {
-          ci.txt <- "CI indicate the confidence interval for the mean."
+          ci.txt <- "CI = confidence interval."
           table.note <- paste(table.note,ci.txt)
      }
 
@@ -181,9 +181,9 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
           tbl.console$table.number = 0
      }
 
-     latex.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
+     latex.table.note <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. "
      if (show.conf.interval==TRUE) {
-          latex.ci.txt <- "CI indicates the confidence interval for the mean."
+          latex.ci.txt <- "CI = confidence interval."
           latex.table.note <- paste(latex.table.note, latex.ci.txt)
      }
 

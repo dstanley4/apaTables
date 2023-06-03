@@ -241,14 +241,14 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      if (show_conf_interval == TRUE) {
           table_title <- "Descriptive Statistics and Correlations"
-          table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95% confidence interval for each correlation."
-          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} and  \\\\textit{SD} are used to represent mean and standard deviation, respectively. Values in square brackets indicate the 95\\\\% confidence interval for each correlation."
+          table_note <- "{\\i M} = mean. {\\i SD} = standard deviation. Values in square brackets indicate the 95% confidence interval."
+          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. Values in square brackets indicate the 95\\\\% confidence interval."
 
 
      } else {
           table_title <- "Descriptive Statistics and Correlations"
-          table_note <- "{\\i M} and {\\i SD} are used to represent mean and standard deviation, respectively."
-          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} and  \\\\textit{SD} are used to represent mean and standard deviation, respectively."
+          table_note <- "{\\i M} = mean. {\\i SD} = standard deviation."
+          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation."
 
      }
 

@@ -78,10 +78,10 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
 
           #Create RTF code
      table.title <- sprintf("Descriptive Statistics for %s For Each Level of %s. ", stringr::str_to_sentence(dv.name), stringr::str_to_sentence(iv.name))
-     table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
+     table.note <- "{\\i M} = mean. {\\i SD} = standard deviation."
 
      if (show.conf.interval==TRUE) {
-          ci.txt <- "{\\i CI} indicates confidence interval for the mean."
+          ci.txt <- "{\\i CI} = confidence interval."
           table.note <- paste(table.note,ci.txt)
      }
 
@@ -91,9 +91,9 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
 
 
      # Ver 3.0 add ons
-     latex.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
+     latex.table.note <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. "
      if (show.conf.interval==TRUE) {
-          latex.ci.txt <- "CI indicates confidence interval for the mean."
+          latex.ci.txt <- "CI = confidence interval."
           latex.table.note <- paste(latex.table.note, latex.ci.txt)
      }
 
@@ -170,9 +170,9 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      names(table.body) <- get_oneway_column_names(table.body)
      names(table.body)[1] <- iv.name
 
-     table.note <- "Note. M and SD represent mean and standard deviation, respectively.\n"
+     table.note <- "Note. M = mean. SD = standard deviation.\n"
      if (show.conf.interval==TRUE) {
-          ci.txt <- "CI indicates confidence interval for the mean."
+          ci.txt <- "CI = confidence interval."
           table.note <- paste(table.note,ci.txt,sep="")
      }
      tbl.console <- list()
