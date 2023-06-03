@@ -27,6 +27,8 @@ Imports:
     stringr
 Suggests: testthat,
     MBESS,
+    ez,
+    tidyr,
     knitr
 Encoding: UTF-8
 RoxygenNote: 7.2.3

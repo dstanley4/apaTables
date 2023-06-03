@@ -32,14 +32,14 @@
 #'
 #'
 #' # Save all three table in the same .doc document
-#' apaTables:::apa.save(filename = "my_tables.doc", table1, table2, table3)
+#' apa.save(filename = "my_tables.doc", table1, table2, table3)
 #'
 #'
 #' # Create a table for your PDF
 #' # Include the lines below in your rmarkdown or Quarto document
-#' apaTables:::apa.knit.table.for.pdf(table1)
-#' apaTables:::apa.knit.table.for.pdf(table2)
-#' apaTables:::apa.knit.table.for.pdf(table3)
+#' apa.knit.table.for.pdf(table1)
+#' apa.knit.table.for.pdf(table2)
+#' apa.knit.table.for.pdf(table3)
 #'
 #'
 #' # delete demo file
@@ -151,7 +151,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
 
      table_title <- sprintf("Fixed-Effects ANOVA Results for %s\n",stringr::str_to_sentence(dv_name))
-     table_note <- "LL and UL represent the lower-limit and upper-limit of the partial \\u0951\\ \\super 2\\nosupersub  confidence interval, respectively."
+     table_note <- "CI indicates the confidence interval for partial \\u0951\\ \\super 2\\nosupersub."
 
      #set columns widths and names
      colwidths <- get_rtf_column_widths_anova(table_out)
@@ -187,7 +187,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
      # Ver 3.0 add ons
 
      tbl_console$ci.conf.level = conf.level
-     latex_note <- "\\\\textit{Note}. \\\\textit{LL} and \\\\textit{UL} represent the lower-limit and upper-limit of the $\\\\eta_{partial}^2$  confidence interval, respectively."
+     latex_note <- "\\\\textit{Note}. CI indicates the confidence interval for $\\\\eta_{partial}^2$."
      tbl_console$latex.table.note <- latex_note
      tbl_console$latex.table.title <- table_title
      tbl_console$latex.body         <- table_body

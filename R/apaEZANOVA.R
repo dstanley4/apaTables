@@ -6,162 +6,147 @@
 #' @param table.number  Integer to use in table number output line
 #' @return APA table object
 #' @examples
-#' \dontrun{
+#' if  (requireNamespace("ez", quietly = TRUE)){
+#' if  (requireNamespace("apaTables", quietly = TRUE)){
+#' if  (requireNamespace("tidyr", quietly = TRUE)){
+#'
+#'
+#'#
 #'# ** Example 1: Between Participant Predictors
 #'#
 #'
-#'library(apaTables)
-#'library(ez)
-#'
-#'# See format where one row represents one PERSON
-#'# Note that participant, gender, and alcohol are factors
-#'
-#'print(goggles)
-#'
+#' goggles <- apaTables::goggles
 #'
 #'# Use ezANOVA
 #'# Be sure use the options command, as below, to ensure sufficient digits
 #'
-#'options(digits = 10)
-#'goggles_results <- ezANOVA(data = goggles,
+#' options(digits = 10)
+#' goggles_results <- ez::ezANOVA(data = goggles,
 #'                           dv = attractiveness,
 #'                           between = .(gender, alcohol),
 #'                           participant ,
 #'                           detailed = TRUE)
 #'
 #'
-#' # Make APA table
+#' # Make APA table - save after all 3 examples
+#' goggles_table <- apa.ezANOVA.table(goggles_results)
 #'
-#'goggles_table <- apa.ezANOVA.table(goggles_results,
-#'                                   filename="ex1_ez_independent.doc")
-#'
-#'print(goggles_table)
-#'
+#' # Create a table for your PDF
+#' # Include the lines below in your rmarkdown or Quarto document
+#' apa.knit.table.for.pdf(goggles_table)
 #'
 #'
 #' #
 #' # ** Example 2: Within Participant Predictors
 #' #
 #'
-#'library(apaTables)
-#'library(tidyr)
-#'library(forcats)
-#'library(ez)
-#'
-#'# See initial wide format where one row represents one PERSON
-#'print(drink_attitude_wide)
+#' drink_attitude_wide <- apaTables::drink_attitude_wide
 #'
 #'# Convert data from wide format to long format where one row represents one OBSERVATION.
 #'# Wide format column names MUST represent levels of each variable separated by an underscore.
 #'# See vignette for further details.
 #'
-#'drink_attitude_long <- gather(data = drink_attitude_wide,
-#'                               key = cell, value = attitude,
-#'                               beer_positive:water_neutral,
-#'                               factor_key=TRUE)
+#' drink_attitude_long <- tidyr::pivot_longer(drink_attitude_wide,
+#'                               cols = beer_positive:water_neutral,
+#'                              names_to = c("drink", "imagery"),
+#'                              names_sep = "_",
+#'                               values_to = "attitude")
 #'
-#'drink_attitude_long <- separate(data = drink_attitude_long,
-#'                                 col = cell, into = c("drink","imagery"),
-#'                                 sep = "_", remove = TRUE)
 #'
-#'drink_attitude_long$drink <- as_factor(drink_attitude_long$drink)
-#'drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
-#'
-#'# See new long format of data, where one row is one OBSERVATION.
-#'# As well, notice that we have two columns (drink, imagery)
-#'# drink, imagery, and participant are factors
-#'print(drink_attitude_long)
+#' drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
+#' drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
 #'
 #'
 #'# Set contrasts to match Field et al. (2012) textbook output
 #'
-#'alcohol_vs_water <- c(1, 1, -2)
-#'beer_vs_wine <- c(-1, 1, 0)
-#'negative_vs_other <- c(1, -2, 1)
-#'positive_vs_neutral <- c(-1, 0, 1)
-#'contrasts(drink_attitude_long$drink) <- cbind(alcohol_vs_water, beer_vs_wine)
-#'contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_neutral)
+#' alcohol_vs_water <- c(1, 1, -2)
+#' beer_vs_wine <- c(-1, 1, 0)
+#' negative_vs_other <- c(1, -2, 1)
+#' positive_vs_neutral <- c(-1, 0, 1)
+#' contrasts(drink_attitude_long$drink) <- cbind(alcohol_vs_water, beer_vs_wine)
+#' contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_neutral)
 #'
 #'
 #'# Use ezANOVA
 #'# Be sure use the options command, as below, to ensure sufficient digits
 #'
-#'options(digits = 10)
-#'drink_attitude_results <- ezANOVA(data = drink_attitude_long,
+#' options(digits = 10)
+#' drink_attitude_results <- ez::ezANOVA(data = drink_attitude_long,
 #'                    dv = .(attitude), wid = .(participant),
 #'                    within = .(drink, imagery),
 #'                    type = 3, detailed = TRUE)
 #'
 #'
-#'# Make APA table
+#' # Make APA table - save after all 3 examples
+#' drink_table <- apa.ezANOVA.table(drink_attitude_results)
 #'
-#'drink_table <- apa.ezANOVA.table(drink_attitude_results,
-#'                                  filename="ex2_repeated_table.doc")
-#'
-#'print(drink_table)
+#' # Create a table for your PDF
+#' # Include the lines below in your rmarkdown or Quarto document
+#' apa.knit.table.for.pdf(drink_table)
 #'
 #'
 #'#
 #'# ** Example 3: Between and Within Participant Predictors
 #'#
 #'
-#'library(apaTables)
-#'library(tidyr)
-#'library(forcats)
-#'library(ez)
-#'
-#'# See initial wide format where one row represents one PERSON
-#'print(dating_wide)
-#'
+#' dating_wide <- apaTables::dating_wide
 #'
 #'# Convert data from wide format to long format where one row represents one OBSERVATION.
 #'# Wide format column names MUST represent levels of each variable separated by an underscore.
 #'# See vignette for further details.
 #'
-#'dating_long <- gather(data = dating_wide,
-#'                      key = cell, value = date_rating,
-#'                      attractive_high:ugly_none,
-#'                      factor_key = TRUE)
 #'
-#'dating_long <- separate(data = dating_long,
-#'                        col = cell, into = c("looks","personality"),
-#'                        sep = "_", remove = TRUE)
+#' dating_long <- tidyr::pivot_longer(dating_wide,
+#'                               cols = attractive_high:ugly_none,
+#'                              names_to = c("looks", "personality"),
+#'                              names_sep = "_",
+#'                               values_to = "date_rating")
+#'#'
+#' dating_long$looks <- as.factor(dating_long$looks)
+#' dating_long$personality <- as.factor(dating_long$personality)
 #'
-#'dating_long$looks <- as_factor(dating_long$looks)
-#'dating_long$personality <- as_factor(dating_long$personality)
-#'
-#'
-#'# See new long format of data, where one row is one OBSERVATION.
-#'# As well, notice that we have two columns (looks, personality)
-#'# looks, personality, and participant are factors
-#'
-#'print(dating_long)
 #'
 #'# Set contrasts to match Field et al. (2012) textbook output
 #'
-#'some_vs_none <- c(1, 1, -2)
-#'hi_vs_av <- c(1, -1, 0)
-#'attractive_vs_ugly <- c(1, 1, -2)
-#'attractive_vs_average <- c(1, -1, 0)
-#'contrasts(dating_long$personality) <- cbind(some_vs_none, hi_vs_av)
-#'contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
+#' some_vs_none <- c(1, 1, -2)
+#' hi_vs_av <- c(1, -1, 0)
+#' attractive_vs_ugly <- c(1, 1, -2)
+#' attractive_vs_average <- c(1, -1, 0)
+#' contrasts(dating_long$personality) <- cbind(some_vs_none, hi_vs_av)
+#' contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
 #'
 #'
 #' # Use ezANOVA
 #'
-#'library(ez)
-#'options(digits = 10)
-#'dating_results <-ezANOVA(data = dating_long, dv = .(date_rating), wid = .(participant),
-#'                         between = .(gender), within = .(looks, personality),
-#'                         type = 3, detailed = TRUE)
+#' options(digits = 10)
+#' dating_results <-ez::ezANOVA(data = dating_long, dv = .(date_rating),
+#'                          wid = .(participant),
+#'                          between = .(gender),
+#'                          within = .(looks, personality),
+#'                          type = 3, detailed = TRUE)
 #'
 #'
-#'# Make APA table
+#' # Make APA table - save after all 3 examples
+#' dating_table <- apa.ezANOVA.table(dating_results)
 #'
-#'dating_table <- apa.ezANOVA.table(dating_results,
-#'                                  filename = "ex3_mixed_table.doc")
-#'print(dating_table)
-#'}
+#' # Create a table for your PDF
+#' # Include the lines below in your rmarkdown or Quarto document
+#' apa.knit.table.for.pdf(dating_table)
+#'
+#'
+#' #
+#' # Saving all three tables
+#' #
+#' apa.save("tables_ezANOVA.doc",
+#'                 goggles_table,
+#'                  drink_table,
+#'                 dating_table)
+#'
+#' # delete demo file
+#' if (file.exists("tables_ezANOVA.doc")) {
+#'      file.remove("tables_ezANOVA.doc")
+#' }
+#' }}}
 #' @export
 apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", filename, table.number=NA) {
 
@@ -354,19 +339,19 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
           }
           if (ez_detailed==TRUE) {
                table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
-               table_note_latex  <- sprintf("$df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.", correction_text)
+               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.", correction_text)
           } else {
                table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
-               table_note_latex  <- sprintf("$df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $eta_{g}^2$ indicates generalized eta-squared.", correction_text)
+               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $eta_{g}^2$ indicates generalized eta-squared.", correction_text)
           }
 
      } else {
           if (ez_detailed==TRUE) {
                table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
-               table_note_latex  <- sprintf("$df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.")
+               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.")
           } else {
                table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
-               table_note_latex  <- sprintf("$df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.")
+               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.")
           }
      }
 

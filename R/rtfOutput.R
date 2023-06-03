@@ -1,3 +1,25 @@
+#' Save previously constructed APA table objects in a single .doc file
+#' @param filename  Filename (e.g., my.tables.doc)
+#' @param ... apaTable objects to be saved
+#' @param paper  Use "us" or "a4". Default is "us".
+#' @return Save status
+#' @examples
+#' library(apaTables)
+#'
+#' table1 <- apa.1way.table(iv = dose, dv = libido,
+#'                data = viagra, table.number = 1)
+#'
+#' table2 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
+#'                          dv = attractiveness,
+#'                          data = goggles, table.number = 1)
+#'
+#' apa.save(filename = "my.tables.doc", table1, table2)
+#'
+#' # delete demo file
+#' if (file.exists("my.tables.doc")) {
+#'      file.remove("my.tables.doc")
+#' }
+#' @export
 apa.save <- function(filename, ..., paper = "us") {
      list_of_tables <- list(...)
      write.rtf.document(filename, list_of_tables, paper)

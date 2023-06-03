@@ -57,12 +57,12 @@ table3 <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
 
 
 # Save both Table 2 and Table 3 in a single .doc document
-apaTables:::apa.save(filename = "my_tables.doc", table2, table3)
+apa.save(filename = "my_tables.doc", table2, table3)
 
 # Create a table for your PDF
 # Include the lines below in your rmarkdown or Quarto document
-apaTables:::apa.knit.table.for.pdf(table2)
-apaTables:::apa.knit.table.for.pdf(table3)
+apa.knit.table.for.pdf(table2)
+apa.knit.table.for.pdf(table3)
 
 # delete demo file
 if (file.exists("my_tables.doc")) {

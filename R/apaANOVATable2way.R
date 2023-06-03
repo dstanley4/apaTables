@@ -25,12 +25,12 @@
 #'
 #'
 #' # Save both Table 2 and Table 3 in a single .doc document
-#' apaTables:::apa.save(filename = "my_tables.doc", table2, table3)
+#' apa.save(filename = "my_tables.doc", table2, table3)
 #'
 #' # Create a table for your PDF
 #' # Include the lines below in your rmarkdown or Quarto document
-#' apaTables:::apa.knit.table.for.pdf(table2)
-#' apaTables:::apa.knit.table.for.pdf(table3)
+#' apa.knit.table.for.pdf(table2)
+#' apa.knit.table.for.pdf(table3)
 #'
 #' # delete demo file
 #' if (file.exists("my_tables.doc")) {
@@ -147,7 +147,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
           table.note.txt <- "Note. M and SD represent mean and standard deviation, respectively."
      }
      if (show.conf.interval==TRUE) {
-          ci.txt <- "\nLL and UL indicate the lower and upper limits of the \n95% confidence interval for the mean, respectively. \nThe confidence interval is a plausible range of population means \nthat could have created a sample mean (Cumming, 2014)."
+          ci.txt <- "\nCI indicates confidence interval for the mean."
           table.note.txt <- paste(table.note.txt,ci.txt)
      }
 
@@ -167,7 +167,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
      table.title <- rtf.title
      table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
      if (show.conf.interval==TRUE) {
-          ci.txt <- "{\\i LL} and {\\i UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively. The confidence interval is a plausible range of population means that could have created a sample mean (Cumming, 2014)."
+          ci.txt <- "CI indicate the confidence interval for the mean."
           table.note <- paste(table.note,ci.txt)
      }
 
@@ -183,7 +183,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA,
 
      latex.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
      if (show.conf.interval==TRUE) {
-          latex.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
+          latex.ci.txt <- "CI indicates the confidence interval for the mean."
           latex.table.note <- paste(latex.table.note, latex.ci.txt)
      }
 

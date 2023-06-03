@@ -30,71 +30,55 @@ APA table object
 Creates an ANOVA table in APA style based output of ezANOVA command from ez package
 }
 \examples{
-\dontrun{
+if  (requireNamespace("ez", quietly = TRUE)){
+if  (requireNamespace("apaTables", quietly = TRUE)){
+if  (requireNamespace("tidyr", quietly = TRUE)){
+
+
+#
 # ** Example 1: Between Participant Predictors
 #
 
-library(apaTables)
-library(ez)
-
-# See format where one row represents one PERSON
-# Note that participant, gender, and alcohol are factors
-
-print(goggles)
-
+goggles <- apaTables::goggles
 
 # Use ezANOVA
 # Be sure use the options command, as below, to ensure sufficient digits
 
 options(digits = 10)
-goggles_results <- ezANOVA(data = goggles,
+goggles_results <- ez::ezANOVA(data = goggles,
                           dv = attractiveness,
                           between = .(gender, alcohol),
                           participant ,
                           detailed = TRUE)
 
 
-# Make APA table
+# Make APA table - save after all 3 examples
+goggles_table <- apa.ezANOVA.table(goggles_results)
 
-goggles_table <- apa.ezANOVA.table(goggles_results,
-                                  filename="ex1_ez_independent.doc")
-
-print(goggles_table)
-
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apa.knit.table.for.pdf(goggles_table)
 
 
 #
 # ** Example 2: Within Participant Predictors
 #
 
-library(apaTables)
-library(tidyr)
-library(forcats)
-library(ez)
-
-# See initial wide format where one row represents one PERSON
-print(drink_attitude_wide)
+drink_attitude_wide <- apaTables::drink_attitude_wide
 
 # Convert data from wide format to long format where one row represents one OBSERVATION.
 # Wide format column names MUST represent levels of each variable separated by an underscore.
 # See vignette for further details.
 
-drink_attitude_long <- gather(data = drink_attitude_wide,
-                              key = cell, value = attitude,
-                              beer_positive:water_neutral,
-                              factor_key=TRUE)
+drink_attitude_long <- tidyr::pivot_longer(drink_attitude_wide,
+                              cols = beer_positive:water_neutral,
+                             names_to = c("drink", "imagery"),
+                             names_sep = "_",
+                              values_to = "attitude")
 
-drink_attitude_long <- separate(data = drink_attitude_long,
-                                col = cell, into = c("drink","imagery"),
-                                sep = "_", remove = TRUE)
 
-drink_attitude_long$drink <- as_factor(drink_attitude_long$drink)
-drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
-
-# See new long format of data, where one row is one OBSERVATION.
-# As well, notice that we have two columns (drink, imagery)
-# drink, imagery, and participant are factors
-print(drink_attitude_long)
+drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
 
 
 # Set contrasts to match Field et al. (2012) textbook output
@@ -111,55 +95,40 @@ contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_n
 # Be sure use the options command, as below, to ensure sufficient digits
 
 options(digits = 10)
-drink_attitude_results <- ezANOVA(data = drink_attitude_long,
+drink_attitude_results <- ez::ezANOVA(data = drink_attitude_long,
                    dv = .(attitude), wid = .(participant),
                    within = .(drink, imagery),
                    type = 3, detailed = TRUE)
 
 
-# Make APA table
+# Make APA table - save after all 3 examples
+drink_table <- apa.ezANOVA.table(drink_attitude_results)
 
-drink_table <- apa.ezANOVA.table(drink_attitude_results,
-                                 filename="ex2_repeated_table.doc")
-
-print(drink_table)
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apa.knit.table.for.pdf(drink_table)
 
 
 #
 # ** Example 3: Between and Within Participant Predictors
 #
 
-library(apaTables)
-library(tidyr)
-library(forcats)
-library(ez)
-
-# See initial wide format where one row represents one PERSON
-print(dating_wide)
-
+dating_wide <- apaTables::dating_wide
 
 # Convert data from wide format to long format where one row represents one OBSERVATION.
 # Wide format column names MUST represent levels of each variable separated by an underscore.
 # See vignette for further details.
 
-dating_long <- gather(data = dating_wide,
-                     key = cell, value = date_rating,
-                     attractive_high:ugly_none,
-                     factor_key = TRUE)
 
-dating_long <- separate(data = dating_long,
-                       col = cell, into = c("looks","personality"),
-                       sep = "_", remove = TRUE)
+dating_long <- tidyr::pivot_longer(dating_wide,
+                              cols = attractive_high:ugly_none,
+                             names_to = c("looks", "personality"),
+                             names_sep = "_",
+                              values_to = "date_rating")
+#'
+dating_long$looks <- as.factor(dating_long$looks)
+dating_long$personality <- as.factor(dating_long$personality)
 
-dating_long$looks <- as_factor(dating_long$looks)
-dating_long$personality <- as_factor(dating_long$personality)
-
-
-# See new long format of data, where one row is one OBSERVATION.
-# As well, notice that we have two columns (looks, personality)
-# looks, personality, and participant are factors
-
-print(dating_long)
 
 # Set contrasts to match Field et al. (2012) textbook output
 
@@ -173,17 +142,33 @@ contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
 
 # Use ezANOVA
 
-library(ez)
 options(digits = 10)
-dating_results <-ezANOVA(data = dating_long, dv = .(date_rating), wid = .(participant),
-                        between = .(gender), within = .(looks, personality),
-                        type = 3, detailed = TRUE)
+dating_results <-ez::ezANOVA(data = dating_long, dv = .(date_rating),
+                         wid = .(participant),
+                         between = .(gender),
+                         within = .(looks, personality),
+                         type = 3, detailed = TRUE)
 
 
-# Make APA table
+# Make APA table - save after all 3 examples
+dating_table <- apa.ezANOVA.table(dating_results)
 
-dating_table <- apa.ezANOVA.table(dating_results,
-                                 filename = "ex3_mixed_table.doc")
-print(dating_table)
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apa.knit.table.for.pdf(dating_table)
+
+
+#
+# Saving all three tables
+#
+apa.save("tables_ezANOVA.doc",
+                goggles_table,
+                 drink_table,
+                dating_table)
+
+# delete demo file
+if (file.exists("tables_ezANOVA.doc")) {
+     file.remove("tables_ezANOVA.doc")
 }
+}}}
 }

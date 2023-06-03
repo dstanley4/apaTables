@@ -13,11 +13,11 @@
 #' table1 <- apa.1way.table(iv = dose, dv = libido,
 #'                data = viagra, table.number = 1)
 #'
-#' apaTables:::apa.save(filename = "table1.doc", table1)
+#' apa.save(filename = "table1.doc", table1)
 #'
 #' # Create a table for your PDF
 #' # Include the line below in your rmarkdown or Quarto document
-#' apaTables:::apa.knit.table.for.pdf(table1)
+#' apa.knit.table.for.pdf(table1)
 #'
 #' # delete demo file
 #' if (file.exists("table1.doc")) {
@@ -81,7 +81,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
      table.note <- "{\\i M} and {\\i SD} represent mean and standard deviation, respectively."
 
      if (show.conf.interval==TRUE) {
-          ci.txt <- "{\\i LL} and {\\i UL} indicate the lower and upper limits of the 95% confidence interval for the mean, respectively."
+          ci.txt <- "{\\i CI} indicates confidence interval for the mean."
           table.note <- paste(table.note,ci.txt)
      }
 
@@ -93,7 +93,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.
      # Ver 3.0 add ons
      latex.table.note <- "\\\\textit{Note}. \\\\textit{M} and \\\\textit{SD} represent mean and standard deviation, respectively. "
      if (show.conf.interval==TRUE) {
-          latex.ci.txt <- "\\\\textit{LL} and \\\\textit{UL} indicate the lower and upper limits of the 95\\\\% confidence interval for the mean, respectively."
+          latex.ci.txt <- "CI indicates confidence interval for the mean."
           latex.table.note <- paste(latex.table.note, latex.ci.txt)
      }
 
@@ -172,7 +172,7 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
 
      table.note <- "Note. M and SD represent mean and standard deviation, respectively.\n"
      if (show.conf.interval==TRUE) {
-          ci.txt <- "LL and UL indicate the lower and upper limits of the 95% confidence interval \nfor the mean, respectively."
+          ci.txt <- "CI indicates confidence interval for the mean."
           table.note <- paste(table.note,ci.txt,sep="")
      }
      tbl.console <- list()

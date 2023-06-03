@@ -36,11 +36,23 @@ APA table object
 Creates a d-values for all paired comparisons in APA style
 }
 \examples{
-\dontrun{
 # View top few rows of viagra data set from Discovering Statistics Using R
 head(viagra)
 
 # Use apa.d.table function
-apa.d.table(iv = dose, dv = libido, data = viagra, filename = "ex1_d_table.doc")
+table1 <- apa.d.table(iv = dose, dv = libido, data = viagra)
+
+
+# Save Table 1 in a .doc document
+apa.save(filename = "table1.doc", table1)
+
+
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apa.knit.table.for.pdf(table1)
+
+# delete demo file
+if (file.exists("table1.doc")) {
+     file.remove("table1.doc")
 }
 }

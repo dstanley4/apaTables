@@ -52,14 +52,14 @@ table3 <- apa.aov.table(lm_output, table.number = 6)
 
 
 # Save all three table in the same .doc document
-apaTables:::apa.save(filename = "my_tables.doc", table1, table2, table3)
+apa.save(filename = "my_tables.doc", table1, table2, table3)
 
 
 # Create a table for your PDF
 # Include the lines below in your rmarkdown or Quarto document
-apaTables:::apa.knit.table.for.pdf(table1)
-apaTables:::apa.knit.table.for.pdf(table2)
-apaTables:::apa.knit.table.for.pdf(table3)
+apa.knit.table.for.pdf(table1)
+apa.knit.table.for.pdf(table2)
+apa.knit.table.for.pdf(table3)
 
 
 # delete demo file

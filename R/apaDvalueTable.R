@@ -8,12 +8,24 @@
 #' @param landscape (TRUE/FALSE) Make RTF file landscape
 #' @return APA table object
 #' @examples
-#' \dontrun{
 #' # View top few rows of viagra data set from Discovering Statistics Using R
 #' head(viagra)
 #'
 #' # Use apa.d.table function
-#' apa.d.table(iv = dose, dv = libido, data = viagra, filename = "ex1_d_table.doc")
+#' table1 <- apa.d.table(iv = dose, dv = libido, data = viagra)
+#'
+#'
+#' # Save Table 1 in a .doc document
+#' apa.save(filename = "table1.doc", table1)
+#'
+#'
+#' # Create a table for your PDF
+#' # Include the lines below in your rmarkdown or Quarto document
+#' apa.knit.table.for.pdf(table1)
+#'
+#' # delete demo file
+#' if (file.exists("table1.doc")) {
+#'      file.remove("table1.doc")
 #' }
 #' @export
 apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.interval = TRUE, landscape=TRUE){
@@ -203,31 +215,49 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.in
 
 
      #make RTF output file
+     colnames(output_matrix_rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number_columns))
+     #add leading blank line on table
+     number_columns <- dim(output_matrix_rtf)[2]
+     blankLine <- rep("",number_columns)
+     output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
+
+     if (show_conf_interval==TRUE) {
+          table_title_latex <- "Means, Standard Deviations, and $d$-values with Confidence Intervals"
+          table_title <- "Means, Standard Deviations, and d-values with Confidence Intervals"
+          table_note <- "{\\i M} indicates mean. {\\i SD} indicates standard deviation. {\\i d}-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\\i d}-values not calculated if unequal variances prevented pooling. Values in square brackets indicate the 95% confidence interval for each {\\i d}-value."
+          table_note_latex <- "\\\\textit{Note}. $M$ indicates mean. $SD$ indicates standard deviation. $d$-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, \\\\& Rothstein (2009). $d$-values not calculated if unequal variances prevented pooling. Values in square brackets indicate the 95\\\\% confidence interval for each $d$-value. "
+
+     } else {
+          table_title_latex <- "Means, Standard Deviations, and $d$-values"
+          table_title <- "Means, Standard Deviations, and d-values"
+          table_note <- "{\\i M} indicates mean. {\\i SD} indicates standard deviation. {\\i d}-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\\i d}-values not calculated if unequal variances prevented pooling."
+          table_note_latex <- "\\\\textit{Note}. $M$ indicates mean. $SD$ indicates standard deviation. $d$-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, \\\\& Rothstein (2009). $d$-values not calculated if unequal variances prevented pooling."
+     }
+
+     #Create RTF code
+     rtfTable <- RtfTable$new(isHeaderRow=TRUE)
+     rtfTable$setTableContent(output_matrix_rtf)
+     cell_widths_in_inches <-c(1.25,.85,.85,rep(1,iv_num_levels-1))
+     rtfTable$setCellWidthsInches(cell_widths_in_inches)
+     rtfTable$setRowFirstColumnJustification("left")
+     txt.body <- rtfTable$getTableAsRTF(FALSE,FALSE)
      if (make_file_flag==TRUE) {
-          colnames(output_matrix_rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number_columns))
-          #add leading blank line on table
-          number_columns <- dim(output_matrix_rtf)[2]
-          blankLine <- rep("",number_columns)
-          output_matrix_rtf <- rbind(blankLine,output_matrix_rtf)
-
-          if (show_conf_interval==TRUE) {
-               table_title <- "Means, standard deviations, and d-values with confidence intervals"
-               table_note <- "{\\i M} indicates mean. {\\i SD} indicates standard deviation. {\\i d}-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\\i d}-values not calculated if unequal variances prevented pooling. Values in square brackets indicate the 95% confidence interval for each {\\i d}-value The confidence interval is a plausible range of population {\\i d}-values that could have caused the sample {\\i d}-value (Cumming, 2014)."
-
-          } else {
-               table_title <- "Means, standard deviations, and d-values"
-               table_note <- "{\\i M} indicates mean. {\\i SD} indicates standard deviation. {\\i d}-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009). {\\i d}-values not calculated if unequal variances prevented pooling."
-          }
-
-          #Create RTF code
-          rtfTable <- RtfTable$new(isHeaderRow=TRUE)
-          rtfTable$setTableContent(output_matrix_rtf)
-          cell_widths_in_inches <-c(1.25,.85,.85,rep(1,iv_num_levels-1))
-          rtfTable$setCellWidthsInches(cell_widths_in_inches)
-          rtfTable$setRowFirstColumnJustification("left")
-          txt.body <- rtfTable$getTableAsRTF(FALSE,FALSE)
           write.rtf.table(filename = filename,txt.body = txt.body,table.title = table_title, table.note = table_note, landscape=landscape,table.number=table.number)
      }
+
+
+     tbl_console$latex.table.note   <- table_note_latex
+     tbl_console$latex.table.title  <- table_title_latex
+     tbl_console$latex.body         <- table_body
+     #tbl_console$latex.table.note   <- "table note"
+
+
+     tbl_console$rtf.body         <- txt.body
+     tbl_console$rtf.table.title  <- table_title
+     tbl_console$rtf.table.note   <- table_note
+
+     tbl_console$landscape      <- landscape
+     tbl_console$table.type      <- "dvalue"
 
      return(tbl_console)
 }

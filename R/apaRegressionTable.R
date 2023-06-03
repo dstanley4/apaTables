@@ -13,7 +13,6 @@
 #' You might consider using the Algina, Keselman, & Penfield (2008) approach via the apa.reg.boot.table function
 #'
 #' @examples
-#' \dontrun{
 #' # View top few rows of goggles data set
 #' # from Discovering Statistics Using R
 #' head(album)
@@ -21,27 +20,47 @@
 #' # Single block example
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
 #' apa.reg.table(blk1)
-#' apa.reg.table(blk1,filename="exRegTable.doc")
+#' table1 <- apa.reg.table(blk1,table.number = 1)
 #'
 #' # Two block example, more than two blocks can be used
 #' blk1 <- lm(sales ~ adverts, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
-#' apa.reg.table(blk1,blk2,filename="exRegBlocksTable.doc")
+#' table2 <- apa.reg.table(blk1, blk2, table.number = 2)
 #'
 #' # Interaction product-term test with blocks
 #' blk1 <- lm(sales ~ adverts + airplay, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-#' apa.reg.table(blk1,blk2,filename="exInteraction1.doc")
+#' table3 <- apa.reg.table(blk1, blk2, table.number = 3)
 #'
 #' # Interaction product-term test with blocks and additional product terms
 #' blk1<-lm(sales ~ adverts + airplay, data=album)
 #' blk2<-lm(sales ~ adverts + airplay + I(adverts*adverts) + I(airplay*airplay), data=album)
 #' blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
-#' apa.reg.table(blk1,blk2,blk3,filename="exInteraction2.doc")
+#' table4 <- apa.reg.table(blk1,blk2,blk3, table.number = 4)
 #'
 #' #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 #' blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-#' apa.reg.table(blk1,filename="exInteraction3.doc")
+#' table5 <- apa.reg.table(blk1, table.number = 5)
+#'
+#' # Save Table 1 in a .doc document
+#' apa.save(filename = "regression_tables.doc",
+#'          table1,
+#'          table2,
+#'          table3,
+#'          table4,
+#'          table5)
+#'
+#' # Create a table for your PDF
+#' # Include the lines below in your rmarkdown or Quarto document
+#' apa.knit.table.for.pdf(table1)
+#' apa.knit.table.for.pdf(table2)
+#' apa.knit.table.for.pdf(table3)
+#' apa.knit.table.for.pdf(table4)
+#' apa.knit.table.for.pdf(table5)
+#'
+#' # delete demo file
+#' if (file.exists("regression_tables.doc")) {
+#'      file.remove("regression_tables.doc")
 #' }
 #' @export
 apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .95) {
@@ -687,18 +706,18 @@ get_reg_table_note_rtf <- function(calculate_cor,calculate_beta) {
 get_reg_table_note_latex <- function(calculate_cor,calculate_beta) {
      if (calculate_cor==TRUE & calculate_beta==TRUE) {
 
-          table_note <- "A significant $b$-weight indicates the beta-weight and semi-partial correlation are also significant. $b$ represents unstandardized regression weights. {\\i beta} indicates the standardized regression weights. Unique $R^2$ represents the semi-partial correlation squared (i.e., $sr^2$. $r$ represents the zero-order correlation. $LL$ and $UL$ indicate the lower and upper limits of a confidence interval, respectively. * indicates $p$ < .05. ** indicates $p$ < .01."
+          table_note <- "\\\\textit{Note}. A significant $b$-weight indicates the beta-weight and semi-partial correlation are also significant. $b$ represents unstandardized regression weights. {\\i beta} indicates the standardized regression weights. Unique $R^2$ represents the semi-partial correlation squared (i.e., $sr^2$. $r$ represents the zero-order correlation. $LL$ and $UL$ indicate the lower and upper limits of a confidence interval, respectively. * indicates $p$ < .05. ** indicates $p$ < .01."
 
      } else if (calculate_cor==TRUE & calculate_beta==FALSE) {
 
-          table_note <- "A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
+          table_note <- "\\\\textit{Note}. A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i r} represents the zero-order correlation. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
 
      } else if (calculate_cor==FALSE & calculate_beta==TRUE) {
 
-          table_note <- "A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights. {\\i beta} indicates the standardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
+          table_note <- "\\\\textit{Note}. A significant {\\i b}-weight indicates the beta-weight and semi-partial correlation are also significant. {\\i b} represents unstandardized regression weights. {\\i beta} indicates the standardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01."
 
      } else {
-          table_note <- "A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates p < .05. ** indicates p < .01."
+          table_note <- "\\\\textit{Note}. A significant {\\i b}-weight indicates the semi-partial correlation is also significant. {\\i b} represents unstandardized regression weights. {\\i sr\\super 2\\nosupersub} represents the semi-partial correlation squared. {\\i LL} and {\\i UL} indicate the lower and upper limits of a confidence interval, respectively.\\line * indicates p < .05. ** indicates p < .01."
      }
      return(table_note)
 

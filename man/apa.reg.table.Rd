@@ -27,7 +27,6 @@ APA table object
 Creates a regresion table in APA style
 }
 \examples{
-\dontrun{
 # View top few rows of goggles data set
 # from Discovering Statistics Using R
 head(album)
@@ -35,27 +34,47 @@ head(album)
 # Single block example
 blk1 <- lm(sales ~ adverts + airplay, data=album)
 apa.reg.table(blk1)
-apa.reg.table(blk1,filename="exRegTable.doc")
+table1 <- apa.reg.table(blk1,table.number = 1)
 
 # Two block example, more than two blocks can be used
 blk1 <- lm(sales ~ adverts, data=album)
 blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
-apa.reg.table(blk1,blk2,filename="exRegBlocksTable.doc")
+table2 <- apa.reg.table(blk1, blk2, table.number = 2)
 
 # Interaction product-term test with blocks
 blk1 <- lm(sales ~ adverts + airplay, data=album)
 blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-apa.reg.table(blk1,blk2,filename="exInteraction1.doc")
+table3 <- apa.reg.table(blk1, blk2, table.number = 3)
 
 # Interaction product-term test with blocks and additional product terms
 blk1<-lm(sales ~ adverts + airplay, data=album)
 blk2<-lm(sales ~ adverts + airplay + I(adverts*adverts) + I(airplay*airplay), data=album)
 blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
-apa.reg.table(blk1,blk2,blk3,filename="exInteraction2.doc")
+table4 <- apa.reg.table(blk1,blk2,blk3, table.number = 4)
 
 #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
 blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
-apa.reg.table(blk1,filename="exInteraction3.doc")
+table5 <- apa.reg.table(blk1, table.number = 5)
+
+# Save Table 1 in a .doc document
+apa.save(filename = "regression_tables.doc",
+         table1,
+         table2,
+         table3,
+         table4,
+         table5)
+
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apa.knit.table.for.pdf(table1)
+apa.knit.table.for.pdf(table2)
+apa.knit.table.for.pdf(table3)
+apa.knit.table.for.pdf(table4)
+apa.knit.table.for.pdf(table5)
+
+# delete demo file
+if (file.exists("regression_tables.doc")) {
+     file.remove("regression_tables.doc")
 }
 }
 \references{
