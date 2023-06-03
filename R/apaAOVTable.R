@@ -151,7 +151,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
 
      table_title <- sprintf("Fixed-Effects ANOVA Results for %s\n",stringr::str_to_sentence(dv_name))
-     table_note <- "CI indicates the confidence interval for partial \\u0951\\ \\super 2\\nosupersub."
+     table_note <- "SS = Sum of squares. df = degrees of freedom. MS = mean square. CI indicates the confidence interval for partial \\u0951\\ \\super 2\\nosupersub."
 
      #set columns widths and names
      colwidths <- get_rtf_column_widths_anova(table_out)
@@ -187,7 +187,8 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
      # Ver 3.0 add ons
 
      tbl_console$ci.conf.level = conf.level
-     latex_note <- "\\\\textit{Note}. CI indicates the confidence interval for $\\\\eta_{partial}^2$."
+     latex_note <- "\\\\textit{Note}. $SS$ = Sum of squares. $df$ = degrees of freedom. $MS$ = mean square. CI indicates the confidence interval for $\\\\eta_{partial}^2$."
+
      tbl_console$latex.table.note <- latex_note
      tbl_console$latex.table.title <- table_title
      tbl_console$latex.body         <- table_body

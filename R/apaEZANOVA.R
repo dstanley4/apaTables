@@ -197,6 +197,7 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
 
           table_out <- between
 
+
      } else {
           # Within Subject or Mixed Design
           within_effect_corrections <- ez_output$'Sphericity Corrections'
@@ -272,12 +273,20 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
 
           all_tables <- list()
           all_tables$full    <- table_out
+
+
           all_tables$between <- between
           all_tables$within  <- within
      }
 
      # within.options("sa (sphericity assumed)", "gg", "hf")
      # provide indication of what was done in table note "For all within suject effects, a XX correction"...
+
+     p         <- table_out$p
+     idp0 <- p == ".000"
+     p[idp0] <- "<.001"
+     table_out$p <- p
+
 
      table_out_txt        <- table_out
      table_out_names      <- get_txt_column_names_anova(table_out_txt)
@@ -293,25 +302,26 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
      correction_text <- ""
      if (is_within == TRUE) {
           if (correction=="GG") {
-               correction_text <- "Epsilon indicates Greenhouse-Geisser multiplier for degrees of freedom,"
+               correction_text <- "Epsilon = Greenhouse-Geisser multiplier for degrees of freedom,"
 
           } else if (correction=="HF") {
-               correction_text <- "Epsilon indicates Huynh-Feldt multiplier for degrees of freedom,"
+               correction_text <- "Epsilon = Huynh-Feldt multiplier for degrees of freedom,"
           } else {
                correction_text <- "p-values based on assumed sphericity."
           }
           if (ez_detailed==TRUE) {
-               table_note  <- sprintf("Note. df_num indicates degrees of freedom numerator. df_den indicates degrees of freedom denominator. \n%s \np-values and degrees of freedom in the table incorporate this correction.\nSS_num indicates sum of squares numerator. SS_den indicates sum of squares denominator. \nges indicates generalized eta-squared.\n", correction_text)
+               table_note  <- sprintf("Note. df_num = degrees of freedom numerator. df_den = degrees of freedom denominator. \n%s \np-values and degrees of freedom in the table incorporate this correction.\nSS_num = sum of squares numerator. SS_den = sum of squares denominator. \nges = generalized eta-squared.\n", correction_text)
           } else {
-               table_note  <- sprintf("Note. df_num indicates degrees of freedom numerator. df_den indicates degrees of freedom denominator. \n%s \np-values and degrees of freedom in the table incorporate this correction.\nges indicates generalized eta-squared.\n", correction_text)
+               table_note  <- sprintf("Note. df_num = degrees of freedom numerator. df_den = degrees of freedom denominator. \n%s \np-values and degrees of freedom in the table incorporate this correction.\nges = generalized eta-squared.\n", correction_text)
           }
      } else {
           if (ez_detailed==TRUE) {
-               table_note  <- sprintf("Note. df_num indicates degrees of freedom numerator. df_den indicates degrees of freedom denominator. \nSS_num indicates sum of squares numerator. SS_den indicates sum of squares denominator. \nges indicates generalized eta-squared.\n")
+               table_note  <- sprintf("Note. df_num = degrees of freedom numerator. df_den = degrees of freedom denominator. \nSS_num = sum of squares numerator. SS_den = sum of squares denominator. \nges = generalized eta-squared.\n")
           } else {
-               table_note  <- sprintf("Note. df_num indicates degrees of freedom numerator. df_den indicates degrees of freedom denominator. \nges indicates generalized eta-squared.\n")
+               table_note  <- sprintf("Note. df_num = degrees of freedom numerator. df_den = degrees of freedom denominator. \nges = generalized eta-squared.\n")
           }
      }
+
 
 
      tbl_console <- list(table_number = table_number,
@@ -327,40 +337,44 @@ apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", file
      correction_text <- ""
      if (is_within == TRUE) {
           if (correction=="GG") {
-               correction_text <- "Epsilon indicates Greenhouse-Geisser multiplier for degrees of freedom,"
-               correction_text_latex <- "Epsilon indicates Greenhouse-Geisser multiplier for degrees of freedom,"
+               correction_text <- "Epsilon = Greenhouse-Geisser multiplier for degrees of freedom,"
+               correction_text_latex <- "Epsilon = Greenhouse-Geisser multiplier for degrees of freedom,"
 
           } else if (correction=="HF") {
-               correction_text <- "Epsilon indicates Huynh-Feldt multiplier for degrees of freedom,"
-               correction_text_latex <- "Epsilon indicates Huynh-Feldt multiplier for degrees of freedom,"
+               correction_text <- "Epsilon = Huynh-Feldt multiplier for degrees of freedom,"
+               correction_text_latex <- "Epsilon = Huynh-Feldt multiplier for degrees of freedom,"
           } else {
                correction_text <- "{\\i p}-values based on assumed sphericity."
                correction_text_latex <- "$p$-values based on assumed sphericity."
           }
           if (ez_detailed==TRUE) {
-               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
-               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.", correction_text)
+               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} = degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} = degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\i SS\\sub Num\\nosupersub} = sum of squares numerator. {\\i SS\\sub Den\\nosupersub} = sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} = generalized eta-squared.\n", correction_text)
+               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ = degrees of freedom numerator. $df_{Den}$ = degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $SS_{Num}$ = sum of squares numerator. $SS_{Den}$ = sum of squares denominator. $\\\\eta_{g}^2$ = generalized eta-squared.", correction_text)
           } else {
-               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n", correction_text)
-               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $eta_{g}^2$ indicates generalized eta-squared.", correction_text)
+               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} = degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} = degrees of freedom denominator. %s \n{\\i p}-values and degrees of freedom in the table incorporate this correction. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} = generalized eta-squared.\n", correction_text)
+               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ = degrees of freedom numerator. $df_{Den}$ = degrees of freedom denominator. %s $p$-values and degrees of freedom in the table incorporate this correction. $\\\\eta_{g}^2$ = generalized eta-squared.", correction_text)
           }
 
      } else {
           if (ez_detailed==TRUE) {
-               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\i SS\\sub Num\\nosupersub} indicates sum of squares numerator. {\\i SS\\sub Den\\nosupersub} indicates sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
-               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.")
+               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} = degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} = degrees of freedom denominator. {\\i SS\\sub Num\\nosupersub} = sum of squares numerator. {\\i SS\\sub Den\\nosupersub} = sum of squares denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} = generalized eta-squared.\n")
+               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ = degrees of freedom numerator. $df_{Den}$ = degrees of freedom denominator. $SS_{Num}$ = sum of squares numerator. $SS_{Den}$ = sum of squares denominator. $\\\\eta_{g}^2$ = generalized eta-squared.")
           } else {
-               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} indicates degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} indicates degrees of freedom denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} indicates generalized eta-squared.\n")
-               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ indicates degrees of freedom numerator. $df_{Den}$ indicates degrees of freedom denominator. $SS_{Num}$ indicates sum of squares numerator. $SS_{Den}$ indicates sum of squares denominator. $eta_{g}^2$ indicates generalized eta-squared.")
+               table_note  <- sprintf("{\\i df\\sub Num\\nosupersub} = degrees of freedom numerator. {\\i df\\sub Den\\nosupersub} = degrees of freedom denominator. {\\u0951\\ \\super 2\\nosupersub \\sub g\\nosupersub} = generalized eta-squared.\n")
+               table_note_latex  <- sprintf("\\\\textit{Note}. $df_{Num}$ = degrees of freedom numerator. $df_{Den}$ = degrees of freedom denominator. $SS_{Num}$ = sum of squares numerator. $SS_{Den}$ = sum of squares denominator. $\\\\eta_{g}^2$ = generalized eta-squared.")
           }
      }
 
      #set columns widths and names
      colwidths <- get_rtf_column_widths_anova(table_out)
 
+
      anova_table <- as.matrix(table_out)
      new_col_names  <- get_rtf_column_names_anova(table_out)
      colnames(anova_table) <- new_col_names
+
+
+
 
 
      if (is_within == FALSE) {
