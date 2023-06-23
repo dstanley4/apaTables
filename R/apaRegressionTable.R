@@ -105,6 +105,7 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
      last_model_number_predictors <- dim(first_model)[2]
      last_predictors <- colnames(first_result$model)[2:last_model_number_predictors]
      n <- dim(first_result$model)[1]
+     n_size <- dim(first_result$model)[1]
 
      for (i in 1:L) {
           cur_result <- regression_results_list[[i]]
@@ -247,7 +248,7 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
 
      table_body <- block_out_txt
 
-     table_note <- get_reg_table_note_txt(first_block_calculate_cor, first_block_calculate_beta)
+     table_note <- get_reg_table_note_txt(first_block_calculate_cor, first_block_calculate_beta, n_size)
 
      table_block_results <-  block_results
 
@@ -271,8 +272,8 @@ apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .
           table_title_latex <- sprintf("Regression Predicting %s",stringr::str_to_sentence(first_criterion))
      }
 
-     table_note <- get_reg_table_note_rtf(first_block_calculate_cor, first_block_calculate_beta)
-     table_note_latex <- get_reg_table_note_latex(first_block_calculate_cor, first_block_calculate_beta)
+     table_note <- get_reg_table_note_rtf(first_block_calculate_cor, first_block_calculate_beta, n_size)
+     table_note_latex <- get_reg_table_note_latex(first_block_calculate_cor, first_block_calculate_beta, n_size)
 
      #set columns widths and names
      colwidths <- get_rtf_column_widths(block_out_rtf)
@@ -662,23 +663,23 @@ get_rtf_column_widths <- function(df) {
      return(width_out)
 }
 
-get_reg_table_note_txt <- function(calculate_cor,calculate_beta) {
+get_reg_table_note_txt <- function(calculate_cor,calculate_beta, n_size) {
 
-     table_note <- "Note. b = unstandardized regression weight. beta = standardized regression weight. Unique R2 = semipartial correlation squared. r = zero-order correlation. CI = confidence interval.  * indicates p < .05. ** indicates p < .01.\n"
+     table_note <- sprintf("Note. N = %g. b = unstandardized regression weight. beta = standardized regression weight. Unique R2 = semipartial correlation squared. r = zero-order correlation. CI = confidence interval.  \n* indicates p < .05. ** indicates p < .01.\n",n_size)
 
      return(table_note)
 
 }
 
 
-get_reg_table_note_rtf <- function(calculate_cor,calculate_beta) {
-     table_note <- "Note. {\\i b} = unstandardized regression weight. {\\i beta} = standardized regression weight. Unique {\\i R\\super 2\\nosupersub} = semipartial correlation squared. {\\i r} = zero-order correlation. CI = confidence interval.  * indicates p < .05. ** indicates p < .01.\n"
+get_reg_table_note_rtf <- function(calculate_cor,calculate_beta, n_size) {
+     table_note <- sprintf("{\\i N} = %g. {\\i b} = unstandardized regression weight. {\\i beta} = standardized regression weight. Unique {\\i R\\super 2\\nosupersub} = semipartial correlation squared. {\\i r} = zero-order correlation. CI = confidence interval. \\line* indicates p < .05. ** indicates p < .01.", n_size)
      return(table_note)
 }
 
 
-get_reg_table_note_latex <- function(calculate_cor,calculate_beta) {
-     table_note <- "\\\\textit{Note}. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \\\\newline  * indicates $p$ < .05. ** indicates $p$ < .01."
+get_reg_table_note_latex <- function(calculate_cor,calculate_beta, n_size) {
+     table_note <- sprintf("\\\\textit{Note}. $N$ = %g. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \\\\newline  * indicates $p$ < .05. ** indicates $p$ < .01.", n_size)
      return(table_note)
 }
 
