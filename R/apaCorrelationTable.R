@@ -68,12 +68,14 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
      output_ci_rtf <- matrix(" ", number_variables, number_columns)
      output_ci_latex <- matrix(" ", number_variables, number_columns)
 
-     output_descriptives   <- matrix(" ",number_variables,2)
+     output_descriptives   <- matrix(" ",number_variables,3)
      output_variable_names <- paste(as.character(1:number_variables),". ",names(data),sep="")
 
      for (i in 1:number_variables) {
-          output_descriptives[i,1] <- txt.number(mean(data[,i], na.rm=TRUE))
-          output_descriptives[i,2] <- txt.number(sd(data[,i], na.rm=TRUE))
+          output_descriptives[i,1] <- as.character(sum(!is.na(data[,i]), na.rm=TRUE) )
+          output_descriptives[i,2] <- txt.number(mean(data[,i], na.rm=TRUE))
+          output_descriptives[i,3] <- txt.number(sd(data[,i], na.rm=TRUE))
+
           for(j in 1:number_variables) {
                if ((j<i)) {
                     x <- data[,i]
@@ -100,7 +102,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
 
      #weave
-     left_padding   <- c(" ", " ", " ")
+     left_padding   <- c(" ", " ", " "," ")
      first_line     <- c(output_variable_names[1], output_descriptives[1,], output_cor[1,])
      first_line_rtf <- c(output_variable_names[1], output_descriptives[1,], output_cor_rtf[1,])
      first_line_latex     <- c(output_variable_names[1], output_descriptives[1,], output_cor[1,])
@@ -193,7 +195,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
 
      rownames(output_matrix_console) <- 1:nrow(output_matrix_console)
-     colnames(output_matrix_console) <- c(c("Variable","M","SD"), as.character(1:number_columns))
+     colnames(output_matrix_console) <- c(c("Variable","N", "M","SD"), as.character(1:number_columns))
 
      rownames(output_matrix_latex) <- rownames(output_matrix_console)
      colnames(output_matrix_latex) <- colnames(output_matrix_console)
@@ -215,9 +217,9 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      #make console output
      if (show_conf_interval == TRUE) {
-          table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\nValues in square brackets indicate the 95% confidence interval.\n"
+          table_note <- "Note. N = number of cases. M = mean. SD = standard deviation.\nValues in square brackets indicate the 95% confidence interval.\n"
      } else {
-          table_note <- "Note. M and SD are used to represent mean and standard deviation, respectively.\n"
+          table_note <- "Note. N = number of cases. M = mean. SD = standard deviation.\n"
      }
 
      if (show_stars == TRUE) {
@@ -233,7 +235,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      #make RTF output file
 
-     colnames(output_matrix_rtf) <- c(c("Variable","{\\i M}","{\\i SD}"),as.character(1:number_columns))
+     colnames(output_matrix_rtf) <- c(c("Variable","{\\i N}","{\\i M}","{\\i SD}"),as.character(1:number_columns))
      #add leading blank line on table
      number_columns <- dim(output_matrix_rtf)[2]
      blankLine <- rep("",number_columns)
@@ -241,20 +243,21 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      if (show_conf_interval == TRUE) {
           table_title <- "Descriptive Statistics and Correlations"
-          table_note <- "{\\i M} = mean. {\\i SD} = standard deviation. Square brackets = 95% confidence interval."
-          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. Square brackets = 95\\\\% confidence interval."
+          table_note <- "{\\i N} = number of cases. {\\i M} = mean. {\\i SD} = standard deviation. Square brackets = 95% confidence interval."
+          table_note_latex <- "\\\\textit{Note}. \\\\textit{N} = number of cases. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. Square brackets = 95\\\\% confidence interval."
 
 
      } else {
           table_title <- "Descriptive Statistics and Correlations"
-          table_note <- "{\\i M} = mean. {\\i SD} = standard deviation."
-          table_note_latex <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation."
+          table_note <- "{\\i N} = number of cases. {\\i M} = mean. {\\i SD} = standard deviation."
+          table_note_latex <- "\\\\textit{Note}. \\\\textit{N} = number of cases. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation."
 
      }
 
      if (show_stars == TRUE) {
-             table_note <- paste(table_note, "* indicates {\\i p} < .05. ** indicates {\\i p} < .01.")
+             table_note_rtf <- paste(table_note, "\\line * indicates {\\i p} < .05. ** indicates {\\i p} < .01.")
              table_note_latex <- paste(table_note_latex, "\\\\newline  * indicates $p$ < .05. ** indicates $p$ < .01.")
+             table_note <- paste(table_note, "\n* indicates {\\i p} < .05. ** indicates {\\i p} < .01.")
      }
 
 
@@ -268,7 +271,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
           write.rtf.table(filename = filename,
                           txt.body = txt_body,
                           table.title = table_title,
-                          table.note = table_note,
+                          table.note = table_note_rtf,
                           landscape=landscape,
                           table.number=table_number)
      }
@@ -276,7 +279,7 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
 
      tbl.console$rtf.body         <- txt_body
      tbl.console$rtf.table.title  <- table_title
-     tbl.console$rtf.table.note   <- table_note
+     tbl.console$rtf.table.note   <- table_note_rtf
      tbl.console$landscape   <- landscape
 
      tbl.console$latex.body <- output_matrix_latex
@@ -288,9 +291,3 @@ apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interv
      return(tbl.console)
 }#end function
 
-
-#
-#
-# txt.d <- function() {
-#
-# }
