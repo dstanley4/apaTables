@@ -237,8 +237,8 @@ get_txt_column_names_anova <- function(df) {
 output_rtf_name_anova <- function(column_name) {
      switch(column_name,
             Predictor="Predictor",
-            SSvalue = "{Sum\\par}{of\\par}Squares",
-            MSvalue = "{Mean\\par}Square",
+            SSvalue = "SS",
+            MSvalue = "MS",
             df_num = "{\\i df\\sub Num \\nosupersub}",
             df_den= "{\\i df\\sub Den \\nosupersub}",
             df_num_int = "{\\i df\\sub Num \\nosupersub}",
@@ -251,7 +251,7 @@ output_rtf_name_anova <- function(column_name) {
             Epsilon = "{\\i Epsilon}",
             ges ="{\\u0951\\ \\super 2\\nosupersub \\sub g \\nosupersub}",
             partial_eta_sq ="{\\sub partial \\nosupersub \\u0951\\ \\super 2\\nosupersub}",
-            partial_eta_sq_CI ="{\\sub partial \\nosupersub \\u0951\\ \\super 2 \\nosupersub \\par xyzzy% CI\\par[LL, UL]}")
+            partial_eta_sq_CI ="{xyzzy% CI}")
 
 }
 
@@ -362,10 +362,10 @@ get_rtf_column_widths_anova <- function(df) {
      return(width_out)
 }
 
-get_anova_table_note_txt <- function(calculate_cor,calculate_beta) {
-          table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights; beta indicates the standardized regression weights; \nsr2 represents the semi-partial correlation squared; r represents the zero-order correlation.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
-     return(table_note)
-}
+# get_anova_table_note_txt <- function(calculate_cor,calculate_beta) {
+#           table_note <- "Note. * indicates p < .05; ** indicates p < .01.\nA significant b-weight indicates the beta-weight and semi-partial correlation are also significant.\nb represents unstandardized regression weights; beta indicates the standardized regression weights; \nsr2 represents the semi-partial correlation squared; r represents the zero-order correlation.\nSquare brackets are used to enclose the lower and upper limits of a confidence interval.\n"
+#      return(table_note)
+# }
 
 
 
