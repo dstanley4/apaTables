@@ -21,8 +21,6 @@ Imports:
     car,
     broom,
     dplyr,
-    boot,
-    tibble,
     kableExtra,
     stringr
 Suggests: testthat,
