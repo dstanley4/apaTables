@@ -28,7 +28,7 @@
 #'      file.remove("table1.doc")
 #' }
 #' @export
-apa.cor.table<-function(data, filename = NA, table.number = NA, show.conf.interval = TRUE, show.sig.stars = TRUE, show.pvalue = TRUE, landscape = TRUE) {
+apa.cor.table<-function(data, filename = NA, table.number = 0, show.conf.interval = TRUE, show.sig.stars = TRUE, show.pvalue = TRUE, landscape = TRUE) {
 
      # test git tower April 23
      data <- as.data.frame(data)

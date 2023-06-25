@@ -148,7 +148,7 @@
 #' }
 #' }}}
 #' @export
-apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", filename, table.number=NA) {
+apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", filename, table.number=0) {
 
      ez_output <- ez.output
 

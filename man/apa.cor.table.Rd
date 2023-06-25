@@ -7,7 +7,7 @@
 apa.cor.table(
   data,
   filename = NA,
-  table.number = NA,
+  table.number = 0,
   show.conf.interval = TRUE,
   show.sig.stars = TRUE,
   show.pvalue = TRUE,

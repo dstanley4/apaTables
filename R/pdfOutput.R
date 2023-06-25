@@ -198,8 +198,9 @@ apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title, 
      num_columns = dim(table_df)[2]
 
      table_column_labels <- colnames(table_df)
-     table_column_labels[2] <- "$M$"
-     table_column_labels[3] <- "$SD$"
+     table_column_labels[2] <- "$N$"
+     table_column_labels[3] <- "$M$"
+     table_column_labels[4] <- "$SD$"
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,

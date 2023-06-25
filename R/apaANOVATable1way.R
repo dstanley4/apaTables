@@ -24,7 +24,7 @@
 #'      file.remove("table1.doc")
 #' }
 #' @export
-apa.1way.table <- function(iv, dv, data,filename=NA, table.number=NA, show.conf.interval=FALSE, landscape=FALSE){
+apa.1way.table <- function(iv, dv, data,filename=NA, table.number=0, show.conf.interval=FALSE, landscape=FALSE){
      data <- as.data.frame(data)
 
      if (is.na(filename)) {

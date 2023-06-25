@@ -9,7 +9,7 @@ apa.ezANOVA.table(
   correction = "GG",
   table.title = "",
   filename,
-  table.number = NA
+  table.number = 0
 )
 }
 \arguments{

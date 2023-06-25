@@ -63,7 +63,7 @@
 #'      file.remove("regression_tables.doc")
 #' }
 #' @export
-apa.reg.table<-function(...,filename=NA,table.number=NA, prop.var.conf.level = .95) {
+apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .95) {
      regression_results_list <- list(...)
 
      table_number <- table.number
@@ -614,11 +614,11 @@ output_rtf_name <- function(column_name) {
      switch(column_name,
             predictor="Predictor",
             b = "{\\i b}",
-            b_CI = "{95% CI\\par}[LL, UL]",
+            b_CI = "{95% CI}",
             beta = "{\\i beta}",
-            beta_CI ="{95% CI\\par}[LL, UL]",
+            beta_CI ="{95% CI}",
             sr2="Unique {\\i R\\super 2 \\nosupersub}",
-            sr2_CI ="{XX% CI\\par}[LL, UL]",
+            sr2_CI ="{XX% CI}",
             r="{\\i r}",
             summary="Fit",
             difference="\\u0916\3Fit")
@@ -645,9 +645,9 @@ output_column_width <- function(column_name) {
             predictor=wide,
             b = wide,
             b_CI = wide*1.35,
-            beta = narrow,
+            beta = narrow*.9,
             beta_CI =wide,
-            sr2=narrow,
+            sr2=narrow*1.1,
             sr2_CI =wide,
             r=narrow,
             summary=wide*1.3,

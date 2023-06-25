@@ -48,7 +48,7 @@
 #' }
 #'
 #' @export
-apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=3) {
+apa.aov.table<-function(lm_output,filename,table.number=0, conf.level=.90,type=3) {
      table_number <- table.number
      conf_level <- conf.level
 
@@ -140,6 +140,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
      table_title <- sprintf("ANOVA Results for %s\n",stringr::str_to_sentence(dv_name))
      table_body  <- table_out_txt
      table_note  <- sprintf("Note: Values in square brackets indicate the bounds of the %1.0f%% confidence interval for partial eta-squared",conf_level*100)
+     table_note <- "Note. SS = Sum of squares. df = degrees of freedom. MS = mean square. CI indicates the confidence interval for partial eta-squared."
 
      tbl_console <- list(table_number = table_number,
                          table_title = table_title,
@@ -148,10 +149,9 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
      class(tbl_console) <- "apa_table"
 
-
-
      table_title <- sprintf("Fixed-Effects ANOVA Results for %s\n",stringr::str_to_sentence(dv_name))
      table_note <- "SS = Sum of squares. df = degrees of freedom. MS = mean square. CI indicates the confidence interval for partial \\u0951\\ \\super 2\\nosupersub."
+     table_note_rtf <- "SS = Sum of squares. {\\i df} = degrees of freedom. MS = mean square. CI indicates the confidence interval for partial \\u0951\\ \\super 2\\nosupersub."
 
      #set columns widths and names
      colwidths <- get_rtf_column_widths_anova(table_out)
@@ -181,7 +181,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
      if (make_file_flag==TRUE) {
                write.rtf.table(filename = filename, txt.body = txt_body, table.title = table_title,
-                               table.note = table_note, landscape=FALSE, table.number = table_number)
+                               table.note = table_note_rtf, landscape=FALSE, table.number = table_number)
      }
 
      # Ver 3.0 add ons
@@ -195,7 +195,7 @@ apa.aov.table<-function(lm_output,filename,table.number=NA, conf.level=.90,type=
 
      tbl_console$rtf.body         <- txt_body
      tbl_console$rtf.table.title  <- table_title
-     tbl_console$rtf.table.note   <- table_note
+     tbl_console$rtf.table.note   <- table_note_rtf
 
      tbl_console$landscape      <- FALSE
      tbl_console$table.type      <- "aovstats"

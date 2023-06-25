@@ -10,7 +10,7 @@ apa.2way.table(
   dv,
   data,
   filename = NA,
-  table.number = NA,
+  table.number = 0,
   show.conf.interval = FALSE,
   show.marginal.means = FALSE,
   landscape = TRUE

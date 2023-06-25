@@ -28,7 +28,7 @@
 #'      file.remove("table1.doc")
 #' }
 #' @export
-apa.d.table <- function(iv, dv, data, filename=NA, table.number=NA, show.conf.interval = TRUE, landscape=TRUE){
+apa.d.table <- function(iv, dv, data, filename=NA, table.number=0, show.conf.interval = TRUE, landscape=TRUE){
      data <- as.data.frame(data)
      table_number <- table.number
 

@@ -7,7 +7,7 @@
 apa.aov.table(
   lm_output,
   filename,
-  table.number = NA,
+  table.number = 0,
   conf.level = 0.9,
   type = 3
 )

@@ -9,7 +9,7 @@ apa.d.table(
   dv,
   data,
   filename = NA,
-  table.number = NA,
+  table.number = 0,
   show.conf.interval = TRUE,
   landscape = TRUE
 )

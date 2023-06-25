@@ -37,7 +37,7 @@
 #'      file.remove("my_tables.doc")
 #' }
 #' @export
-apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = NA, show.conf.interval = FALSE, show.marginal.means = FALSE, landscape = TRUE){
+apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = 0, show.conf.interval = FALSE, show.marginal.means = FALSE, landscape = TRUE){
 
      data <- as.data.frame(data)
 

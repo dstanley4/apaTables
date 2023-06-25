@@ -9,7 +9,7 @@ apa.1way.table(
   dv,
   data,
   filename = NA,
-  table.number = NA,
+  table.number = 0,
   show.conf.interval = FALSE,
   landscape = FALSE
 )
