@@ -51,12 +51,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apa.reg.table</span><span class="op">(</span></span>
-<span>  <span class="va">...</span>,</span>
-<span>  filename <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  table.number <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  prop.var.conf.level <span class="op">=</span> <span class="fl">0.95</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apa.reg.table</span><span class="op">(</span><span class="va">...</span>, filename <span class="op">=</span> <span class="cn">NA</span>, table.number <span class="op">=</span> <span class="fl">0</span>, prop.var.conf.level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -108,6 +103,8 @@ You might consider using the Algina, Keselman, &amp; Penfield (2008) approach vi
 <span class="r-in"><span><span class="va">blk1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">adverts</span> <span class="op">+</span> <span class="va">airplay</span>, data<span class="op">=</span><span class="va">album</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">apa.reg.table</span><span class="op">(</span><span class="va">blk1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Table 0 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Regression Predicting Sales</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
