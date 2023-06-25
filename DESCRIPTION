@@ -10,7 +10,7 @@ Description: A common task faced by researchers is the creation of APA style
     errors. This package creates Word files (.doc files) and latex code containing APA style tables
     for several types of analyses. Using this package minimizes transcription errors
     and reduces the number commands needed by the user.
-URL: https://github.com/dstanley4/apaTables
+URL: https://github.com/dstanley4/apaTables, http://dstanley4.github.io/apaTables/
 BugReports: https://github.com/dstanley4/apaTables/issues
 Depends:
     R (>= 3.1.2)
@@ -23,12 +23,16 @@ Imports:
     dplyr,
     kableExtra,
     stringr
-Suggests: testthat,
+Suggests: 
+    testthat,
     MBESS,
     ez,
-    tidyr
+    tidyr,
+    knitr,
+    rmarkdown
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 License: MIT License + file LICENSE
 LazyData: true
 Date: 2023-6-29
+VignetteBuilder: knitr
