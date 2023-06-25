@@ -36,4 +36,4 @@ library(apaTables)
 Tutorial
 --------
 
-You can learn how to use apaTables [here](https://dstanley4.github.io/apaTables/articles/apaTables.html).
+You can learn how to use apaTables [here](https://dstanley4.github.io/apaTables/).
