@@ -433,19 +433,7 @@ of the dataset to remind us that the data is in in the “wide” format
 where one row contains all the data for one person. There are 20
 participants so there are 20 rows.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">drink_attitude_wide</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Rows: 20</span></span>
-<span><span class="co">#&gt; Columns: 10</span></span>
-<span><span class="co">#&gt; $ participant    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13,…</span></span>
-<span><span class="co">#&gt; $ beer_positive  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 43, 15, 40, 8, 17, 30, 34, 34, 26, 1, 7, 22, 30, 40,…</span></span>
-<span><span class="co">#&gt; $ beer_negative  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 6, 30, 15, 30, 12, 17, 21, 23, 20, 27, -19, -18, -8, -6…</span></span>
-<span><span class="co">#&gt; $ beer_neutral   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 5, 8, 12, 19, 8, 15, 21, 28, 26, 27, -10, 6, 4, 3, 0, 4…</span></span>
-<span><span class="co">#&gt; $ wine_positive  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 38, 20, 20, 28, 11, 17, 15, 27, 24, 23, 28, 26, 34, 32,…</span></span>
-<span><span class="co">#&gt; $ wine_negative  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> -5, -12, -15, -4, -2, -6, -2, -7, -10, -15, -13, -16, -…</span></span>
-<span><span class="co">#&gt; $ wine_neutral   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 4, 4, 6, 0, 6, 6, 16, 7, 12, 14, 13, 19, 14, 21, 19, 7,…</span></span>
-<span><span class="co">#&gt; $ water_positive <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 10, 9, 6, 20, 27, 9, 19, 12, 12, 21, 33, 23, 21, 17, 15…</span></span>
-<span><span class="co">#&gt; $ water_negative <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> -14, -10, -16, -10, 5, -6, -20, -12, -9, -6, -2, -17, -…</span></span>
-<span><span class="co">#&gt; $ water_neutral  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> -2, -13, 1, 2, -5, -13, 3, 2, 4, 0, 9, 5, 0, 4, 2, 8, 1…</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">drink_attitude_wide</span><span class="op">)</span></span></code></pre></div>
 <p>The dataset represents an ANOVA with two repeated measures factors.
 It is a 3 <em>drinks</em> (wine, beer, water) X 3 <em>imagery</em>
 (positive, negative, neutral) design. The dataset uses 10 columns to
@@ -590,14 +578,7 @@ person) – taking into account the independent groups factors
 <p>We can inspect the final long version of the dataset with glimpse
 again:</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">dating_long</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Rows: 180</span></span>
-<span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; $ participant <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> P01, P01, P01, P01, P01, P01, P01, P01, P01, P02, P02, P02…</span></span>
-<span><span class="co">#&gt; $ gender      <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> Male, Male, Male, Male, Male, Male, Male, Male, Male, Male…</span></span>
-<span><span class="co">#&gt; $ looks       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> attractive, average, ugly, attractive, average, ugly, attr…</span></span>
-<span><span class="co">#&gt; $ personality <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> high, high, high, some, some, some, none, none, none, high…</span></span>
-<span><span class="co">#&gt; $ date_rating <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 86, 84, 67, 88, 69, 50, 97, 48, 47, 91, 83, 53, 83, 74, 48…</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">dating_long</span><span class="op">)</span></span></code></pre></div>
 <p>This output reveals the new data structure. There are now only five
 columns where each row represents a single observation for a
 participant. As before, the first column is factor column representing
@@ -610,16 +591,7 @@ one in each of the nine cells). The second column contains the
 <em>date_rating</em>.</p>
 <p>You can see the first few rows in the more familiar format below:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dating_long</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
-<span><span class="co">#&gt;   participant gender looks      personality date_rating</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> P01         Male   attractive high                 86</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> P01         Male   average    high                 84</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> P01         Male   ugly       high                 67</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> P01         Male   attractive some                 88</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> P01         Male   average    some                 69</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> P01         Male   ugly       some                 50</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dating_long</span><span class="op">)</span></span></code></pre></div>
 <p>Prior to conducting the analysis we set the contrasts as per Field et
 al. (2012).</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
