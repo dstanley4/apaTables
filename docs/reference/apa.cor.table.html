@@ -18,7 +18,10 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="nav-item">
+  <a class="nav-link" href="../articles/apaTables.html">Get started</a>
+</li>
+<li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item">
@@ -54,7 +57,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">apa.cor.table</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  filename <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  table.number <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  table.number <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  show.conf.interval <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show.sig.stars <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show.pvalue <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -130,7 +133,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> \begin{threeparttable}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \begin{tabular}[t]{lrrccccccc}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \toprule</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Variable &amp; $M$ &amp; $SD$ &amp; SD &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6\\</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variable &amp; $N$ &amp; $M$ &amp; $SD$ &amp; 1 &amp; 2 &amp; 3 &amp; 4 &amp; 5 &amp; 6\\</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> \midrule</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1. rating &amp; 30 &amp; 64.63 &amp; 12.17 &amp;  &amp;  &amp;  &amp;  &amp;  &amp; \\</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  &amp; \\</span>
