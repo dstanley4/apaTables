@@ -1,4 +1,4 @@
-#' Save previously constructed APA table objects in a single .doc file
+#' Create latex output for an apaTables object
 #' @param table_object Previously constructed apaTable object
 #' @param table_title  Replace default table title with this text
 #' @param table_note  Replace default table note with this text

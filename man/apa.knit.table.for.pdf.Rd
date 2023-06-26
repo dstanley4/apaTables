@@ -2,7 +2,7 @@
 % Please edit documentation in R/pdfOutput.R
 \name{apa.knit.table.for.pdf}
 \alias{apa.knit.table.for.pdf}
-\title{Save previously constructed APA table objects in a single .doc file}
+\title{Create latex output for an apaTables object}
 \usage{
 apa.knit.table.for.pdf(
   table_object,
@@ -24,5 +24,5 @@ apa.knit.table.for.pdf(
 Save status
 }
 \description{
-Save previously constructed APA table objects in a single .doc file
+Create latex output for an apaTables object
 }
