@@ -232,10 +232,14 @@ apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .9
 
 
      #console table
+
+     first_title_criterion = first_criterion
+     #first_title_criterion = gsub("_", " ", first_title_criterion)
+
      if (is_multiple_blocks == TRUE) {
-          table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",stringr::str_to_sentence(first_criterion))
+          table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",stringr::str_to_title(first_title_criterion))
      } else {
-          table_title <- sprintf("Regression Predicting %s\n",stringr::str_to_sentence(first_criterion))
+          table_title <- sprintf("Regression Predicting %s\n",stringr::str_to_title(first_title_criterion))
      }
      txt_column_names <- get_txt_column_names(block_out_txt)
      if (prop_var_conf_level == .95) {
@@ -265,11 +269,11 @@ apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .9
 
 
      if (is_multiple_blocks == TRUE) {
-          table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",    stringr::str_to_sentence(first_criterion))
-          table_title_latex <- sprintf("Hierarchical Multiple Regression Predicting %s",stringr::str_to_sentence(first_criterion))
+          table_title <- sprintf("Hierarchical Multiple Regression Predicting %s\n",    stringr::str_to_title(first_title_criterion))
+          table_title_latex <- sprintf("Hierarchical Multiple Regression Predicting %s",stringr::str_to_title(first_title_criterion))
      } else {
-          table_title <- sprintf("Regression Predicting %s\n",    stringr::str_to_sentence(first_criterion))
-          table_title_latex <- sprintf("Regression Predicting %s",stringr::str_to_sentence(first_criterion))
+          table_title <- sprintf("Regression Predicting %s\n",    stringr::str_to_title(first_title_criterion))
+          table_title_latex <- sprintf("Regression Predicting %s",stringr::str_to_title(first_title_criterion))
      }
 
      table_note <- get_reg_table_note_rtf(first_block_calculate_cor, first_block_calculate_beta, n_size)

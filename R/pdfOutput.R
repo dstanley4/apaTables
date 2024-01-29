@@ -45,12 +45,17 @@ apa.knit.dvalue.for.pdf <- function(table_object, table_note, table_title, line_
           table_title         <- table_object$latex.table.title
      }
 
+
+
      num_columns = dim(table_df)[2]
 
 
      table_column_labels <- c("Variable", "$M$", "$SD$", seq(1:(num_columns-3)))
      column_alignment = rep("c", num_columns)
      column_alignment[1] <- "l"
+
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,
@@ -97,6 +102,9 @@ apa.knit.ezanova.for.pdf <- function(table_object, table_note, table_title, line
      table_column_labels <- get_latex_ezanova_labels(table_df)
      column_alignment = rep("c", num_columns)
      column_alignment[1] <- "l"
+
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,
@@ -156,6 +164,8 @@ apa.knit.regression.for.pdf <- function(table_object, table_note, table_title, l
           column_alignment <- column_alignment[1:9]
      }
 
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,
@@ -201,6 +211,9 @@ apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title, 
      table_column_labels[2] <- "$N$"
      table_column_labels[3] <- "$M$"
      table_column_labels[4] <- "$SD$"
+
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,
@@ -258,6 +271,9 @@ apa.knit.aov.for.pdf <- function(table_object, table_note, table_title, line_spa
                               "$\\eta_{partial}^2$",
                               ci_txt_str)
 
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
+
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
@@ -305,6 +321,8 @@ apa.knit.twoway.ci.for.pdf <- function(table_object, table_note, table_title, li
      table_column_center <- table_object$latex.column.centering
 
 
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,
@@ -373,6 +391,8 @@ apa.knit.twoway.for.pdf <- function(table_object, table_note, table_title, line_
      table_column_labels <- table_object$latex.column.labels
      table_column_center <- table_object$latex.column.centering
 
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
 
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
@@ -420,6 +440,8 @@ apa.knit.oneway.for.pdf <- function(table_object, table_note, table_title, line_
      table_column_labels <- table_object$latex.column.labels
      table_column_center <- table_object$latex.column.centering
 
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
 
      table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
                                   col.names = table_column_labels,

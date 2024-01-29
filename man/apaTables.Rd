@@ -2,6 +2,7 @@
 % Please edit documentation in R/apaTables.R
 \docType{package}
 \name{apaTables}
+\alias{-package}
 \alias{apaTables}
 \title{Create American Psychological Association (APA) Style Tables}
 \description{
