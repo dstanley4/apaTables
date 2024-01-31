@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   apaTables: apaTables.html
-last_built: 2024-01-31T18:12Z
+last_built: 2024-01-31T18:43Z
 urls:
   reference: http://dstanley4.github.io/apaTables/reference
   article: http://dstanley4.github.io/apaTables/articles
