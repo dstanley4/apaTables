@@ -22,7 +22,8 @@ Imports:
     broom,
     dplyr,
     kableExtra,
-    stringr
+    stringr,
+    papaja
 Suggests: 
     testthat,
     MBESS,

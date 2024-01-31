@@ -33,10 +33,11 @@
 #'@importFrom "stats" "anova" "cor.test" "median" "na.omit" "pf" "sd" "t.test" "var"
 #'@importFrom "utils" "capture.output"
 #'@importFrom "stats" "confint"
-#'@importFrom "dplyr" "mutate" "select"
+#'@importFrom "dplyr" "mutate" "select" "as_tibble"
 #'@importFrom "broom" "glance" "tidy"
 #'@importFrom "stats" "qnorm" "rnorm" "lm"
-#'@importFrom "stringr" "str_to_sentence"
+#'@importFrom "stringr" "str_to_sentence" "str_to_title"
+#'@importFrom "papaja" "apa_table"
 utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI"))
 NULL
 
