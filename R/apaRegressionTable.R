@@ -317,6 +317,8 @@ apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .9
      tbl_console$rtf.table.title  <- table_title
      tbl_console$rtf.table.note   <- table_note
 
+     block_out_latex$predictor <- gsub("_", " ", block_out_latex$predictor)
+
      tbl_console$latex.body         <- block_out_latex
      tbl_console$latex.table.title  <- table_title_latex
      tbl_console$latex.table.note   <- table_note_latex
@@ -356,6 +358,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
 
      #Regression table statistics
      reg_table <- broom::tidy(cur_blk)
+
      names(reg_table) <- c("predictor","b","SE","t","p")
 
      #adjust df xyzzy
