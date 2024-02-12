@@ -282,6 +282,10 @@ apa.cor.table<-function(data, filename = NA, table.number = 0, show.conf.interva
      tbl.console$rtf.table.note   <- table_note_rtf
      tbl.console$landscape   <- landscape
 
+
+
+     output_matrix_latex[,1] <- gsub("_", " ", output_matrix_latex[,1])
+
      tbl.console$latex.body <- output_matrix_latex
      tbl.console$latex.table.title <- table_title
      tbl.console$latex.table.note  <- table_note_latex
