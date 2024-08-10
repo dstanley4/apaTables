@@ -1,6 +1,6 @@
 #' Create output for papaja
 #' @param table_object Previously constructed apaTable object
-#' @param latex_font_size A strijg that indicates normalsize, small, footnotesize, scriptsize
+#' @param latex_font_size A string that indicates normalsize, small, footnotesize, scriptsize
 #' @return Save status
 #' @export
 apa.knit.table.for.papaja <- function(table_object, latex_font_size = "footnotesize"){
