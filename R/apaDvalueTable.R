@@ -1,4 +1,4 @@
-#' Creates a d-values for all paired comparisons in APA style
+#' Creates a d-values for all pairwise (two-sample) comparisons in APA style
 #' @param iv Name of independent variable column in data frame for all paired comparisons
 #' @param dv Name of dependent variable column in data frame for all paired comparisons
 #' @param data Project data frame name
