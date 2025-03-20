@@ -332,8 +332,10 @@ apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .9
 
 apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      #Regression data
-     reg_table_data <- as.data.frame(model.matrix(cur_blk))
-     reg_table_data[,1] <- cur_blk$model[,1]
+     reg_table_data <- cbind(cur_blk$model[1],as.data.frame(model.matrix(cur_blk))[-1])
+     #reg_table_data <- as.data.frame(model.matrix(cur_blk))
+     #reg_table_data[1] <- cur_blk$model[1]
+     #colnames(reg_table_data)[1] <- colnames(cur_blk$model)[1]
      
      #reg_table_data <- cur_blk$model
      n              <- dim(reg_table_data)[1]
