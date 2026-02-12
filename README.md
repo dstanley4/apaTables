@@ -12,7 +12,7 @@ The development version of apaTables R package is hosted here on Github. Current
 
 ### What's new in Version 3.0.1
 
-- **afex support**: Use `apa.afex.table()` with output from `afex::aov_ez()` for ANOVA tables. The afex package is the recommended approach for repeated-measures and mixed designs.
+- **afex support**: Use `apa.afex.table()` with output from `afex::aov_ez()` for ANOVA tables. The afex package is the recommended approach for repeated-measures and mixed designs. Initial support only - still in testing.
 - **ez package deprecated**: The ez package has been archived on CRAN. `apa.ezANOVA.table()` still works for users who have ez installed but is now deprecated. Please use `apa.afex.table()` instead.
 - **LaTeX table support**: All table functions now support LaTeX output in addition to Word (.doc/.rtf) files.
 
