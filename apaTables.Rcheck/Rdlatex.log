@@ -1,0 +1,168 @@
+Hmm ... looks like a package
+Converting parsed Rd's to LaTeX ..
+Creating pdf output from LaTeX ...
+
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+(./Rd2.tex
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2025/01/22 v1.4n Standard LaTeX document class
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/bk10.clo)) (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/ifthen.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/longtable.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/bm.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/alltt.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/verbatim.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/textcomp.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amstext.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.sty)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsbsy.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/amsfonts.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/amssymb.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/jknapltx/mathrsfs.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/fontenc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/times.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/zi4.sty `inconsolata-zi4' v1.12, 2019/05/17 Text macros for Inconsolata (msharpe) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/xkeyval/xkeyval.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/xkeyval.tex (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/xkvutils.tex (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/keyval.tex))))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics/color.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/pdftex.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/pdfescape/pdfescape.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/infwarerr/infwarerr.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hycolor/hycolor.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty)))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/makeidx.sty)
+Writing index file Rd2.idx
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/t1ptm.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
+No file Rd2.aux.
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/t1zi4.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/jknapltx/ursfs.fd)
+No file Rd2.toc.
+[1{/Users/dstanley/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}]
+Overfull \hbox (8.04918pt too wide) in paragraph at lines 50--51
+[]\T1/ptm/m/n/10 Bugs and fea-ture re-quests can be re-ported at: [][]$\T1/zi4/m/n/10 https : / / github . com / dstanley4 / apaTables / issues$[][] 
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/ts1ptm.fd) [2] [3] [4]
+Overfull \hbox (17.79718pt too wide) in paragraph at lines 216--217
+[]\T1/ptm/m/n/10 (TRUE/FALSE) Dis-play con-fi-dence in-ter-vals in ta-ble. Negates show.marginal.means
+
+Overfull \hbox (2.12778pt too wide) in paragraph at lines 218--219
+[]\T1/ptm/m/n/10 (TRUE/FALSE) Show marginal means in out-put. Only used if show.conf.interval
+[5] [6]
+Overfull \hbox (2.23795pt too wide) in paragraph at lines 325--325
+ []\T1/zi4/m/n/9 # Wide format column names MUST represent levels of each variable separated by an underscore.[] 
+
+Overfull \hbox (2.23795pt too wide) in paragraph at lines 359--359
+ []\T1/zi4/m/n/9 # Wide format column names MUST represent levels of each variable separated by an underscore.[] 
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/ts1zi4.fd)
+Underfull \vbox (badness 10000) has occurred while \output is active [7{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}] [8] [9] [10] [11] [12] [13] [14]
+Overfull \hbox (50.28088pt too wide) in paragraph at lines 793--793
+ []\T1/zi4/m/n/9 blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)[] 
+
+Overfull \hbox (5.25328pt too wide) in paragraph at lines 796--796
+ []\T1/zi4/m/n/9 #Interaction product-term test with single regression (i.e., semi-partial correlation focus)[] 
+[15] [16] [17] [18] [19] [20]
+No file Rd2.ind.
+[21] (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.aux)
+
+Package rerunfilecheck Warning: File `Rd2.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
+(see the transcript file for additional information)</Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Rd2.pdf (21 pages, 118783 bytes).
+Transcript written on Rd2.log.
+This is makeindex, version 2.17 [TeX Live 2025] (kpathsea + Thai support).
+Scanning input file Rd2.idx....done (36 entries accepted, 0 rejected).
+Sorting entries....done (195 comparisons).
+Generating output file Rd2.ind....done (59 lines written, 0 warnings).
+Output written in Rd2.ind.
+Transcript written in Rd2.ilg.
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+(./Rd2.tex
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2025/01/22 v1.4n Standard LaTeX document class
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/bk10.clo)) (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/ifthen.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/longtable.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/bm.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/alltt.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/verbatim.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/textcomp.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amstext.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.sty)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsbsy.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/amsfonts.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/amssymb.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/jknapltx/mathrsfs.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/fontenc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/times.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/zi4.sty `inconsolata-zi4' v1.12, 2019/05/17 Text macros for Inconsolata (msharpe) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/xkeyval/xkeyval.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/xkeyval.tex (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/xkvutils.tex (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/keyval.tex))))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics/color.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/pdftex.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/pdfescape/pdfescape.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/infwarerr/infwarerr.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hycolor/hycolor.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty)))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/makeidx.sty)
+Writing index file Rd2.idx
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/t1ptm.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.aux) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.out) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.out) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/t1zi4.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/jknapltx/ursfs.fd) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.toc [1{/Users/dstanley/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}])
+Overfull \hbox (8.04918pt too wide) in paragraph at lines 50--51
+[]\T1/ptm/m/n/10 Bugs and fea-ture re-quests can be re-ported at: [][]$\T1/zi4/m/n/10 https : / / github . com / dstanley4 / apaTables / issues$[][] 
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/ts1ptm.fd) [2] [3] [4]
+Overfull \hbox (17.79718pt too wide) in paragraph at lines 216--217
+[]\T1/ptm/m/n/10 (TRUE/FALSE) Dis-play con-fi-dence in-ter-vals in ta-ble. Negates show.marginal.means
+
+Overfull \hbox (2.12778pt too wide) in paragraph at lines 218--219
+[]\T1/ptm/m/n/10 (TRUE/FALSE) Show marginal means in out-put. Only used if show.conf.interval
+[5] [6]
+Overfull \hbox (2.23795pt too wide) in paragraph at lines 325--325
+ []\T1/zi4/m/n/9 # Wide format column names MUST represent levels of each variable separated by an underscore.[] 
+
+Underfull \vbox (badness 10000) has occurred while \output is active [7]
+Overfull \hbox (2.23795pt too wide) in paragraph at lines 359--359
+ []\T1/zi4/m/n/9 # Wide format column names MUST represent levels of each variable separated by an underscore.[] 
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [8{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}] [9] [10] [11] [12] [13] [14]
+Overfull \hbox (50.28088pt too wide) in paragraph at lines 793--793
+ []\T1/zi4/m/n/9 blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)[] 
+
+Overfull \hbox (5.25328pt too wide) in paragraph at lines 796--796
+ []\T1/zi4/m/n/9 #Interaction product-term test with single regression (i.e., semi-partial correlation focus)[] 
+[15] [16] [17] [18] [19] [20] (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.ind [21]
+
+LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
+(Font)              using `T1/zi4/m/n' instead on input line 33.
+
+[22]) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.aux)
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+
+Package rerunfilecheck Warning: File `Rd2.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
+(see the transcript file for additional information)</Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Rd2.pdf (22 pages, 131613 bytes).
+Transcript written on Rd2.log.
+This is makeindex, version 2.17 [TeX Live 2025] (kpathsea + Thai support).
+Scanning input file Rd2.idx....done (36 entries accepted, 0 rejected).
+Sorting entries....done (195 comparisons).
+Generating output file Rd2.ind....done (59 lines written, 0 warnings).
+Output written in Rd2.ind.
+Transcript written in Rd2.ilg.
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+(./Rd2.tex
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2025/01/22 v1.4n Standard LaTeX document class
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/bk10.clo)) (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/ifthen.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/longtable.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/bm.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/alltt.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/tools/verbatim.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/textcomp.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amstext.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.sty)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsbsy.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/amsfonts.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/amssymb.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/jknapltx/mathrsfs.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/fontenc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/times.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/zi4.sty `inconsolata-zi4' v1.12, 2019/05/17 Text macros for Inconsolata (msharpe) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/xkeyval/xkeyval.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/xkeyval.tex (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/xkvutils.tex (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/xkeyval/keyval.tex))))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics/color.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/color.cfg) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/pdftex.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/graphics/mathcolor.ltx)) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/pdfescape/pdfescape.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/infwarerr/infwarerr.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hycolor/hycolor.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty)))) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/base/makeidx.sty)
+Writing index file Rd2.idx
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/t1ptm.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.aux) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.out) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.out) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/t1zi4.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd) (/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/jknapltx/ursfs.fd) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.toc [1{/Users/dstanley/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}])
+Overfull \hbox (8.04918pt too wide) in paragraph at lines 50--51
+[]\T1/ptm/m/n/10 Bugs and fea-ture re-quests can be re-ported at: [][]$\T1/zi4/m/n/10 https : / / github . com / dstanley4 / apaTables / issues$[][] 
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/psnfss/ts1ptm.fd) [2] [3] [4]
+Overfull \hbox (17.79718pt too wide) in paragraph at lines 216--217
+[]\T1/ptm/m/n/10 (TRUE/FALSE) Dis-play con-fi-dence in-ter-vals in ta-ble. Negates show.marginal.means
+
+Overfull \hbox (2.12778pt too wide) in paragraph at lines 218--219
+[]\T1/ptm/m/n/10 (TRUE/FALSE) Show marginal means in out-put. Only used if show.conf.interval
+[5] [6]
+Overfull \hbox (2.23795pt too wide) in paragraph at lines 325--325
+ []\T1/zi4/m/n/9 # Wide format column names MUST represent levels of each variable separated by an underscore.[] 
+
+Underfull \vbox (badness 10000) has occurred while \output is active [7]
+Overfull \hbox (2.23795pt too wide) in paragraph at lines 359--359
+ []\T1/zi4/m/n/9 # Wide format column names MUST represent levels of each variable separated by an underscore.[] 
+(/Users/dstanley/Library/TinyTeX/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [8{/Users/dstanley/Library/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}] [9] [10] [11] [12] [13] [14]
+Overfull \hbox (50.28088pt too wide) in paragraph at lines 793--793
+ []\T1/zi4/m/n/9 blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)[] 
+
+Overfull \hbox (5.25328pt too wide) in paragraph at lines 796--796
+ []\T1/zi4/m/n/9 #Interaction product-term test with single regression (i.e., semi-partial correlation focus)[] 
+[15] [16] [17] [18] [19] [20] (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.ind [21]
+
+LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
+(Font)              using `T1/zi4/m/n' instead on input line 33.
+
+[22]) (/private/var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T/Rtmpw84xMf/Rd2pdfa6f74412624/Rd2.aux)
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ )
+(see the transcript file for additional information)</Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></Users/dstanley/Library/TinyTeX/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Rd2.pdf (22 pages, 131832 bytes).
+Transcript written on Rd2.log.
+Saving output to ‘apaTables-manual.pdf’ ...
+Done
+You may want to clean up by 'rm -Rf /var/folders/9n/q9qmmjf52g54sxpshwwxdj0r0000gn/T//Rtmpw84xMf/Rd2pdfa6f74412624'

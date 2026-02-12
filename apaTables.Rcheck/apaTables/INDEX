@@ -1,0 +1,36 @@
+Eysenck                 Eysenck data
+album                   album data from textbook
+apa.1way.table          Creates a table of means and standard
+                        deviations for a 1-way ANOVA design in APA
+                        style
+apa.2way.table          Creates a table of means and standard
+                        deviations for a 2-way ANOVA design in APA
+                        style
+apa.afex.table          Creates an ANOVA table in APA style based on
+                        output of aov_ez command from afex package
+apa.aov.table           Creates a fixed-effects ANOVA table in APA
+                        style
+apa.cor.table           Creates a correlation table in APA style with
+                        means and standard deviations
+apa.d.table             Creates a d-values for all pairwise
+                        (two-sample) comparisons in APA style
+apa.ezANOVA.table       Creates an ANOVA table in APA style based
+                        output of ezANOVA command from ez package
+apa.knit.table.for.papaja
+                        Create output for papaja
+apa.knit.table.for.pdf
+                        Create latex output for an apaTables object
+apa.reg.table           Creates a regresion table in APA style
+apa.save                Save previously constructed APA table objects
+                        in a single .doc file
+apaTables-package       apaTables: Create American Psychological
+                        Association (APA) Style Tables
+dating_wide             dating data from textbook
+drink_attitude_wide     drink attitude data from textbook
+fidler_thompson         Fidler & Thompson (2001) Fixed-Effects ANOVA
+                        data
+get.ci.partial.eta.squared
+                        Calculates confidence interval for partial
+                        eta-squared in a fixed-effects ANOVA
+goggles                 goggles data from textbook
+viagra                  viagra data from textbook

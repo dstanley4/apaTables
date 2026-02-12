@@ -1,0 +1,1024 @@
+
+R version 4.5.2 (2025-10-31) -- "[Not] Part in a Rumble"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "apaTables"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> base::assign(".ExTimings", "apaTables-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
+> library('apaTables')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("apa.1way.table")
+> ### * apa.1way.table
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.1way.table
+> ### Title: Creates a table of means and standard deviations for a 1-way
+> ###   ANOVA design in APA style
+> ### Aliases: apa.1way.table
+> 
+> ### ** Examples
+> 
+> # Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
+> 
+> table1 <- apa.1way.table(iv = dose, dv = libido,
++                data = viagra, table.number = 1)
+> 
+> apa.save(filename = file.path(tempdir(), "table1.doc"), table1)
+> 
+> # Create a table for your PDF
+> # Include the line below in your rmarkdown or Quarto document
+> apa.knit.table.for.pdf(table1)
+\renewcommand{\arraystretch}{1}\begin{table}
+
+\caption{Descriptive Statistics For Libido For Each Level Of Dose. }
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrr}
+\toprule
+dose & $M$ & $SD$\\
+\midrule
+Placebo & 2.20 & 1.30\\
+Low Dose & 3.20 & 1.30\\
+High Dose & 5.00 & 1.58\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. \textit{M} = mean. \textit{SD} = standard deviation. 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\renewcommand{\arraystretch}{1}
+ 
+> 
+> # delete demo file
+> unlink(file.path(tempdir(), "table1.doc"))
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.1way.table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("apa.2way.table")
+> ### * apa.2way.table
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.2way.table
+> ### Title: Creates a table of means and standard deviations for a 2-way
+> ###   ANOVA design in APA style
+> ### Aliases: apa.2way.table
+> 
+> ### ** Examples
+> 
+> # Example 2: 2-way from Fidler & Thompson (2001)
+> 
+> table2 <- apa.2way.table(iv1 = a, iv2 = b, dv = dv,
++                           data = fidler_thompson,
++                           landscape = TRUE,
++                           table.number = 2)
+> 
+> 
+> # Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
+> 
+> table3 <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
++                          data = goggles, table.number = 3)
+> 
+> 
+> # Save both Table 2 and Table 3 in a single .doc document
+> apa.save(filename = file.path(tempdir(), "my_tables.doc"), table2, table3)
+> 
+> # Create a table for your PDF
+> # Include the lines below in your rmarkdown or Quarto document
+> apa.knit.table.for.pdf(table2)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Descriptive Statistics For Dv In A 2(A) X 4(B) Design}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrrrrrrr}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{8}{c}{b} \\
+\cmidrule(l{3pt}r{3pt}){2-9}
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{1} & \multicolumn{2}{c}{2} & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{4} \\
+\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7} \cmidrule(l{3pt}r{3pt}){8-9}
+a & $M$ & $SD$ & $M$ & $SD$ & $M$ & $SD$ & $M$ & $SD$\\
+\midrule
+1 & 1.00 & 1.00 & 2.00 & 1.00 & 3.00 & 1.00 & 3.00 & 1.00\\
+2 & 2.00 & 1.00 & 3.00 & 1.00 & 2.00 & 1.00 & 4.00 & 1.00\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. \textit{M} = mean. \textit{SD} = standard deviation. 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> apa.knit.table.for.pdf(table3)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Descriptive Statistics For Attractiveness In A 2(Gender) X 3(Alcohol) Design}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrrrrr}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{6}{c}{alcohol} \\
+\cmidrule(l{3pt}r{3pt}){2-7}
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{None} & \multicolumn{2}{c}{2 Pints} & \multicolumn{2}{c}{4 Pints} \\
+\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-7}
+gender & $M$ & $SD$ & $M$ & $SD$ & $M$ & $SD$\\
+\midrule
+Female & 60.62 & 4.96 & 62.50 & 6.55 & 57.50 & 7.07\\
+Male & 66.88 & 10.33 & 66.88 & 12.52 & 35.62 & 10.84\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. \textit{M} = mean. \textit{SD} = standard deviation. 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> 
+> # delete demo file
+> unlink(file.path(tempdir(), "my_tables.doc"))
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.2way.table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("apa.afex.table")
+> ### * apa.afex.table
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.afex.table
+> ### Title: Creates an ANOVA table in APA style based on output of aov_ez
+> ###   command from afex package
+> ### Aliases: apa.afex.table
+> 
+> ### ** Examples
+> 
+> if  (requireNamespace("afex", quietly = TRUE)){
++ if  (requireNamespace("apaTables", quietly = TRUE)){
++ if  (requireNamespace("tidyr", quietly = TRUE)){
++ 
++ 
++ #
++ # ** Example 1: Between Participant Predictors
++ #
++ 
++ goggles <- apaTables::goggles
++ 
++ goggles_results <- afex::aov_ez("participant", "attractiveness", goggles,
++                                  between = c("gender", "alcohol"))
++ 
++ 
++ # Make APA table - save after all 3 examples
++ goggles_table <- apa.afex.table(goggles_results)
++ 
++ # Create a table for your PDF
++ # Include the lines below in your rmarkdown or Quarto document
++ apa.knit.table.for.pdf(goggles_table)
++ 
++ 
++ ## No test: 
++ #
++ # ** Example 2: Within Participant Predictors
++ #
++ 
++ drink_attitude_wide <- apaTables::drink_attitude_wide
++ 
++ # Convert data from wide format to long format where one row represents one OBSERVATION.
++ # Wide format column names MUST represent levels of each variable separated by an underscore.
++ # See vignette for further details.
++ 
++ drink_attitude_long <- tidyr::pivot_longer(drink_attitude_wide,
++                               cols = beer_positive:water_neutral,
++                              names_to = c("drink", "imagery"),
++                              names_sep = "_",
++                               values_to = "attitude")
++ 
++ 
++ drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
++ drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
++ 
++ 
++ drink_attitude_results <- afex::aov_ez("participant", "attitude",
++                              drink_attitude_long,
++                              within = c("drink", "imagery"))
++ 
++ 
++ # Make APA table - save after all 3 examples
++ drink_table <- apa.afex.table(drink_attitude_results)
++ 
++ # Create a table for your PDF
++ # Include the lines below in your rmarkdown or Quarto document
++ apa.knit.table.for.pdf(drink_table)
++ 
++ 
++ #
++ # ** Example 3: Between and Within Participant Predictors
++ #
++ 
++ dating_wide <- apaTables::dating_wide
++ 
++ # Convert data from wide format to long format where one row represents one OBSERVATION.
++ # Wide format column names MUST represent levels of each variable separated by an underscore.
++ # See vignette for further details.
++ 
++ 
++ dating_long <- tidyr::pivot_longer(dating_wide,
++                               cols = attractive_high:ugly_none,
++                              names_to = c("looks", "personality"),
++                              names_sep = "_",
++                               values_to = "date_rating")
++ #'
++ dating_long$looks <- as.factor(dating_long$looks)
++ dating_long$personality <- as.factor(dating_long$personality)
++ 
++ 
++ dating_results <- afex::aov_ez("participant", "date_rating", dating_long,
++                                 between = "gender",
++                                 within = c("looks", "personality"))
++ 
++ 
++ # Make APA table - save after all 3 examples
++ dating_table <- apa.afex.table(dating_results)
++ 
++ # Create a table for your PDF
++ # Include the lines below in your rmarkdown or Quarto document
++ apa.knit.table.for.pdf(dating_table)
++ 
++ 
++ #
++ # Saving all three tables
++ #
++ apa.save(file.path(tempdir(), "tables_afex.doc"),
++                 goggles_table,
++                  drink_table,
++                 dating_table)
++ 
++ # delete demo file
++ unlink(file.path(tempdir(), "tables_afex.doc"))
++ ## End(No test)
++ }}}
+Contrasts set to contr.sum for the following variables: gender, alcohol
+Contrasts set to contr.sum for the following variables: gender
+Warning in summary.Anova.mlm(object$Anova, multivariate = FALSE) :
+  HF eps > 1 treated as 1
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.afex.table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("apa.aov.table")
+> ### * apa.aov.table
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.aov.table
+> ### Title: Creates a fixed-effects ANOVA table in APA style
+> ### Aliases: apa.aov.table
+> 
+> ### ** Examples
+> 
+> 
+> #Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
+> op <- options(contrasts = c("contr.helmert", "contr.poly"))
+> lm_output <- lm(libido ~ dose, data = viagra)
+> table1 <- apa.aov.table(lm_output, table.number = 4)
+> 
+> 
+> # Example 2: 2-way from Fidler & Thompson (2001)
+> # You must set these contrasts to ensure values match SPSS
+> lm_output <- lm(dv ~ a*b, data = fidler_thompson)
+> table2 <- apa.aov.table(lm_output, table.number = 5)
+> 
+> 
+> #Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
+> # You must set these contrasts to ensure values match SPSS
+> lm_output <- lm(attractiveness ~ gender*alcohol, data = goggles)
+> table3 <- apa.aov.table(lm_output, table.number = 6)
+> 
+> 
+> # Save all three table in the same .doc document
+> apa.save(filename = file.path(tempdir(), "my_tables.doc"), table1, table2, table3)
+> 
+> 
+> # Create a table for your PDF
+> # Include the lines below in your rmarkdown or Quarto document
+> apa.knit.table.for.pdf(table1)
+\renewcommand{\arraystretch}{1}\begin{table}
+
+\caption{Fixed-Effects Anova Results For Libido
+}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrrrrrc}
+\toprule
+Predictor & $SS$ & $df$ & $MS$ & $F$ & $p$ & $\eta_{partial}^2$ & 90\% CI\\
+\midrule
+(Intercept) & 180.27 & 1 & 180.27 & 91.66 & <.001 &  & \\
+dose & 20.13 & 2 & 10.06 & 5.12 & .025 & .46 & {}[.04, .62]\\
+Error & 23.60 & 12 & 1.97 &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $SS$ = Sum of squares. $df$ = degrees of freedom. $MS$ = mean square. CI indicates the confidence interval for $\eta_{partial}^2$.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\renewcommand{\arraystretch}{1}
+ 
+> apa.knit.table.for.pdf(table2)
+\renewcommand{\arraystretch}{1}\begin{table}
+
+\caption{Fixed-Effects Anova Results For Dv
+}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrrrrrc}
+\toprule
+Predictor & $SS$ & $df$ & $MS$ & $F$ & $p$ & $\eta_{partial}^2$ & 90\% CI\\
+\midrule
+(Intercept) & 150.00 & 1 & 150.00 & 150.00 & <.001 &  & \\
+a & 1.50 & 1 & 1.50 & 1.50 & .238 & .09 & {}[.00, .32]\\
+b & 12.00 & 3 & 4.00 & 4.00 & .027 & .43 & {}[.04, .57]\\
+a x b & 4.50 & 3 & 1.50 & 1.50 & .253 & .22 & {}[.00, .38]\\
+Error & 16.00 & 16 & 1.00 &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $SS$ = Sum of squares. $df$ = degrees of freedom. $MS$ = mean square. CI indicates the confidence interval for $\eta_{partial}^2$.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\renewcommand{\arraystretch}{1}
+ 
+> apa.knit.table.for.pdf(table3)
+\renewcommand{\arraystretch}{1}\begin{table}
+
+\caption{Fixed-Effects Anova Results For Attractiveness
+}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrrrrrc}
+\toprule
+Predictor & $SS$ & $df$ & $MS$ & $F$ & $p$ & $\eta_{partial}^2$ & 90\% CI\\
+\midrule
+(Intercept) & 163333.33 & 1 & 163333.33 & 1967.03 & <.001 &  & \\
+gender & 168.75 & 1 & 168.75 & 2.03 & .161 & .05 & {}[.00, .18]\\
+alcohol & 3332.29 & 2 & 1666.14 & 20.07 & <.001 & .49 & {}[.28, .60]\\
+gender x alcohol & 1978.13 & 2 & 989.07 & 11.91 & <.001 & .36 & {}[.15, .49]\\
+Error & 3487.50 & 42 & 83.04 &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $SS$ = Sum of squares. $df$ = degrees of freedom. $MS$ = mean square. CI indicates the confidence interval for $\eta_{partial}^2$.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\renewcommand{\arraystretch}{1}
+ 
+> 
+> 
+> # delete demo file
+> unlink(file.path(tempdir(), "my_tables.doc"))
+> options(op)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.aov.table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> base::options(contrasts = c(unordered = "contr.treatment",ordered = "contr.poly"))
+> cleanEx()
+> nameEx("apa.cor.table")
+> ### * apa.cor.table
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.cor.table
+> ### Title: Creates a correlation table in APA style with means and standard
+> ###   deviations
+> ### Aliases: apa.cor.table
+> 
+> ### ** Examples
+> 
+> # View top few rows of attitude data set
+> head(attitude)
+  rating complaints privileges learning raises critical advance
+1     43         51         30       39     61       92      45
+2     63         64         51       54     63       73      47
+3     71         70         68       69     76       86      48
+4     61         63         45       47     54       84      35
+5     81         78         56       66     71       83      47
+6     43         55         49       44     54       49      34
+> 
+> # Use apa.cor.table function
+> table1 <- apa.cor.table(attitude)
+> 
+> 
+> # Save Table 1 in a .doc document
+> apa.save(filename = file.path(tempdir(), "table1.doc"), table1)
+> 
+> 
+> # Create a table for your PDF
+> # Include the lines below in your rmarkdown or Quarto document
+> apa.knit.table.for.pdf(table1)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Descriptive Statistics And Correlations}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrccccccc}
+\toprule
+Variable & $N$ & $M$ & $SD$ & 1 & 2 & 3 & 4 & 5 & 6\\
+\midrule
+1. rating & 30 & 64.63 & 12.17 &  &  &  &  &  & \\
+ &  &  &  &  &  &  &  &  & \\
+ &  &  &  &  &  &  &  &  & \\
+ &  &  &  &  &  &  &  &  & \\
+2. complaints & 30 & 66.60 & 13.31 & .83$^{**}$ &  &  &  &  & \\
+ &  &  &  & {}[.66, .91] &  &  &  &  & \\
+ &  &  &  & $p$ < .001 &  &  &  &  & \\
+ &  &  &  &  &  &  &  &  & \\
+3. privileges & 30 & 53.13 & 12.24 & .43$^{*}$ & .56$^{**}$ &  &  &  & \\
+ &  &  &  & {}[.08, .68] & {}[.25, .76] &  &  &  & \\
+ &  &  &  & $p$ = .019 & $p$ = .001 &  &  &  & \\
+ &  &  &  &  &  &  &  &  & \\
+4. learning & 30 & 56.37 & 11.74 & .62$^{**}$ & .60$^{**}$ & .49$^{**}$ &  &  & \\
+ &  &  &  & {}[.34, .80] & {}[.30, .79] & {}[.16, .72] &  &  & \\
+ &  &  &  & $p$ < .001 & $p$ < .001 & $p$ = .006 &  &  & \\
+ &  &  &  &  &  &  &  &  & \\
+5. raises & 30 & 64.63 & 10.40 & .59$^{**}$ & .67$^{**}$ & .45$^{*}$ & .64$^{**}$ &  & \\
+ &  &  &  & {}[.29, .78] & {}[.41, .83] & {}[.10, .69] & {}[.36, .81] &  & \\
+ &  &  &  & $p$ < .001 & $p$ < .001 & $p$ = .014 & $p$ < .001 &  & \\
+ &  &  &  &  &  &  &  &  & \\
+6. critical & 30 & 74.77 & 9.89 & .16 & .19 & .15 & .12 & .38$^{*}$ & \\
+ &  &  &  & {}[-.22, .49] & {}[-.19, .51] & {}[-.22, .48] & {}[-.25, .46] & {}[.02, .65] & \\
+ &  &  &  & $p$ = .409 & $p$ = .321 & $p$ = .438 & $p$ = .542 & $p$ = .040 & \\
+ &  &  &  &  &  &  &  &  & \\
+7. advance & 30 & 42.93 & 10.29 & .16 & .22 & .34 & .53$^{**}$ & .57$^{**}$ & .28\\
+ &  &  &  & {}[-.22, .49] & {}[-.15, .54] & {}[-.02, .63] & {}[.21, .75] & {}[.27, .77] & {}[-.09, .58]\\
+ &  &  &  & $p$ = .413 & $p$ = .233 & $p$ = .063 & $p$ = .003 & $p$ < .001 & $p$ = .129\\
+ &  &  &  &  &  &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. \textit{N} = number of cases. \textit{M} = mean. \textit{SD} = standard deviation. Square brackets = 95\% confidence interval. \newline  * indicates $p$ < .05. ** indicates $p$ < .01.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> 
+> # delete demo file
+> unlink(file.path(tempdir(), "table1.doc"))
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.cor.table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("apa.d.table")
+> ### * apa.d.table
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.d.table
+> ### Title: Creates a d-values for all pairwise (two-sample) comparisons in
+> ###   APA style
+> ### Aliases: apa.d.table
+> 
+> ### ** Examples
+> 
+> # View top few rows of viagra data set from Discovering Statistics Using R
+> head(viagra)
+      dose libido
+1  Placebo      3
+2  Placebo      2
+3  Placebo      1
+4  Placebo      1
+5  Placebo      4
+6 Low Dose      5
+> 
+> # Use apa.d.table function
+> table1 <- apa.d.table(iv = dose, dv = libido, data = viagra)
+> 
+> 
+> # Save Table 1 in a .doc document
+> apa.save(filename = file.path(tempdir(), "table1.doc"), table1)
+> 
+> 
+> # Create a table for your PDF
+> # Include the lines below in your rmarkdown or Quarto document
+> apa.knit.table.for.pdf(table1)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Means, Standard Deviations, And $D$-Values With Confidence Intervals}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lcccc}
+\toprule
+Variable & $M$ & $SD$ & 1 & 2\\
+\midrule
+1. Placebo & 2.20 & 1.30 &  & \\
+ &  &  &  & \\
+2. Low Dose & 3.20 & 1.30 & 0.77 & \\
+ &  &  & {}[-0.55, 2.04] & \\
+ &  &  &  & \\
+3. High Dose & 5.00 & 1.58 & 1.93 & 1.24\\
+ &  &  & {}[0.34, 3.44] & {}[-0.17, 2.59]\\
+ &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $M$ indicates mean. $SD$ indicates standard deviation. $d$-values are estimates calculated using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, \& Rothstein (2009). $d$-values not calculated if unequal variances prevented pooling. Values in square brackets indicate the 95\% confidence interval for each $d$-value. 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> 
+> # delete demo file
+> unlink(file.path(tempdir(), "table1.doc"))
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.d.table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("apa.ezANOVA.table")
+> ### * apa.ezANOVA.table
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.ezANOVA.table
+> ### Title: Creates an ANOVA table in APA style based output of ezANOVA
+> ###   command from ez package
+> ### Aliases: apa.ezANOVA.table
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Note: ez package has been archived on CRAN.
+> ##D # Use apa.afex.table() with afex::aov_ez() instead.
+> ##D 
+> ##D #
+> ##D # ** Example 1: Between Participant Predictors
+> ##D #
+> ##D 
+> ##D goggles <- apaTables::goggles
+> ##D 
+> ##D # Use ezANOVA
+> ##D # Be sure use the options command, as below, to ensure sufficient digits
+> ##D 
+> ##D op <- options(digits = 10)
+> ##D goggles_results <- ez::ezANOVA(data = goggles,
+> ##D                           dv = attractiveness,
+> ##D                           between = .(gender, alcohol),
+> ##D                           participant ,
+> ##D                           detailed = TRUE)
+> ##D 
+> ##D # Make APA table
+> ##D goggles_table <- apa.ezANOVA.table(goggles_results)
+> ##D 
+> ##D # Create a table for your PDF
+> ##D # Include the lines below in your rmarkdown or Quarto document
+> ##D apa.knit.table.for.pdf(goggles_table)
+> ##D options(op)
+> ## End(Not run)
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.ezANOVA.table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("apa.reg.table")
+> ### * apa.reg.table
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.reg.table
+> ### Title: Creates a regresion table in APA style
+> ### Aliases: apa.reg.table
+> 
+> ### ** Examples
+> 
+> # View top few rows of goggles data set
+> # from Discovering Statistics Using R
+> head(album)
+   adverts sales airplay attract
+1   10.256   330      43      10
+2  985.685   120      28       7
+3 1445.563   360      35       7
+4 1188.193   270      33       7
+5  574.513   220      44       5
+6  568.954   170      19       5
+> 
+> # Single block example
+> blk1 <- lm(sales ~ adverts + airplay, data=album)
+> apa.reg.table(blk1)
+
+
+Table 0 
+
+Regression Predicting Sales
+ 
+
+   Predictor       b       b_95%_CI beta  beta_95%_CI Unique_R2 Unique_95%_CI
+ (Intercept) 41.12** [22.72, 59.53]                                          
+     adverts  0.09**   [0.07, 0.10] 0.52 [0.44, 0.61]     .27**    [.18, .36]
+     airplay  3.59**   [3.02, 4.15] 0.55 [0.46, 0.63]     .29**    [.20, .38]
+                                                                             
+                                                                             
+                                                                             
+     r             Fit
+                      
+ .58**                
+ .60**                
+           R2 = .629**
+       95% CI[.55,.69]
+                      
+
+Note. N = 200. b = unstandardized regression weight. beta = standardized regression weight. Unique R2 = semipartial correlation squared. r = zero-order correlation. CI = confidence interval.  
+* indicates p < .05. ** indicates p < .01.
+ 
+
+> table1 <- apa.reg.table(blk1,table.number = 1)
+> 
+> ## No test: 
+> # Two block example, more than two blocks can be used
+> blk1 <- lm(sales ~ adverts, data=album)
+> blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
+> table2 <- apa.reg.table(blk1, blk2, table.number = 2)
+> 
+> # Interaction product-term test with blocks
+> blk1 <- lm(sales ~ adverts + airplay, data=album)
+> blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
+> table3 <- apa.reg.table(blk1, blk2, table.number = 3)
+> 
+> # Interaction product-term test with blocks and additional product terms
+> blk1<-lm(sales ~ adverts + airplay, data=album)
+> blk2<-lm(sales ~ adverts + airplay + I(adverts*adverts) + I(airplay*airplay), data=album)
+> blk3<-lm(sales~adverts+airplay+I(adverts*adverts)+I(airplay*airplay)+I(adverts*airplay),data=album)
+> table4 <- apa.reg.table(blk1,blk2,blk3, table.number = 4)
+> 
+> #Interaction product-term test with single regression (i.e., semi-partial correlation focus)
+> blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
+> table5 <- apa.reg.table(blk1, table.number = 5)
+> 
+> # Save Table 1 in a .doc document
+> apa.save(filename = file.path(tempdir(), "regression_tables.doc"),
++          table1,
++          table2,
++          table3,
++          table4,
++          table5)
+> 
+> # Create a table for your PDF
+> # Include the lines below in your rmarkdown or Quarto document
+> apa.knit.table.for.pdf(table1)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Regression Predicting Sales}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrcrcrcc}
+\toprule
+Predictor & $b$ & 95\% CI & $beta$ & 95\% CI & Unique $R^2$ & 95\% CI & $r$ & Fit\\
+\midrule
+(Intercept) & 41.12** & {}[22.72, 59.53] &  &  &  &  &  & \\
+adverts & 0.09** & {}[0.07, 0.10] & 0.52 & {}[0.44, 0.61] & .27** & {}[.18, .36] & .58** & \\
+airplay & 3.59** & {}[3.02, 4.15] & 0.55 & {}[0.46, 0.63] & .29** & {}[.20, .38] & .60** & \\
+ &  &  &  &  &  &  &  & $R^2$ = .629**\\
+ &  &  &  &  &  &  &  & 95\% CI[.55,.69]\\
+ &  &  &  &  &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $N$ = 200. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \newline  * indicates $p$ < .05. ** indicates $p$ < .01.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> apa.knit.table.for.pdf(table2)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Hierarchical Multiple Regression Predicting Sales}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrcrcrccc}
+\toprule
+Predictor & $b$ & 95\% CI & $beta$ & 95\% CI & Unique $R^2$ & 95\% CI & $r$ & Fit & $\Delta$ Fit\\
+\midrule
+Model 1 &  &  &  &  &  &  &  &  & \\
+(Intercept) & 134.14** & {}[119.28, 149.00] &  &  &  &  &  &  & \\
+adverts & 0.10** & {}[0.08, 0.12] & 0.58 & {}[0.46, 0.69] & .33** & {}[.23, .43] & .58** &  & \\
+ &  &  &  &  &  &  &  & $R^2$ = .335** & \\
+ &  &  &  &  &  &  &  & 95\% CI[.23,.43] & \\
+ &  &  &  &  &  &  &  &  & \\
+Model 2 &  &  &  &  &  &  &  &  & \\
+(Intercept) & -26.61 & {}[-60.83, 7.60] &  &  &  &  &  &  & \\
+adverts & 0.08** & {}[0.07, 0.10] & 0.51 & {}[0.43, 0.59] & .26** & {}[.17, .34] & .58** &  & \\
+airplay & 3.37** & {}[2.82, 3.92] & 0.51 & {}[0.43, 0.60] & .25** & {}[.17, .33] & .60** &  & \\
+attract & 11.09** & {}[6.28, 15.89] & 0.19 & {}[0.11, 0.27] & .04** & {}[.00, .07] & .33** &  & \\
+ &  &  &  &  &  &  &  & $R^2$ = .665** & $\Delta R^2$  = .330**\\
+ &  &  &  &  &  &  &  & 95\% CI[.59,.72] & 95\% CI[.24, .42]\\
+ &  &  &  &  &  &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $N$ = 200. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \newline  * indicates $p$ < .05. ** indicates $p$ < .01.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> apa.knit.table.for.pdf(table3)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Hierarchical Multiple Regression Predicting Sales}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrcrcrccc}
+\toprule
+Predictor & $b$ & 95\% CI & $beta$ & 95\% CI & Unique $R^2$ & 95\% CI & $r$ & Fit & $\Delta$ Fit\\
+\midrule
+Model 1 &  &  &  &  &  &  &  &  & \\
+(Intercept) & 41.12** & {}[22.72, 59.53] &  &  &  &  &  &  & \\
+adverts & 0.09** & {}[0.07, 0.10] & 0.52 & {}[0.44, 0.61] & .27** & {}[.18, .36] & .58** &  & \\
+airplay & 3.59** & {}[3.02, 4.15] & 0.55 & {}[0.46, 0.63] & .29** & {}[.20, .38] & .60** &  & \\
+ &  &  &  &  &  &  &  & $R^2$ = .629** & \\
+ &  &  &  &  &  &  &  & 95\% CI[.55,.69] & \\
+ &  &  &  &  &  &  &  &  & \\
+Model 2 &  &  &  &  &  &  &  &  & \\
+(Intercept) & 28.30* & {}[1.09, 55.50] &  &  &  &  &  &  & \\
+adverts & 0.11** & {}[0.07, 0.16] & 0.69 & {}[0.42, 0.96] & .05** & {}[.01, .08] & .58** &  & \\
+airplay & 4.02** & {}[3.14, 4.91] & 0.61 & {}[0.48, 0.75] & .15** & {}[.08, .22] & .60** &  & \\
+adverts x airplay & -0.00 & {}[-0.00, 0.00] & -0.19 & {}[-0.49, 0.11] & .00 & {}[-.01, .01] &  &  & \\
+ &  &  &  &  &  &  &  & $R^2$ = .632** & $\Delta R^2$  = .003\\
+ &  &  &  &  &  &  &  & 95\% CI[.55,.69] & 95\% CI[-.01, .01]\\
+ &  &  &  &  &  &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $N$ = 200. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \newline  * indicates $p$ < .05. ** indicates $p$ < .01.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> apa.knit.table.for.pdf(table4)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Hierarchical Multiple Regression Predicting Sales}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrcrcrccc}
+\toprule
+Predictor & $b$ & 95\% CI & $beta$ & 95\% CI & Unique $R^2$ & 95\% CI & $r$ & Fit & $\Delta$ Fit\\
+\midrule
+Model 1 &  &  &  &  &  &  &  &  & \\
+(Intercept) & 41.12** & {}[22.72, 59.53] &  &  &  &  &  &  & \\
+adverts & 0.09** & {}[0.07, 0.10] & 0.52 & {}[0.44, 0.61] & .27** & {}[.18, .36] & .58** &  & \\
+airplay & 3.59** & {}[3.02, 4.15] & 0.55 & {}[0.46, 0.63] & .29** & {}[.20, .38] & .60** &  & \\
+ &  &  &  &  &  &  &  & $R^2$ = .629** & \\
+ &  &  &  &  &  &  &  & 95\% CI[.55,.69] & \\
+ &  &  &  &  &  &  &  &  & \\
+Model 2 &  &  &  &  &  &  &  &  & \\
+(Intercept) & 48.77** & {}[19.73, 77.82] &  &  &  &  &  &  & \\
+adverts & 0.10** & {}[0.05, 0.14] & 0.58 & {}[0.33, 0.83] & .04** & {}[.01, .07] & .58** &  & \\
+airplay & 2.65** & {}[0.67, 4.63] & 0.40 & {}[0.10, 0.70] & .01** & {}[-.01, .03] & .60** &  & \\
+adverts x adverts & -0.00 & {}[-0.00, 0.00] & -0.05 & {}[-0.31, 0.20] & .00 & {}[-.00, .00] &  &  & \\
+airplay x airplay & 0.02 & {}[-0.02, 0.05] & 0.15 & {}[-0.15, 0.45] & .00 & {}[-.01, .01] &  &  & \\
+ &  &  &  &  &  &  &  & $R^2$ = .631** & $\Delta R^2$  = .002\\
+ &  &  &  &  &  &  &  & 95\% CI[.55,.69] & 95\% CI[-.01, .01]\\
+ &  &  &  &  &  &  &  &  & \\
+Model 3 &  &  &  &  &  &  &  &  & \\
+(Intercept) & 37.30* & {}[2.84, 71.77] &  &  &  &  &  &  & \\
+adverts & 0.12** & {}[0.06, 0.18] & 0.72 & {}[0.38, 1.06] & .03** & {}[.00, .06] & .58** &  & \\
+airplay & 3.07** & {}[0.98, 5.15] & 0.47 & {}[0.15, 0.78] & .02** & {}[-.01, .04] & .60** &  & \\
+adverts x adverts & -0.00 & {}[-0.00, 0.00] & -0.03 & {}[-0.29, 0.23] & .00 & {}[-.00, .00] &  &  & \\
+airplay x airplay & 0.02 & {}[-0.02, 0.05] & 0.15 & {}[-0.15, 0.45] & .00 & {}[-.01, .01] &  &  & \\
+adverts x airplay & -0.00 & {}[-0.00, 0.00] & -0.19 & {}[-0.49, 0.12] & .00 & {}[-.01, .01] &  &  & \\
+ &  &  &  &  &  &  &  & $R^2$ = .634** & $\Delta R^2$  = .003\\
+ &  &  &  &  &  &  &  & 95\% CI[.55,.69] & 95\% CI[-.01, .01]\\
+ &  &  &  &  &  &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $N$ = 200. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \newline  * indicates $p$ < .05. ** indicates $p$ < .01.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> apa.knit.table.for.pdf(table5)
+\renewcommand{\arraystretch}{1}
+\begin{landscape}\begin{table}
+
+\caption{Regression Predicting Sales}
+\fontsize{10}{12}\selectfont
+\begin{threeparttable}
+\begin{tabular}[t]{lrrcrcrcc}
+\toprule
+Predictor & $b$ & 95\% CI & $beta$ & 95\% CI & Unique $R^2$ & 95\% CI & $r$ & Fit\\
+\midrule
+(Intercept) & 28.30* & {}[1.09, 55.50] &  &  &  &  &  & \\
+adverts & 0.11** & {}[0.07, 0.16] & 0.69 & {}[0.42, 0.96] & .05** & {}[.01, .08] & .58** & \\
+airplay & 4.02** & {}[3.14, 4.91] & 0.61 & {}[0.48, 0.75] & .15** & {}[.08, .22] & .60** & \\
+adverts x airplay & -0.00 & {}[-0.00, 0.00] & -0.19 & {}[-0.49, 0.11] & .00 & {}[-.01, .01] &  & \\
+ &  &  &  &  &  &  &  & $R^2$ = .632**\\
+ &  &  &  &  &  &  &  & 95\% CI[.55,.69]\\
+ &  &  &  &  &  &  &  & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item \textit{Note}. $N$ = 200. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \newline  * indicates $p$ < .05. ** indicates $p$ < .01.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{landscape}
+\renewcommand{\arraystretch}{1}
+ 
+> 
+> # delete demo file
+> unlink(file.path(tempdir(), "regression_tables.doc"))
+> ## End(No test)
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.reg.table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("apa.save")
+> ### * apa.save
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: apa.save
+> ### Title: Save previously constructed APA table objects in a single .doc
+> ###   file
+> ### Aliases: apa.save
+> 
+> ### ** Examples
+> 
+> library(apaTables)
+> 
+> table1 <- apa.1way.table(iv = dose, dv = libido,
++                data = viagra, table.number = 1)
+> 
+> table2 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
++                          dv = attractiveness,
++                          data = goggles, table.number = 1)
+> 
+> apa.save(filename = file.path(tempdir(), "my.tables.doc"), table1, table2)
+> 
+> # delete demo file
+> unlink(file.path(tempdir(), "my.tables.doc"))
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("apa.save", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("get.ci.partial.eta.squared")
+> ### * get.ci.partial.eta.squared
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: get.ci.partial.eta.squared
+> ### Title: Calculates confidence interval for partial eta-squared in a
+> ###   fixed-effects ANOVA
+> ### Aliases: get.ci.partial.eta.squared
+> 
+> ### ** Examples
+> 
+> # Smithson (2001) p. 619
+> get.ci.partial.eta.squared(F.value=6.00, df1=1, df2=42, conf.level=.90)
+$LL
+[1] 0.01170243
+
+$UL
+[1] 0.2801166
+
+> get.ci.partial.eta.squared(F.value=2.65, df1=6, df2=42, conf.level=.90)
+$LL
+[1] 0.01744483
+
+$UL
+[1] 0.3577174
+
+> get.ci.partial.eta.squared(F.value=2.60, df1=6, df2=42, conf.level=.90)
+$LL
+[1] 0.01473858
+
+$UL
+[1] 0.3537137
+
+> 
+> # Fidler & Thompson (2001) Fixed Effects 2x4 p. 594 (Table 6) / p. 596 (Table 8)
+> get.ci.partial.eta.squared(F.value=1.50, df1=1, df2=16, conf.level=.90)
+$LL
+[1] 0
+
+$UL
+[1] 0.3166901
+
+> get.ci.partial.eta.squared(F.value=4.00, df1=3, df2=16, conf.level=.90)
+$LL
+[1] 0.03574041
+
+$UL
+[1] 0.5670909
+
+> get.ci.partial.eta.squared(F.value=1.50, df1=3, df2=16, conf.level=.90)
+$LL
+[1] 0
+
+$UL
+[1] 0.3777952
+
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("get.ci.partial.eta.squared", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  2.087 0.106 2.202 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')
