@@ -36,6 +36,7 @@
 #' apa.knit.table.for.pdf(goggles_table)
 #'
 #'
+#' \donttest{
 #' #
 #' # ** Example 2: Within Participant Predictors
 #' #
@@ -143,6 +144,7 @@
 #' # delete demo file
 #' unlink(file.path(tempdir(), "tables_ezANOVA.doc"))
 #' options(op)
+#' }
 #' }}}
 #' @export
 apa.ezANOVA.table<-function(ez.output, correction = "GG", table.title = "", filename, table.number=0) {

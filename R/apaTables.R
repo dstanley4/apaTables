@@ -1,4 +1,4 @@
-utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI"))
+utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI","beta","Epsilon","F"))
 
 #' @description A common task faced by researchers is the creation of APA style (i.e., \emph{American Psychological Association} style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) and latex code containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user.
 #'

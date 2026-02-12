@@ -28,12 +28,9 @@ Suggests:
     papaja,
     MBESS,
     ez,
-    tidyr,
-    knitr,
-    rmarkdown
+    tidyr
 Encoding: UTF-8
 RoxygenNote: 7.3.3
 License: MIT + file LICENSE
 LazyData: true
 Date: 2026-02-12
-VignetteBuilder: knitr

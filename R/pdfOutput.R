@@ -57,14 +57,14 @@ apa.knit.dvalue.for.pdf <- function(table_object, table_note, table_title, line_
      table_title <- gsub("_", " ", table_title)
      table_title <- stringr::str_to_title(table_title)
 
-     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = column_alignment,
                                   caption = table_title, linesep = "")
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
 
 
      if (table_object$landscape == TRUE) {
@@ -106,14 +106,14 @@ apa.knit.ezanova.for.pdf <- function(table_object, table_note, table_title, line
      table_title <- gsub("_", " ", table_title)
      table_title <- stringr::str_to_title(table_title)
 
-     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = column_alignment,
                                   caption = table_title, linesep = "")
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
 
      if (table_object$landscape == TRUE) {
           table_out <- kableExtra::landscape(table_out)
@@ -167,14 +167,14 @@ apa.knit.regression.for.pdf <- function(table_object, table_note, table_title, l
      table_title <- gsub("_", " ", table_title)
      table_title <- stringr::str_to_title(table_title)
 
-     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = column_alignment,
                                   caption = table_title, linesep = "")
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
 
      if (table_object$landscape == TRUE) {
           table_out <- kableExtra::landscape(table_out)
@@ -215,14 +215,14 @@ apa.knit.correlation.for.pdf <- function(table_object, table_note, table_title, 
      table_title <- gsub("_", " ", table_title)
      table_title <- stringr::str_to_title(table_title)
 
-     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = c("l", "r", "r", rep("c", num_columns-3)),
                                   caption = table_title, linesep = "")
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
 
      if (table_object$landscape == TRUE) {
           table_out <- kableExtra::landscape(table_out)
@@ -274,7 +274,7 @@ apa.knit.aov.for.pdf <- function(table_object, table_note, table_title, line_spa
      table_title <- gsub("_", " ", table_title)
      table_title <- stringr::str_to_title(table_title)
 
-     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = c("l", rep("r", 6), "c"),
@@ -287,7 +287,7 @@ apa.knit.aov.for.pdf <- function(table_object, table_note, table_title, line_spa
      # }
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
 
      #adjust line spacing
      table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
@@ -324,7 +324,7 @@ apa.knit.twoway.ci.for.pdf <- function(table_object, table_note, table_title, li
      table_title <- gsub("_", " ", table_title)
      table_title <- stringr::str_to_title(table_title)
 
-     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = c("l","r","c","r"),
@@ -340,7 +340,7 @@ apa.knit.twoway.ci.for.pdf <- function(table_object, table_note, table_title, li
      #table_out <- kableExtra::add_header_above(table_out, c(" " = 2, "95\\\\% CI", " "), escape = FALSE)
 
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
 
      #adjust line spacing
      table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
@@ -395,7 +395,7 @@ apa.knit.twoway.for.pdf <- function(table_object, table_note, table_title, line_
      table_title <- stringr::str_to_title(table_title)
 
 
-     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = table_column_center,
@@ -408,7 +408,7 @@ apa.knit.twoway.for.pdf <- function(table_object, table_note, table_title, line_
      if (is_marginal_means == TRUE) {
       table_out <- kableExtra::row_spec(table_out, (y.num.columns-1), hline_after = TRUE)
      }
-     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
 
      if (table_object$landscape == TRUE) {
           table_out <- kableExtra::landscape(table_out)
@@ -443,7 +443,7 @@ apa.knit.oneway.for.pdf <- function(table_object, table_note, table_title, line_
      table_title <- gsub("_", " ", table_title)
      table_title <- stringr::str_to_title(table_title)
 
-     table_out <- kableExtra::kbl(table_df, booktabs = T, escape = FALSE,
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
                                   col.names = table_column_labels,
                                   format = "latex",
                                   align = table_column_center,
@@ -453,7 +453,7 @@ apa.knit.oneway.for.pdf <- function(table_object, table_note, table_title, line_
      #      table_out <- kableExtra::add_header_above(table_out, c(" " = 2, "95\\\\% CI" =1, " "), escape = FALSE)
      # }
      table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
-     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = T)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
 
      #adjust line spacing
      table_spacing <- "\\renewcommand{\\arraystretch}{XX}"

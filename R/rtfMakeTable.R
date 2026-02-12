@@ -165,7 +165,7 @@ RtfTable <- setRefClass("RtfTable",
                          rtfRow <- getRow(rowContent=curRow,isExtraSpacing=isExtraSpacing,isLineAbove=FALSE,isLineBelow=TRUE,isThinLine=isThinLine,isCurRowHeaderRow=FALSE)
                          rtfTable <- c(rtfTable,rtfRow)
                     } else {
-                         rtfRow <- getRow(rowContent=curRow,isExtraSpacing=isExtraSpacing,isLineAbove-FALSE,isLineBelow=FALSE,isThinLine=isThinLine,isCurRowHeaderRow=FALSE)
+                         rtfRow <- getRow(rowContent=curRow,isExtraSpacing=isExtraSpacing,isLineAbove=FALSE,isLineBelow=FALSE,isThinLine=isThinLine,isCurRowHeaderRow=FALSE)
                          rtfTable <- c(rtfTable,rtfRow)
                     }
                }

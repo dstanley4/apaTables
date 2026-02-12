@@ -22,6 +22,7 @@
 #' apa.reg.table(blk1)
 #' table1 <- apa.reg.table(blk1,table.number = 1)
 #'
+#' \donttest{
 #' # Two block example, more than two blocks can be used
 #' blk1 <- lm(sales ~ adverts, data=album)
 #' blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
@@ -60,6 +61,7 @@
 #'
 #' # delete demo file
 #' unlink(file.path(tempdir(), "regression_tables.doc"))
+#' }
 #' @export
 apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .95) {
      regression_results_list <- list(...)
