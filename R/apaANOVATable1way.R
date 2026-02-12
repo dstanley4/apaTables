@@ -72,7 +72,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=0, show.conf.i
 
      if (is.na(table.number)) {
           table.number = 0
-          tbl.console$table.number = 0
+          tbl.console$table_number = 0
      }
 
 
@@ -176,11 +176,11 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
           table.note <- paste(table.note,ci.txt,sep="")
      }
      tbl.console <- list()
-     tbl.console <- list(table.number = table.number,
-                         table.title = table.title,
-                         table.body = table.body,
-                         table.note = table.note)
-     class(tbl.console) <- "apa.table"
+     tbl.console <- list(table_number = table.number,
+                         table_title = table.title,
+                         table_body = table.body,
+                         table_note = table.note)
+     class(tbl.console) <- "apa_table"
 
 
      #make rtf header row

@@ -154,13 +154,13 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = 0, 
 
      #make console output
      tbl.console <- list()
-     tbl.console <- list(table.number = table.number,
-                         table.title = table.title,
-                         table.body = table.initial.console,
-                         table.note = table.note.txt)
+     tbl.console <- list(table_number = table.number,
+                         table_title = table.title,
+                         table_body = table.initial.console,
+                         table_note = table.note.txt)
 
 
-     class(tbl.console) <- "apa.table"
+     class(tbl.console) <- "apa_table"
 
 
      rtf.title <- table.title
@@ -178,7 +178,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = 0, 
      # Ver 3.0 add ons
      if (is.na(table.number)) {
           table.number = 0
-          tbl.console$table.number = 0
+          tbl.console$table_number = 0
      }
 
      latex.table.note <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. "
@@ -416,7 +416,7 @@ apa.2way.table.ci.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,table.nu
 
           if (count==1) {
                tbl.console.output <- tables.out$tbl.console
-               tbl.console <- tbl.console.output$table.body
+               tbl.console <- tbl.console.output$table_body
                latex.body <- tbl.console
 
                tbl.console <- add.blank.first.row(tbl.console)
@@ -426,7 +426,7 @@ apa.2way.table.ci.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,table.nu
                tbl.console[1,1] <- sprintf("%s:%s",iv2.name,cur.iv2.level)
                console.data <- tbl.console
           } else {
-               tbl.console <- tables.out$tbl.console$table.body
+               tbl.console <- tables.out$tbl.console$table_body
                latex.cur.body <- tbl.console
 
                tbl.console <- add.blank.first.row(tbl.console)
@@ -442,7 +442,7 @@ apa.2way.table.ci.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,table.nu
           my.col.names <- colnames(console.data)
           my.col.names[1] <- ""
           colnames(console.data) <- my.col.names
-          tbl.console.output$table.body <- console.data
+          tbl.console.output$table_body <- console.data
 
           #rtf
           txt.body <- tables.out$txt.body
@@ -461,7 +461,7 @@ apa.2way.table.ci.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,table.nu
 
      output <- list()
      output$rtf <- rtf.data
-     output$console <- tbl.console.output$table.body
+     output$console <- tbl.console.output$table_body
      output$latex.body <- latex.body
      return(output)
 }

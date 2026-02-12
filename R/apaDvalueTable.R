@@ -207,11 +207,11 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=0, show.conf.int
      } else {
           table_note <- "Note. M indicates mean. SD indicates standard deviation. d-values are estimates calculated using formulas 4.18 and 4.19\nfrom Borenstein, Hedges, Higgins, & Rothstein (2009). d-values not calculated if unequal variances prevented pooling.\n"
      }
-     tbl_console <- list(table.number = table_number,
-                         table.title = table_title,
-                         table.body = table_body,
-                         table.note = table_note)
-     class(tbl_console) <- "apa.table"
+     tbl_console <- list(table_number = table_number,
+                         table_title = table_title,
+                         table_body = table_body,
+                         table_note = table_note)
+     class(tbl_console) <- "apa_table"
 
 
      #make RTF output file

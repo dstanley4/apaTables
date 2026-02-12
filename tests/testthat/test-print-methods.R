@@ -1,13 +1,13 @@
 library(apaTables)
 
-test_that("print.apa.table outputs Table N and title", {
+test_that("print.apa_table outputs Table N and title for 1way", {
      t1 <- apa.1way.table(iv = dose, dv = libido, data = viagra, table.number = 3)
      out <- capture.output(print(t1))
      expect_true(any(grepl("Table 3", out)))
      expect_true(any(grepl("Descriptive Statistics", out)))
 })
 
-test_that("print.apa.table outputs table note", {
+test_that("print.apa_table outputs table note for 1way", {
      t1 <- apa.1way.table(iv = dose, dv = libido, data = viagra, table.number = 3)
      out <- capture.output(print(t1))
      expect_true(any(grepl("Note", out)))
@@ -30,7 +30,7 @@ test_that("print.apa_table for regression outputs Regression", {
      expect_true(any(grepl("Regression", out)))
 })
 
-test_that("print.apa.table with table.number = 0 does not error", {
+test_that("print.apa_table with table.number = 0 does not error for 1way", {
      t1 <- apa.1way.table(iv = dose, dv = libido, data = viagra, table.number = 0)
      out <- capture.output(print(t1))
      # Should still produce output without error

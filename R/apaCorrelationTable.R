@@ -226,11 +226,11 @@ apa.cor.table<-function(data, filename = NA, table.number = 0, show.conf.interva
              table_note <- paste(table_note, "* indicates p < .05. ** indicates p < .01.\n")
      }
 
-     tbl.console <- list(table.number = table_number,
-                 table.title = table_title,
-                 table.body = table_body,
-                 table.note = table_note)
-     class(tbl.console) <- "apa.table"
+     tbl.console <- list(table_number = table_number,
+                 table_title = table_title,
+                 table_body = table_body,
+                 table_note = table_note)
+     class(tbl.console) <- "apa_table"
 
 
      #make RTF output file

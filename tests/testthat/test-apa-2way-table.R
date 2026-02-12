@@ -3,16 +3,16 @@ library(apaTables)
 test_that("apa.2way.table returns correct class and type", {
      t1 <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
                            data = goggles, table.number = 3)
-     expect_s3_class(t1, "apa.table")
+     expect_s3_class(t1, "apa_table")
      expect_equal(t1$table.type, "twoway")
 })
 
 test_that("apa.2way.table title mentions DV and both IVs", {
      t1 <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
                            data = goggles)
-     expect_true(grepl("Attractiveness", t1$table.title))
-     expect_true(grepl("Gender", t1$table.title))
-     expect_true(grepl("Alcohol", t1$table.title))
+     expect_true(grepl("Attractiveness", t1$table_title))
+     expect_true(grepl("Gender", t1$table_title))
+     expect_true(grepl("Alcohol", t1$table_title))
 })
 
 test_that("apa.2way.table with CI changes table.type", {
@@ -34,16 +34,16 @@ test_that("apa.2way.table show.marginal.means works without error", {
 test_that("apa.2way.table table.number parameter works", {
      t1 <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
                            data = goggles, table.number = 8)
-     expect_equal(t1$table.number, 8)
+     expect_equal(t1$table_number, 8)
 })
 
 test_that("apa.2way.table works with fidler_thompson data", {
      t1 <- apa.2way.table(iv1 = a, iv2 = b, dv = dv,
                            data = fidler_thompson, table.number = 2)
-     expect_s3_class(t1, "apa.table")
-     expect_true(grepl("Dv", t1$table.title))
-     expect_true(grepl("A", t1$table.title))
-     expect_true(grepl("B", t1$table.title))
+     expect_s3_class(t1, "apa_table")
+     expect_true(grepl("Dv", t1$table_title))
+     expect_true(grepl("A", t1$table_title))
+     expect_true(grepl("B", t1$table_title))
 })
 
 test_that("apa.2way.table has RTF and LaTeX components", {
@@ -59,7 +59,7 @@ test_that("apa.2way.table has RTF and LaTeX components", {
 test_that("apa.2way.table table.body is not null", {
      t1 <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
                            data = goggles)
-     expect_false(is.null(t1$table.body))
-     expect_true(nrow(t1$table.body) > 0)
-     expect_true(ncol(t1$table.body) > 0)
+     expect_false(is.null(t1$table_body))
+     expect_true(nrow(t1$table_body) > 0)
+     expect_true(ncol(t1$table_body) > 0)
 })

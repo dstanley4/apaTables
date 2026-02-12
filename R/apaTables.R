@@ -198,22 +198,6 @@ get.cors <- function(dv.in,pred.in) {
 
 # Helper functions
 #' @export
-print.apa.table <- function(x,...) {
-     cat("\n\n")
-     tbl <- x
-     if (!is.na(tbl$table.number)) {
-          cat(sprintf("Table %1.0f",tbl$table.number),"\n")
-          cat("\n")
-     }
-     cat(tbl$table.title,"\n")
-     cat("\n")
-     print(tbl$table.body,row.names=FALSE,quote=FALSE)
-     cat("\n")
-     cat(tbl$table.note,"\n")
-     cat("\n")
-}
-
-#' @export
 print.apa_table <- function(x,...) {
      cat("\n\n")
      tbl <- x

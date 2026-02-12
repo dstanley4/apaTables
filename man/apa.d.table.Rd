@@ -2,7 +2,7 @@
 % Please edit documentation in R/apaDvalueTable.R
 \name{apa.d.table}
 \alias{apa.d.table}
-\title{Creates a d-values for all paired comparisons in APA style}
+\title{Creates a d-values for all pairwise (two-sample) comparisons in APA style}
 \usage{
 apa.d.table(
   iv,
@@ -33,7 +33,7 @@ apa.d.table(
 APA table object
 }
 \description{
-Creates a d-values for all paired comparisons in APA style
+Creates a d-values for all pairwise (two-sample) comparisons in APA style
 }
 \examples{
 # View top few rows of viagra data set from Discovering Statistics Using R
