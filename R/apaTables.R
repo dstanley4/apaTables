@@ -1,6 +1,6 @@
 utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI"))
 
-#' @description A common task faced by researchers is the creation of APA style (i.e., \emph{American Psychological Association} style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) and latex code containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user. Examples are provided in this documentation and at \url{http://www.StatsCanBeFun.com}.
+#' @description A common task faced by researchers is the creation of APA style (i.e., \emph{American Psychological Association} style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) and latex code containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user.
 #'
 #'  Bugs and feature requests can be reported at: \url{https://github.com/dstanley4/apaTables/issues}
 #'
@@ -220,8 +220,7 @@ is.valid.name <- function(sub.name, data.col.names) {
      if (!is.null(sub.name)) {
           is.name.valid <- any(sub.name == data.col.names)
           if (is.name.valid==FALSE){
-               cat("apa.mean.table error:\n")
-               cat(sprintf("%s is not a valid column name.\n\n",as.character(sub.name)))
+               warning(sprintf("%s is not a valid column name.",as.character(sub.name)), call. = FALSE)
           }
      }
      return(is.name.valid)

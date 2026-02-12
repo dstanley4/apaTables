@@ -44,7 +44,7 @@ goggles <- apaTables::goggles
 # Use ezANOVA
 # Be sure use the options command, as below, to ensure sufficient digits
 
-options(digits = 10)
+op <- options(digits = 10)
 goggles_results <- ez::ezANOVA(data = goggles,
                           dv = attractiveness,
                           between = .(gender, alcohol),
@@ -94,7 +94,6 @@ contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_n
 # Use ezANOVA
 # Be sure use the options command, as below, to ensure sufficient digits
 
-options(digits = 10)
 drink_attitude_results <- ez::ezANOVA(data = drink_attitude_long,
                    dv = .(attitude), wid = .(participant),
                    within = .(drink, imagery),
@@ -142,7 +141,6 @@ contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
 
 # Use ezANOVA
 
-options(digits = 10)
 dating_results <-ez::ezANOVA(data = dating_long, dv = .(date_rating),
                          wid = .(participant),
                          between = .(gender),
@@ -161,14 +159,13 @@ apa.knit.table.for.pdf(dating_table)
 #
 # Saving all three tables
 #
-apa.save("tables_ezANOVA.doc",
+apa.save(file.path(tempdir(), "tables_ezANOVA.doc"),
                 goggles_table,
                  drink_table,
                 dating_table)
 
 # delete demo file
-if (file.exists("tables_ezANOVA.doc")) {
-     file.remove("tables_ezANOVA.doc")
-}
+unlink(file.path(tempdir(), "tables_ezANOVA.doc"))
+options(op)
 }}}
 }

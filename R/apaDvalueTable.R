@@ -16,7 +16,7 @@
 #'
 #'
 #' # Save Table 1 in a .doc document
-#' apa.save(filename = "table1.doc", table1)
+#' apa.save(filename = file.path(tempdir(), "table1.doc"), table1)
 #'
 #'
 #' # Create a table for your PDF
@@ -24,9 +24,7 @@
 #' apa.knit.table.for.pdf(table1)
 #'
 #' # delete demo file
-#' if (file.exists("table1.doc")) {
-#'      file.remove("table1.doc")
-#' }
+#' unlink(file.path(tempdir(), "table1.doc"))
 #' @export
 apa.d.table <- function(iv, dv, data, filename=NA, table.number=0, show.conf.interval = TRUE, landscape=TRUE){
      data <- as.data.frame(data)
@@ -34,7 +32,7 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=0, show.conf.int
 
 
      if (show.conf.interval==FALSE) {
-          cat("The ability to suppress reporting of reporting confidence intervals has been deprecated in this version.\nThe function arguement show.conf.interval will be removed in a later version.\n")
+          message("The ability to suppress reporting of reporting confidence intervals has been deprecated in this version.\nThe function argument show.conf.interval will be removed in a later version.")
      }
 
      if (requireNamespace("MBESS", quietly = TRUE)) {
@@ -54,9 +52,7 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=0, show.conf.int
      if (!is.null(data)) {
           data_col_names <- colnames(data)
      } else {
-          cat("apa.mean.table error:\n")
-          cat("data not specified.\n\n")
-          return(FALSE)
+          stop("apa.d.table error:\ndata not specified.", call. = FALSE)
      }
 
      iv_sub <- substitute(iv)
@@ -67,15 +63,11 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=0, show.conf.int
 
 
      if (is_dv==FALSE) {
-          cat("apa.mean.table error:\n")
-          cat("A valid dependent variable (dv) must be specified.\n")
-          return(FALSE)
+          stop("apa.d.table error:\nA valid dependent variable (dv) must be specified.", call. = FALSE)
      }
 
      if (is_iv==FALSE) {
-          cat("apa.mean.table error:\n")
-          cat("Two valid independent variables (iv's) must be specified.\n\n")
-          return(FALSE)
+          stop("apa.d.table error:\nA valid independent variable (iv) must be specified.", call. = FALSE)
      }
      iv_name <- deparse(iv_sub)
      dv_name <- deparse(dv_sub)

@@ -13,16 +13,14 @@
 #' table1 <- apa.1way.table(iv = dose, dv = libido,
 #'                data = viagra, table.number = 1)
 #'
-#' apa.save(filename = "table1.doc", table1)
+#' apa.save(filename = file.path(tempdir(), "table1.doc"), table1)
 #'
 #' # Create a table for your PDF
 #' # Include the line below in your rmarkdown or Quarto document
 #' apa.knit.table.for.pdf(table1)
 #'
 #' # delete demo file
-#' if (file.exists("table1.doc")) {
-#'      file.remove("table1.doc")
-#' }
+#' unlink(file.path(tempdir(), "table1.doc"))
 #' @export
 apa.1way.table <- function(iv, dv, data,filename=NA, table.number=0, show.conf.interval=FALSE, landscape=FALSE){
      data <- as.data.frame(data)
@@ -36,9 +34,7 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=0, show.conf.i
      if (!is.null(data)) {
           data.col.names <- colnames(data)
      } else {
-          cat("apa.mean.table error:\n")
-          cat("data not specified.\n\n")
-          return(FALSE)
+          stop("apa.1way.table error:\ndata not specified.", call. = FALSE)
      }
 
      iv.sub <- substitute(iv)
@@ -49,15 +45,11 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=0, show.conf.i
 
 
      if (is.dv==FALSE) {
-          cat("apa.mean.table error:\n")
-          cat("A valid dependent variable (dv) must be specified.\n")
-          return(FALSE)
+          stop("apa.1way.table error:\nA valid dependent variable (dv) must be specified.", call. = FALSE)
      }
 
      if (is.iv==FALSE) {
-          cat("apa.mean.table error:\n")
-          cat("A valid independent variables (iv) must be specified.\n\n")
-          return(FALSE)
+          stop("apa.1way.table error:\nA valid independent variable (iv) must be specified.", call. = FALSE)
      }
 
      iv.name <- deparse(iv.sub)

@@ -29,10 +29,8 @@ table2 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
                          dv = attractiveness,
                          data = goggles, table.number = 1)
 
-apa.save(filename = "my.tables.doc", table1, table2)
+apa.save(filename = file.path(tempdir(), "my.tables.doc"), table1, table2)
 
 # delete demo file
-if (file.exists("my.tables.doc")) {
-     file.remove("my.tables.doc")
-}
+unlink(file.path(tempdir(), "my.tables.doc"))
 }

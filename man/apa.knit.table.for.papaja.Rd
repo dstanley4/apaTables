@@ -12,7 +12,7 @@ apa.knit.table.for.papaja(table_object, latex_font_size = "footnotesize")
 \item{latex_font_size}{A strijg that indicates normalsize, small, footnotesize, scriptsize}
 }
 \value{
-Save status
+A papaja apa_table object for rendering in APA-style PDF documents.
 }
 \description{
 Create output for papaja

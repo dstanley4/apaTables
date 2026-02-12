@@ -12,27 +12,25 @@
 #' @examples
 #'
 #' #Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
-#' options(contrasts = c("contr.helmert", "contr.poly"))
+#' op <- options(contrasts = c("contr.helmert", "contr.poly"))
 #' lm_output <- lm(libido ~ dose, data = viagra)
 #' table1 <- apa.aov.table(lm_output, table.number = 4)
 #'
 #'
 #' # Example 2: 2-way from Fidler & Thompson (2001)
 #' # You must set these contrasts to ensure values match SPSS
-#' options(contrasts = c("contr.helmert", "contr.poly"))
 #' lm_output <- lm(dv ~ a*b, data = fidler_thompson)
 #' table2 <- apa.aov.table(lm_output, table.number = 5)
 #'
 #'
 #' #Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 #' # You must set these contrasts to ensure values match SPSS
-#' options(contrasts = c("contr.helmert", "contr.poly"))
 #' lm_output <- lm(attractiveness ~ gender*alcohol, data = goggles)
 #' table3 <- apa.aov.table(lm_output, table.number = 6)
 #'
 #'
 #' # Save all three table in the same .doc document
-#' apa.save(filename = "my_tables.doc", table1, table2, table3)
+#' apa.save(filename = file.path(tempdir(), "my_tables.doc"), table1, table2, table3)
 #'
 #'
 #' # Create a table for your PDF
@@ -43,9 +41,8 @@
 #'
 #'
 #' # delete demo file
-#' if (file.exists("my_tables.doc")) {
-#'      file.remove("my_tables.doc")
-#' }
+#' unlink(file.path(tempdir(), "my_tables.doc"))
+#' options(op)
 #'
 #' @export
 apa.aov.table<-function(lm_output,filename,table.number=0, conf.level=.90,type=3) {
@@ -312,16 +309,6 @@ get_rtf_column_names_anova <- function(df) {
 # }
 #
 
-get_rtf_column_names_anova <- function(df) {
-     n <- names(df)
-     names_out <- c()
-     for (i in 1:length(n)) {
-          names_out[i] <-output_rtf_name_anova(n[i])
-     }
-     return(names_out)
-}
-
-
 # end ezANOVA -------------------------------------------------------------
 
 
@@ -369,13 +356,6 @@ get_rtf_column_widths_anova <- function(df) {
 
 
 
-convert_colon_to_x <- function(predictor_strings) {
-     L <- length(predictor_strings)
-     for (i in 1:L) {
-          cur_string <- predictor_strings
-     }
-
-}
 
 
 

@@ -43,7 +43,7 @@
 #' table5 <- apa.reg.table(blk1, table.number = 5)
 #'
 #' # Save Table 1 in a .doc document
-#' apa.save(filename = "regression_tables.doc",
+#' apa.save(filename = file.path(tempdir(), "regression_tables.doc"),
 #'          table1,
 #'          table2,
 #'          table3,
@@ -59,9 +59,7 @@
 #' apa.knit.table.for.pdf(table5)
 #'
 #' # delete demo file
-#' if (file.exists("regression_tables.doc")) {
-#'      file.remove("regression_tables.doc")
-#' }
+#' unlink(file.path(tempdir(), "regression_tables.doc"))
 #' @export
 apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .95) {
      regression_results_list <- list(...)
@@ -93,9 +91,7 @@ apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .9
           is_same_criterion[i] <- first_criterion == cur_criterion_name
      }
      if (any(is_same_criterion == FALSE)) {
-          cat("apa.reg.table error:\nAll regression objects (i.e., blocks) must use the same criterion.\n")
-          cat("The regression objects used had different criterion variables.\n\n")
-          return(FALSE)
+          stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must use the same criterion.\nThe regression objects used had different criterion variables.", call. = FALSE)
      }
 
 
@@ -116,14 +112,7 @@ apa.reg.table<-function(...,filename=NA,table.number=0, prop.var.conf.level = .9
           last_predictors <- cur_predictors
      }
      if (any(is_same_predictors==FALSE)) {
-          cat("apa.reg.table error:\nEach regression objects (i.e., block) must contain all of the predictors from the preceeding regression object (i.e., block).\n\n")
-          cat("For example:\n")
-          cat("block1 <- lm(y ~ a + b)\n")
-          cat("block2 <- lm(y ~ a + b + c)\n\n")
-          cat("The second block contains all of the predictors from the first block plus additional predictors.\n\n")
-          cat("Therefore the command below will work: \n\n")
-          cat("apa.reg.table(block1, block2)\n\n")
-          return(FALSE)
+          stop("apa.reg.table error:\nEach regression objects (i.e., block) must contain all of the predictors from the preceeding regression object (i.e., block).\n\nFor example:\nblock1 <- lm(y ~ a + b)\nblock2 <- lm(y ~ a + b + c)\n\nThe second block contains all of the predictors from the first block plus additional predictors.\n\nTherefore the command below will work:\napa.reg.table(block1, block2)", call. = FALSE)
      }
 
 
@@ -380,7 +369,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      } else {
           R2LL <- NA
           R2UL <- NA
-          cat("\nMBESS package needs to be installed to calculate R2 confidence intervals.\n")
+          message("MBESS package needs to be installed to calculate R2 confidence intervals.")
      }
 
 

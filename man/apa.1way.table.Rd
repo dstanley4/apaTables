@@ -41,14 +41,12 @@ Creates a table of means and standard deviations for a 1-way ANOVA design in APA
 table1 <- apa.1way.table(iv = dose, dv = libido,
                data = viagra, table.number = 1)
 
-apa.save(filename = "table1.doc", table1)
+apa.save(filename = file.path(tempdir(), "table1.doc"), table1)
 
 # Create a table for your PDF
 # Include the line below in your rmarkdown or Quarto document
 apa.knit.table.for.pdf(table1)
 
 # delete demo file
-if (file.exists("table1.doc")) {
-     file.remove("table1.doc")
-}
+unlink(file.path(tempdir(), "table1.doc"))
 }

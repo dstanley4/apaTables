@@ -16,7 +16,7 @@
 #'
 #'
 #' # Save Table 1 in a .doc document
-#' apa.save(filename = "table1.doc", table1)
+#' apa.save(filename = file.path(tempdir(), "table1.doc"), table1)
 #'
 #'
 #' # Create a table for your PDF
@@ -24,13 +24,10 @@
 #' apa.knit.table.for.pdf(table1)
 #'
 #' # delete demo file
-#' if (file.exists("table1.doc")) {
-#'      file.remove("table1.doc")
-#' }
+#' unlink(file.path(tempdir(), "table1.doc"))
 #' @export
 apa.cor.table<-function(data, filename = NA, table.number = 0, show.conf.interval = TRUE, show.sig.stars = TRUE, show.pvalue = TRUE, landscape = TRUE) {
 
-     # test git tower April 23
      data <- as.data.frame(data)
      table_number <- table.number
 

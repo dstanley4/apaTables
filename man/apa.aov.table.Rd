@@ -32,27 +32,25 @@ Creates a fixed-effects ANOVA table in APA style
 \examples{
 
 #Example 1: 1-way from Field et al. (2012) Discovery Statistics Using R
-options(contrasts = c("contr.helmert", "contr.poly"))
+op <- options(contrasts = c("contr.helmert", "contr.poly"))
 lm_output <- lm(libido ~ dose, data = viagra)
 table1 <- apa.aov.table(lm_output, table.number = 4)
 
 
 # Example 2: 2-way from Fidler & Thompson (2001)
 # You must set these contrasts to ensure values match SPSS
-options(contrasts = c("contr.helmert", "contr.poly"))
 lm_output <- lm(dv ~ a*b, data = fidler_thompson)
 table2 <- apa.aov.table(lm_output, table.number = 5)
 
 
 #Example 3: 2-way from Field et al. (2012) Discovery Statistics Using R
 # You must set these contrasts to ensure values match SPSS
-options(contrasts = c("contr.helmert", "contr.poly"))
 lm_output <- lm(attractiveness ~ gender*alcohol, data = goggles)
 table3 <- apa.aov.table(lm_output, table.number = 6)
 
 
 # Save all three table in the same .doc document
-apa.save(filename = "my_tables.doc", table1, table2, table3)
+apa.save(filename = file.path(tempdir(), "my_tables.doc"), table1, table2, table3)
 
 
 # Create a table for your PDF
@@ -63,9 +61,8 @@ apa.knit.table.for.pdf(table3)
 
 
 # delete demo file
-if (file.exists("my_tables.doc")) {
-     file.remove("my_tables.doc")
-}
+unlink(file.path(tempdir(), "my_tables.doc"))
+options(op)
 
 }
 \references{

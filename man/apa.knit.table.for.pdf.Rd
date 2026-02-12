@@ -21,7 +21,7 @@ apa.knit.table.for.pdf(
 \item{line_spacing}{Line spacing multiplier for table}
 }
 \value{
-Save status
+A kableExtra LaTeX table object for rendering in PDF documents.
 }
 \description{
 Create latex output for an apaTables object

@@ -25,7 +25,7 @@
 #'
 #'
 #' # Save both Table 2 and Table 3 in a single .doc document
-#' apa.save(filename = "my_tables.doc", table2, table3)
+#' apa.save(filename = file.path(tempdir(), "my_tables.doc"), table2, table3)
 #'
 #' # Create a table for your PDF
 #' # Include the lines below in your rmarkdown or Quarto document
@@ -33,9 +33,7 @@
 #' apa.knit.table.for.pdf(table3)
 #'
 #' # delete demo file
-#' if (file.exists("my_tables.doc")) {
-#'      file.remove("my_tables.doc")
-#' }
+#' unlink(file.path(tempdir(), "my_tables.doc"))
 #' @export
 apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = 0, show.conf.interval = FALSE, show.marginal.means = FALSE, landscape = TRUE){
 
@@ -51,9 +49,7 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = 0, 
      if (!is.null(data)) {
           data.col.names <- colnames(data)
      } else {
-          cat("apa.mean.table error:\n")
-          cat("data not specified.\n\n")
-          return(FALSE)
+          stop("apa.2way.table error:\ndata not specified.", call. = FALSE)
      }
 
      iv1.sub <- substitute(iv1)
@@ -66,15 +62,11 @@ apa.2way.table <- function(iv1, iv2, dv, data, filename = NA, table.number = 0, 
 
 
      if (is.dv==FALSE) {
-          cat("apa.mean.table error:\n")
-          cat("A valid dependent variable (dv) must be specified.\n")
-          return(FALSE)
+          stop("apa.2way.table error:\nA valid dependent variable (dv) must be specified.", call. = FALSE)
      }
 
      if (all(is.iv1==TRUE & is.iv2==TRUE)==FALSE) {
-          cat("apa.mean.table error:\n")
-          cat("Two valid independent variables (iv's) must be specified.\n\n")
-          return(FALSE)
+          stop("apa.2way.table error:\nTwo valid independent variables (iv's) must be specified.", call. = FALSE)
      }
 
      iv1.name <- deparse(iv1.sub)
@@ -368,7 +360,7 @@ apa.2way.table.work <- function(iv1,iv2,dv,iv1.name,iv2.name,dv.name,show.margin
 
      #add label column for IV1
      iv1.levels <- c(" ",iv1.name,levels(iv1))
-     if ((show.marginal.means==T) & (show.conf.interval==F)) {
+     if ((show.marginal.means==TRUE) & (show.conf.interval==FALSE)) {
           iv1.levels <- c(iv1.levels,"Marginal")
      }
      columns.out <- cbind(iv1.levels,columns.out)

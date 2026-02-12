@@ -13,12 +13,10 @@
 #'                          dv = attractiveness,
 #'                          data = goggles, table.number = 1)
 #'
-#' apa.save(filename = "my.tables.doc", table1, table2)
+#' apa.save(filename = file.path(tempdir(), "my.tables.doc"), table1, table2)
 #'
 #' # delete demo file
-#' if (file.exists("my.tables.doc")) {
-#'      file.remove("my.tables.doc")
-#' }
+#' unlink(file.path(tempdir(), "my.tables.doc"))
 #' @export
 apa.save <- function(filename, ..., paper = "us") {
      list_of_tables <- list(...)

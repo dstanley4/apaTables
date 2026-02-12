@@ -52,7 +52,7 @@ blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data=album)
 table5 <- apa.reg.table(blk1, table.number = 5)
 
 # Save Table 1 in a .doc document
-apa.save(filename = "regression_tables.doc",
+apa.save(filename = file.path(tempdir(), "regression_tables.doc"),
          table1,
          table2,
          table3,
@@ -68,9 +68,7 @@ apa.knit.table.for.pdf(table4)
 apa.knit.table.for.pdf(table5)
 
 # delete demo file
-if (file.exists("regression_tables.doc")) {
-     file.remove("regression_tables.doc")
-}
+unlink(file.path(tempdir(), "regression_tables.doc"))
 }
 \references{
 sr2 and delta R2 confidence intervals calculated via:

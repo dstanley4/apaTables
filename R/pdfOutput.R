@@ -3,7 +3,7 @@
 #' @param table_title  Replace default table title with this text
 #' @param table_note  Replace default table note with this text
 #' @param line_spacing  Line spacing multiplier for table
-#' @return Save status
+#' @return A kableExtra LaTeX table object for rendering in PDF documents.
 #' @export
 apa.knit.table.for.pdf <- function(table_object, table_note = NULL, table_title = NULL, line_spacing = 1){
 

@@ -41,7 +41,7 @@ get.ci.partial.eta.squared <- function(F.value, df1, df2, conf.level=.90) {
                UL_partial_eta2 <- 1
           }
      } else {
-               cat("\nMBESS package needs to be installed to calculate eta-squared confidence intervals.\n")
+               message("MBESS package needs to be installed to calculate eta-squared confidence intervals.")
      }
 
      output <- list()
