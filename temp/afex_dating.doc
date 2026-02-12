@@ -1,0 +1,195 @@
+{\rtf1\ansi\deff0 {\fonttbl {\f0 Times New Roman;}}
+\paperw15840 \paperh12240 \margl1440 \margr1440 \margt1440 \margb1440 \landscape 
+{\pard Table 0 \par}
+{\pard  \par}
+{\pard\i ANOVA Results
+\par}
+{\pard  \par}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1368 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx2664 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3960 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4996 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6292 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7848 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx8712 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{Predictor}\cell
+\pard\sa0\sb0\intbl\qc{{\i df\sub Num \nosupersub}}\cell
+\pard\sa0\sb0\intbl\qc{{\i df\sub Den \nosupersub}}\cell
+\pard\sa0\sb0\intbl\qc{{\i Epsilon}}\cell
+\pard\sa0\sb0\intbl\qc{{\i MSE}}\cell
+\pard\sa0\sb0\intbl\qc{{\i F}}\cell
+\pard\sa0\sb0\intbl\qc{{\i p}}\cell
+\pard\sa0\sb0\intbl\qc{{\u0951\ \super 2\nosupersub \sub g \nosupersub}}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1368 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx2664 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3960 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4996 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6292 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7848 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx8712 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{gender}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{1.00}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{18.00}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{42.23}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{0.00}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{.946}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.00}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1368 
+\clvertalc\cellx2664 
+\clvertalc\cellx3960 
+\clvertalc\cellx4996 
+\clvertalc\cellx6292 
+\clvertalc\cellx7848 
+\clvertalc\cellx8712 
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{looks}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{1.92}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{34.62}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.96}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{25.50}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{423.73}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{<.001}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.81}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1368 
+\clvertalc\cellx2664 
+\clvertalc\cellx3960 
+\clvertalc\cellx4996 
+\clvertalc\cellx6292 
+\clvertalc\cellx7848 
+\clvertalc\cellx8712 
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{gender x looks}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{1.92}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{34.62}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.96}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{25.50}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{80.43}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{<.001}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.45}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1368 
+\clvertalc\cellx2664 
+\clvertalc\cellx3960 
+\clvertalc\cellx4996 
+\clvertalc\cellx6292 
+\clvertalc\cellx7848 
+\clvertalc\cellx8712 
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{personality}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{1.87}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{33.62}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.93}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{37.89}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{328.25}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{<.001}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.83}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1368 
+\clvertalc\cellx2664 
+\clvertalc\cellx3960 
+\clvertalc\cellx4996 
+\clvertalc\cellx6292 
+\clvertalc\cellx7848 
+\clvertalc\cellx8712 
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{gender x personality}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{1.87}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{33.62}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.93}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{37.89}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{62.45}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{<.001}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.47}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1368 
+\clvertalc\cellx2664 
+\clvertalc\cellx3960 
+\clvertalc\cellx4996 
+\clvertalc\cellx6292 
+\clvertalc\cellx7848 
+\clvertalc\cellx8712 
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{looks x personality}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{3.20}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{57.55}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.80}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{34.62}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{36.63}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{<.001}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.45}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx1368 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx2664 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx3960 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx4996 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx6292 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx7848 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx8712 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{gender x looks x personality}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{3.20}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{57.55}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.80}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{34.62}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{24.12}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{<.001}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.35}\cell
+\row
+}
+{\pard \par}{\pard{\i Note.} {\i df\sub Num\nosupersub} = degrees of freedom numerator. {\i df\sub Den\nosupersub} = degrees of freedom denominator. Epsilon = Greenhouse-Geisser multiplier for degrees of freedom, 
+{\i p}-values and degrees of freedom in the table incorporate this correction. {\i MSE} = mean square error. {\u0951\ \super 2\nosupersub \sub g\nosupersub} = generalized eta-squared.
+\par}
+}

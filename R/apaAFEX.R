@@ -171,7 +171,9 @@ apa.afex.table <- function(afex.output, correction = "GG", table.title = "", fil
                eps_col <- "HF eps"
           }
 
-          # Get epsilon for within effects; correct df
+          # Get epsilon for within effects
+          # Note: anova(afex_obj, correction=...) already returns corrected df and p-values,
+          # so we do NOT multiply df by epsilon here — just extract epsilon for display.
           epsilon_values <- rep(NA, nrow(df_internal))
           for (i in seq_along(effect_names)) {
                if (is_within_effect[i]) {
@@ -180,8 +182,6 @@ apa.afex.table <- function(afex.output, correction = "GG", table.title = "", fil
                     } else {
                          epsilon_values[i] <- 1.0
                     }
-                    df_internal$df_num[i] <- df_internal$df_num[i] * epsilon_values[i]
-                    df_internal$df_den[i] <- df_internal$df_den[i] * epsilon_values[i]
                }
           }
 

@@ -1,0 +1,115 @@
+{\rtf1\ansi\deff0 {\fonttbl {\f0 Times New Roman;}}
+\paperw15840 \paperh12240 \margl1440 \margr1440 \margt1440 \margb1440 \landscape 
+{\pard Table 0 \par}
+{\pard  \par}
+{\pard\i ANOVA Results
+\par}
+{\pard  \par}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1368 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx2664 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3960 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4996 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6292 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7848 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx8712 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{Predictor}\cell
+\pard\sa0\sb0\intbl\qc{{\i df\sub Num \nosupersub}}\cell
+\pard\sa0\sb0\intbl\qc{{\i df\sub Den \nosupersub}}\cell
+\pard\sa0\sb0\intbl\qc{{\i Epsilon}}\cell
+\pard\sa0\sb0\intbl\qc{{\i MSE}}\cell
+\pard\sa0\sb0\intbl\qc{{\i F}}\cell
+\pard\sa0\sb0\intbl\qc{{\i p}}\cell
+\pard\sa0\sb0\intbl\qc{{\u0951\ \super 2\nosupersub \sub g \nosupersub}}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx1368 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx2664 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3960 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx4996 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx6292 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx7848 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx8712 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{drink}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{1.15}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{21.93}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.58}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{355.03}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{5.11}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{.030}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.12}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx1368 
+\clvertalc\cellx2664 
+\clvertalc\cellx3960 
+\clvertalc\cellx4996 
+\clvertalc\cellx6292 
+\clvertalc\cellx7848 
+\clvertalc\cellx8712 
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{imagery}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{1.49}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{28.40}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.75}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{118.05}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{122.56}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{<.001}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.58}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx1368 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx2664 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx3960 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx4996 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx6292 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx7848 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx8712 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx9576 
+\pard\sa0\sb0\intbl\qr{drink x imagery}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx389{3.19}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx518{60.68}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx207{0.80}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx778{47.90}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx933{17.15}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx86{<.001}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx173{.14}\cell
+\row
+}
+{\pard \par}{\pard{\i Note.} {\i df\sub Num\nosupersub} = degrees of freedom numerator. {\i df\sub Den\nosupersub} = degrees of freedom denominator. Epsilon = Greenhouse-Geisser multiplier for degrees of freedom, 
+{\i p}-values and degrees of freedom in the table incorporate this correction. {\i MSE} = mean square error. {\u0951\ \super 2\nosupersub \sub g\nosupersub} = generalized eta-squared.
+\par}
+}
