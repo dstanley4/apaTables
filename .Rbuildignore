@@ -5,3 +5,4 @@
 ^pkgdown$
 ^\.github$
 ^vignettes/articles$
+^\.claude$

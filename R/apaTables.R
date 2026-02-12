@@ -1,4 +1,6 @@
-#' A common task faced by researchers is the creation of APA style (i.e., \emph{American Psychological Association} style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) and latex code containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user. Examples are provided in this documentation and at \url{http://www.StatsCanBeFun.com}.
+utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI"))
+
+#' @description A common task faced by researchers is the creation of APA style (i.e., \emph{American Psychological Association} style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) and latex code containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user. Examples are provided in this documentation and at \url{http://www.StatsCanBeFun.com}.
 #'
 #'  Bugs and feature requests can be reported at: \url{https://github.com/dstanley4/apaTables/issues}
 #'
@@ -13,18 +15,6 @@
 #'   \item ezANOVA tables from ez package - An ANOVA F-table from ezANOVA output can be created via \code{\link{apa.ezANOVA.table}}.
 #'   \item Standardized mean difference (i.e., \emph{d}-value) tables (with confidence intervals and descriptive statistics) illustrating all possible paired comparisons using a single independent variable are created from data frames using \code{\link{apa.d.table}}.
 #'  }
-#'\tabular{ll}{
-#'Package: \tab apaTables\cr
-#'Type: \tab Package\cr
-#'Version: \tab 3.0.0\cr
-#'Date: \tab 2023-06-29\cr
-#'License: \tab MIT\cr
-#'}
-#'
-#'@name apaTables
-#'@aliases apaTables
-#'@docType package
-#'@title Create American Psychological Association (APA) Style Tables
 #'@author
 #'\tabular{ll}{
 #'Author: \tab David J. Stanley \email{dstanley@@uoguelph.ca}\cr
@@ -37,8 +27,7 @@
 #'@importFrom "broom" "glance" "tidy"
 #'@importFrom "stats" "qnorm" "rnorm" "lm"
 #'@importFrom "stringr" "str_to_sentence" "str_to_title"
-utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI"))
-NULL
+"_PACKAGE"
 
 
 strip.leading.zero <- function(string.in) {
