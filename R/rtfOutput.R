@@ -20,6 +20,13 @@
 #' @export
 apa.save <- function(filename, ..., paper = "us") {
      list_of_tables <- list(...)
+
+     for (i in seq_along(list_of_tables)) {
+          if (!inherits(list_of_tables[[i]], "apa_table")) {
+               stop(sprintf("Argument %d is not an apa_table object. Use a function like apa.afex.table() or apa.reg.table() to create a table object first, then pass it to apa.save().", i + 1))
+          }
+     }
+
      write.rtf.document(filename, list_of_tables, paper)
 }
 
