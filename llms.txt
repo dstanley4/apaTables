@@ -23,7 +23,8 @@ Current stable version is on the CRAN, see apaTables
   with output from
   [`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html) for
   ANOVA tables. The afex package is the recommended approach for
-  repeated-measures and mixed designs.
+  repeated-measures and mixed designs. Initial support only - still in
+  testing.
 - **ez package deprecated**: The ez package has been archived on CRAN.
   [`apa.ezANOVA.table()`](http://dstanley4.github.io/apaTables/reference/apa.ezANOVA.table.md)
   still works for users who have ez installed but is now deprecated.
