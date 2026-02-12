@@ -25,6 +25,8 @@ apa.knit.table.for.pdf <- function(table_object, table_note = NULL, table_title 
           table_out <- apa.knit.regression.for.pdf(table_object, table_note, table_title, line_spacing)
      } else if (table_type == "ezanova") {
           table_out <- apa.knit.ezanova.for.pdf(table_object, table_note, table_title, line_spacing)
+     } else if (table_type == "afex") {
+          table_out <- apa.knit.afex.for.pdf(table_object, table_note, table_title, line_spacing)
      } else if (table_type == "dvalue") {
           table_out <- apa.knit.dvalue.for.pdf(table_object, table_note, table_title, line_spacing)
      }
@@ -489,6 +491,79 @@ get_latex_ezanova_labels <- function(df) {
      names_out <- c()
      for (i in 1:length(n)) {
           names_out[i] <-ezanova_latex_column_names(n[i])
+     }
+
+     return(names_out)
+}
+
+
+apa.knit.afex.for.pdf <- function(table_object, table_note, table_title, line_spacing){
+
+
+     table_df <- table_object$latex.body
+     rownames(table_df) <- NULL
+
+     if (is.null(table_note)) {
+          table_note          <- table_object$latex.table.note
+     }
+
+     if (is.null(table_title)) {
+          table_title         <- table_object$latex.table.title
+     }
+
+     num_columns = dim(table_df)[2]
+
+     table_column_labels <- get_latex_afex_labels(table_df)
+     column_alignment = rep("c", num_columns)
+     column_alignment[1] <- "l"
+
+     table_title <- gsub("_", " ", table_title)
+     table_title <- stringr::str_to_title(table_title)
+
+     table_out <- kableExtra::kbl(table_df, booktabs = TRUE, escape = FALSE,
+                                  col.names = table_column_labels,
+                                  format = "latex",
+                                  align = column_alignment,
+                                  caption = table_title, linesep = "")
+
+     table_out <- kableExtra::kable_styling(table_out, position = "left", font_size = 10)
+     table_out <- kableExtra::footnote(table_out, escape = FALSE, general = table_note, general_title = "", threeparttable = TRUE)
+
+     if (table_object$landscape == TRUE) {
+          table_out <- kableExtra::landscape(table_out)
+     }
+
+     #adjust line spacing
+     table_spacing <- "\\renewcommand{\\arraystretch}{XX}"
+     table_spacing <- gsub(pattern = "XX", replacement = as.character(line_spacing), table_spacing)
+     end_spacing <- "\n\\renewcommand{\\arraystretch}{1}\n "
+     table_out[1] <- paste0(table_spacing, table_out[1], end_spacing)
+
+     return(table_out)
+}
+
+
+afex_latex_column_names <- function(column_name) {
+     switch(column_name,
+            Predictor = "Predictor",
+            df_num = "$df_{Num}$",
+            df_den = "$df_{Den}$",
+            MSE = "$MSE$",
+            Epsilon = "Epsilon",
+            Fvalue ="$F$",
+            p ="$p$",
+            ges ="$\\eta_{g}^2$")
+}
+
+
+get_latex_afex_labels <- function(df) {
+     n <- names(df)
+     id <- n == "F"
+     n[id] <- "Fvalue"
+
+     names_out <- c()
+     for (i in 1:length(n)) {
+          names_out[i] <- afex_latex_column_names(n[i])
      }
 
      return(names_out)

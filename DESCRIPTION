@@ -28,6 +28,7 @@ Suggests:
     papaja,
     MBESS,
     ez,
+    afex,
     tidyr
 Encoding: UTF-8
 RoxygenNote: 7.3.3

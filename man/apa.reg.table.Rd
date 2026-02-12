@@ -31,6 +31,7 @@ blk1 <- lm(sales ~ adverts + airplay, data=album)
 apa.reg.table(blk1)
 table1 <- apa.reg.table(blk1,table.number = 1)
 
+\donttest{
 # Two block example, more than two blocks can be used
 blk1 <- lm(sales ~ adverts, data=album)
 blk2 <- lm(sales ~ adverts + airplay + attract, data=album)
@@ -69,6 +70,7 @@ apa.knit.table.for.pdf(table5)
 
 # delete demo file
 unlink(file.path(tempdir(), "regression_tables.doc"))
+}
 }
 \references{
 sr2 and delta R2 confidence intervals calculated via:
