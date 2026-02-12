@@ -37,7 +37,6 @@
 #'@importFrom "broom" "glance" "tidy"
 #'@importFrom "stats" "qnorm" "rnorm" "lm"
 #'@importFrom "stringr" "str_to_sentence" "str_to_title"
-#'@importFrom "papaja" "apa_table"
 utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI"))
 NULL
 

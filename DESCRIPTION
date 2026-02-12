@@ -22,10 +22,10 @@ Imports:
     broom,
     dplyr,
     kableExtra,
-    stringr,
-    papaja
-Suggests: 
+    stringr
+Suggests:
     testthat,
+    papaja,
     MBESS,
     ez,
     tidyr,

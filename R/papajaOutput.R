@@ -5,8 +5,9 @@
 #' @export
 apa.knit.table.for.papaja <- function(table_object, latex_font_size = "footnotesize"){
 
-     #apa.knit.table.for.papaja <- function(table_object, table_note = NULL, table_title = NULL, line_spacing = 1)
-
+     if (!requireNamespace("papaja", quietly = TRUE)) {
+          stop("Package 'papaja' is required for this function. Install it with: remotes::install_github('crsh/papaja')", call. = FALSE)
+     }
 
      table_type <- table_object$table.type
 
