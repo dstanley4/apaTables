@@ -1,0 +1,156 @@
+# Creates an ANOVA table in APA style based on output of aov_ez command from afex package
+
+Creates an ANOVA table in APA style based on output of aov_ez command
+from afex package
+
+## Usage
+
+``` r
+apa.afex.table(
+  afex.output,
+  correction = "GG",
+  table.title = "",
+  filename,
+  table.number = 0
+)
+```
+
+## Arguments
+
+- afex.output:
+
+  Output object from afex::aov_ez() command (class afex_aov)
+
+- correction:
+
+  Type of sphericity correction: "none", "GG", or "HF" corresponding to
+  none, Greenhouse-Geisser and Huynh-Feldt, respectively.
+
+- table.title:
+
+  String containing text for table title
+
+- filename:
+
+  (optional) Output filename document filename (must end in .rtf or .doc
+  only)
+
+- table.number:
+
+  Integer to use in table number output line
+
+## Value
+
+APA table object
+
+## Examples
+
+``` r
+if  (requireNamespace("afex", quietly = TRUE)){
+if  (requireNamespace("apaTables", quietly = TRUE)){
+if  (requireNamespace("tidyr", quietly = TRUE)){
+
+
+#
+# ** Example 1: Between Participant Predictors
+#
+
+goggles <- apaTables::goggles
+
+goggles_results <- afex::aov_ez("participant", "attractiveness", goggles,
+                                 between = c("gender", "alcohol"))
+
+
+# Make APA table - save after all 3 examples
+goggles_table <- apa.afex.table(goggles_results)
+
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apa.knit.table.for.pdf(goggles_table)
+
+
+# \donttest{
+#
+# ** Example 2: Within Participant Predictors
+#
+
+drink_attitude_wide <- apaTables::drink_attitude_wide
+
+# Convert data from wide format to long format where one row represents one OBSERVATION.
+# Wide format column names MUST represent levels of each variable separated by an underscore.
+# See vignette for further details.
+
+drink_attitude_long <- tidyr::pivot_longer(drink_attitude_wide,
+                              cols = beer_positive:water_neutral,
+                             names_to = c("drink", "imagery"),
+                             names_sep = "_",
+                              values_to = "attitude")
+
+
+drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
+
+
+drink_attitude_results <- afex::aov_ez("participant", "attitude",
+                             drink_attitude_long,
+                             within = c("drink", "imagery"))
+
+
+# Make APA table - save after all 3 examples
+drink_table <- apa.afex.table(drink_attitude_results)
+
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apa.knit.table.for.pdf(drink_table)
+
+
+#
+# ** Example 3: Between and Within Participant Predictors
+#
+
+dating_wide <- apaTables::dating_wide
+
+# Convert data from wide format to long format where one row represents one OBSERVATION.
+# Wide format column names MUST represent levels of each variable separated by an underscore.
+# See vignette for further details.
+
+
+dating_long <- tidyr::pivot_longer(dating_wide,
+                              cols = attractive_high:ugly_none,
+                             names_to = c("looks", "personality"),
+                             names_sep = "_",
+                              values_to = "date_rating")
+#'
+dating_long$looks <- as.factor(dating_long$looks)
+dating_long$personality <- as.factor(dating_long$personality)
+
+
+dating_results <- afex::aov_ez("participant", "date_rating", dating_long,
+                                between = "gender",
+                                within = c("looks", "personality"))
+
+
+# Make APA table - save after all 3 examples
+dating_table <- apa.afex.table(dating_results)
+
+# Create a table for your PDF
+# Include the lines below in your rmarkdown or Quarto document
+apa.knit.table.for.pdf(dating_table)
+
+
+#
+# Saving all three tables
+#
+apa.save(file.path(tempdir(), "tables_afex.doc"),
+                goggles_table,
+                 drink_table,
+                dating_table)
+
+# delete demo file
+unlink(file.path(tempdir(), "tables_afex.doc"))
+# }
+}}}
+#> Contrasts set to contr.sum for the following variables: gender, alcohol
+#> Contrasts set to contr.sum for the following variables: gender
+#> Warning: HF eps > 1 treated as 1
+```
