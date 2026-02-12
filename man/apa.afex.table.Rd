@@ -41,16 +41,17 @@ if  (requireNamespace("tidyr", quietly = TRUE)){
 
 goggles <- apaTables::goggles
 
-goggles_results <- afex::aov_ez("participant", "attractiveness", goggles,
+goggles_results <- afex::aov_ez(id = "participant", dv = "attractiveness",
+                                 data = goggles,
                                  between = c("gender", "alcohol"))
 
 
 # Make APA table - save after all 3 examples
-goggles_table <- apa.afex.table(goggles_results)
+goggles_table <- apa.afex.table(afex.output = goggles_results)
 
 # Create a table for your PDF
 # Include the lines below in your rmarkdown or Quarto document
-apa.knit.table.for.pdf(goggles_table)
+apa.knit.table.for.pdf(table_object = goggles_table)
 
 
 \donttest{
@@ -75,17 +76,17 @@ drink_attitude_long$drink <- as.factor(drink_attitude_long$drink)
 drink_attitude_long$imagery <- as.factor(drink_attitude_long$imagery)
 
 
-drink_attitude_results <- afex::aov_ez("participant", "attitude",
-                             drink_attitude_long,
+drink_attitude_results <- afex::aov_ez(id = "participant", dv = "attitude",
+                             data = drink_attitude_long,
                              within = c("drink", "imagery"))
 
 
 # Make APA table - save after all 3 examples
-drink_table <- apa.afex.table(drink_attitude_results)
+drink_table <- apa.afex.table(afex.output = drink_attitude_results)
 
 # Create a table for your PDF
 # Include the lines below in your rmarkdown or Quarto document
-apa.knit.table.for.pdf(drink_table)
+apa.knit.table.for.pdf(table_object = drink_table)
 
 
 #
@@ -109,23 +110,24 @@ dating_long$looks <- as.factor(dating_long$looks)
 dating_long$personality <- as.factor(dating_long$personality)
 
 
-dating_results <- afex::aov_ez("participant", "date_rating", dating_long,
+dating_results <- afex::aov_ez(id = "participant", dv = "date_rating",
+                                data = dating_long,
                                 between = "gender",
                                 within = c("looks", "personality"))
 
 
 # Make APA table - save after all 3 examples
-dating_table <- apa.afex.table(dating_results)
+dating_table <- apa.afex.table(afex.output = dating_results)
 
 # Create a table for your PDF
 # Include the lines below in your rmarkdown or Quarto document
-apa.knit.table.for.pdf(dating_table)
+apa.knit.table.for.pdf(table_object = dating_table)
 
 
 #
 # Saving all three tables
 #
-apa.save(file.path(tempdir(), "tables_afex.doc"),
+apa.save(filename = file.path(tempdir(), "tables_afex.doc"),
                 goggles_table,
                  drink_table,
                 dating_table)
