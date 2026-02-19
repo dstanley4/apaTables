@@ -34,7 +34,7 @@ strip.leading.zero <- function(string.in) {
      string.out = string.in
      id.r.is.one <- string.in == "1.00"
      id.r.is.mone <- string.in == "-1.00"
-     string.out <- sub(pattern="0.",replacement=".",x=string.in)
+     string.out <- sub(pattern="0.",replacement=".",x=string.in, fixed=TRUE)
      string.out[id.r.is.one] <- "1.00"
      string.out[id.r.is.mone] <- "-1.00"
      return(string.out)
