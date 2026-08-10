@@ -26,5 +26,5 @@ A data frame with 15 rows and 2 variables:
 
 ## References
 
-Field, A., Miles, J., & Field, Z. (2012) Discovering Statistics Using R.
-Sage: Chicago.
+Field, A., Miles, J., & Field, Z. (2012). Discovering statistics using
+R. Sage.

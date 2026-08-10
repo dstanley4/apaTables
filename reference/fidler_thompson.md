@@ -26,6 +26,6 @@ A data frame with 24 rows and 3 variables:
 
 ## References
 
-Fidler, F. & Thompson, B. (2001). Computing correct confidence intervals
-for ANOVA fixed- and random-effects effect sizes. Educational and
-Psychological Measurement, 61, 575-604.
+Fidler, F., & Thompson, B. (2001). Computing correct confidence
+intervals for ANOVA fixed- and random-effects effect sizes. Educational
+and Psychological Measurement, 61(4), 575-604.

@@ -11,7 +11,7 @@ data(drink_attitude_wide)
 ## Format
 
 A data frame with 20 rows and 10 columns. Drink and Imagery are within
-subject variables. Particpant is a factor.
+subject variables. Participant is a factor.
 
 - participant:
 
@@ -59,5 +59,5 @@ subject variables. Particpant is a factor.
 
 ## References
 
-Field, A., Miles, J., & Field, Z. (2012) Discovering Statistics Using R.
-Sage: Chicago.
+Field, A., Miles, J., & Field, Z. (2012). Discovering statistics using
+R. Sage.

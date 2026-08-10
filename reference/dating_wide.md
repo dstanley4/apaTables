@@ -12,7 +12,7 @@ data(dating_wide)
 
 A data frame with 20 rows and 11 columns. Gender is a between subjects
 variable. Looks and Personality are within subject variables. Both
-gender and particpant are factors.
+gender and participant are factors.
 
 - participant:
 
@@ -64,5 +64,5 @@ gender and particpant are factors.
 
 ## References
 
-Field, A., Miles, J., & Field, Z. (2012) Discovering Statistics Using R.
-Sage: Chicago.
+Field, A., Miles, J., & Field, Z. (2012). Discovering statistics using
+R. Sage.

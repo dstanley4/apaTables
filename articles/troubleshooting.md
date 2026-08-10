@@ -1,0 +1,143 @@
+# Troubleshooting
+
+Each heading below is what you would say out loud, not what is
+technically happening. If your symptom is here, the fix is under it.
+
+## “Where did my tables go? They are all at the end.”
+
+That is not a fault, and it is the most common first surprise. An APA
+manuscript collects its tables at the end, after the reference list, and
+apaquarto does that by default because that is the format journals ask
+for.
+
+If you would rather see each table where you wrote it – which is usually
+easier while you are drafting – add one line to the settings block at
+the top of your document:
+
+    format:
+      apaquarto-pdf:
+        floatsintext: true
+
+Both are correct APA output. Nothing else about your document changes.
+
+## “One of my tables is on a sideways page by itself.”
+
+This is expected behaviour for apaTables. A table too wide to stand
+upright is placed on a rotated (landscape) page, and a rotated page
+cannot also carry ordinary paragraphs, so that table gets a page to
+itself. apaTables measures each table as the document renders and only
+rotates the ones that need it.
+
+If you want to overrule that decision, every table function takes a
+`landscape` argument: `landscape = FALSE` forbids a rotated page, and
+`landscape = TRUE` insists on one.
+
+## “My table has no number, no title, and no note.”
+
+**The most likely cause is a missing label.** A table’s code block needs
+a settings line that starts with `tbl-`:
+
+    #| label: tbl-correlations
+
+Without it, Quarto does not treat the block as a table at all. There is
+then nothing to number, nothing to attach a title to, and no note – no
+matter what else you write in the block. The label is also what lets you
+write `@tbl-correlations` in a sentence and have the number filled in.
+
+**The other cause is that the document is not using apaquarto**, or is
+using the standard copy of it rather than the one apaTables ships. The
+automatic title and note are produced by apaTables’ own patched build.
+Run this once in the project folder:
+
+``` r
+
+apa.quarto.setup()
+```
+
+It installs or repairs the extension, and does nothing at all if the
+project is already correct.
+
+## “I set the title myself and nothing happened.”
+
+Three things can supply a title, and they have a fixed order of
+precedence: a `#| tbl-cap:` settings line wins over a `title =`
+argument, which wins over the title apaTables generates. So if a
+`tbl-cap` line is present, a `title =` argument is ignored – by design.
+
+The same order applies to `#| apa-note:` and `note =`.
+
+If you did not mean to override anything, delete the line and the
+argument and let apaTables write both.
+
+## “My tables looked right before and now they do not.”
+
+**Did you run `quarto add wjschne/apaquarto` or `quarto update`?**
+Either one replaces apaTables’ patched copy of the extension with the
+standard one – while printing `[No Change]`, which is why it is easy to
+miss. Put the tested copy back:
+
+``` r
+
+apa.quarto.setup()
+```
+
+**Did you send someone just the `.qmd` file?** The extension lives in an
+`_extensions` folder next to the document. Send the whole folder and
+there is nothing for the recipient to do; send the file on its own and
+they need to run
+[`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
+once before rendering.
+
+## “The numbers in my two-way ANOVA look wrong.”
+
+**This is the one to check first, because nothing about the output looks
+wrong.** A two-way ANOVA needs contrasts that sum to zero, or the sums
+of squares are not the ones you meant to report and no warning is given.
+Set them before the analysis:
+
+``` r
+
+options(contrasts = c("contr.sum", "contr.poly"))
+```
+
+The examples on the
+[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+help page set this line before every model for exactly this reason.
+
+## “My colleague’s table has different columns from mine.”
+
+[`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md)
+shows confidence intervals for its d values only when the MBESS package
+is installed. Install it and the columns appear:
+
+``` r
+
+install.packages("MBESS")
+```
+
+## “My table is missing rows, or its note has vanished.”
+
+Are you rendering with `documentmode: jou`, apaquarto’s two-column
+journal layout? Tables are not supported there. A two-column page cannot
+break a table across pages, so rows, columns and whole notes can go
+missing with nothing reported. apaTables warns during the render, but
+there is no setting that makes it safe – render with `documentmode: man`
+instead, which is the mode a manuscript is submitted in, or save the
+table as a Word file with
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md).
+
+## “R says it cannot find `apa.ezANOVA.table()`.”
+
+It was removed in version 4.0.0, because the `ez` package it depended on
+was archived by CRAN. Use
+[`apa.afex.table()`](https://dstanley4.github.io/apaTables/reference/apa.afex.table.md)
+with output from
+[`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html) instead,
+which covers the same repeated-measures and mixed designs.
+
+## “R says it cannot find `apa.cor.table()` when I render.”
+
+Every code block in a Quarto document runs in a fresh R session that
+knows nothing about your console. Add
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) to a
+block near the top of the document.

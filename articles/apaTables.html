@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>apaTables • apaTables</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="apaTables">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">apaTables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,14 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/apaTables.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/apaquarto-usage.html">Using apaTables with apaquarto</a></li>
+    <li><a class="dropdown-item" href="../articles/migrating-to-4.0.html">Migrating to apaTables 4.0</a></li>
+    <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -64,15 +72,18 @@
 <h2 id="context">Context<a class="anchor" aria-label="anchor" href="#context"></a>
 </h2>
 <p>Reproducible research is research for which the numbers reported in
-the paper can obtained by others using the original data and analysis
+the paper can be obtained by others using the original data and analysis
 scripts. (Note that this differs from replicability - the extent to
 which findings are consistent across samples.) Recent research has
 revealed a problem with the reproducibility of analyses in many fields.
-For example, in psychology Nuijten et al. (2015) found that in 50% of
-articles there was at least once instance of a reported test statistic
-(e.g., <em>t</em>(24)=22.71) being inconsistent with the reported
-<em>p</em>-value. This inconsistency rate suggests there is a major
-problem with reproducibility in the psychological literature.</p>
+For example, in psychology Nuijten et al. (2016) found that about half
+of the psychology articles reporting null-hypothesis significance tests
+contained at least one reported test statistic (e.g.,
+<em>t</em>(24)=22.71) that was inconsistent with its reported
+<em>p</em>-value. One in eight articles contained an inconsistency large
+enough to change the statistical conclusion. This inconsistency rate
+suggests there is a major problem with reproducibility in the
+psychological literature.</p>
 <p>My objective in creating the <em>apaTables</em> package was to
 automate the process through which tables are created from analyses when
 using R. Using <em>apaTables</em> ensures that the tables in your
@@ -82,8 +93,15 @@ typically not useful for psychology researchers because of the need to
 report results in the style required by the <a href="http://www.apa.org" class="external-link">American Psychological Association</a>; that
 is, <a href="http://www.apastyle.org/products/asc-landing-page.aspx" class="external-link">APA
 Style</a>. Consequently, <em>apaTables</em> creates <a href="https://products.office.com/en-ca/word" class="external-link">Microsoft Word</a>
-documents (.doc files) that contain tables that conform to APA
-Style.</p>
+documents (.docx files) that contain tables that conform to APA Style.
+Tables can also be placed in <a href="https://quarto.org" class="external-link">Quarto</a>
+documents – Quarto is a free system for writing documents that combine
+text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension,
+each table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Installing the
+apaquarto extension takes one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+section of the apaquarto guide</a> on this site. Both workflows are
+shown for every table below.</p>
 <p>In many cases it would be necessary to execute additional R commands
 to obtain all of the statistics needed for an APA Style table. For
 example, if conducting a regression using the <strong>lm</strong>
@@ -91,11 +109,10 @@ command the unstandardized regression (i.e., b) weights are reported.
 Additional commands are needed to obtain standardized (i.e., beta)
 weights. <em>apaTables</em> automatically executes these additional
 commands to create a table with the required information in Microsoft
-Word .doc format<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Technically the tables are in .rtf format. But you
-should end all files with .doc; this will ensure they are automatically
-loaded by Microsoft Word&lt;/p&gt;"><sup>1</sup></a>.</p>
+Word .docx format via <code><a href="../reference/apa.save.html">apa.save()</a></code> or in a Quarto document
+via <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code>.</p>
 <p>Additionally, the <a href="http://www.amstat.org" class="external-link">American
-Statistical Association</a> recently released a <a href="https://www.amstat.org/newsroom/pressreleases/P-ValueStatement.pdf" class="external-link">position
+Statistical Association</a> recently released a <a href="https://www.amstat.org/asa/files/pdfs/p-valuestatement.pdf" class="external-link">position
 paper</a> on the use of <em>p</em>-values in research. A component of
 that statement indicated that “<em>Scientific conclusions and business
 or policy decisions should not be based only on whether a p-value passes
@@ -121,21 +138,117 @@ creates an APA Style correlation table, see Table 1, using the
 <em>attitude</em> dataset built into <em>R</em>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
-<span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span>, </span>
-<span>                        table.number<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span>,</span>
+<span>                        table.number <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table1.doc"</span>,</span>
-<span>         <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table1.jpg" alt="Correlation table in MSWord"><div class="figcaption">Correlation table in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table1.docx"</span>,</span>
+<span>         <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table1.png" style="width:87.0%"></p>
+<p><a href="https://quarto.org" class="external-link">Quarto</a> is a free system for writing
+documents that combine text and R code. The <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension (one
+command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>) makes a Quarto document follow APA style. Place this
+table in such a document and it appears as a fully formatted APA table –
+number, title, and note included – in Word, PDF, or HTML. Tables go into
+the document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span>,</span>
+<span>                        table.number <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table1</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the code chunk yourself,
+directly in your Quarto document. <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> displays
+the table body with its title and note included automatically, so
+nothing more than the label is required:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="in">#| label: tbl-correlations</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="in">table1 &lt;- apa.cor.table(attitude)</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(table1)</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>That <code>#| label: tbl-correlations</code> line is not optional:
+without a label starting <code>tbl-</code>, Quarto builds no float for
+the chunk, so there is no number, no title, and no note, however you try
+to supply them.</p>
+<p>One caution for PDF: a correlation table with many variables can be
+wider than the upright (portrait) PDF page. This one is not – Table 1
+measures about 5.4 inches against the 6.5 inches an upright page gives a
+table – but a table with more variables in it would be. APA style places
+such a table on a rotated (landscape) page, and apaTables does that for
+you: it measures the table, and when it will not fit upright it asks
+apaquarto for a rotated page. Nothing has to be added to the chunk and
+nothing has to be added to the document’s YAML header – the display line
+is simply <code>apa.quarto.pdf(table1)</code>, and it works whether your
+tables sit in the text or are collected at the end of the manuscript.
+(Documents that already wrap a chunk in <code>::: {.landscape}</code>
+markers keep rendering exactly as before; the markers are just no longer
+something you have to write.) Word output needs none of this either:
+<code><a href="../reference/apa.save.html">apa.save()</a></code> turns the page to landscape automatically.</p>
+<p><strong>The automatic title and note work identically in PDF, Word,
+and HTML.</strong> A chunk rendered to <code>apaquarto-docx</code> or
+<code>apaquarto-html</code> shows the same generated (or your own) title
+and note a PDF render would – use <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.docx()</a></code> or
+<code><a href="../reference/apa.quarto.pdf.html">apa.quarto.html()</a></code> in place of <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code>
+to match the document’s YAML <code>format:</code> line.
+<code><a href="../reference/apa.save.html">apa.save()</a></code>, shown above, remains the way to write a Word or
+HTML file of its own, outside any Quarto document.</p>
+<p><code>apa.quarto.template(table1)</code> prints one plain chunk – no
+title line, no note line, no wrapper lines, and nothing to add to the
+YAML header. It names the chunk after your table object
+(<code>tbl-table1</code>); shown here with the build lines filled
+in:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="in">#| label: tbl-table1</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="in">table1 &lt;- apa.cor.table(attitude)</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(table1)</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>If a table is still too wide for its page – even a rotated one –
+apaTables prints it smaller during PDF rendering, as small as it has to
+be, so that nothing is cut off. This is automatic; the chunk needs
+nothing extra, and there is no setting to change:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<p>If fitting the table takes the type below 6 points – where an APA
+table stops being comfortable to read – a warning in the rendered draft
+says so and points you to <code><a href="../reference/apa.save.html">apa.save()</a></code> for a full-size Word
+version. The table in the PDF is still complete.</p>
 </div>
 <div class="section level2">
 <h2 id="regression-table-overview">Regression table overview<a class="anchor" aria-label="anchor" href="#regression-table-overview"></a>
@@ -144,9 +257,8 @@ creates an APA Style correlation table, see Table 1, using the
 <strong>apa.reg.table()</strong> function. The constructed table
 includes the unstandardized regression coefficient (<em>b</em> with CI),
 standardized regression coefficient (<em>beta</em> with CI),
-semi-partial correlation squared
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><msup><mi>r</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">sr^2</annotation></semantics></math>
-with CI), the correlation
+semi-partial correlation squared (labelled <em>Unique R</em><sup>2</sup>
+in the table, with CI), the correlation
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>),
 and the overall fit of the model (indexed by
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
@@ -159,7 +271,46 @@ used to illustrate the <strong>apa.reg.table()</strong> function.</p>
 <p>The <strong>apa.reg.table()</strong> function creates a regression
 table with confidence intervals based on <strong>lm()</strong> output;
 see Table 2.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">basic.reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">adverts</span> <span class="op">+</span> <span class="va">airplay</span>,</span>
+<span>                data <span class="op">=</span> <span class="va">album</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">basic.reg</span>,</span>
+<span>                        table.number <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table2.docx"</span>,</span>
+<span>         <span class="va">table2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table2.png" style="width:100.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">basic.reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">adverts</span> <span class="op">+</span> <span class="va">airplay</span>,</span>
@@ -168,15 +319,24 @@ see Table 2.</p>
 <span><span class="va">table2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">basic.reg</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table2.doc"</span>,</span>
-<span>         <span class="va">table2</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table2.jpg" alt="Basic regression table in MSWord"><div class="figcaption">Basic regression table in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table2</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table2</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="in">#| label: tbl-regression2</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="in">basic.reg &lt;- lm(sales ~ adverts + airplay, data = album)</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="in">table2 &lt;- apa.reg.table(basic.reg)</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="in">apa.quarto.pdf(table2)</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="blocks-regression-table">Blocks regression table<a class="anchor" aria-label="anchor" href="#blocks-regression-table"></a>
@@ -213,8 +373,47 @@ As well, if the predictors in any of the blocks are a product-term, the
 zero-order correlation will be omitted from the output to prevent
 interpretation errors common in psychology.</p>
 <p>The <strong>apa.reg.table()</strong> function allows for multiple
-(i.e., more 2 or more) blocks as per below; see Table 3.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+(i.e., 2 or more) blocks as per below; see Table 3.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">block1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">adverts</span> <span class="op">+</span> <span class="va">airplay</span>, data <span class="op">=</span> <span class="va">album</span><span class="op">)</span></span>
+<span><span class="va">block2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">adverts</span> <span class="op">+</span> <span class="va">airplay</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">adverts</span><span class="op">*</span><span class="va">airplay</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">album</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">block1</span>, <span class="va">block2</span>,</span>
+<span>                        table.number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table3.docx"</span>,</span>
+<span>         <span class="va">table3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table3.png" style="width:100.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">block1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">adverts</span> <span class="op">+</span> <span class="va">airplay</span>, data <span class="op">=</span> <span class="va">album</span><span class="op">)</span></span>
@@ -223,15 +422,61 @@ interpretation errors common in psychology.</p>
 <span><span class="va">table3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">block1</span>, <span class="va">block2</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table3.doc"</span>,</span>
-<span>         <span class="va">table3</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table3.jpg" alt="Blocks regression table in MSWord"><div class="figcaption">Blocks regression table in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table3</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table3</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table3</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="in">#| label: tbl-regression3</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="in">block1 &lt;- lm(sales ~ adverts + airplay, data = album)</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="in">block2 &lt;- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="in">table3 &lt;- apa.reg.table(block1, block2)</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table3)</span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>One caution for PDF: a regression table with several blocks is wider
+than the upright (portrait) PDF page. APA style places such a table on a
+rotated (landscape) page, and apaTables does that for you: it measures
+the table and asks apaquarto for a rotated page when one is needed.
+Nothing has to be added to the chunk or to the document’s YAML header –
+the display line is simply <code>apa.quarto.pdf(table3)</code>. This
+two-block table (Table 3) measures about 7.1 inches: more than the 6.5
+inches an upright page gives a table, but well within the 9 inches of a
+rotated one. So it lands on a rotated page at full size with every
+column present. A table wider still – wider than even a rotated page –
+is printed smaller instead, as small as it has to be so that every
+column is kept. If that takes the type below 6 points the rendered draft
+carries a warning saying so, and <code><a href="../reference/apa.save.html">apa.save()</a></code> Word output
+keeps every column at full size (its page turns to landscape
+instead).</p>
+<p>This table is wide enough to be rotated, and
+<code>apa.quarto.template(table3)</code> still prints one plain chunk
+(named <code>tbl-table3</code> after the object) – the rotation is
+worked out when the document is rendered, not written into the chunk.
+Shown with the build lines filled in:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="in">#| label: tbl-table3</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="in">block1 &lt;- lm(sales ~ adverts + airplay, data = album)</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="in">block2 &lt;- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="in">table3 &lt;- apa.reg.table(block1, block2)</span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table3)</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>Alongside the chunk it prints the reason, in the words it actually
+uses:</p>
+<pre><code>This table is about 7.1 inches wide -- too wide for an upright (portrait)
+PDF page. It will be placed on a rotated (landscape) page automatically,
+at full size. There is nothing to add to the chunk or to your document's
+YAML header.</code></pre>
 </div>
 <div class="section level2">
 <h2 id="way-anova-and-d-value-tables">1-way ANOVA and d-value tables<a class="anchor" aria-label="anchor" href="#way-anova-and-d-value-tables"></a>
@@ -245,97 +490,289 @@ First, however, the ANOVA must be conducted - we do so using the
 ANOVA in R using the <strong>lm()</strong> command you must ensure your
 independent variables are R factors and that contrasts are set
 correctly. Note: repeated measures designs are supported via the
-<strong>apa.ezANOVA.table()</strong> command.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<strong>apa.afex.table()</strong> command.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contr.sum"</span>, <span class="st">"contr.poly"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">lm_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">libido</span> <span class="op">~</span> <span class="va">dose</span>,</span>
 <span>                data <span class="op">=</span> <span class="va">viagra</span><span class="op">)</span></span></code></pre></div>
 <p>The <strong>apa.aov.table()</strong> function creates a 1-way ANOVA
 table based on lm_output; see Table 4.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span><span class="va">lm_output</span>,</span>
+<span>                        table.number <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table4.docx"</span>,</span>
+<span>         <span class="va">table4</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table4.png" style="width:76.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contr.sum"</span>, <span class="st">"contr.poly"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">lm_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">libido</span> <span class="op">~</span> <span class="va">dose</span>,</span>
+<span>                data <span class="op">=</span> <span class="va">viagra</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span><span class="va">lm_output</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table4.doc"</span>,</span>
-<span>         <span class="va">table4</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table4.jpg" alt="1-way ANOVA table in MSWord"><div class="figcaption">1-way ANOVA table in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table4</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table4</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table4</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="in">#| label: tbl-anova4</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="in">options(contrasts = c("contr.sum", "contr.poly"))</span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="in">lm_output &lt;- lm(libido ~ dose, data = viagra)</span></span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="in">table4 &lt;- apa.aov.table(lm_output)</span></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table4)</span></span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>The <strong>apa.1way.table()</strong> function creates a table with
 the mean and sd for each cell; see Table 5.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.1way.table.html">apa.1way.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">dose</span>,</span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.1way.table.html">apa.1way.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">dose</span>,</span>
 <span>                         dv <span class="op">=</span> <span class="va">libido</span>,</span>
-<span>                         data <span class="op">=</span> <span class="va">viagra</span>, </span>
+<span>                         data <span class="op">=</span> <span class="va">viagra</span>,</span>
+<span>                         table.number <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table5.docx"</span>,</span>
+<span>         <span class="va">table5</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table5.png" style="width:39.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.1way.table.html">apa.1way.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">dose</span>,</span>
+<span>                         dv <span class="op">=</span> <span class="va">libido</span>,</span>
+<span>                         data <span class="op">=</span> <span class="va">viagra</span>,</span>
 <span>                         table.number <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table5.doc"</span>,</span>
-<span>         <span class="va">table5</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table5.jpg" alt="1-way M/SD table in MSWord"><div class="figcaption">1-way M/SD table in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table5</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table5</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table5</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="in">#| label: tbl-means5</span></span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a><span class="in">table5 &lt;- apa.1way.table(iv = dose, dv = libido, data = viagra)</span></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(table5)</span></span>
+<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>The <strong>apa.d.table()</strong> function show a d-value (with
 confidence interval) for each paired comparison; see Table 6.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.d.table.html">apa.d.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">dose</span>,</span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.d.table.html">apa.d.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">dose</span>,</span>
+<span>                      dv <span class="op">=</span> <span class="va">libido</span>,</span>
+<span>                      data <span class="op">=</span> <span class="va">viagra</span>,</span>
+<span>                      table.number <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table6.docx"</span>,</span>
+<span>         <span class="va">table6</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table6.png" style="width:99.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.d.table.html">apa.d.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">dose</span>,</span>
 <span>                      dv <span class="op">=</span> <span class="va">libido</span>,</span>
 <span>                      data <span class="op">=</span> <span class="va">viagra</span>,</span>
 <span>                      table.number <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table6.doc"</span>,</span>
-<span>         <span class="va">table6</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table6.jpg" alt="1-way Paired Comparison d-values (with CI) in MSWord"><div class="figcaption">1-way Paired Comparison d-values (with CI) in
-MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table6</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table6</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table6</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="in">#| label: tbl-dvalues6</span></span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a><span class="in">table6 &lt;- apa.d.table(iv = dose, dv = libido, data = viagra)</span></span>
+<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(table6)</span></span>
+<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="n-way-anova-tables-2-way-example">N-way ANOVA tables: 2-way Example<a class="anchor" aria-label="anchor" href="#n-way-anova-tables-2-way-example"></a>
 </h2>
 <p>The 2-way example with independent variable predictors is based on
-the <em>goggles</em> dataset from Field et al. (2012). As before, when
-conducting an ANOVA in <em>R</em> using the <strong>lm()</strong>
-command you must ensure your independent variables are <em>R</em>
-factors and that contrasts are set correctly. Note: repeated measures
-designs are supported via the <strong>apa.ezANOVA.table()</strong>
-command.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+the <em>goggles</em> dataset from Field et al. (2012). When conducting
+an ANOVA in <em>R</em> using the <strong>lm()</strong> command you must
+ensure your independent variables are <em>R</em> factors and that
+contrasts are set correctly. Note: repeated measures designs are
+supported via the <strong>apa.afex.table()</strong> command.</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contr.sum"</span>, <span class="st">"contr.poly"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">lm_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">attractiveness</span> <span class="op">~</span> <span class="va">gender</span><span class="op">*</span><span class="va">alcohol</span>,</span>
 <span>                data <span class="op">=</span> <span class="va">goggles</span><span class="op">)</span></span></code></pre></div>
 <p>The <strong>apa.aov.table()</strong> function creates a 2-way ANOVA
 table based on lm_output; see Table 7.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span><span class="va">lm_output</span>,</span>
+<span>                        table.number <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table7.docx"</span>,</span>
+<span>         <span class="va">table7</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table7.png" style="width:76.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb39-9"><a href="#cb39-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contr.sum"</span>, <span class="st">"contr.poly"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">lm_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">attractiveness</span> <span class="op">~</span> <span class="va">gender</span><span class="op">*</span><span class="va">alcohol</span>,</span>
+<span>                data <span class="op">=</span> <span class="va">goggles</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span><span class="va">lm_output</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table7.doc"</span>,</span>
-<span>         <span class="va">table7</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table7.jpg" alt="2-way ANOVA table in MSWord"><div class="figcaption">2-way ANOVA table in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table7</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table7</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table7</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a><span class="in">#| label: tbl-anova7</span></span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb41-6"><a href="#cb41-6" tabindex="-1"></a><span class="in">options(contrasts = c("contr.sum", "contr.poly"))</span></span>
+<span id="cb41-7"><a href="#cb41-7" tabindex="-1"></a><span class="in">lm_output &lt;- lm(attractiveness ~ gender*alcohol, data = goggles)</span></span>
+<span id="cb41-8"><a href="#cb41-8" tabindex="-1"></a><span class="in">table7 &lt;- apa.aov.table(lm_output)</span></span>
+<span id="cb41-9"><a href="#cb41-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table7)</span></span>
+<span id="cb41-10"><a href="#cb41-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>The <strong>apa.2way.table()</strong> function creates a table with
 the mean and sd for each cell; see Table 8. Marginal means can also be
 requested with the <em>show.marginal.means</em> = TRUE. For higher-order
@@ -343,27 +780,79 @@ designs (i.e., 3-way or higher) use the <strong>filter()</strong>
 command in the <em>tidyverse</em> package to select the subset of rows
 and then use <strong>apa.2way.table()</strong> to display cell
 statistics.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.2way.table.html">apa.2way.table</a></span><span class="op">(</span>iv1 <span class="op">=</span> <span class="va">gender</span>,</span>
-<span>                         iv2 <span class="op">=</span> <span class="va">alcohol</span>, </span>
-<span>                         dv <span class="op">=</span> <span class="va">attractiveness</span>, </span>
-<span>                         data <span class="op">=</span> <span class="va">goggles</span>, </span>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.2way.table.html">apa.2way.table</a></span><span class="op">(</span>iv1 <span class="op">=</span> <span class="va">gender</span>,</span>
+<span>                         iv2 <span class="op">=</span> <span class="va">alcohol</span>,</span>
+<span>                         dv <span class="op">=</span> <span class="va">attractiveness</span>,</span>
+<span>                         data <span class="op">=</span> <span class="va">goggles</span>,</span>
+<span>                         show.marginal.means <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                         table.number <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table8.docx"</span>,</span>
+<span>         <span class="va">table8</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table8.png" style="width:83.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb44-3"><a href="#cb44-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb44-4"><a href="#cb44-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb44-5"><a href="#cb44-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb44-6"><a href="#cb44-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb44-7"><a href="#cb44-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb44-8"><a href="#cb44-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb44-9"><a href="#cb44-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.2way.table.html">apa.2way.table</a></span><span class="op">(</span>iv1 <span class="op">=</span> <span class="va">gender</span>,</span>
+<span>                         iv2 <span class="op">=</span> <span class="va">alcohol</span>,</span>
+<span>                         dv <span class="op">=</span> <span class="va">attractiveness</span>,</span>
+<span>                         data <span class="op">=</span> <span class="va">goggles</span>,</span>
 <span>                         show.marginal.means <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         table.number <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table8.doc"</span>,</span>
-<span>         <span class="va">table8</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table8.jpg" alt="2-way M/SD table in MSWord"><div class="figcaption">2-way M/SD table in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table8</span><span class="op">)</span></span></code></pre></div>
-<p>You can use the <em>tidyverse</em> package to conducted paired
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table8</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table8</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a><span class="in">#| label: tbl-means8</span></span>
+<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a><span class="in">table8 &lt;- apa.2way.table(iv1 = gender, iv2 = alcohol,</span></span>
+<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a><span class="in">                         dv = attractiveness, data = goggles,</span></span>
+<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a><span class="in">                         show.marginal.means = TRUE)</span></span>
+<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table8)</span></span>
+<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>You can use the <em>tidyverse</em> package to conduct paired
 comparisons within each gender again using
 <strong>apa.d.table()</strong>; see Tables 9 and 10.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -377,38 +866,111 @@ comparisons within each gender again using
 <span>                      table.number <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table10</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.d.table.html">apa.d.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">alcohol</span>,</span>
-<span>                       dv <span class="op">=</span> <span class="va">attractiveness</span>, </span>
-<span>                       data <span class="op">=</span> <span class="va">goggles.women</span>, </span>
+<span>                       dv <span class="op">=</span> <span class="va">attractiveness</span>,</span>
+<span>                       data <span class="op">=</span> <span class="va">goggles.women</span>,</span>
+<span>                       table.number <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"tables9and10.docx"</span>,</span>
+<span>         <span class="va">table9</span>, <span class="va">table10</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Tables9and10.png" style="width:99.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb49-4"><a href="#cb49-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb49-5"><a href="#cb49-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb49-6"><a href="#cb49-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb49-7"><a href="#cb49-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb49-8"><a href="#cb49-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb49-9"><a href="#cb49-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the tables and
+then ask for their Quarto code:</p>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">goggles.men</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">goggles</span>,<span class="va">gender</span><span class="op">==</span><span class="st">"Male"</span><span class="op">)</span></span>
+<span><span class="va">goggles.women</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">goggles</span>,<span class="va">gender</span><span class="op">==</span><span class="st">"Female"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table9</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.d.table.html">apa.d.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">alcohol</span>,</span>
+<span>                      dv <span class="op">=</span> <span class="va">attractiveness</span>,</span>
+<span>                      data <span class="op">=</span> <span class="va">goggles.men</span>,</span>
+<span>                      table.number <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table10</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.d.table.html">apa.d.table</a></span><span class="op">(</span>iv <span class="op">=</span> <span class="va">alcohol</span>,</span>
+<span>                       dv <span class="op">=</span> <span class="va">attractiveness</span>,</span>
+<span>                       data <span class="op">=</span> <span class="va">goggles.women</span>,</span>
 <span>                       table.number <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"tables9and10.doc"</span>,</span>
-<span>         <span class="va">table9</span>, <span class="va">table10</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table9.jpg" alt="Subgroups for Paired Comparison d-values (with CI) in MSWord"><div class="figcaption">Subgroups for Paired Comparison d-values (with
-CI) in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table9</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table10</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table9</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table10</span><span class="op">)</span></span></code></pre></div>
+<p>This prints ready-made Quarto code chunks. They carry no title or
+note lines and need none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+each table itself, every time you render. Copy each printed chunk into
+your Quarto document, add the lines that create the corresponding table
+object – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a><span class="in">#| label: tbl-dvalues9</span></span>
+<span id="cb51-3"><a href="#cb51-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb51-4"><a href="#cb51-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb51-5"><a href="#cb51-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb51-6"><a href="#cb51-6" tabindex="-1"></a><span class="in">library(dplyr)</span></span>
+<span id="cb51-7"><a href="#cb51-7" tabindex="-1"></a><span class="in">goggles.men &lt;- filter(goggles, gender == "Male")</span></span>
+<span id="cb51-8"><a href="#cb51-8" tabindex="-1"></a><span class="in">table9 &lt;- apa.d.table(iv = alcohol, dv = attractiveness, data = goggles.men)</span></span>
+<span id="cb51-9"><a href="#cb51-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table9)</span></span>
+<span id="cb51-10"><a href="#cb51-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>The chunk for Table 10 carries its own label, its own line creating
+<code>goggles.women</code>, and its own call to
+<strong>apa.d.table()</strong>:</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a><span class="in">#| label: tbl-dvalues10</span></span>
+<span id="cb52-3"><a href="#cb52-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a><span class="in">library(dplyr)</span></span>
+<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a><span class="in">goggles.women &lt;- filter(goggles, gender == "Female")</span></span>
+<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a><span class="in">table10 &lt;- apa.d.table(iv = alcohol, dv = attractiveness, data = goggles.women)</span></span>
+<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table10)</span></span>
+<span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="ezanova-and-apatables-repeated-measures-anova">ezANOVA and apaTables: Repeated measures ANOVA<a class="anchor" aria-label="anchor" href="#ezanova-and-apatables-repeated-measures-anova"></a>
+<h2 id="afex-and-apatables-repeated-measures-anova">afex and apaTables: Repeated measures ANOVA<a class="anchor" aria-label="anchor" href="#afex-and-apatables-repeated-measures-anova"></a>
 </h2>
 <p>apaTables also supports repeated measures ANOVA tables and repeated
 measures by between measures (mixed) ANOVA tables via
-<strong>ezANOVA</strong> output from the <em>ez</em> package.</p>
+<strong>afex</strong> output from the <em>afex</em> package
+(specifically the <code><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">afex::aov_ez()</a></code> command). The <em>ez</em>
+package was previously used for this purpose but has been archived on
+CRAN; <em>afex</em> is now the recommended approach.</p>
 <div class="section level3">
 <h3 id="repeated-measures-2-way-design">Repeated Measures: 2-way design<a class="anchor" aria-label="anchor" href="#repeated-measures-2-way-design"></a>
 </h3>
-<p>Prior to begining we ‘open’ the <em>apaTables</em>,
-<em>tidyverse</em>, and <em>ez</em> packages using the library command
+<p>Prior to beginning we ‘open’ the <em>apaTables</em>,
+<em>tidyverse</em>, and <em>afex</em> packages using the library command
 as per below.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bucky2177/ez" class="external-link">ez</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://afex.singmann.science/" class="external-link">afex</a></span><span class="op">)</span></span></code></pre></div>
 <p>In this example, we used the <em>drink_attitude</em> dataset from
 Field et al. (2012). As before, this dataset is built into
 <em>apaTables</em> so it does not need to be loaded using
@@ -416,34 +978,33 @@ Field et al. (2012). As before, this dataset is built into
 (<em>drink_attitude_wide</em>) can be inspected with the
 <strong>glimpse()</strong> command below (this provides information
 similar to SPSS variable view). We use the “wide” descriptor in the name
-of the dataset to remind us that the data is in in the “wide” format
-where one row contains all the data for one person. There are 20
-participants so there are 20 rows.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+of the dataset to remind us that the data is in the “wide” format where
+one row contains all the data for one person. There are 20 participants
+so there are 20 rows.</p>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">drink_attitude_wide</span><span class="op">)</span></span></code></pre></div>
 <p>The dataset represents an ANOVA with two repeated measures factors.
 It is a 3 <em>drinks</em> (wine, beer, water) X 3 <em>imagery</em>
 (positive, negative, neutral) design. The dataset uses 10 columns to
 represent this design. The first column contains a code for each
 participant (P1, P2, etc.) Note that the <em>participant</em> column is
-a factor as indicated by the &lt; fctr &gt; descriptor. The
-<em>participant</em> column must be a factor which can, as noted
-previously, be created by the <strong>as_factor()</strong> command.</p>
-<p>Each of the remaining 9 columns contain atittude ratings for a single
+a factor as indicated by the <fct> descriptor. The <em>participant</em>
+column must be a factor which can, as noted previously, be created by
+the <strong>as_factor()</strong> command.</fct></p>
+<p>Each of the remaining 9 columns contain attitude ratings for a single
 <em>drink/imagery</em> combination cell. The naming convention for
 column names is critical to the workflow we describe below. Each column
 name represents the level of the <em>drink</em> variable separated using
 an underscore ( _ ) from a level of the <em>imagery</em> variable. For
 example the first column is called <em>beer_positive</em> representing
-the cell with a combination of the the <em>beer</em> level of
-<em>drink</em> and the positive level of <em>imagery</em>. Each value in
-this column represents <em>attitude</em> for a participant in this
-cell.</p>
+the cell with a combination of the <em>beer</em> level of <em>drink</em>
+and the positive level of <em>imagery</em>. Each value in this column
+represents <em>attitude</em> for a participant in this cell.</p>
 <p>In order to conduct a repeated measures ANOVA we need to convert the
 dataset from the wide format (where each row represents a person) to the
 long format (where each row represents a single observation from a
 person). We do this with a series of commands below.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drink_attitude_long</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="va">drink_attitude_wide</span>,</span>
 <span>                              cols <span class="op">=</span> <span class="va">beer_positive</span><span class="op">:</span><span class="va">water_neutral</span>,</span>
 <span>                              names_to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drink"</span>, <span class="st">"imagery"</span><span class="op">)</span>,</span>
@@ -455,7 +1016,7 @@ person). We do this with a series of commands below.</p>
 <span><span class="va">drink_attitude_long</span><span class="op">$</span><span class="va">imagery</span> <span class="op">&lt;-</span> <span class="fu">as_factor</span><span class="op">(</span><span class="va">drink_attitude_long</span><span class="op">$</span><span class="va">imagery</span><span class="op">)</span></span></code></pre></div>
 <p>We can inspect the final long version of the dataset with glimpse
 again:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">drink_attitude_long</span><span class="op">)</span></span></code></pre></div>
 <p>This output reveals the new data structure. There are now only four
 columns where each row represents a single observation for a
@@ -467,82 +1028,146 @@ column indicating level of <em>drink</em>, a single column indicating
 level of <em>imagery</em>, and a column indicating the <em>attitude</em>
 rating.</p>
 <p>You can see the first few rows in the more familiar format below:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">drink_attitude_long</span><span class="op">)</span></span></code></pre></div>
-<p>Prior to conducting the analysis we set the contrasts as per Field et
-al. (2012).</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">alcohol_vs_water</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">beer_vs_wine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">negative_vs_other</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">positive_vs_neutral</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html" class="external-link">contrasts</a></span><span class="op">(</span><span class="va">drink_attitude_long</span><span class="op">$</span><span class="va">drink</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">alcohol_vs_water</span>, <span class="va">beer_vs_wine</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html" class="external-link">contrasts</a></span><span class="op">(</span><span class="va">drink_attitude_long</span><span class="op">$</span><span class="va">imagery</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">negative_vs_other</span>, <span class="va">positive_vs_neutral</span><span class="op">)</span></span></code></pre></div>
-<p>Then we use the <strong>ezANOVA</strong> command from the <em>ez</em>
-package to conduct the repeated measures ANOVA. Be sure to include all
-of the commands below including the options command which ensures that
-the output has sufficent number of digits (i.e., numbers after the
-decimal) for <em>apaTables</em>.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">drink_attitude_results</span> <span class="op">&lt;-</span> <span class="fu">ezANOVA</span><span class="op">(</span>data <span class="op">=</span> <span class="va">drink_attitude_long</span>,</span>
-<span>                                  dv <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span>,</span>
-<span>                                  wid <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">participant</span><span class="op">)</span>,</span>
-<span>                                  within <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">drink</span>, <span class="va">imagery</span><span class="op">)</span>,</span>
-<span>                                  type <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                                  detailed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>We use the <strong>aov_ez()</strong> command from the <em>afex</em>
+package to conduct the repeated measures ANOVA. We supply the
+participant id column (<em>participant</em>), the dependent variable
+(<em>attitude</em>), and the two within-participant factors
+(<em>drink</em> and <em>imagery</em>). Unlike the older <em>ez</em>
+workflow, <em>afex</em> selects appropriate contrasts and applies a
+Greenhouse-Geisser sphericity correction automatically, so the manual
+<code><a href="https://rdrr.io/r/stats/contrasts.html" class="external-link">contrasts()</a></code> and <code>options(digits = ...)</code> steps
+are no longer required.</p>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">drink_attitude_results</span> <span class="op">&lt;-</span> <span class="fu">afex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">aov_ez</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"participant"</span>,</span>
+<span>                                       dv <span class="op">=</span> <span class="st">"attitude"</span>,</span>
+<span>                                       data <span class="op">=</span> <span class="va">drink_attitude_long</span>,</span>
+<span>                                       within <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drink"</span>, <span class="st">"imagery"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Now we make the table based on the output:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table11</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.ezANOVA.table.html">apa.ezANOVA.table</a></span><span class="op">(</span><span class="va">drink_attitude_results</span>,</span>
-<span>                             table.number <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table11.doc"</span>,</span>
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">table11</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span><span class="va">drink_attitude_results</span>,</span>
+<span>                          table.number <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table11.docx"</span>,</span>
 <span>         <span class="va">table11</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table10.jpg" alt="2-way Repeated Measures ANOVA in MSWord"><div class="figcaption">2-way Repeated Measures ANOVA in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table11</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table11.png" style="width:99.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb61-2"><a href="#cb61-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb61-3"><a href="#cb61-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb61-4"><a href="#cb61-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb61-5"><a href="#cb61-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb61-6"><a href="#cb61-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb61-7"><a href="#cb61-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb61-8"><a href="#cb61-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb61-9"><a href="#cb61-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://afex.singmann.science/" class="external-link">afex</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">drink_attitude_long</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="va">drink_attitude_wide</span>,</span>
+<span>                              cols <span class="op">=</span> <span class="va">beer_positive</span><span class="op">:</span><span class="va">water_neutral</span>,</span>
+<span>                              names_to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drink"</span>, <span class="st">"imagery"</span><span class="op">)</span>,</span>
+<span>                              names_sep <span class="op">=</span> <span class="st">"_"</span>,</span>
+<span>                              values_to <span class="op">=</span> <span class="st">"attitude"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">drink_attitude_long</span><span class="op">$</span><span class="va">drink</span> <span class="op">&lt;-</span> <span class="fu">as_factor</span><span class="op">(</span><span class="va">drink_attitude_long</span><span class="op">$</span><span class="va">drink</span><span class="op">)</span></span>
+<span><span class="va">drink_attitude_long</span><span class="op">$</span><span class="va">imagery</span> <span class="op">&lt;-</span> <span class="fu">as_factor</span><span class="op">(</span><span class="va">drink_attitude_long</span><span class="op">$</span><span class="va">imagery</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">drink_attitude_results</span> <span class="op">&lt;-</span> <span class="fu">afex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">aov_ez</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"participant"</span>,</span>
+<span>                                       dv <span class="op">=</span> <span class="st">"attitude"</span>,</span>
+<span>                                       data <span class="op">=</span> <span class="va">drink_attitude_long</span>,</span>
+<span>                                       within <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drink"</span>, <span class="st">"imagery"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table11</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span><span class="va">drink_attitude_results</span>,</span>
+<span>                          table.number <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table11</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table11</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-2"><a href="#cb63-2" tabindex="-1"></a><span class="in">#| label: tbl-anova11</span></span>
+<span id="cb63-3"><a href="#cb63-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb63-4"><a href="#cb63-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb63-5"><a href="#cb63-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb63-6"><a href="#cb63-6" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb63-7"><a href="#cb63-7" tabindex="-1"></a><span class="in">library(afex)</span></span>
+<span id="cb63-8"><a href="#cb63-8" tabindex="-1"></a><span class="in">drink_attitude_long &lt;- tidyr::pivot_longer(drink_attitude_wide,</span></span>
+<span id="cb63-9"><a href="#cb63-9" tabindex="-1"></a><span class="in">                          cols = beer_positive:water_neutral,</span></span>
+<span id="cb63-10"><a href="#cb63-10" tabindex="-1"></a><span class="in">                          names_to = c("drink", "imagery"),</span></span>
+<span id="cb63-11"><a href="#cb63-11" tabindex="-1"></a><span class="in">                          names_sep = "_",</span></span>
+<span id="cb63-12"><a href="#cb63-12" tabindex="-1"></a><span class="in">                          values_to = "attitude")</span></span>
+<span id="cb63-13"><a href="#cb63-13" tabindex="-1"></a><span class="in">drink_attitude_long$drink &lt;- as_factor(drink_attitude_long$drink)</span></span>
+<span id="cb63-14"><a href="#cb63-14" tabindex="-1"></a><span class="in">drink_attitude_long$imagery &lt;- as_factor(drink_attitude_long$imagery)</span></span>
+<span id="cb63-15"><a href="#cb63-15" tabindex="-1"></a><span class="in">drink_attitude_results &lt;- afex::aov_ez(id = "participant",</span></span>
+<span id="cb63-16"><a href="#cb63-16" tabindex="-1"></a><span class="in">                                       dv = "attitude",</span></span>
+<span id="cb63-17"><a href="#cb63-17" tabindex="-1"></a><span class="in">                                       data = drink_attitude_long,</span></span>
+<span id="cb63-18"><a href="#cb63-18" tabindex="-1"></a><span class="in">                                       within = c("drink", "imagery"))</span></span>
+<span id="cb63-19"><a href="#cb63-19" tabindex="-1"></a><span class="in">table11 &lt;- apa.afex.table(drink_attitude_results)</span></span>
+<span id="cb63-20"><a href="#cb63-20" tabindex="-1"></a><span class="in">apa.quarto.pdf(table11)</span></span>
+<span id="cb63-21"><a href="#cb63-21" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="repeated-measures-and-independent-groups-3-way-design">Repeated Measures and Independent Groups: 3-way design<a class="anchor" aria-label="anchor" href="#repeated-measures-and-independent-groups-3-way-design"></a>
 </h3>
-<p>Prior to begining we ‘open’ the <em>apaTables</em>,
-<em>tidyverse</em>, and <em>ez</em> packages using the library command
+<p>Prior to beginning we ‘open’ the <em>apaTables</em>,
+<em>tidyverse</em>, and <em>afex</em> packages using the library command
 as per below.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bucky2177/ez" class="external-link">ez</a></span><span class="op">)</span></span></code></pre></div>
-<p>In this example, we used the drink_attitude dataset from Field et
-al. (2012). As before, this dataset is built into apaTables. The dataset
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://afex.singmann.science/" class="external-link">afex</a></span><span class="op">)</span></span></code></pre></div>
+<p>In this example, we used the dating dataset from Field et al. (2012).
+As before, this dataset is built into apaTables. The dataset
 (<em>dating_wide</em>) can be inspected with the
 <strong>glimpse()</strong> command below (this provides information
 similar to SPSS variable view). We use the “wide” descriptor in the name
-of the dataset to remind us that the data is in in the “wide” format
-where one row contains all the data for one person. There are 20
-participants so there are 20 rows.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+of the dataset to remind us that the data is in the “wide” format where
+one row contains all the data for one person. There are 20 participants
+so there are 20 rows.</p>
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">dating_wide</span><span class="op">)</span></span></code></pre></div>
 <p>The dataset represents an ANOVA with one independent groups factor
 and two repeated measures factors. It is a 2 <em>gender</em> (male,
-female) by 3 <em>looks</em> (attrative, average, ugly) X 3
+female) by 3 <em>looks</em> (attractive, average, ugly) X 3
 <em>personality</em> (high, some, none) design. The dataset uses 11
 columns to represent this design. The first column contains a code for
 each participant (P1, P2, etc.) Note that the <em>participant</em>
-column is a factor as indicated by the “&lt; fctr &gt;” descriptor. The
-second column is used to indicate the gender of each participant. Both
-the <em>participant</em> and <em>gender</em> columns are factors.</p>
-<p>Each of the remaining 9 columns contain atittude ratings for a single
+column is a factor as indicated by the <fct> descriptor. The second
+column is used to indicate the gender of each participant. Both the
+<em>participant</em> and <em>gender</em> columns are factors.</fct></p>
+<p>Each of the remaining 9 columns contain attitude ratings for a single
 <em>looks/personality</em> combination cell. The naming convention for
 column names is critical to the workflow we describe below. Each column
 name represents the level of the <em>looks</em> variable separated using
 an underscore ( _ ) from a level of the <em>personality</em> variable.
 For example the first column is called <em>attractive_high</em>
-representing the cell with a combination of the the attractive level of
+representing the cell with a combination of the attractive level of
 <em>looks</em> and the high level of <em>personality</em>. Each value in
 this column represents <em>date rating</em> for a participant in this
 cell.</p>
@@ -551,7 +1176,7 @@ the dataset from the wide format (where each row represents a person) to
 the long format (where each row represents a single observation from a
 person) – taking into account the independent groups factors
 (<em>gender</em>). We do this with a series of commands below.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">dating_long</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="va">dating_wide</span>,</span>
 <span>                                   cols <span class="op">=</span> <span class="va">attractive_high</span><span class="op">:</span><span class="va">ugly_none</span>,</span>
@@ -564,7 +1189,7 @@ person) – taking into account the independent groups factors
 <span><span class="va">dating_long</span><span class="op">$</span><span class="va">personality</span> <span class="op">&lt;-</span> <span class="fu">as_factor</span><span class="op">(</span><span class="va">dating_long</span><span class="op">$</span><span class="va">personality</span><span class="op">)</span></span></code></pre></div>
 <p>We can inspect the final long version of the dataset with glimpse
 again:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">dating_long</span><span class="op">)</span></span></code></pre></div>
 <p>This output reveals the new data structure. There are now only five
 columns where each row represents a single observation for a
@@ -574,62 +1199,127 @@ this column now - because each participant has nine observations (i.e.,
 one in each of the nine cells). The second column contains the
 <em>gender</em> factor. The third column indicates the level of
 <em>looks</em>, and the fourth column indicates the level of
-<em>personality</em>. The fith column indicates the
+<em>personality</em>. The fifth column indicates the
 <em>date_rating</em>.</p>
 <p>You can see the first few rows in the more familiar format below:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dating_long</span><span class="op">)</span></span></code></pre></div>
-<p>Prior to conducting the analysis we set the contrasts as per Field et
-al. (2012).</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">some_vs_none</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">hi_vs_av</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">attractive_vs_ugly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">attractive_vs_average</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html" class="external-link">contrasts</a></span><span class="op">(</span><span class="va">dating_long</span><span class="op">$</span><span class="va">personality</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">some_vs_none</span>, <span class="va">hi_vs_av</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html" class="external-link">contrasts</a></span><span class="op">(</span><span class="va">dating_long</span><span class="op">$</span><span class="va">looks</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">attractive_vs_ugly</span>, <span class="va">attractive_vs_average</span><span class="op">)</span></span></code></pre></div>
-<p>Then we use the <strong>ezANOVA</strong> command from the <em>ez</em>
-package to conduct the repeated measures ANOVA. Be sure to include all
-of the commands below including the options command which ensures that
-the output has sufficent number of digits (i.e., numbers after the
-decimal) for apaTables.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">dating_results</span> <span class="op">&lt;-</span><span class="fu">ezANOVA</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dating_long</span>, </span>
-<span>                         dv <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">date_rating</span><span class="op">)</span>,</span>
-<span>                         wid <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">participant</span><span class="op">)</span>,</span>
-<span>                         between <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">gender</span><span class="op">)</span>,</span>
-<span>                         within <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">looks</span>, <span class="va">personality</span><span class="op">)</span>,</span>
-<span>                         type <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                         detailed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>We use the <strong>aov_ez()</strong> command from the <em>afex</em>
+package to conduct the mixed ANOVA. We supply the participant id column
+(<em>participant</em>), the dependent variable (<em>date_rating</em>),
+the between-participant factor (<em>gender</em>), and the two
+within-participant factors (<em>looks</em> and <em>personality</em>). As
+above, <em>afex</em> selects appropriate contrasts and applies a
+sphericity correction automatically, so the manual
+<code><a href="https://rdrr.io/r/stats/contrasts.html" class="external-link">contrasts()</a></code> and <code>options(digits = ...)</code> steps
+are no longer required.</p>
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dating_results</span> <span class="op">&lt;-</span> <span class="fu">afex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">aov_ez</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"participant"</span>,</span>
+<span>                               dv <span class="op">=</span> <span class="st">"date_rating"</span>,</span>
+<span>                               data <span class="op">=</span> <span class="va">dating_long</span>,</span>
+<span>                               between <span class="op">=</span> <span class="st">"gender"</span>,</span>
+<span>                               within <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"looks"</span>, <span class="st">"personality"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Now we make the table based on the output:</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.ezANOVA.table.html">apa.ezANOVA.table</a></span><span class="op">(</span><span class="va">dating_results</span>, </span>
-<span>                                  filename <span class="op">=</span> <span class="st">"Table12_APA.doc"</span>, </span>
-<span>                                  table.number <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table12.doc"</span>,</span>
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">table12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span><span class="va">dating_results</span>,</span>
+<span>                          table.number <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table12.docx"</span>,</span>
 <span>         <span class="va">table12</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="Table11.jpg" alt="3-way Mixed Measures ANOVA in MSWord"><div class="figcaption">3-way Mixed Measures ANOVA in MSWord</div>
-</div>
-<p>Use the apa.knit.table.for.pdf() function to create a latex table for
-<a href="https://github.com/crsh/papaja" class="external-link">papaja</a> or <a href="https://quarto.org" class="external-link">Quarto</a> documents:</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.knit.table.for.pdf.html">apa.knit.table.for.pdf</a></span><span class="op">(</span><span class="va">table12</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Table12.png" style="width:99.0%"></p>
+<p>This table can also be placed in a <a href="https://quarto.org" class="external-link">Quarto</a> document – Quarto is a free system
+for writing documents that combine text and R code. With the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension
+installed (one command; see the <a href="apaquarto-usage.html#installing-the-apaquarto-extension">installation
+instructions</a>), the table appears fully formatted – number, title,
+and note included – when the document is rendered to Word, PDF, or HTML.
+Tables go into the document inside a “code chunk”: a small block of R
+code with a few settings lines at the top. “Rendering” the document
+turns it into the finished Word, PDF, or HTML file.</p>
+<p>Every apaquarto document begins with a YAML header: the settings
+block between <code>---</code> lines at the very top of the document.
+apaquarto needs an author there – with no author, or an empty one, the
+render stops with a LaTeX error – and it reports a problem unless that
+author has an affiliation and is marked
+<code>corresponding: true</code>. This header is enough to render:</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb72-1"><a href="#cb72-1" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb72-2"><a href="#cb72-2" tabindex="-1"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> </span><span class="st">"My Paper"</span></span>
+<span id="cb72-3"><a href="#cb72-3" tabindex="-1"></a><span class="fu">author</span><span class="kw">:</span></span>
+<span id="cb72-4"><a href="#cb72-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Jane Doe</span></span>
+<span id="cb72-5"><a href="#cb72-5" tabindex="-1"></a><span class="at">    </span><span class="fu">corresponding</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb72-6"><a href="#cb72-6" tabindex="-1"></a><span class="at">    </span><span class="fu">affiliations</span><span class="kw">:</span></span>
+<span id="cb72-7"><a href="#cb72-7" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> University of Guelph</span></span>
+<span id="cb72-8"><a href="#cb72-8" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span><span class="at"> apaquarto-pdf</span></span>
+<span id="cb72-9"><a href="#cb72-9" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>There are two ways to produce the chunk that holds the table; most
+users only need the first.</p>
+<p><strong>Easy way.</strong> In the R console, create the table and
+then ask for its Quarto code:</p>
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://afex.singmann.science/" class="external-link">afex</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dating_long</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="va">dating_wide</span>,</span>
+<span>                                   cols <span class="op">=</span> <span class="va">attractive_high</span><span class="op">:</span><span class="va">ugly_none</span>,</span>
+<span>                                   names_to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"looks"</span>, <span class="st">"personality"</span><span class="op">)</span>,</span>
+<span>                                   names_sep <span class="op">=</span> <span class="st">"_"</span>,</span>
+<span>                                   values_to <span class="op">=</span> <span class="st">"date_rating"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dating_long</span><span class="op">$</span><span class="va">looks</span> <span class="op">&lt;-</span> <span class="fu">as_factor</span><span class="op">(</span><span class="va">dating_long</span><span class="op">$</span><span class="va">looks</span><span class="op">)</span></span>
+<span><span class="va">dating_long</span><span class="op">$</span><span class="va">personality</span> <span class="op">&lt;-</span> <span class="fu">as_factor</span><span class="op">(</span><span class="va">dating_long</span><span class="op">$</span><span class="va">personality</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dating_results</span> <span class="op">&lt;-</span> <span class="fu">afex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">aov_ez</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"participant"</span>,</span>
+<span>                               dv <span class="op">=</span> <span class="st">"date_rating"</span>,</span>
+<span>                               data <span class="op">=</span> <span class="va">dating_long</span>,</span>
+<span>                               between <span class="op">=</span> <span class="st">"gender"</span>,</span>
+<span>                               within <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"looks"</span>, <span class="st">"personality"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span><span class="va">dating_results</span>,</span>
+<span>                          table.number <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table12</span><span class="op">)</span></span></code></pre></div>
+<p>This prints a ready-made Quarto code chunk. It carries no title or
+note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
+the table itself, every time you render. Copy the printed chunk into
+your Quarto document, add the lines that create <code>table12</code> to
+the chunk – <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> among them; without it the
+document cannot find the apaTables commands and the render stops. Then
+render the document.</p>
+<p><strong>Advanced way.</strong> Write the chunk yourself:</p>
+<div class="sourceCode" id="cb74"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb74-1"><a href="#cb74-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb74-2"><a href="#cb74-2" tabindex="-1"></a><span class="in">#| label: tbl-anova12</span></span>
+<span id="cb74-3"><a href="#cb74-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb74-4"><a href="#cb74-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb74-5"><a href="#cb74-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb74-6"><a href="#cb74-6" tabindex="-1"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb74-7"><a href="#cb74-7" tabindex="-1"></a><span class="in">library(afex)</span></span>
+<span id="cb74-8"><a href="#cb74-8" tabindex="-1"></a><span class="in">dating_long &lt;- tidyr::pivot_longer(dating_wide,</span></span>
+<span id="cb74-9"><a href="#cb74-9" tabindex="-1"></a><span class="in">                                   cols = attractive_high:ugly_none,</span></span>
+<span id="cb74-10"><a href="#cb74-10" tabindex="-1"></a><span class="in">                                   names_to = c("looks", "personality"),</span></span>
+<span id="cb74-11"><a href="#cb74-11" tabindex="-1"></a><span class="in">                                   names_sep = "_",</span></span>
+<span id="cb74-12"><a href="#cb74-12" tabindex="-1"></a><span class="in">                                   values_to = "date_rating")</span></span>
+<span id="cb74-13"><a href="#cb74-13" tabindex="-1"></a><span class="in">dating_long$looks &lt;- as_factor(dating_long$looks)</span></span>
+<span id="cb74-14"><a href="#cb74-14" tabindex="-1"></a><span class="in">dating_long$personality &lt;- as_factor(dating_long$personality)</span></span>
+<span id="cb74-15"><a href="#cb74-15" tabindex="-1"></a><span class="in">dating_results &lt;- afex::aov_ez(id = "participant",</span></span>
+<span id="cb74-16"><a href="#cb74-16" tabindex="-1"></a><span class="in">                               dv = "date_rating",</span></span>
+<span id="cb74-17"><a href="#cb74-17" tabindex="-1"></a><span class="in">                               data = dating_long,</span></span>
+<span id="cb74-18"><a href="#cb74-18" tabindex="-1"></a><span class="in">                               between = "gender",</span></span>
+<span id="cb74-19"><a href="#cb74-19" tabindex="-1"></a><span class="in">                               within = c("looks", "personality"))</span></span>
+<span id="cb74-20"><a href="#cb74-20" tabindex="-1"></a><span class="in">table12 &lt;- apa.afex.table(dating_results)</span></span>
+<span id="cb74-21"><a href="#cb74-21" tabindex="-1"></a><span class="in">apa.quarto.pdf(table12)</span></span>
+<span id="cb74-22"><a href="#cb74-22" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Field, A., Miles, J., Field, Z. <em>Discovering statistics using
-R</em>. Sage: Chicago.</p>
+<p>Field, A., Miles, J., &amp; Field, Z. (2012). <em>Discovering
+statistics using R</em>. Sage.</p>
 <p>Nuijten, M. B., Hartgerink, C. H. J., van Assen, M. A. L. M.,
-Epskamp, S., &amp; Wicherts, J. M. (2015). The prevalence of statistical
+Epskamp, S., &amp; Wicherts, J. M. (2016). The prevalence of statistical
 reporting errors in psychology (1985-2013). <em>Behavior Research
-Methods</em>. <a href="http://doi.org/10.3758/s13428-015-0664-2" class="external-link">http://doi.org/10.3758/s13428-015-0664-2</a></p>
+Methods, 48</em>(4), 1205-1226. <a href="https://doi.org/10.3758/s13428-015-0664-2" class="external-link">https://doi.org/10.3758/s13428-015-0664-2</a></p>
 </div>
-
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
@@ -637,11 +1327,11 @@ Methods</em>. <a href="http://doi.org/10.3758/s13428-015-0664-2" class="external
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by David Stanley.</p>
+  <p>Developed by David J. Stanley.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

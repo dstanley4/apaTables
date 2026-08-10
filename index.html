@@ -7,12 +7,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Create American Psychological Association (APA) Style Tables • apaTables</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Create American Psychological Association (APA) Style Tables">
-<meta name="description" content="A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) and latex code containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user.">
-<meta property="og:description" content="A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) and latex code containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user.">
+<meta name="description" content="A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table, and manually re-creating that table in a word processor is prone to transcription errors. This package builds complete APA style tables directly from analysis output. A single command saves a finished table as a Microsoft Word (.docx) file, ready for a manuscript. Tables can also be placed in Quarto documents (via the bundled apaquarto extension), so a rendered Word or PDF manuscript comes out with its tables already in place — numbered, titled, and with notes. The same tables can be shown on reveal.js slides, and HTML output is also supported. Using this package minimizes transcription errors and reduces the number of commands needed by the user. The approach is described in Stanley and Spence (2018) &lt;doi:10.1177/2515245918773743&gt;.">
+<meta property="og:description" content="A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table, and manually re-creating that table in a word processor is prone to transcription errors. This package builds complete APA style tables directly from analysis output. A single command saves a finished table as a Microsoft Word (.docx) file, ready for a manuscript. Tables can also be placed in Quarto documents (via the bundled apaquarto extension), so a rendered Word or PDF manuscript comes out with its tables already in place — numbered, titled, and with notes. The same tables can be shown on reveal.js slides, and HTML output is also supported. Using this package minimizes transcription errors and reduces the number of commands needed by the user. The approach is described in Stanley and Spence (2018) &lt;doi:10.1177/2515245918773743&gt;.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">apaTables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,14 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/apaTables.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/apaquarto-usage.html">Using apaTables with apaquarto</a></li>
+    <li><a class="dropdown-item" href="articles/migrating-to-4.0.html">Migrating to apaTables 4.0</a></li>
+    <li><a class="dropdown-item" href="articles/troubleshooting.html">Troubleshooting</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -48,48 +56,476 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9">
-<p>[<img src="http://cranlogs.r-pkg.org/badges/grand-total/apaTables"></p>
 <div class="section level1">
-<div class="page-header"><h1 id="apatables-version-301">apaTables Version 3.0.1<a class="anchor" aria-label="anchor" href="#apatables-version-301"></a>
+<div class="page-header"><h1 id="apatables-version-400">apaTables Version 4.0.0<a class="anchor" aria-label="anchor" href="#apatables-version-400"></a>
 </h1></div>
-<p>A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table. As well, the process of manually creating APA style tables in a word processor is prone to transcription errors. This package creates Word files (.doc files) containing APA style tables for several types of analyses. Using this package minimizes transcription errors and reduces the number commands needed by the user.</p>
-<p>The development version of apaTables R package is hosted here on Github. Current stable version is on the CRAN, see apaTables <a href="https://cran.r-project.org/package=apaTables" class="external-link">here.</a></p>
+<p>A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table, and manually re-creating that table in a word processor is prone to transcription errors. This package builds complete APA style tables directly from analysis output. A single command saves a finished table as a Microsoft Word (.docx) file, ready for a manuscript. Tables can also be placed in Quarto documents (via the bundled apaquarto extension), so a rendered Word or PDF manuscript comes out with its tables already in place — numbered, titled, and with notes. The same tables can be shown on reveal.js slides, and HTML output is also supported. Using this package minimizes transcription errors and reduces the number of commands needed by the user.</p>
+<p>The development version of the apaTables R package is hosted here on GitHub. The current stable version is on CRAN, see apaTables <a href="https://cran.r-project.org/package=apaTables" class="external-link">here.</a></p>
+<p><strong>Version 4.0.0 has not been released on CRAN yet.</strong> <code>install.packages("apaTables")</code> still delivers the CRAN version (2.0.8), which has none of the Version 4.0.0 features described on this page — including everything in the quick start below. To use them now, install the development version from GitHub (the second install command near the end of this page).</p>
+<div class="section level2">
+<h2 id="quick-start--the-common-cases">Quick start — the common cases<a class="anchor" aria-label="anchor" href="#quick-start--the-common-cases"></a>
+</h2>
+<p>Most people arrive here with one of two goals, and they call for different ways of working:</p>
+<ul>
+<li>
+<strong>Your manuscript lives in Word.</strong> You want a Word file holding a finished APA table, so you can copy the table into your manuscript.</li>
+<li>
+<strong>Your manuscript lives in Quarto</strong> (<a href="https://quarto.org" class="external-link">quarto.org</a> — a free system where your text and R code share one document), and you want the rendered Word or PDF manuscript to come out with the tables already in place, numbered, in APA style.</li>
+</ul>
+<p>This quick start shows both. Everything else — HTML, slides, PowerPoint, overriding titles, landscape pages, font sizes — is in the numbered sections that follow.</p>
+<p><strong>A Word table file, to copy into your manuscript.</strong> This way needs nothing but apaTables itself:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">regression</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">rating</span> <span class="op">~</span> <span class="va">complaints</span> <span class="op">+</span> <span class="va">learning</span>, data <span class="op">=</span> <span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="va">table2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">regression</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="st">"Tables.docx"</span>, <span class="va">table1</span>, <span class="va">table2</span><span class="op">)</span></span></code></pre></div>
+<p><code>Tables.docx</code> appears in your working directory — the folder R is currently pointing at — holding both tables, one per page, numbered Table 1 and Table 2 in the order you listed them. Open it in Word and copy the tables into your manuscript. That is the whole workflow; details in section 1a below.</p>
+<p>The rest of the quick start is the Quarto way.</p>
+<p><strong>Quarto needs one piece of setup — done for you here.</strong> A Quarto document only comes out in APA style if the <strong>apaquarto extension</strong> is installed in an <code>_extensions</code> folder beside it; the extension is the part that turns your table into an APA table. In your own projects, that installation is what <code><a href="reference/apa.quarto.new.html">apa.quarto.new()</a></code> (a new manuscript) and <code><a href="reference/apa.quarto.setup.html">apa.quarto.setup()</a></code> (a folder you already have) are for, and every new project needs it done once. What they install is apaTables’ own tested copy of apaquarto — apaquarto plus a few table fixes not yet in the standard release — so use these functions rather than Quarto’s own <code>quarto add</code>, which gets the standard release instead. Both functions used below install it for you, so there is no separate setup step in this quick start.</p>
+<p><strong>See every table type, in PDF and in Word.</strong> apaTables can write you complete, working example documents:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.example.html">apa.quarto.example</a></span><span class="op">(</span><span class="st">"apaTables-examples.qmd"</span><span class="op">)</span></span></code></pre></div>
+<p>Two example documents appear in your working directory, with the apaquarto extension installed beside them (an <code>_extensions</code> folder) — one per destination:</p>
+<pre><code><span><span class="va">apaTables</span><span class="op">-</span><span class="va">examples</span><span class="op">-</span><span class="va">pdf.qmd</span></span>
+<span><span class="va">apaTables</span><span class="op">-</span><span class="va">examples</span><span class="op">-</span><span class="va">docx.qmd</span></span></code></pre>
+<p>The two are the same document, set up for different destinations: render the <code>-pdf</code> file and you get a PDF manuscript; render the <code>-docx</code> file and you get a Word manuscript — both with full APA table numbering, titles, and notes.</p>
+<p>One page of each example uses the afex and tidyr packages, which do not come with apaTables — install them once with <code>install.packages(c("afex", "tidyr"))</code>. Then render: open either file in Positron and press Preview, or in any terminal:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">quarto</span> render apaTables-examples-pdf.qmd</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">quarto</span> render apaTables-examples-docx.qmd</span></code></pre></div>
+<p>(The PDF render also needs a LaTeX engine such as TinyTeX; the Word render does not.) Each finished manuscript shows every apaTables table type, one per page — including two tables too wide to stand upright, which arrive on rotated (landscape) pages without your having asked. Open either <code>.qmd</code> file in your editor to see the code chunk that made each table.</p>
+<p><strong>Start your own manuscript.</strong></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/apa.quarto.new.html">apa.quarto.new</a></span><span class="op">(</span><span class="st">"my-paper"</span><span class="op">)</span></span></code></pre></div>
+<p>This creates a <code>my-paper</code> folder holding a working APA manuscript with the apaquarto extension already installed — the setup from above, done for you — so the very first render works. The installed extension is apaTables’ own tested copy of apaquarto, with table fixes not yet in the standard release, so do not run Quarto’s <code>quarto add</code> or <code>quarto update</code> in this folder — both replace it with the standard release. Details in section 1b below.</p>
+</div>
+<div class="section level2">
+<h2 id="where-do-you-want-your-table-to-end-up">Where do you want your table to end up?<a class="anchor" aria-label="anchor" href="#where-do-you-want-your-table-to-end-up"></a>
+</h2>
+<p>Start with the kind of document you are writing, and read only that section — each one is complete on its own.</p>
+<ol style="list-style-type: decimal">
+<li><a href="#id_1-how-do-i-make-tables-for-microsoft-word">Microsoft Word</a></li>
+<li><a href="#id_2-how-do-i-make-tables-in-a-pdf">PDF</a></li>
+<li><a href="#id_3-how-do-i-make-tables-for-revealjs-slides">reveal.js slides</a></li>
+<li><a href="#id_4-how-do-i-make-tables-for-powerpoint">PowerPoint</a></li>
+<li><a href="#id_5-how-do-i-make-tables-in-a-quarto-document">A Quarto document</a></li>
+<li><a href="#id_6-how-do-i-just-look-at-a-table-in-r">Just look at it in R</a></li>
+</ol>
+<p>And if you need to change what the table shows:</p>
+<ol start="7" style="list-style-type: decimal">
+<li><a href="#id_7-how-do-i-write-my-own-table-title-or-note">Writing your own title or note</a></li>
+<li><a href="#id_8-how-do-i-put-a-table-on-a-landscape-page">Putting a table on a landscape page</a></li>
+<li><a href="#id_9-how-do-i-change-a-tables-font-size">Changing a table’s font size</a></li>
+</ol>
 <div class="section level3">
-<h3 id="whats-new-in-version-301">What’s new in Version 3.0.1<a class="anchor" aria-label="anchor" href="#whats-new-in-version-301"></a>
+<h3 id="id_1-how-do-i-make-tables-for-microsoft-word">1. How do I make tables for Microsoft Word?<a class="anchor" aria-label="anchor" href="#id_1-how-do-i-make-tables-for-microsoft-word"></a>
+</h3>
+<p>There are two ways, and which suits you depends on where your manuscript lives.</p>
+<div class="section level4">
+<h4 id="id_1a-if-you-already-write-your-manuscript-in-word">1a. If you already write your manuscript in Word<a class="anchor" aria-label="anchor" href="#id_1a-if-you-already-write-your-manuscript-in-word"></a>
+</h4>
+<p>Make the table in R, then save it as a Word file:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="st">"Table1.docx"</span>, <span class="va">my_table</span><span class="op">)</span></span></code></pre></div>
+<p>A file called <code>Table1.docx</code> now sits in your working directory — the folder R is currently pointing at. Open it in Word and you will find a finished APA table. Copy it into your manuscript.</p>
+<p>To put several tables in one file, list them all:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="st">"AllTables.docx"</span>, <span class="va">table1</span>, <span class="va">table2</span>, <span class="va">table3</span><span class="op">)</span></span></code></pre></div>
+<p>They are numbered Table 1, Table 2 and Table 3, in the order you list them.</p>
+<p>The title and the note are written by apaTables from the table itself. <strong>On this route there is no way to supply your own wording at this time</strong> — <code><a href="reference/apa.save.html">apa.save()</a></code> takes a filename and your tables, and nothing else. If you need a particular title or note, the Quarto route in section 1b can do it; editing the finished Word file by hand is the other option.</p>
+</div>
+<div class="section level4">
+<h4 id="id_1b-if-you-write-the-whole-manuscript-in-quarto">1b. If you write the whole manuscript in Quarto<a class="anchor" aria-label="anchor" href="#id_1b-if-you-write-the-whole-manuscript-in-quarto"></a>
+</h4>
+<p>Quarto lets your writing and your analysis live in one file, so the finished Word document comes out with the tables already in place and numbered. To start a paper set up that way, run this once:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/apa.quarto.new.html">apa.quarto.new</a></span><span class="op">(</span><span class="st">"my-paper"</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>Do not skip this step, and do not replace it by writing the settings block yourself.</strong> <code><a href="reference/apa.quarto.new.html">apa.quarto.new()</a></code> writes the starter document <em>and</em> installs the <strong>apaquarto extension</strong> into an <code>_extensions</code> folder beside it. The extension is the part that turns your table into an APA table — the settings block on its own does nothing without it. A document whose settings say <code>apaquarto-docx</code> with no extension installed does not render at all: Quarto stops with</p>
+<pre><code>ERROR: Unable to read the extension 'apaquarto'.</code></pre>
+<p>before any of your R code runs, and produces no file. <strong>If you already have a project</strong>, run <code><a href="reference/apa.quarto.setup.html">apa.quarto.setup()</a></code> once in its folder instead — it installs the same thing into a folder you already have.</p>
+<p>What these functions install is <strong>apaTables’ own tested copy of apaquarto</strong> — apaquarto plus a few table fixes that are not yet in the standard release. So use these functions to install it; Quarto’s own <code>quarto add</code> gets the standard release instead — and do not run <code>quarto update</code> in the folder afterwards, which quietly puts the standard release back.</p>
+</blockquote>
+<p>That creates a folder called <code>my-paper</code> with a starter document inside it, and an <code>_extensions</code> folder holding the apaquarto extension. Open the document in Positron. Near the top is a block of settings between two rows of dashes. The starter arrives set up for PDF, so its format line says <code>format: apaquarto-pdf</code> — for a Word manuscript, change that line to:</p>
+<pre><code><span><span class="va">format</span><span class="op">:</span> <span class="va">apaquarto</span><span class="op">-</span><span class="va">docx</span></span></code></pre>
+<p>That line is what makes the finished file a Word document. (The starter’s own worked table block calls <code><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> — change that to <code><a href="reference/apa.quarto.pdf.html">apa.quarto.docx()</a></code> too, so the call and the format line agree.) Further down, wherever you want a table, put your analysis in a block like this one:</p>
+<pre><code>```{r}
+my_table &lt;- apa.cor.table(attitude)
+apa.quarto.docx(my_table)
+```</code></pre>
+<p>Then render the document (the Preview button in Positron). Quarto runs your R code and produces <code>my-paper.docx</code>, with the table numbered and captioned for you.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="id_2-how-do-i-make-tables-in-a-pdf">2. How do I make tables in a PDF?<a class="anchor" aria-label="anchor" href="#id_2-how-do-i-make-tables-in-a-pdf"></a>
+</h3>
+<p>PDF goes through Quarto. Quarto lets your writing and your analysis live in one file, and produces the finished PDF with the tables already in place and numbered. To start a paper set up that way, run this once:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/apa.quarto.new.html">apa.quarto.new</a></span><span class="op">(</span><span class="st">"my-paper"</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>Do not skip this step, and do not replace it by writing the settings block yourself.</strong> <code><a href="reference/apa.quarto.new.html">apa.quarto.new()</a></code> writes the starter document <em>and</em> installs the <strong>apaquarto extension</strong> into an <code>_extensions</code> folder beside it. The extension is the part that turns your table into an APA table — the settings block on its own does nothing without it. A document whose settings name an apaquarto format with no extension installed does not render at all: Quarto stops with</p>
+<pre><code>ERROR: Unable to read the extension 'apaquarto'.</code></pre>
+<p>before any of your R code runs, and produces no file. <strong>If you already have a project</strong>, run <code><a href="reference/apa.quarto.setup.html">apa.quarto.setup()</a></code> once in its folder instead — it installs the same thing into a folder you already have.</p>
+<p>What these functions install is <strong>apaTables’ own tested copy of apaquarto</strong> — apaquarto plus a few table fixes that are not yet in the standard release. So use these functions to install it; Quarto’s own <code>quarto add</code> gets the standard release instead — and do not run <code>quarto update</code> in the folder afterwards, which quietly puts the standard release back.</p>
+</blockquote>
+<p>That creates a folder called <code>my-paper</code> with a starter document inside it, and an <code>_extensions</code> folder holding the apaquarto extension. Open the document in Positron. In the settings block near the top, the format line reads <code>format: apaquarto-pdf</code>. Where you want the table, put a block like this one:</p>
+<pre><code>```{r}
+my_table &lt;- apa.cor.table(attitude)
+apa.quarto.pdf(my_table)
+```</code></pre>
+<p>Then render the document (the Preview button in Positron), and you get <code>my-paper.pdf</code>.</p>
+<p>A table too wide to stand upright is turned sideways for you, and a table taller than the page continues onto the next one with its column headings repeated.</p>
+<p><code><a href="reference/apa.save.html">apa.save()</a></code> does not write PDF files. If you ask it to, it tells you so and points you back here.</p>
+</div>
+<div class="section level3">
+<h3 id="id_3-how-do-i-make-tables-for-revealjs-slides">3. How do I make tables for reveal.js slides?<a class="anchor" aria-label="anchor" href="#id_3-how-do-i-make-tables-for-revealjs-slides"></a>
+</h3>
+<p>reveal.js is the slide format Quarto produces by default.</p>
+<p><strong>Slides are the one case that needs no extension.</strong> A deck is plain Quarto: it does not use apaquarto at all, so there is nothing to install and nothing to repair. None of the <code><a href="reference/apa.quarto.new.html">apa.quarto.new()</a></code> / <code><a href="reference/apa.quarto.setup.html">apa.quarto.setup()</a></code> advice elsewhere on this page applies to a deck. Start from a plain <code>.qmd</code> file. The trade is that a slide has no table number and no automatic title or note — a deck has no list of tables to number against.</p>
+<p>In the settings block at the top of your document:</p>
+<pre><code><span><span class="va">format</span><span class="op">:</span> <span class="va">revealjs</span></span></code></pre>
+<p>and on the slide where you want the table:</p>
+<pre><code>```{r}
+my_table &lt;- apa.cor.table(attitude)
+apa.quarto.revealjs(my_table)
+```</code></pre>
+<p>The table is sized to fit the slide. A very large table may still be too much for one slide — if it looks cramped, show fewer variables.</p>
+</div>
+<div class="section level3">
+<h3 id="id_4-how-do-i-make-tables-for-powerpoint">4. How do I make tables for PowerPoint?<a class="anchor" aria-label="anchor" href="#id_4-how-do-i-make-tables-for-powerpoint"></a>
+</h3>
+<p>Not yet. If you render to PowerPoint, apaTables still puts the table on the slide and warns you that PowerPoint is not yet supported, so that you do not hand out a deck without knowing. Support is planned for a future release; for now, reveal.js is the presentation format apaTables supports.</p>
+</div>
+<div class="section level3">
+<h3 id="id_5-how-do-i-make-tables-in-a-quarto-document">5. How do I make tables in a Quarto document?<a class="anchor" aria-label="anchor" href="#id_5-how-do-i-make-tables-in-a-quarto-document"></a>
+</h3>
+<p>This is the part worth learning. <strong>You write the analysis once. Which kind of document comes out is one line of settings.</strong></p>
+<table class="table">
+<thead><tr>
+<th>What you want</th>
+<th>The settings line</th>
+<th>The function to call</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>A Word document</td>
+<td><code>format: apaquarto-docx</code></td>
+<td><code><a href="reference/apa.quarto.pdf.html">apa.quarto.docx()</a></code></td>
+</tr>
+<tr>
+<td>A PDF</td>
+<td><code>format: apaquarto-pdf</code></td>
+<td><code><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code></td>
+</tr>
+<tr>
+<td>A web page</td>
+<td><code>format: apaquarto-html</code></td>
+<td><code><a href="reference/apa.quarto.pdf.html">apa.quarto.html()</a></code></td>
+</tr>
+<tr>
+<td>Slides</td>
+<td><code>format: revealjs</code></td>
+<td><code><a href="reference/apa.quarto.pdf.html">apa.quarto.revealjs()</a></code></td>
+</tr>
+</tbody>
+</table>
+<p>Change those two lines and nothing else changes.</p>
+<p>Whether you are new to Quarto or not, start a paper with:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/apa.quarto.new.html">apa.quarto.new</a></span><span class="op">(</span><span class="st">"my-paper"</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>Do not skip this step, and do not replace it by writing the settings block yourself.</strong> <code><a href="reference/apa.quarto.new.html">apa.quarto.new()</a></code> writes the starter document <em>and</em> installs the <strong>apaquarto extension</strong> into an <code>_extensions</code> folder beside it. The extension is the part that turns your table into an APA table — the settings block on its own does nothing without it. A document whose settings name an apaquarto format with no extension installed does not render at all: Quarto stops with</p>
+<pre><code>ERROR: Unable to read the extension 'apaquarto'.</code></pre>
+<p>before any of your R code runs, and produces no file. <strong>If you already have a project</strong>, run <code><a href="reference/apa.quarto.setup.html">apa.quarto.setup()</a></code> once in its folder instead — it installs the same thing into a folder you already have.</p>
+<p>What these functions install is <strong>apaTables’ own tested copy of apaquarto</strong> — apaquarto plus a few table fixes that are not yet in the standard release. So use these functions to install it; Quarto’s own <code>quarto add</code> gets the standard release instead — and do not run <code>quarto update</code> in the folder afterwards, which quietly puts the standard release back.</p>
+</blockquote>
+<p>That gives you a working document to edit rather than a blank page, with the extension already beside it. The first three rows of the table above need that extension. <strong>The Slides row does not</strong> — a reveal.js deck is plain Quarto and never uses apaquarto, so there is nothing to install for it.</p>
+</div>
+<div class="section level3">
+<h3 id="id_6-how-do-i-just-look-at-a-table-in-r">6. How do I just look at a table in R?<a class="anchor" aria-label="anchor" href="#id_6-how-do-i-just-look-at-a-table-in-r"></a>
+</h3>
+<p>Print it. Every table-making function returns an object that displays as a plain APA table at the console — no file and no rendering involved:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="va">my_table</span></span></code></pre></div>
+<p>This is the quickest way to check your analysis before putting the table into a document.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="do-you-need-to-change-something">Do you need to change something?<a class="anchor" aria-label="anchor" href="#do-you-need-to-change-something"></a>
+</h2>
+<p>These are the two things people most often want to control by hand. Both are optional — apaTables handles both for you unless you say otherwise.</p>
+<div class="section level3">
+<h3 id="id_7-how-do-i-write-my-own-table-title-or-note">7. How do I write my own table title or note?<a class="anchor" aria-label="anchor" href="#id_7-how-do-i-write-my-own-table-title-or-note"></a>
+</h3>
+<p><strong>You usually do not need to.</strong> apaTables writes the title and the note from the table itself, every time you render, so they stay correct when your analysis changes. Write your own only when you want particular wording.</p>
+<blockquote>
+<p><strong>This applies to the Quarto route only.</strong> If you are saving a table straight to a Word file with <code><a href="reference/apa.save.html">apa.save()</a></code> — section 1a above — there is no way to supply your own title or note at this time: <code><a href="reference/apa.save.html">apa.save()</a></code> takes a filename and your tables, and the title and note come from the table itself. The rest of this section will not work on that route.</p>
+</blockquote>
+<p>There are two ways, and they do the same thing.</p>
+<p><strong>With function arguments.</strong> Pass <code>title =</code> and <code>note =</code> to whichever entry point matches your document:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span>,</span>
+<span>               title <span class="op">=</span> <span class="st">"Correlations Among Seven Attitude Measures"</span>,</span>
+<span>               note  <span class="op">=</span> <span class="st">"N = 30 clerical employees."</span><span class="op">)</span></span></code></pre></div>
+<p>The same arguments work on <code><a href="reference/apa.quarto.pdf.html">apa.quarto.docx()</a></code> and <code><a href="reference/apa.quarto.pdf.html">apa.quarto.html()</a></code>.</p>
+<p><strong>With settings lines in the code block.</strong> <code>tbl-cap</code> sets the title and <code>apa-note</code> sets the note:</p>
+<pre><code>```{r}
+#| label: tbl-correlations
+#| tbl-cap: "Correlations Among Seven Attitude Measures"
+#| apa-note: "N = 30 clerical employees."
+my_table &lt;- apa.cor.table(attitude)
+apa.quarto.pdf(my_table)
+```</code></pre>
+<p><strong>If you use both, the settings line wins.</strong> So if you pass <code>title =</code> and the table keeps a different title, look for a <code>tbl-cap</code> line in the same block — that is what is overriding it.</p>
+<div class="section level4">
+<h4 id="getting-italics-superscripts-and-subscripts">Getting italics, superscripts and subscripts<a class="anchor" aria-label="anchor" href="#getting-italics-superscripts-and-subscripts"></a>
+</h4>
+<p>APA notes are full of symbols that have to be italic — <em>N</em>, <em>M</em>, <em>SD</em>, <em>p</em> — and the titles apaTables writes for you already are. When you write your own, you get them with three pieces of markup:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>you type</th>
+<th>you get</th>
+<th>for example</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>*M*</code></td>
+<td>
+<em>M</em> — italic</td>
+<td><code>*N* = 30.</code></td>
+</tr>
+<tr>
+<td><code>^2^</code></td>
+<td>superscript</td>
+<td>
+<code>*R*^2^ = .41</code> gives <em>R</em>²</td>
+</tr>
+<tr>
+<td><code>~p~</code></td>
+<td>subscript</td>
+<td>
+<code>*eta*~p~^2^</code> gives η with a <em>p</em> below and a 2 above</td>
+</tr>
+</tbody>
+</table>
+<p>They work in the title and in the note, and in both of the ways shown above — the <code>title =</code> and <code>note =</code> arguments, and the <code>tbl-cap</code> and <code>apa-note</code> settings lines. So a hand-written note can carry exactly the same formatting as a generated one:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">blk1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span>,</span>
+<span>               note <span class="op">=</span> <span class="st">"*N* = 200. *R*^2^ is the variance explained."</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>One exception, in the title only.</strong> An APA table title is <em>already</em> set in italics, so there is nothing to gain by marking a symbol italic there — and the result is not the same everywhere: in PDF a <code>*M*</code> inside the title comes out <strong>upright</strong>, while in Word and HTML it stays italic. Superscripts and subscripts are unaffected and behave the same everywhere. <strong>In a title, just type the symbol; in a note, mark it up as normal.</strong></p>
+</blockquote>
+<p><strong>A note that is really several notes</strong> — a general note, then a probability note — is written as a list, so that each part starts on its own line as APA requires:</p>
+<pre><code>```{r}
+#| label: tbl-correlations
+#| apa-note: ["*N* = 30 clerical employees.","\\* indicates *p* &lt; .05."]
+my_table &lt;- apa.cor.table(attitude)
+apa.quarto.pdf(my_table)
+```</code></pre>
+<p>The backslashes in front of the star keep it from being read as the start of italics.</p>
+</div>
+<div class="section level4">
+<h4 id="greek-letters-and-other-symbols">Greek letters and other symbols<a class="anchor" aria-label="anchor" href="#greek-letters-and-other-symbols"></a>
+</h4>
+<p>APA notes often need a symbol — Δ<em>R</em>², <em>M</em> ± <em>SD</em>, η²ₚ, μ. <strong>Type the character itself.</strong> It works in the title and the note, in both of the ways shown above, and on every destination:</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">blkA</span>, <span class="va">blkB</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span>,</span>
+<span>               note <span class="op">=</span> <span class="st">"*N* = 200. Δ*R*² is the change in variance explained."</span><span class="op">)</span></span></code></pre></div>
+<p>and the same thing as a settings line:</p>
+<pre><code>```{r}
+#| label: tbl-blocks
+#| apa-note: "*N* = 200. Δ*R*² is the change in variance explained."
+my_table &lt;- apa.reg.table(blkA, blkB)
+apa.quarto.pdf(my_table)
+```</code></pre>
+<p><strong>If you would rather not paste a character you cannot type</strong>, you can spell it out instead — <code>\u0394</code> is Δ, <code>\u03bc</code> is μ, <code>\u03b7</code> is η, and <code>\u00b2</code> is ². This works in <em>both</em> places: R reads the escape inside a string, and the settings line reads it too, as long as the value is in <strong>double quotes</strong>.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span>,</span>
+<span>               note <span class="op">=</span> <span class="st">"*N* = 200. \u0394*R*\u00b2 is the change in variance explained."</span><span class="op">)</span></span></code></pre></div>
+<pre><code>```{r}
+#| label: tbl-blocks
+#| apa-note: "*N* = 200. \u0394*R*\u00b2 is the change in variance explained."
+my_table &lt;- apa.reg.table(blkA, blkB)
+apa.quarto.pdf(my_table)
+```</code></pre>
+<p><strong>LaTeX maths notation such as <code>$\Delta$</code> also works</strong>, in PDF, Word and HTML alike — but prefer the plain character anyway. Maths is set in a <em>maths</em> font, so <code>$\mu$</code> comes out in a slightly different typeface from a μ standing next to it in the same sentence, which is visible in all three. In HTML it is also rendered by a script: one fetched from the internet on an ordinary render, or built into the file itself when the document is rendered self-contained. A typed character needs none of that.</p>
+</div>
+<div class="section level4">
+<h4 id="starting-from-apatables-own-wording">Starting from apaTables’ own wording<a class="anchor" aria-label="anchor" href="#starting-from-apatables-own-wording"></a>
+</h4>
+<p>If you want to <em>extend</em> the generated wording rather than replace it, two helpers hand it to you as ordinary text: <code><a href="reference/apa_caption.html">apa_caption()</a></code> gives the title and <code><a href="reference/apa_note_text.html">apa_note_text()</a></code> gives the note.</p>
+<p><strong>With function arguments</strong>, you can build the new text in the call:</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span>,</span>
+<span>               note <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="reference/apa_note_text.html">apa_note_text</a></span><span class="op">(</span><span class="va">my_table</span><span class="op">)</span>,</span>
+<span>                            <span class="st">"Data collected in 2026."</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><strong>With settings lines</strong>, print the wording in the R console first and paste the result in — a settings line is plain text and cannot run R code:</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa_caption.html">apa_caption</a></span><span class="op">(</span><span class="va">my_table</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Descriptive Statistics and Correlations</span></span>
+<span><span class="fu"><a href="reference/apa_note_text.html">apa_note_text</a></span><span class="op">(</span><span class="va">my_table</span><span class="op">)</span></span>
+<span><span class="co">#&gt; N = number of cases. M = mean. SD = standard deviation. ...</span></span></code></pre></div>
+<p>then edit what you copied:</p>
+<pre><code>```{r}
+#| label: tbl-correlations
+#| apa-note: "N = number of cases. M = mean. SD = standard deviation. Data collected in 2026."
+my_table &lt;- apa.cor.table(attitude)
+apa.quarto.pdf(my_table)
+```</code></pre>
+</div>
+</div>
+<div class="section level3">
+<h3 id="id_8-how-do-i-put-a-table-on-a-landscape-page">8. How do I put a table on a landscape page?<a class="anchor" aria-label="anchor" href="#id_8-how-do-i-put-a-table-on-a-landscape-page"></a>
+</h3>
+<p><strong>You usually do not need to.</strong> apaTables measures every table as the document renders and rotates the ones that will not fit upright onto a landscape page, at full size. Set this yourself only to overrule that decision.</p>
+<p><strong>This only means something where there are pages — PDF and Word.</strong> An HTML page has no pages and neither does a slide, so the setting is accepted and ignored there, without complaint.</p>
+<p>There are two ways, and they do the same thing.</p>
+<p><strong>With a function argument.</strong> Every table function takes <code>landscape</code>:</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span>, landscape <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span><span class="op">)</span></span></code></pre></div>
+<p>It takes three values:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>value</th>
+<th>what happens</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>TRUE</code></td>
+<td>always a rotated page</td>
+</tr>
+<tr>
+<td><code>FALSE</code></td>
+<td>never a rotated page — the table is shrunk to fit upright instead</td>
+</tr>
+<tr>
+<td>
+<code>NA</code> (the default)</td>
+<td>apaTables measures the table and decides</td>
+</tr>
+</tbody>
+</table>
+<p><strong>With a settings line in the code block:</strong></p>
+<pre><code>```{r}
+#| label: tbl-correlations
+#| apa-landscape: true
+my_table &lt;- apa.cor.table(attitude)
+apa.quarto.pdf(my_table)
+```</code></pre>
+<p><strong>If you use both, the settings line wins</strong> — including when it says <code>false</code> and the argument said <code>TRUE</code>.</p>
+<p><strong>The <code>#| label:</code> line is required for this to work in PDF.</strong> Without a label starting <code>tbl-</code>, Quarto does not build a table float, and a page can only be turned for a float. A wide table in an unlabelled block is printed smaller on an upright page instead, complete — and if it had asked for a rotated page (<code>landscape = TRUE</code>, or the settings line), the rendered draft says the label is what is missing.</p>
+</div>
+<div class="section level3">
+<h3 id="id_9-how-do-i-change-a-tables-font-size">9. How do I change a table’s font size?<a class="anchor" aria-label="anchor" href="#id_9-how-do-i-change-a-tables-font-size"></a>
+</h3>
+<p><strong>You usually do not need to.</strong> apaTables sizes each table as the document renders: a table too wide for the page is turned landscape first, and shrunk only when turning is not enough — or not allowed. Set a size yourself only to overrule that decision.</p>
+<p>All four Quarto functions take <code>font.size</code>, in points:</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span>, font.size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<p>The size applies to the body of the table. The title above it and the note below it keep their usual size.</p>
+<p><strong>What arrives on the page differs by destination:</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>destination</th>
+<th>what you get</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>PDF, HTML, reveal.js slides</td>
+<td>your size exactly, fractions included — <code>font.size = 9.5</code> really is 9.5 pt</td>
+</tr>
+<tr>
+<td>Word (<code><a href="reference/apa.quarto.pdf.html">apa.quarto.docx()</a></code>)</td>
+<td>whole points only, kept between 6 and 12</td>
+</tr>
+</tbody>
+</table>
+<p>Word is different because it takes a table’s type size from a named style in the document template, so the request is rounded down to a whole point and held inside the 6–12 range — and the rendered draft tells you when the size delivered is not the size you asked for.</p>
+<p>Two warnings to know about; neither stops the render:</p>
+<ul>
+<li>
+<strong>A size below 6 points</strong> — where an APA table stops being comfortable to read — draws a warning on every destination. PDF, HTML and slides still deliver it; Word will not go below 6 at all.</li>
+<li>
+<strong>A size can also be too big.</strong> In PDF, if the table at your requested size is wider than the page even after rotation, the rendered draft warns that the right-hand columns will be cut off and names the largest size that fits — request that, or remove <code>font.size</code> and let apaTables choose.</li>
+</ul>
+<p><strong>Font size is set only as a function argument.</strong> Unlike landscape (section 8), there is no <code>#|</code> chunk option for it.</p>
+<p><strong>On the <code><a href="reference/apa.save.html">apa.save()</a></code> route (section 1a) there is no font size setting at this time</strong> — those tables are always 12 point Times New Roman, matching the manuscript body type APA style expects. If a table is too wide at 12 points, <code><a href="reference/apa.save.html">apa.save()</a></code> turns its page landscape rather than shrinking the type.</p>
+</div>
+<div class="section level3">
+<h3 id="whats-new-in-version-400">What’s new in Version 4.0.0<a class="anchor" aria-label="anchor" href="#whats-new-in-version-400"></a>
 </h3>
 <ul>
 <li>
-<strong>afex support</strong>: Use <code><a href="reference/apa.afex.table.html">apa.afex.table()</a></code> with output from <code><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">afex::aov_ez()</a></code> for ANOVA tables. The afex package is the recommended approach for repeated-measures and mixed designs. Initial support only - still in testing.</li>
+<p><strong>One-command APA manuscript</strong>: apaTables now ships its own patched copy of the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> extension and can install it for you. <code>apa.quarto.new("my-paper")</code> creates a folder with a working Quarto document and the extension already installed, so the first render produces a real APA manuscript:</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.new.html">apa.quarto.new</a></span><span class="op">(</span><span class="st">"my-paper"</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="reference/apa.quarto.setup.html">apa.quarto.setup()</a></code> installs or repairs the extension in a project you already have, and does nothing on a project that is already correct.</p>
+</li>
 <li>
-<strong>ez package deprecated</strong>: The ez package has been archived on CRAN. <code><a href="reference/apa.ezANOVA.table.html">apa.ezANOVA.table()</a></code> still works for users who have ez installed but is now deprecated. Please use <code><a href="reference/apa.afex.table.html">apa.afex.table()</a></code> instead.</li>
-<li>
-<strong>LaTeX table support</strong>: All table functions now support LaTeX output in addition to Word (.doc/.rtf) files.</li>
+<p><strong>Quarto / apaquarto support</strong>: build the table on one line, then pass it to <code><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code>, <code><a href="reference/apa.quarto.pdf.html">apa.quarto.docx()</a></code>, <code><a href="reference/apa.quarto.pdf.html">apa.quarto.html()</a></code> or <code><a href="reference/apa.quarto.pdf.html">apa.quarto.revealjs()</a></code> (named for the document’s own destination) on the next, and the apaquarto extension formats it as an APA table in PDF, Word, HTML or reveal.js slides:</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span><span class="op">)</span></span></code></pre></div>
+<p>The helper <code><a href="reference/apa.quarto.template.html">apa.quarto.template()</a></code> prints a ready-to-paste block of code for you.</p>
+</li>
+<li><p><strong>Wide and tall tables in PDF handled for you</strong>: a table too wide to stand upright is placed on a rotated (landscape) page automatically, at full size, and a table taller than the page continues onto the next one with its column headings repeated. You do not have to work out in advance which of your tables need this — apaTables measures each one as the document renders. If you ever need to overrule that decision, every table function takes a <code>landscape</code> argument: <code>landscape = TRUE</code> forces a rotated page, <code>landscape = FALSE</code> forbids one, and the default measures.</p></li>
+<li><p><strong>Word and HTML output</strong>: <code><a href="reference/apa.save.html">apa.save()</a></code> writes Microsoft Word (.docx) and HTML files (chosen by the file extension) via the flextable and officer packages.</p></li>
+<li><p><strong><code>apa.ezANOVA.table()</code> removed</strong>: The ez package was archived on CRAN. Use <code><a href="reference/apa.afex.table.html">apa.afex.table()</a></code> with <code><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">afex::aov_ez()</a></code> output for repeated-measures and mixed designs instead.</p></li>
+<li><p><strong><code>apa.knit.table.for.pdf()</code> and <code>apa.knit.table.for.papaja()</code> removed</strong>: both belonged to the kableExtra LaTeX path, which the apaquarto path above replaces. <code>kableExtra</code> and <code>papaja</code> are no longer listed in Suggests.</p></li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="install-stable-20-cran-version">Install Stable 2.0 CRAN Version<a class="anchor" aria-label="anchor" href="#install-stable-20-cran-version"></a>
+<h3 id="install-the-cran-version">Install the CRAN Version<a class="anchor" aria-label="anchor" href="#install-the-cran-version"></a>
 </h3>
-<p>This version does not support LaTeX tables or afex.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"apaTables"</span>,dep<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"apaTables"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="install-301-development-version">Install 3.0.1 Development Version<a class="anchor" aria-label="anchor" href="#install-301-development-version"></a>
+<h3 id="install-the-development-version">Install the Development Version<a class="anchor" aria-label="anchor" href="#install-the-development-version"></a>
 </h3>
-<p>This version supports LaTeX tables and afex.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"dstanley4/apaTables"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
 <div class="section level2">
 <h2 id="tutorial">Tutorial<a class="anchor" aria-label="anchor" href="#tutorial"></a>
 </h2>
-<p>You can learn how to use apaTables <a href="https://dstanley4.github.io/apaTables/" class="external-link">here</a>.</p>
+<p>You can learn how to use apaTables <a href="https://dstanley4.github.io/apaTables/">here</a>.</p>
 </div>
 </div>
 
@@ -122,7 +558,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>David Stanley <br><small class="roles"> Author, maintainer </small>   </li>
+<li>David J. Stanley <br><small class="roles"> Author, maintainer, copyright holder </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
@@ -130,6 +567,9 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://cran.r-project.org/package=apaTables" class="external-link"><img src="https://www.r-pkg.org/badges/version/apaTables" alt="CRAN status"></a></li>
+<li><a href="https://cran.r-project.org/package=apaTables" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/apaTables" alt="Downloads"></a></li>
+<li><a href="https://github.com/dstanley4/apaTables/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/dstanley4/apaTables/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/dstanley4/apaTables" class="external-link"><img src="https://codecov.io/gh/dstanley4/apaTables/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 
@@ -138,11 +578,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by David Stanley.</p>
+  <p>Developed by David J. Stanley.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

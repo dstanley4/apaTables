@@ -1,9 +1,12 @@
-pandoc: 3.1.11
-pkgdown: 2.2.0
+pandoc: 3.8.3
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  apaquarto-usage: apaquarto-usage.html
   articles/apaTables: apaTables.html
-last_built: 2026-02-19T17:59Z
+  migrating-to-4.0: migrating-to-4.0.html
+  articles/troubleshooting: troubleshooting.html
+last_built: 2026-08-10T12:56Z
 urls:
-  reference: http://dstanley4.github.io/apaTables/reference
-  article: http://dstanley4.github.io/apaTables/articles
+  reference: https://dstanley4.github.io/apaTables/reference
+  article: https://dstanley4.github.io/apaTables/articles

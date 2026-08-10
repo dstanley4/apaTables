@@ -10,7 +10,7 @@ data(goggles)
 
 ## Format
 
-A data frame with 48 rows and 3 variables:
+A data frame with 48 rows and 4 variables:
 
 - participant:
 
@@ -34,5 +34,5 @@ A data frame with 48 rows and 3 variables:
 
 ## References
 
-Field, A., Miles, J., & Field, Z. (2012) Discovering Statistics Using R.
-Sage: Chicago.
+Field, A., Miles, J., & Field, Z. (2012). Discovering statistics using
+R. Sage.

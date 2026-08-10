@@ -3,15 +3,17 @@
 ## Context
 
 Reproducible research is research for which the numbers reported in the
-paper can obtained by others using the original data and analysis
+paper can be obtained by others using the original data and analysis
 scripts. (Note that this differs from replicability - the extent to
 which findings are consistent across samples.) Recent research has
 revealed a problem with the reproducibility of analyses in many fields.
-For example, in psychology Nuijten et al. (2015) found that in 50% of
-articles there was at least once instance of a reported test statistic
-(e.g., *t*(24)=22.71) being inconsistent with the reported *p*-value.
-This inconsistency rate suggests there is a major problem with
-reproducibility in the psychological literature.
+For example, in psychology Nuijten et al. (2016) found that about half
+of the psychology articles reporting null-hypothesis significance tests
+contained at least one reported test statistic (e.g., *t*(24)=22.71)
+that was inconsistent with its reported *p*-value. One in eight articles
+contained an inconsistency large enough to change the statistical
+conclusion. This inconsistency rate suggests there is a major problem
+with reproducibility in the psychological literature.
 
 My objective in creating the *apaTables* package was to automate the
 process through which tables are created from analyses when using R.
@@ -24,8 +26,17 @@ report results in the style required by the [American Psychological
 Association](http://www.apa.org); that is, [APA
 Style](http://www.apastyle.org/products/asc-landing-page.aspx).
 Consequently, *apaTables* creates [Microsoft
-Word](https://products.office.com/en-ca/word) documents (.doc files)
-that contain tables that conform to APA Style.
+Word](https://products.office.com/en-ca/word) documents (.docx files)
+that contain tables that conform to APA Style. Tables can also be placed
+in [Quarto](https://quarto.org) documents – Quarto is a free system for
+writing documents that combine text and R code. With the
+[apaquarto](https://wjschne.github.io/apaquarto/) extension, each table
+appears fully formatted – number, title, and note included – when the
+document is rendered to Word, PDF, or HTML. Installing the apaquarto
+extension takes one command; see the [installation section of the
+apaquarto
+guide](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)
+on this site. Both workflows are shown for every table below.
 
 In many cases it would be necessary to execute additional R commands to
 obtain all of the statistics needed for an APA Style table. For example,
@@ -33,12 +44,15 @@ if conducting a regression using the **lm** command the unstandardized
 regression (i.e., b) weights are reported. Additional commands are
 needed to obtain standardized (i.e., beta) weights. *apaTables*
 automatically executes these additional commands to create a table with
-the required information in Microsoft Word .doc format[¹](#fn1).
+the required information in Microsoft Word .docx format via
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+or in a Quarto document via
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md).
 
 Additionally, the [American Statistical
 Association](http://www.amstat.org) recently released a [position
-paper](https://www.amstat.org/newsroom/pressreleases/P-ValueStatement.pdf)
-on the use of *p*-values in research. A component of that statement
+paper](https://www.amstat.org/asa/files/pdfs/p-valuestatement.pdf) on
+the use of *p*-values in research. A component of that statement
 indicated that “*Scientific conclusions and business or policy decisions
 should not be based only on whether a p-value passes a specific
 threshold.*” The Executive Director of the [ASA](http://www.amstat.org)
@@ -67,38 +81,170 @@ APA Style correlation table, see Table 1, using the *attitude* dataset
 built into *R*.
 
 ``` r
+
 library(apaTables)
-table1 <- apa.cor.table(attitude, 
-                        table.number=1)
+table1 <- apa.cor.table(attitude,
+                        table.number = 1)
 
 print(table1)
+```
 
+``` r
 
-apa.save(filename = "table1.doc",
+apa.save(filename = "table1.docx",
          table1)
 ```
 
-![Correlation table in MSWord](Table1.jpg)
+![](Table1.png)
 
-Correlation table in MSWord
+[Quarto](https://quarto.org) is a free system for writing documents that
+combine text and R code. The
+[apaquarto](https://wjschne.github.io/apaquarto/) extension (one
+command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension))
+makes a Quarto document follow APA style. Place this table in such a
+document and it appears as a fully formatted APA table – number, title,
+and note included – in Word, PDF, or HTML. Tables go into the document
+inside a “code chunk”: a small block of R code with a few settings lines
+at the top. “Rendering” the document turns it into the finished Word,
+PDF, or HTML file.
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
 
 ``` r
-apa.knit.table.for.pdf(table1)
+
+library(apaTables)
+
+table1 <- apa.cor.table(attitude,
+                        table.number = 1)
+
+apa.quarto.template(table1)
 ```
+
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table1` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
+
+**Advanced way.** Write the code chunk yourself, directly in your Quarto
+document.
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+displays the table body with its title and note included automatically,
+so nothing more than the label is required:
+
+```` markdown
+```{r}
+#| label: tbl-correlations
+#| message: false
+#| warning: true
+library(apaTables)
+table1 <- apa.cor.table(attitude)
+apa.quarto.pdf(table1)
+```
+````
+
+That `#| label: tbl-correlations` line is not optional: without a label
+starting `tbl-`, Quarto builds no float for the chunk, so there is no
+number, no title, and no note, however you try to supply them.
+
+One caution for PDF: a correlation table with many variables can be
+wider than the upright (portrait) PDF page. This one is not – Table 1
+measures about 5.4 inches against the 6.5 inches an upright page gives a
+table – but a table with more variables in it would be. APA style places
+such a table on a rotated (landscape) page, and apaTables does that for
+you: it measures the table, and when it will not fit upright it asks
+apaquarto for a rotated page. Nothing has to be added to the chunk and
+nothing has to be added to the document’s YAML header – the display line
+is simply `apa.quarto.pdf(table1)`, and it works whether your tables sit
+in the text or are collected at the end of the manuscript. (Documents
+that already wrap a chunk in `::: {.landscape}` markers keep rendering
+exactly as before; the markers are just no longer something you have to
+write.) Word output needs none of this either:
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+turns the page to landscape automatically.
+
+**The automatic title and note work identically in PDF, Word, and
+HTML.** A chunk rendered to `apaquarto-docx` or `apaquarto-html` shows
+the same generated (or your own) title and note a PDF render would – use
+[`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+or
+[`apa.quarto.html()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+in place of
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+to match the document’s YAML `format:` line.
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md),
+shown above, remains the way to write a Word or HTML file of its own,
+outside any Quarto document.
+
+`apa.quarto.template(table1)` prints one plain chunk – no title line, no
+note line, no wrapper lines, and nothing to add to the YAML header. It
+names the chunk after your table object (`tbl-table1`); shown here with
+the build lines filled in:
+
+```` markdown
+```{r}
+#| label: tbl-table1
+#| message: false
+#| warning: true
+library(apaTables)
+table1 <- apa.cor.table(attitude)
+apa.quarto.pdf(table1)
+```
+````
+
+If a table is still too wide for its page – even a rotated one –
+apaTables prints it smaller during PDF rendering, as small as it has to
+be, so that nothing is cut off. This is automatic; the chunk needs
+nothing extra, and there is no setting to change:
+
+``` r
+
+apa.quarto.pdf(table1)
+```
+
+If fitting the table takes the type below 6 points – where an APA table
+stops being comfortable to read – a warning in the rendered draft says
+so and points you to
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+for a full-size Word version. The table in the PDF is still complete.
 
 ## Regression table overview
 
 Regression tables can be constructed using the **apa.reg.table()**
 function. The constructed table includes the unstandardized regression
 coefficient (*b* with CI), standardized regression coefficient (*beta*
-with CI), semi-partial correlation squared ($sr^{2}$ with CI), the
-correlation ($r$), and the overall fit of the model (indexed by $R^{2}$
-with CI). The *album* sales dataset from Field et al. (2012) is used to
-illustrate the **apa.reg.table()** function.
+with CI), semi-partial correlation squared (labelled *Unique R*² in the
+table, with CI), the correlation ($`r`$), and the overall fit of the
+model (indexed by $`R^2`$ with CI). The *album* sales dataset from Field
+et al. (2012) is used to illustrate the **apa.reg.table()** function.
 
 ## Basic regression table
 
@@ -106,6 +252,62 @@ The **apa.reg.table()** function creates a regression table with
 confidence intervals based on **lm()** output; see Table 2.
 
 ``` r
+
+library(apaTables)
+
+basic.reg <- lm(sales ~ adverts + airplay,
+                data = album)
+
+table2 <- apa.reg.table(basic.reg,
+                        table.number = 2)
+```
+
+``` r
+
+apa.save(filename = "table2.docx",
+         table2)
+```
+
+![](Table2.png)
+
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
+
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
+
+``` r
+
 library(apaTables)
 
 basic.reg <- lm(sales ~ adverts + airplay,
@@ -114,21 +316,32 @@ basic.reg <- lm(sales ~ adverts + airplay,
 table2 <- apa.reg.table(basic.reg,
                         table.number = 2)
 
-apa.save(filename = "table2.doc",
-         table2)
+apa.quarto.template(table2)
 ```
 
-![Basic regression table in MSWord](Table2.jpg)
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table2` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
 
-Basic regression table in MSWord
+**Advanced way.** Write the chunk yourself:
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
-
-``` r
-apa.knit.table.for.pdf(table2)
+```` markdown
+```{r}
+#| label: tbl-regression2
+#| message: false
+#| warning: true
+library(apaTables)
+basic.reg <- lm(sales ~ adverts + airplay, data = album)
+table2 <- apa.reg.table(basic.reg)
+apa.quarto.pdf(table2)
 ```
+````
 
 ## Blocks regression table
 
@@ -164,10 +377,66 @@ two blocks, note that any number of blocks can be used with the
 blocks are a product-term, the zero-order correlation will be omitted
 from the output to prevent interpretation errors common in psychology.
 
-The **apa.reg.table()** function allows for multiple (i.e., more 2 or
-more) blocks as per below; see Table 3.
+The **apa.reg.table()** function allows for multiple (i.e., 2 or more)
+blocks as per below; see Table 3.
 
 ``` r
+
+library(apaTables)
+
+block1 <- lm(sales ~ adverts + airplay, data = album)
+block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
+
+table3 <- apa.reg.table(block1, block2,
+                        table.number = 3)
+```
+
+``` r
+
+apa.save(filename = "table3.docx",
+         table3)
+```
+
+![](Table3.png)
+
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
+
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
+
+``` r
+
 library(apaTables)
 
 block1 <- lm(sales ~ adverts + airplay, data = album)
@@ -176,21 +445,76 @@ block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
 table3 <- apa.reg.table(block1, block2,
                         table.number = 3)
 
-apa.save(filename = "table3.doc",
-         table3)
+apa.quarto.template(table3)
 ```
 
-![Blocks regression table in MSWord](Table3.jpg)
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table3` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
 
-Blocks regression table in MSWord
+**Advanced way.** Write the chunk yourself:
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
-
-``` r
-apa.knit.table.for.pdf(table3)
+```` markdown
+```{r}
+#| label: tbl-regression3
+#| message: false
+#| warning: true
+library(apaTables)
+block1 <- lm(sales ~ adverts + airplay, data = album)
+block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
+table3 <- apa.reg.table(block1, block2)
+apa.quarto.pdf(table3)
 ```
+````
+
+One caution for PDF: a regression table with several blocks is wider
+than the upright (portrait) PDF page. APA style places such a table on a
+rotated (landscape) page, and apaTables does that for you: it measures
+the table and asks apaquarto for a rotated page when one is needed.
+Nothing has to be added to the chunk or to the document’s YAML header –
+the display line is simply `apa.quarto.pdf(table3)`. This two-block
+table (Table 3) measures about 7.1 inches: more than the 6.5 inches an
+upright page gives a table, but well within the 9 inches of a rotated
+one. So it lands on a rotated page at full size with every column
+present. A table wider still – wider than even a rotated page – is
+printed smaller instead, as small as it has to be so that every column
+is kept. If that takes the type below 6 points the rendered draft
+carries a warning saying so, and
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+Word output keeps every column at full size (its page turns to landscape
+instead).
+
+This table is wide enough to be rotated, and
+`apa.quarto.template(table3)` still prints one plain chunk (named
+`tbl-table3` after the object) – the rotation is worked out when the
+document is rendered, not written into the chunk. Shown with the build
+lines filled in:
+
+```` markdown
+```{r}
+#| label: tbl-table3
+#| message: false
+#| warning: true
+library(apaTables)
+block1 <- lm(sales ~ adverts + airplay, data = album)
+block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
+table3 <- apa.reg.table(block1, block2)
+apa.quarto.pdf(table3)
+```
+````
+
+Alongside the chunk it prints the reason, in the words it actually uses:
+
+    This table is about 7.1 inches wide -- too wide for an upright (portrait)
+    PDF page. It will be placed on a rotated (landscape) page automatically,
+    at full size. There is nothing to add to the chunk or to your document's
+    YAML header.
 
 ## 1-way ANOVA and d-value tables
 
@@ -202,11 +526,11 @@ conducted - we do so using the *viagra* dataset from Field et
 al. (2012). When conducting an ANOVA in R using the **lm()** command you
 must ensure your independent variables are R factors and that contrasts
 are set correctly. Note: repeated measures designs are supported via the
-**apa.ezANOVA.table()** command.
+**apa.afex.table()** command.
 
 ``` r
-options(contrasts = c("contr.sum", "contr.poly"))
 
+options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(libido ~ dose,
                 data = viagra)
 ```
@@ -215,89 +539,292 @@ The **apa.aov.table()** function creates a 1-way ANOVA table based on
 lm_output; see Table 4.
 
 ``` r
+
 library(apaTables)
 
 table4 <- apa.aov.table(lm_output,
                         table.number = 4)
+```
 
-apa.save(filename = "table4.doc",
+``` r
+
+apa.save(filename = "table4.docx",
          table4)
 ```
 
-![1-way ANOVA table in MSWord](Table4.jpg)
+![](Table4.png)
 
-1-way ANOVA table in MSWord
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
 
 ``` r
-apa.knit.table.for.pdf(table4)
+
+library(apaTables)
+
+options(contrasts = c("contr.sum", "contr.poly"))
+lm_output <- lm(libido ~ dose,
+                data = viagra)
+
+table4 <- apa.aov.table(lm_output,
+                        table.number = 4)
+
+apa.quarto.template(table4)
 ```
+
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table4` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
+
+**Advanced way.** Write the chunk yourself:
+
+```` markdown
+```{r}
+#| label: tbl-anova4
+#| message: false
+#| warning: true
+library(apaTables)
+options(contrasts = c("contr.sum", "contr.poly"))
+lm_output <- lm(libido ~ dose, data = viagra)
+table4 <- apa.aov.table(lm_output)
+apa.quarto.pdf(table4)
+```
+````
 
 The **apa.1way.table()** function creates a table with the mean and sd
 for each cell; see Table 5.
 
 ``` r
+
+library(apaTables)
+
 table5 <- apa.1way.table(iv = dose,
                          dv = libido,
-                         data = viagra, 
+                         data = viagra,
                          table.number = 5)
+```
 
-apa.save(filename = "table5.doc",
+``` r
+
+apa.save(filename = "table5.docx",
          table5)
 ```
 
-![1-way M/SD table in MSWord](Table5.jpg)
+![](Table5.png)
 
-1-way M/SD table in MSWord
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
 
 ``` r
-apa.knit.table.for.pdf(table5)
+
+library(apaTables)
+
+table5 <- apa.1way.table(iv = dose,
+                         dv = libido,
+                         data = viagra,
+                         table.number = 5)
+
+apa.quarto.template(table5)
 ```
+
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table5` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
+
+**Advanced way.** Write the chunk yourself:
+
+```` markdown
+```{r}
+#| label: tbl-means5
+#| message: false
+#| warning: true
+library(apaTables)
+table5 <- apa.1way.table(iv = dose, dv = libido, data = viagra)
+apa.quarto.pdf(table5)
+```
+````
 
 The **apa.d.table()** function show a d-value (with confidence interval)
 for each paired comparison; see Table 6.
 
 ``` r
+
+library(apaTables)
+
+table6 <- apa.d.table(iv = dose,
+                      dv = libido,
+                      data = viagra,
+                      table.number = 6)
+```
+
+``` r
+
+apa.save(filename = "table6.docx",
+         table6)
+```
+
+![](Table6.png)
+
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
+
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
+
+``` r
+
+library(apaTables)
+
 table6 <- apa.d.table(iv = dose,
                       dv = libido,
                       data = viagra,
                       table.number = 6)
 
-apa.save(filename = "table6.doc",
-         table6)
+apa.quarto.template(table6)
 ```
 
-![1-way Paired Comparison d-values (with CI) in MSWord](Table6.jpg)
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table6` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
 
-1-way Paired Comparison d-values (with CI) in MSWord
+**Advanced way.** Write the chunk yourself:
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
-
-``` r
-apa.knit.table.for.pdf(table6)
+```` markdown
+```{r}
+#| label: tbl-dvalues6
+#| message: false
+#| warning: true
+library(apaTables)
+table6 <- apa.d.table(iv = dose, dv = libido, data = viagra)
+apa.quarto.pdf(table6)
 ```
+````
 
 ## N-way ANOVA tables: 2-way Example
 
 The 2-way example with independent variable predictors is based on the
-*goggles* dataset from Field et al. (2012). As before, when conducting
-an ANOVA in *R* using the **lm()** command you must ensure your
-independent variables are *R* factors and that contrasts are set
-correctly. Note: repeated measures designs are supported via the
-**apa.ezANOVA.table()** command.
+*goggles* dataset from Field et al. (2012). When conducting an ANOVA in
+*R* using the **lm()** command you must ensure your independent
+variables are *R* factors and that contrasts are set correctly. Note:
+repeated measures designs are supported via the **apa.afex.table()**
+command.
 
 ``` r
-options(contrasts = c("contr.sum", "contr.poly"))
 
+options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(attractiveness ~ gender*alcohol,
                 data = goggles)
 ```
@@ -306,26 +833,95 @@ The **apa.aov.table()** function creates a 2-way ANOVA table based on
 lm_output; see Table 7.
 
 ``` r
+
 library(apaTables)
 
 table7 <- apa.aov.table(lm_output,
                         table.number = 7)
+```
 
-apa.save(filename = "table7.doc",
+``` r
+
+apa.save(filename = "table7.docx",
          table7)
 ```
 
-![2-way ANOVA table in MSWord](Table7.jpg)
+![](Table7.png)
 
-2-way ANOVA table in MSWord
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
 
 ``` r
-apa.knit.table.for.pdf(table7)
+
+library(apaTables)
+
+options(contrasts = c("contr.sum", "contr.poly"))
+lm_output <- lm(attractiveness ~ gender*alcohol,
+                data = goggles)
+
+table7 <- apa.aov.table(lm_output,
+                        table.number = 7)
+
+apa.quarto.template(table7)
 ```
+
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table7` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
+
+**Advanced way.** Write the chunk yourself:
+
+```` markdown
+```{r}
+#| label: tbl-anova7
+#| message: false
+#| warning: true
+library(apaTables)
+options(contrasts = c("contr.sum", "contr.poly"))
+lm_output <- lm(attractiveness ~ gender*alcohol, data = goggles)
+table7 <- apa.aov.table(lm_output)
+apa.quarto.pdf(table7)
+```
+````
 
 The **apa.2way.table()** function creates a table with the mean and sd
 for each cell; see Table 8. Marginal means can also be requested with
@@ -335,33 +931,105 @@ select the subset of rows and then use **apa.2way.table()** to display
 cell statistics.
 
 ``` r
+
+library(apaTables)
+
 table8 <- apa.2way.table(iv1 = gender,
-                         iv2 = alcohol, 
-                         dv = attractiveness, 
-                         data = goggles, 
+                         iv2 = alcohol,
+                         dv = attractiveness,
+                         data = goggles,
                          show.marginal.means = TRUE,
                          table.number = 8)
+```
 
-apa.save(filename = "table8.doc",
+``` r
+
+apa.save(filename = "table8.docx",
          table8)
 ```
 
-![2-way M/SD table in MSWord](Table8.jpg)
+![](Table8.png)
 
-2-way M/SD table in MSWord
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
 
-``` r
-apa.knit.table.for.pdf(table8)
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
 ```
 
-You can use the *tidyverse* package to conducted paired comparisons
-within each gender again using **apa.d.table()**; see Tables 9 and 10.
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
 
 ``` r
+
+library(apaTables)
+
+table8 <- apa.2way.table(iv1 = gender,
+                         iv2 = alcohol,
+                         dv = attractiveness,
+                         data = goggles,
+                         show.marginal.means = TRUE,
+                         table.number = 8)
+
+apa.quarto.template(table8)
+```
+
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table8` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
+
+**Advanced way.** Write the chunk yourself:
+
+```` markdown
+```{r}
+#| label: tbl-means8
+#| message: false
+#| warning: true
+library(apaTables)
+table8 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
+                         dv = attractiveness, data = goggles,
+                         show.marginal.means = TRUE)
+apa.quarto.pdf(table8)
+```
+````
+
+You can use the *tidyverse* package to conduct paired comparisons within
+each gender again using **apa.d.table()**; see Tables 9 and 10.
+
+``` r
+
 library(apaTables)
 
 library(dplyr)
@@ -375,43 +1043,138 @@ table9 <- apa.d.table(iv = alcohol,
                       table.number = 9)
 
 table10 <- apa.d.table(iv = alcohol,
-                       dv = attractiveness, 
-                       data = goggles.women, 
+                       dv = attractiveness,
+                       data = goggles.women,
                        table.number = 10)
+```
 
-apa.save(filename = "tables9and10.doc",
+``` r
+
+apa.save(filename = "tables9and10.docx",
          table9, table10)
 ```
 
-![Subgroups for Paired Comparison d-values (with CI) in
-MSWord](Table9.jpg)
+![](Tables9and10.png)
 
-Subgroups for Paired Comparison d-values (with CI) in MSWord
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
 
-``` r
-apa.knit.table.for.pdf(table9)
-apa.knit.table.for.pdf(table10)
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
 ```
 
-## ezANOVA and apaTables: Repeated measures ANOVA
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the tables and then ask for their
+Quarto code:
+
+``` r
+
+library(apaTables)
+
+library(dplyr)
+
+goggles.men   <- filter(goggles,gender=="Male")
+goggles.women <- filter(goggles,gender=="Female")
+
+table9 <- apa.d.table(iv = alcohol,
+                      dv = attractiveness,
+                      data = goggles.men,
+                      table.number = 9)
+
+table10 <- apa.d.table(iv = alcohol,
+                       dv = attractiveness,
+                       data = goggles.women,
+                       table.number = 10)
+
+apa.quarto.template(table9)
+apa.quarto.template(table10)
+```
+
+This prints ready-made Quarto code chunks. They carry no title or note
+lines and need none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from each table itself, every time you render. Copy each
+printed chunk into your Quarto document, add the lines that create the
+corresponding table object –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
+
+**Advanced way.** Write the chunk yourself:
+
+```` markdown
+```{r}
+#| label: tbl-dvalues9
+#| message: false
+#| warning: true
+library(apaTables)
+library(dplyr)
+goggles.men <- filter(goggles, gender == "Male")
+table9 <- apa.d.table(iv = alcohol, dv = attractiveness, data = goggles.men)
+apa.quarto.pdf(table9)
+```
+````
+
+The chunk for Table 10 carries its own label, its own line creating
+`goggles.women`, and its own call to **apa.d.table()**:
+
+```` markdown
+```{r}
+#| label: tbl-dvalues10
+#| message: false
+#| warning: true
+library(apaTables)
+library(dplyr)
+goggles.women <- filter(goggles, gender == "Female")
+table10 <- apa.d.table(iv = alcohol, dv = attractiveness, data = goggles.women)
+apa.quarto.pdf(table10)
+```
+````
+
+## afex and apaTables: Repeated measures ANOVA
 
 apaTables also supports repeated measures ANOVA tables and repeated
-measures by between measures (mixed) ANOVA tables via **ezANOVA** output
-from the *ez* package.
+measures by between measures (mixed) ANOVA tables via **afex** output
+from the *afex* package (specifically the
+[`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html) command).
+The *ez* package was previously used for this purpose but has been
+archived on CRAN; *afex* is now the recommended approach.
 
 ### Repeated Measures: 2-way design
 
-Prior to begining we ‘open’ the *apaTables*, *tidyverse*, and *ez*
+Prior to beginning we ‘open’ the *apaTables*, *tidyverse*, and *afex*
 packages using the library command as per below.
 
 ``` r
+
 library(apaTables)
 library(tidyverse)
-library(ez)
+library(afex)
 ```
 
 In this example, we used the *drink_attitude* dataset from Field et
@@ -420,10 +1183,11 @@ not need to be loaded using **read_csv()** or **read_sav()**. The
 dataset (*drink_attitude_wide*) can be inspected with the **glimpse()**
 command below (this provides information similar to SPSS variable view).
 We use the “wide” descriptor in the name of the dataset to remind us
-that the data is in in the “wide” format where one row contains all the
+that the data is in the “wide” format where one row contains all the
 data for one person. There are 20 participants so there are 20 rows.
 
 ``` r
+
 glimpse(drink_attitude_wide)
 ```
 
@@ -431,17 +1195,17 @@ The dataset represents an ANOVA with two repeated measures factors. It
 is a 3 *drinks* (wine, beer, water) X 3 *imagery* (positive, negative,
 neutral) design. The dataset uses 10 columns to represent this design.
 The first column contains a code for each participant (P1, P2, etc.)
-Note that the *participant* column is a factor as indicated by the \<
-fctr \> descriptor. The *participant* column must be a factor which can,
-as noted previously, be created by the **as_factor()** command.
+Note that the *participant* column is a factor as indicated by the
+descriptor. The *participant* column must be a factor which can, as
+noted previously, be created by the **as_factor()** command.
 
-Each of the remaining 9 columns contain atittude ratings for a single
+Each of the remaining 9 columns contain attitude ratings for a single
 *drink/imagery* combination cell. The naming convention for column names
 is critical to the workflow we describe below. Each column name
 represents the level of the *drink* variable separated using an
 underscore ( \_ ) from a level of the *imagery* variable. For example
 the first column is called *beer_positive* representing the cell with a
-combination of the the *beer* level of *drink* and the positive level of
+combination of the *beer* level of *drink* and the positive level of
 *imagery*. Each value in this column represents *attitude* for a
 participant in this cell.
 
@@ -451,6 +1215,7 @@ long format (where each row represents a single observation from a
 person). We do this with a series of commands below.
 
 ``` r
+
 drink_attitude_long <- tidyr::pivot_longer(drink_attitude_wide,
                               cols = beer_positive:water_neutral,
                               names_to = c("drink", "imagery"),
@@ -465,6 +1230,7 @@ drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
 We can inspect the final long version of the dataset with glimpse again:
 
 ``` r
+
 glimpse(drink_attitude_long)
 ```
 
@@ -480,100 +1246,183 @@ column indicating level of *drink*, a single column indicating level of
 You can see the first few rows in the more familiar format below:
 
 ``` r
+
 head(drink_attitude_long)
 ```
 
-Prior to conducting the analysis we set the contrasts as per Field et
-al. (2012).
+We use the **aov_ez()** command from the *afex* package to conduct the
+repeated measures ANOVA. We supply the participant id column
+(*participant*), the dependent variable (*attitude*), and the two
+within-participant factors (*drink* and *imagery*). Unlike the older
+*ez* workflow, *afex* selects appropriate contrasts and applies a
+Greenhouse-Geisser sphericity correction automatically, so the manual
+[`contrasts()`](https://rdrr.io/r/stats/contrasts.html) and
+`options(digits = ...)` steps are no longer required.
 
 ``` r
-alcohol_vs_water <- c(1, 1, -2)
-beer_vs_wine <- c(-1, 1, 0)
-negative_vs_other <- c(1, -2, 1)
-positive_vs_neutral <- c(-1, 0, 1)
-contrasts(drink_attitude_long$drink) <- cbind(alcohol_vs_water, beer_vs_wine)
-contrasts(drink_attitude_long$imagery) <- cbind(negative_vs_other, positive_vs_neutral)
-```
 
-Then we use the **ezANOVA** command from the *ez* package to conduct the
-repeated measures ANOVA. Be sure to include all of the commands below
-including the options command which ensures that the output has
-sufficent number of digits (i.e., numbers after the decimal) for
-*apaTables*.
-
-``` r
-options(digits = 10)
-
-drink_attitude_results <- ezANOVA(data = drink_attitude_long,
-                                  dv = .(attitude),
-                                  wid = .(participant),
-                                  within = .(drink, imagery),
-                                  type = 3,
-                                  detailed = TRUE)
+drink_attitude_results <- afex::aov_ez(id = "participant",
+                                       dv = "attitude",
+                                       data = drink_attitude_long,
+                                       within = c("drink", "imagery"))
 ```
 
 Now we make the table based on the output:
 
 ``` r
-table11 <- apa.ezANOVA.table(drink_attitude_results,
-                             table.number = 11)
 
-apa.save(filename = "table11.doc",
+table11 <- apa.afex.table(drink_attitude_results,
+                          table.number = 11)
+```
+
+``` r
+
+apa.save(filename = "table11.docx",
          table11)
 ```
 
-![2-way Repeated Measures ANOVA in MSWord](Table10.jpg)
+![](Table11.png)
 
-2-way Repeated Measures ANOVA in MSWord
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
 
 ``` r
-apa.knit.table.for.pdf(table11)
+
+library(apaTables)
+library(tidyverse)
+library(afex)
+
+drink_attitude_long <- tidyr::pivot_longer(drink_attitude_wide,
+                              cols = beer_positive:water_neutral,
+                              names_to = c("drink", "imagery"),
+                              names_sep = "_",
+                              values_to = "attitude")
+
+drink_attitude_long$drink <- as_factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
+
+drink_attitude_results <- afex::aov_ez(id = "participant",
+                                       dv = "attitude",
+                                       data = drink_attitude_long,
+                                       within = c("drink", "imagery"))
+
+table11 <- apa.afex.table(drink_attitude_results,
+                          table.number = 11)
+
+apa.quarto.template(table11)
 ```
+
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table11` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
+
+**Advanced way.** Write the chunk yourself:
+
+```` markdown
+```{r}
+#| label: tbl-anova11
+#| message: false
+#| warning: true
+library(apaTables)
+library(tidyverse)
+library(afex)
+drink_attitude_long <- tidyr::pivot_longer(drink_attitude_wide,
+                          cols = beer_positive:water_neutral,
+                          names_to = c("drink", "imagery"),
+                          names_sep = "_",
+                          values_to = "attitude")
+drink_attitude_long$drink <- as_factor(drink_attitude_long$drink)
+drink_attitude_long$imagery <- as_factor(drink_attitude_long$imagery)
+drink_attitude_results <- afex::aov_ez(id = "participant",
+                                       dv = "attitude",
+                                       data = drink_attitude_long,
+                                       within = c("drink", "imagery"))
+table11 <- apa.afex.table(drink_attitude_results)
+apa.quarto.pdf(table11)
+```
+````
 
 ### Repeated Measures and Independent Groups: 3-way design
 
-Prior to begining we ‘open’ the *apaTables*, *tidyverse*, and *ez*
+Prior to beginning we ‘open’ the *apaTables*, *tidyverse*, and *afex*
 packages using the library command as per below.
 
 ``` r
+
 library(apaTables)
 library(tidyverse)
-library(ez)
+library(afex)
 ```
 
-In this example, we used the drink_attitude dataset from Field et
-al. (2012). As before, this dataset is built into apaTables. The dataset
+In this example, we used the dating dataset from Field et al. (2012). As
+before, this dataset is built into apaTables. The dataset
 (*dating_wide*) can be inspected with the **glimpse()** command below
 (this provides information similar to SPSS variable view). We use the
 “wide” descriptor in the name of the dataset to remind us that the data
-is in in the “wide” format where one row contains all the data for one
+is in the “wide” format where one row contains all the data for one
 person. There are 20 participants so there are 20 rows.
 
 ``` r
+
 glimpse(dating_wide)
 ```
 
 The dataset represents an ANOVA with one independent groups factor and
 two repeated measures factors. It is a 2 *gender* (male, female) by 3
-*looks* (attrative, average, ugly) X 3 *personality* (high, some, none)
+*looks* (attractive, average, ugly) X 3 *personality* (high, some, none)
 design. The dataset uses 11 columns to represent this design. The first
 column contains a code for each participant (P1, P2, etc.) Note that the
-*participant* column is a factor as indicated by the “\< fctr \>”
-descriptor. The second column is used to indicate the gender of each
-participant. Both the *participant* and *gender* columns are factors.
+*participant* column is a factor as indicated by the descriptor. The
+second column is used to indicate the gender of each participant. Both
+the *participant* and *gender* columns are factors.
 
-Each of the remaining 9 columns contain atittude ratings for a single
+Each of the remaining 9 columns contain attitude ratings for a single
 *looks/personality* combination cell. The naming convention for column
 names is critical to the workflow we describe below. Each column name
 represents the level of the *looks* variable separated using an
 underscore ( \_ ) from a level of the *personality* variable. For
 example the first column is called *attractive_high* representing the
-cell with a combination of the the attractive level of *looks* and the
-high level of *personality*. Each value in this column represents *date
+cell with a combination of the attractive level of *looks* and the high
+level of *personality*. Each value in this column represents *date
 rating* for a participant in this cell.
 
 In order to conduct a mixed between/within ANOVA we need to convert the
@@ -583,6 +1432,7 @@ person) – taking into account the independent groups factors (*gender*).
 We do this with a series of commands below.
 
 ``` r
+
 
 dating_long <- tidyr::pivot_longer(dating_wide,
                                    cols = attractive_high:ugly_none,
@@ -598,6 +1448,7 @@ dating_long$personality <- as_factor(dating_long$personality)
 We can inspect the final long version of the dataset with glimpse again:
 
 ``` r
+
 glimpse(dating_long)
 ```
 
@@ -608,79 +1459,156 @@ participant. As before, the first column is factor column representing
 column now - because each participant has nine observations (i.e., one
 in each of the nine cells). The second column contains the *gender*
 factor. The third column indicates the level of *looks*, and the fourth
-column indicates the level of *personality*. The fith column indicates
+column indicates the level of *personality*. The fifth column indicates
 the *date_rating*.
 
 You can see the first few rows in the more familiar format below:
 
 ``` r
+
 head(dating_long)
 ```
 
-Prior to conducting the analysis we set the contrasts as per Field et
-al. (2012).
+We use the **aov_ez()** command from the *afex* package to conduct the
+mixed ANOVA. We supply the participant id column (*participant*), the
+dependent variable (*date_rating*), the between-participant factor
+(*gender*), and the two within-participant factors (*looks* and
+*personality*). As above, *afex* selects appropriate contrasts and
+applies a sphericity correction automatically, so the manual
+[`contrasts()`](https://rdrr.io/r/stats/contrasts.html) and
+`options(digits = ...)` steps are no longer required.
 
 ``` r
-some_vs_none <- c(1, 1, -2)
-hi_vs_av <- c(1, -1, 0)
-attractive_vs_ugly <- c(1, 1, -2)
-attractive_vs_average <- c(1, -1, 0)
-contrasts(dating_long$personality) <- cbind(some_vs_none, hi_vs_av)
-contrasts(dating_long$looks) <- cbind(attractive_vs_ugly, attractive_vs_average)
-```
 
-Then we use the **ezANOVA** command from the *ez* package to conduct the
-repeated measures ANOVA. Be sure to include all of the commands below
-including the options command which ensures that the output has
-sufficent number of digits (i.e., numbers after the decimal) for
-apaTables.
-
-``` r
-options(digits = 10)
-dating_results <-ezANOVA(data = dating_long, 
-                         dv = .(date_rating),
-                         wid = .(participant),
-                         between = .(gender),
-                         within = .(looks, personality),
-                         type = 3,
-                         detailed = TRUE)
+dating_results <- afex::aov_ez(id = "participant",
+                               dv = "date_rating",
+                               data = dating_long,
+                               between = "gender",
+                               within = c("looks", "personality"))
 ```
 
 Now we make the table based on the output:
 
 ``` r
-table12 <- apa.ezANOVA.table(dating_results, 
-                                  filename = "Table12_APA.doc", 
-                                  table.number = 12)
 
-apa.save(filename = "table12.doc",
+table12 <- apa.afex.table(dating_results,
+                          table.number = 12)
+```
+
+``` r
+
+apa.save(filename = "table12.docx",
          table12)
 ```
 
-![3-way Mixed Measures ANOVA in MSWord](Table11.jpg)
+![](Table12.png)
 
-3-way Mixed Measures ANOVA in MSWord
+This table can also be placed in a [Quarto](https://quarto.org) document
+– Quarto is a free system for writing documents that combine text and R
+code. With the [apaquarto](https://wjschne.github.io/apaquarto/)
+extension installed (one command; see the [installation
+instructions](https://dstanley4.github.io/apaTables/articles/apaquarto-usage.html#installing-the-apaquarto-extension)),
+the table appears fully formatted – number, title, and note included –
+when the document is rendered to Word, PDF, or HTML. Tables go into the
+document inside a “code chunk”: a small block of R code with a few
+settings lines at the top. “Rendering” the document turns it into the
+finished Word, PDF, or HTML file.
 
-Use the apa.knit.table.for.pdf() function to create a latex table for
-[papaja](https://github.com/crsh/papaja) or [Quarto](https://quarto.org)
-documents:
+Every apaquarto document begins with a YAML header: the settings block
+between `---` lines at the very top of the document. apaquarto needs an
+author there – with no author, or an empty one, the render stops with a
+LaTeX error – and it reports a problem unless that author has an
+affiliation and is marked `corresponding: true`. This header is enough
+to render:
+
+``` yaml
+---
+title: "My Paper"
+author:
+  - name: Jane Doe
+    corresponding: true
+    affiliations:
+      - name: University of Guelph
+format: apaquarto-pdf
+---
+```
+
+There are two ways to produce the chunk that holds the table; most users
+only need the first.
+
+**Easy way.** In the R console, create the table and then ask for its
+Quarto code:
 
 ``` r
-apa.knit.table.for.pdf(table12)
+
+library(apaTables)
+library(tidyverse)
+library(afex)
+
+dating_long <- tidyr::pivot_longer(dating_wide,
+                                   cols = attractive_high:ugly_none,
+                                   names_to = c("looks", "personality"),
+                                   names_sep = "_",
+                                   values_to = "date_rating")
+
+dating_long$looks <- as_factor(dating_long$looks)
+dating_long$personality <- as_factor(dating_long$personality)
+
+dating_results <- afex::aov_ez(id = "participant",
+                               dv = "date_rating",
+                               data = dating_long,
+                               between = "gender",
+                               within = c("looks", "personality"))
+
+table12 <- apa.afex.table(dating_results,
+                          table.number = 12)
+
+apa.quarto.template(table12)
 ```
+
+This prints a ready-made Quarto code chunk. It carries no title or note
+line and needs none:
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+writes both from the table itself, every time you render. Copy the
+printed chunk into your Quarto document, add the lines that create
+`table12` to the chunk –
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) among
+them; without it the document cannot find the apaTables commands and the
+render stops. Then render the document.
+
+**Advanced way.** Write the chunk yourself:
+
+```` markdown
+```{r}
+#| label: tbl-anova12
+#| message: false
+#| warning: true
+library(apaTables)
+library(tidyverse)
+library(afex)
+dating_long <- tidyr::pivot_longer(dating_wide,
+                                   cols = attractive_high:ugly_none,
+                                   names_to = c("looks", "personality"),
+                                   names_sep = "_",
+                                   values_to = "date_rating")
+dating_long$looks <- as_factor(dating_long$looks)
+dating_long$personality <- as_factor(dating_long$personality)
+dating_results <- afex::aov_ez(id = "participant",
+                               dv = "date_rating",
+                               data = dating_long,
+                               between = "gender",
+                               within = c("looks", "personality"))
+table12 <- apa.afex.table(dating_results)
+apa.quarto.pdf(table12)
+```
+````
 
 ## References
 
-Field, A., Miles, J., Field, Z. *Discovering statistics using R*. Sage:
-Chicago.
+Field, A., Miles, J., & Field, Z. (2012). *Discovering statistics using
+R*. Sage.
 
 Nuijten, M. B., Hartgerink, C. H. J., van Assen, M. A. L. M., Epskamp,
-S., & Wicherts, J. M. (2015). The prevalence of statistical reporting
-errors in psychology (1985-2013). *Behavior Research Methods*.
-<http://doi.org/10.3758/s13428-015-0664-2>
-
-------------------------------------------------------------------------
-
-1.  Technically the tables are in .rtf format. But you should end all
-    files with .doc; this will ensure they are automatically loaded by
-    Microsoft Word
+S., & Wicherts, J. M. (2016). The prevalence of statistical reporting
+errors in psychology (1985-2013). *Behavior Research Methods, 48*(4),
+1205-1226. <https://doi.org/10.3758/s13428-015-0664-2>

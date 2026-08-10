@@ -1,6 +1,8 @@
-# Save previously constructed APA table objects in a single .doc file
+# Save apaTables tables to a Word (.docx) or HTML (.html) file
 
-Save previously constructed APA table objects in a single .doc file
+`apa.save()` writes one or more finished tables to a single file – the
+way to get an apaTables table into a manuscript you write in Word, or to
+give a journal its tables as a file of their own:
 
 ## Usage
 
@@ -12,19 +14,79 @@ apa.save(filename, ..., paper = "us")
 
 - filename:
 
-  Filename (e.g., my.tables.doc)
+  Output filename ending in `.docx` or `.html` (a `.doc`/`.rtf` name is
+  written as `.docx`).
 
 - ...:
 
-  apaTable objects to be saved
+  One or more apaTables table objects to save.
 
 - paper:
 
-  Use "us" or "a4". Default is "us".
+  Page size for `.docx`: `"us"` (default) or `"a4"`. Capitalization is
+  forgiven (`"A4"` works); any other value is an error.
 
 ## Value
 
-Save status
+Invisibly returns the `filename` actually written.
+
+## Details
+
+    table1 <- apa.cor.table(attitude)
+    apa.save("Table1.docx", table1)
+
+The file appears in your working directory – the folder R is currently
+pointing at. Open it in Word and the finished APA table is there: the
+"Table N" line, the italic title, the body, and the *Note.* below it.
+Copy it into your manuscript, or send the file as it is. The format is
+chosen by the file extension: `.docx` for Word, `.html` for a web page
+(a legacy `.doc`/`.rtf` name is written as `.docx`). `apa.save()` does
+not write PDF files.
+
+Several tables can go into one file, each on a page of its own, in the
+order you list them:
+
+    apa.save("AllTables.docx", table1, table2, table3)
+
+A table left with its default number is numbered by its position in the
+file – Table 1, Table 2, Table 3 above – while a number set when the
+table was built is kept.
+
+Tables are set in 12 point, matching the manuscript body type APA style
+expects. Each page is upright (portrait) unless the table is too wide
+for it: `apa.save()` measures every table, and one that will not fit
+upright is placed on a landscape page at full size – columns are never
+shrunk or cut off. To decide the orientation yourself, use the
+`landscape` argument of the function that built the table – for example
+`apa.cor.table(attitude, landscape = TRUE)`; an explicit value always
+wins over measurement.
+
+**The title and the note are written from the table itself**, so they
+stay correct when the analysis changes; there is no `title` or `note`
+argument here at this time. If you need particular wording, edit the
+finished Word file.
+
+## See also
+
+The functions that make the tables this saves:
+[`apa.cor.table`](https://dstanley4.github.io/apaTables/reference/apa.cor.table.md),
+[`apa.reg.table`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md),
+[`apa.aov.table`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md),
+[`apa.1way.table`](https://dstanley4.github.io/apaTables/reference/apa.1way.table.md),
+[`apa.2way.table`](https://dstanley4.github.io/apaTables/reference/apa.2way.table.md),
+[`apa.afex.table`](https://dstanley4.github.io/apaTables/reference/apa.afex.table.md),
+and
+[`apa.d.table`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md).
+
+If your manuscript lives in a Quarto document – text and analysis in one
+file – place tables with
+[`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+or
+[`apa.quarto.docx`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+there instead of saving separate files.
+
+**The package website** has all of this documentation with rendered
+examples: <https://dstanley4.github.io/apaTables/>.
 
 ## Examples
 
@@ -32,14 +94,10 @@ Save status
 library(apaTables)
 
 table1 <- apa.1way.table(iv = dose, dv = libido,
-               data = viagra, table.number = 1)
+                         data = viagra, table.number = 1)
 
-table2 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
-                         dv = attractiveness,
-                         data = goggles, table.number = 1)
-
-apa.save(filename = file.path(tempdir(), "my.tables.doc"), table1, table2)
+apa.save(filename = file.path(tempdir(), "Table1.docx"), table1)
 
 # delete demo file
-unlink(file.path(tempdir(), "my.tables.doc"))
+unlink(file.path(tempdir(), "Table1.docx"))
 ```
