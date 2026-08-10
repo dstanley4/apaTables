@@ -11,8 +11,12 @@ test_that("the tablemeta filter's precedence decisions are correct", {
   lua <- system.file("_extensions/wjschne/apaquarto/apatablemeta-decide.lua",
                      package = "apaTables")
   skip_if(lua == "", "extension not installed")
+  # The variable is set in the R process, not via system2(env=): on Windows
+  # system2() puts env assignments on the command line, where pandoc reads
+  # them as input filenames.
+  withr::local_envvar(APA_TABLEMETA_LUA = lua)
   out <- suppressWarnings(system2(
     "pandoc", c("lua", test_path("test-tablemeta-decision.lua")),
-    env = paste0("APA_TABLEMETA_LUA=", lua), stdout = TRUE, stderr = TRUE))
+    stdout = TRUE, stderr = TRUE))
   expect_equal(attr(out, "status") %||% 0L, 0L, info = paste(out, collapse = "\n"))
 })
