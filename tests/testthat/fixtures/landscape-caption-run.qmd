@@ -1,0 +1,58 @@
+---
+title: "Landscape Caption Run"
+shorttitle: "Caption Run"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+## Results
+
+Two CONSECUTIVE rotated tables followed by an UPRIGHT one. The run of two is
+what Phase 1.14 collapses into a single landscape section; the upright table
+ends the run and must keep its own layout untouched.
+
+`apa.cor.table(attitude)` is deliberately NOT used here: it measures 5.44 in
+inside a manuscript's 6.5 in block and does not rotate (D61), so it would have
+made this a one-rotated-table fixture reporting the opposite conclusion. That
+mistake was made once already, in this phase's own measure round.
+
+`tbl-runa`: rotated.
+
+```{r}
+#| label: tbl-runa
+#| tbl-cap: "CAPTIONRUNA"
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars))
+```
+
+`tbl-runb`: rotated, a different width so the two are distinguishable.
+
+```{r}
+#| label: tbl-runb
+#| tbl-cap: "CAPTIONRUNB"
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars[, 1:9]))
+```
+
+`tbl-runc`: NOT rotated -- ends the run.
+
+```{r}
+#| label: tbl-runc
+#| tbl-cap: "CAPTIONRUNC"
+#| echo: false
+apaTables:::apa_quarto_markdown_block(
+  apa.1way.table(iv = dose, dv = libido, data = viagra))
+```
+
+ENDMARKERCAPTIONRUN closes the body.

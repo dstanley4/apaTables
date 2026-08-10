@@ -1,0 +1,64 @@
+---
+title: "Landscape Note Position"
+shorttitle: "Note Position"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+## Results
+
+Four floats, covering the four cases fix round 1 of Task 7 required verified
+together: a rotated table with a generated note, a rotated table with an
+explicit chunk note, a rotated table with NO note at all, and a non-rotated
+table with a generated note. `apatablelandscapenote.lua` (bundled) must move
+the note inside the landscape section for the first two, leave the third
+alone (nothing to move), and never touch the fourth (no landscape closer at
+all).
+
+`tbl-a`: rotated, generated note.
+
+```{r}
+#| label: tbl-a
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars))
+```
+
+`tbl-b`: rotated, explicit chunk `apa-note`.
+
+```{r}
+#| label: tbl-b
+#| apa-note: "Explicit chunk note text for table B."
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars))
+```
+
+`tbl-c`: rotated, NO note at all (`note = ""` defeats the generated default
+without a chunk `apa-note` taking its place -- see `apa_note_attr()`'s own
+comment on an empty candidate).
+
+```{r}
+#| label: tbl-c
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars), note = "")
+```
+
+`tbl-d`: NOT rotated, generated note.
+
+```{r}
+#| label: tbl-d
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]))
+```
+
+ENDMARKER closes the body of this manuscript, after every table.

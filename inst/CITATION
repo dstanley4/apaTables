@@ -1,0 +1,23 @@
+citHeader("To cite the apaTables package in publications, please cite the article describing it. To credit a specific version of the package as well, also cite the manual entry below.")
+
+bibentry(
+  bibtype = "Article",
+  title   = "Reproducible Tables in Psychology Using the {apaTables} Package",
+  author  = c(person(c("David", "J."), "Stanley"),
+              person(c("Jeffrey", "R."), "Spence")),
+  journal = "Advances in Methods and Practices in Psychological Science",
+  year    = "2018",
+  volume  = "1",
+  number  = "3",
+  pages   = "415--431",
+  doi     = "10.1177/2515245918773743"
+)
+
+bibentry(
+  bibtype = "Manual",
+  title   = "{apaTables}: Create American Psychological Association (APA) Style Tables",
+  author  = person(c("David", "J."), "Stanley"),
+  year    = sub("-.*", "", meta$Date),
+  note    = paste("R package version", meta$Version),
+  url     = "https://cran.r-project.org/package=apaTables"
+)

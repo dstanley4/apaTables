@@ -1,0 +1,29 @@
+---
+title: "AOV Smoke"
+shorttitle: "aov"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-pdf
+---
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+op <- options(contrasts = c("contr.helmert", "contr.poly"))
+lm_output <- lm(libido ~ dose, data = viagra)
+aov_tbl <- apa.aov.table(lm_output, table.number = 4)
+options(op)
+```
+
+```{r}
+#| label: tbl-aov
+#| tbl-cap: "ANOVA Results for Libido"
+#| apa-note: "SS = Sum of squares. df = degrees of freedom. MS = mean square."
+apa.quarto.pdf(aov_tbl)
+```

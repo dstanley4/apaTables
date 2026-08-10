@@ -1,0 +1,26 @@
+---
+title: "Correlation Smoke"
+shorttitle: "Cor"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-pdf
+---
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+cor_tbl <- apa.cor.table(attitude, table.number = 1)
+```
+
+```{r}
+#| label: tbl-cor
+#| tbl-cap: "Descriptive Statistics and Correlations Among Attitude Variables"
+#| apa-note: "N = 30."
+apa.quarto.pdf(cor_tbl)
+```

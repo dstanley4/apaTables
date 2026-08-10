@@ -1,0 +1,44 @@
+---
+title: "Landscape Unlabelled Shrunk"
+shorttitle: "Unlabelled Shrunk"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Body text before.
+
+The chunk below carries NO `tbl-` label, and that absence is the whole
+test (fix round 1, Important). Task 6 made rotation reachable for an
+unlabelled chunk (`apatablelandscape.lua` finds its own marker div via a
+Pandoc-level walk, not a `FloatRefTarget` handler), which also made
+reachable a defect in the shrink-ladder filter that predates Task 6: it was
+scoped to `FloatRefTarget` only, so an unlabelled wide table would rotate
+but silently keep the default 10 pt table style, leaving its own marker
+div stranded, unread, in the rendered document. That filter now uses the
+same Pandoc-level walk this one does. (This paragraph deliberately avoids
+spelling out the marker's own class name as a literal string, since the
+structural test reading this rendered document checks the OUTPUT does not
+contain it -- and this prose would otherwise be a false positive against
+its own check.)
+
+```{r}
+#| label: standin-not-a-float
+#| echo: false
+set.seed(1)
+d14 <- as.data.frame(matrix(rnorm(30 * 14), ncol = 14))
+names(d14) <- paste0("Var", 1:14)
+apaTables:::apa_quarto_markdown_block(apa.cor.table(d14))
+```
+
+Body text after.

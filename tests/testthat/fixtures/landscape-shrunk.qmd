@@ -1,0 +1,40 @@
+---
+title: "Landscape Shrunk"
+shorttitle: "Landscape Shrunk"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Body text before.
+
+@tbl-wide14 is wide enough that the layout ladder BOTH rotates it AND still
+has to shrink its type below the 10 pt default to fit the rotated budget --
+the combination D38 (dev/specs/2026-07-31-phase2-decisions.md; the Route A
+shrink ladder, carried by apaquarto fork commit 125cbe4 on branch
+apatables-bundle) left unverified through a real render ("rotation's
+interaction with this marker is NOT yet built or verified... a table that
+both rotates AND shrinks is untested here"), because apatablelandscape.lua
+(Task 6) did not exist yet.
+
+```{r}
+#| label: tbl-wide14
+#| tbl-cap: "Fourteen Variable Correlations"
+#| echo: false
+set.seed(1)
+d14 <- as.data.frame(matrix(rnorm(30 * 14), ncol = 14))
+names(d14) <- paste0("Var", 1:14)
+apaTables:::apa_quarto_markdown_block(apa.cor.table(d14))
+```
+
+Body text after.

@@ -1,0 +1,30 @@
+---
+title: "Float page placement: a figure with an appendix"
+shorttitle: "Float pages appendix figures"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+UNIQUEBODYMARKER this sentence exists so a test can ask which page it is on.
+
+```{r}
+#| label: fig-one
+#| echo: false
+#| fig-cap: "UNIQUEFIGUREONE"
+plot(1:10)
+```
+
+# Appendix
+
+UNIQUEAPPENDIXBODY

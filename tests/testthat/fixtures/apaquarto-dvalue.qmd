@@ -1,0 +1,27 @@
+---
+title: "d-value Smoke"
+shorttitle: "dvalue"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-pdf
+---
+
+```{r}
+#| include: false
+#| message: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+dvalue_tbl <- apa.d.table(iv = dose, dv = libido, data = viagra)
+```
+
+```{r}
+#| label: tbl-dvalue
+#| tbl-cap: "Means, Standard Deviations, and *d*-values with Confidence Intervals"
+#| apa-note: "M = mean. SD = standard deviation."
+apa.quarto.pdf(dvalue_tbl)
+```

@@ -1,0 +1,50 @@
+---
+title: "My Paper"
+shorttitle: "My Paper"
+author:
+  - name: Your Name
+    corresponding: true
+    email: you@example.org
+    affiliations:
+      - name: Your University
+format: apaquarto-pdf
+---
+
+<!-- Created by apaTables @APATABLES_VERSION@ with apaquarto @APAQUARTO_VERSION@.
+
+     Sharing this document:
+       * Send the whole folder. The _extensions folder travels with it and
+         there is nothing for the person receiving it to do.
+       * Send this .qmd on its own. The person receiving it puts it in a
+         folder and runs apa.quarto.setup() in R once, before rendering.
+
+     Do not run "quarto add" or "quarto update" in this folder: both replace
+     the extension with the standard one, which brings back bugs in table
+     numbering. If that happens, run apa.quarto.setup() to put it back. -->
+
+```{r}
+#| echo: false
+#| message: false
+library(apaTables)
+apa.quarto.setup()
+```
+
+## Method
+
+Describe your participants and measures here.
+
+## Results
+
+The correlations are reported in @tbl-correlations.
+
+```{r}
+#| label: tbl-correlations
+#| message: false
+#| warning: true
+my_table <- apa.cor.table(attitude[, 1:4])
+apa.quarto.pdf(my_table)
+```
+
+## Discussion
+
+Interpret your findings here.

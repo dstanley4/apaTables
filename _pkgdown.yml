@@ -1,0 +1,60 @@
+url: https://dstanley4.github.io/apaTables/
+template:
+  bootstrap: 5
+
+# The maintainer's working notes (CLAUDE.md, STATUS.md, quarto-dev.md) are
+# gitignored, so the CI checkout that builds the deployed site never contains
+# them. A LOCAL build does see them: pkgdown turns every .md file in the
+# package root into a page, and it offers no way to opt one out (the skip list
+# in pkgdown:::package_mds() is hardcoded). search.exclude at least keeps those
+# local-only pages out of search.json; delete docs/{CLAUDE,STATUS,quarto-dev}.*
+# after any local build rather than publishing it by hand.
+search:
+  exclude: ['CLAUDE.html', 'STATUS.html', 'quarto-dev.html']
+
+reference:
+- title: Build APA tables
+  contents:
+  - apa.cor.table
+  - apa.reg.table
+  - apa.aov.table
+  - apa.1way.table
+  - apa.2way.table
+  - apa.d.table
+  - apa.afex.table
+- title: Use tables in Quarto (apaquarto)
+  desc: >
+    A table goes into a Quarto document one way: build it on one line, then
+    pass it to the entry point named for the document's own destination --
+    apa.quarto.pdf(), apa.quarto.docx(), apa.quarto.html() or
+    apa.quarto.revealjs() -- on the next. The rest of this section sets a
+    project up and writes the code for you.
+  contents:
+  - apa.quarto.pdf
+  - apa.quarto.new
+  - apa.quarto.setup
+  - apa.quarto.template
+  - apa.quarto.example
+  - apa_caption
+  - apa_note_text
+- title: Save tables to Word or HTML
+  desc: >
+    The other way out of apaTables: one command writes a table -- or several
+    tables -- to a Word (.docx) or HTML file.
+  contents:
+  - apa.save
+- title: Confidence-interval utilities
+  contents:
+  - get.ci.partial.eta.squared
+- title: Datasets
+  contents:
+  - album
+  - dating_wide
+  - drink_attitude_wide
+  - Eysenck
+  - fidler_thompson
+  - goggles
+  - viagra
+- title: internal
+  contents:
+  - apaTables-package

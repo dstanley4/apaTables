@@ -1,0 +1,12 @@
+---
+title: "Slide font size"
+format: revealjs
+---
+
+## An explicit font.size, honoured exactly
+
+```{r}
+#| echo: false
+library(apaTables)
+apa.cor.table(attitude[, 1:3]) |> apa.quarto.revealjs(font.size = 8.5)
+```

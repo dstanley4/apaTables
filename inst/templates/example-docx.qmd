@@ -1,0 +1,323 @@
+---
+title: "apaTables Example Tables (Word)"
+shorttitle: "apaTables Examples (Word)"
+author:
+  - name: Your Name
+    corresponding: true
+    email: you@example.org
+    affiliations:
+      - name: Your Institution
+format:
+  apaquarto-docx:
+    # floatsintext places each table in the text where its code chunk sits,
+    # instead of collecting every table on pages at the end of the
+    # manuscript. It is used here so that each table appears on the page
+    # that describes it. Either placement works: apaTables tables render
+    # correctly both ways, rotated pages included.
+    floatsintext: true
+---
+
+<!--
+This document uses the apaquarto Quarto extension
+(https://wjschne.github.io/apaquarto/), already installed next to it in an
+_extensions/wjschne/apaquarto folder by apa.quarto.example() -- there is
+nothing to install before rendering this file. Full details about
+apaquarto itself are at https://wjschne.github.io/apaquarto/ .
+
+Rendering this file to Word needs no LaTeX -- Quarto writes the .docx
+directly. Its companion file ending in -pdf.qmd renders the same tables to PDF,
+which does need a LaTeX engine such as TinyTeX.
+
+Sharing this document:
+  * Send the whole folder. The _extensions folder travels with it and
+    there is nothing for the person receiving it to do.
+  * Send this .qmd on its own. The person receiving it puts it in a
+    folder and runs apa.quarto.setup() in R once, before rendering.
+
+Do not run "quarto add" or "quarto update" in this folder: both replace
+the extension with the standard one, which brings back bugs in table
+numbering. If that happens, run apa.quarto.setup() to put it back.
+
+BEFORE RENDERING: the repeated-measures page near the end of this document
+needs two packages that are not installed with apaTables -- afex, which runs
+the analysis, and tidyr, which reshapes the data for it. Install both once,
+in the R console:
+  install.packages(c("afex", "tidyr"))
+Without them the render stops on that page with a message that afex or tidyr
+is missing.
+
+A second file ending in -pdf.qmd was written next to this one: the same
+document set up for PDF. The two differ only in their format line, in
+which apa.quarto.*() function the chunks call, and in prose like this
+that names the output.
+
+Each page below builds one apaTables table using the "write it yourself"
+approach: build the table on one line, then display it with
+apa.quarto.docx() on the next, inside a code chunk whose settings lines you
+write by hand --
+  #| label: an identifier starting with "tbl-" so you can cross-reference the
+            table in text (e.g. @tbl-correlation)
+Every table chunk also carries #| message: false and #| warning: true.
+The first keeps package-loading chatter out of the document; the second
+(knitr's default, set deliberately here) lets apaTables tell you in the
+draft if a table cannot fit.
+
+That #| label line is the only one most chunks below need, and it is not
+optional. Without one starting "tbl-", Quarto builds no table float for the
+chunk at all, so there is no number, no title and no note, however you try
+to supply them.
+
+Nothing in this file types a title or a note. Every one you see in the
+rendered Word document was written by apaTables from the table itself. Let it do that.
+It knows what the table contains, so it describes it correctly and keeps
+the italics right, and it writes the title again every time you render. A
+title you type by hand stops being true the moment you change the analysis
+above it.
+
+ONE page, the d-values table, writes its own title and note instead, because
+that is worth knowing about for the times you need your own wording. It comes
+after several ordinary pages on purpose: see how the normal way looks first.
+
+Nothing below asks for a rotated page or for a smaller type size. When this
+document is rendered, apaTables measures each table and asks apaquarto for a
+rotated (landscape) page whenever the table is too wide to stand upright on
+an ordinary page. TWO pages get one here -- the wide correlation table and the
+hierarchical regression table; the other seven tables fit upright.
+
+This document's format is apaquarto-docx, so every table below is displayed
+with apa.quarto.docx() -- the function named for this destination. The
+companion file ending in -pdf.qmd renders the same tables to PDF with
+apa.quarto.pdf(), and an HTML document works the same way with
+format: apaquarto-html and apa.quarto.html(). The YAML format line above is
+what actually decides the output; the call name states intent, and if the
+two ever disagree the rendered draft carries one line saying which YAML
+line would make them match. See ?apa.quarto.pdf for the full behaviour,
+shared by all three.
+
+Edit the title and author above, and the captions and notes below, to suit your
+own work.
+-->
+
+```{r}
+#| label: setup
+#| include: false
+library(apaTables)
+# afex is loaded here, out of sight, so the one-time startup notices from
+# its dependencies stay out of the rendered document
+if (requireNamespace("afex", quietly = TRUE)) library(afex)
+```
+
+# Correlation table
+
+`apa.cor.table()` produces a correlation table with means and standard
+deviations. Build it on one line, then display it with `apa.quarto.docx()` on
+the next.
+
+**This is the ordinary way, and it is the whole of it.** The chunk below writes
+one settings line, `#| label`, and nothing about the title or the note.
+Everything you see above and below the table in the rendered Word document -- the number,
+the italic title, and the note explaining *N*, *M*, *SD* and the confidence
+intervals -- was written by apaTables from the table itself.
+
+The `#| label` line is not optional, and it must start with `tbl-`: without
+one, Quarto builds no table float for the chunk at all, so there is no number,
+no title and no note, however you try to supply them. It is also what lets you
+write `@tbl-correlation` in a sentence and have Quarto fill in the number.
+
+```{r}
+#| label: tbl-correlation
+#| message: false
+#| warning: true
+my_table <- apa.cor.table(attitude)
+apa.quarto.docx(my_table)
+```
+
+{{< pagebreak >}}
+
+# A wide correlation table, on a rotated page
+
+The correlation table earlier in this document has seven variables and is
+narrow enough for an ordinary upright page. (Being too TALL is not a problem
+that needs solving: a table simply continues onto the next page with its
+column headings repeated, which is what the earlier one does here if it starts
+part-way down a page.) This one has nine variables and is too WIDE, which is a
+different matter entirely: no amount of continuing onto another page makes a
+table narrower. So the table is on the next page, and that page is rotated.
+The table is about 7.3 inches wide (cell padding counted, as Word lays it
+out), and an upright page gives a table only 6.5 inches. When this document
+was rendered, apaTables measured the table, found it would not fit, and
+asked apaquarto for a rotated (landscape) page. The table is printed at full size
+there: no column is dropped and nothing is shrunk. A rotated page cannot also
+carry this upright paragraph, which is why the table moved to a page of its
+own.
+
+**There is nothing in this document's `.qmd` source file that asks for the
+rotation.** The code chunk that produces the table is an ordinary code chunk,
+and the settings block at the top of the source file says nothing about page
+orientation. You do not have to predict
+which of your tables will need a rotated page -- apaTables measures each one
+as the document renders and asks for a rotated page only when it is needed.
+That is why the earlier correlation table stayed upright while this one
+turned: the decision is made per table, from its actual width.
+
+The same thing happens to the hierarchical regression table later in this
+document, for the same reason: any apaTables table that measures too wide
+for the upright page gets a rotated one.
+
+If you ever need to overrule the measurement, every builder takes a
+`landscape` argument: `landscape = TRUE` forces a rotated page,
+`landscape = FALSE` forbids one, and the default measures.
+
+```{r}
+#| label: tbl-correlation-wide
+#| message: false
+#| warning: true
+my_table <- apa.cor.table(dating_wide)
+apa.quarto.docx(my_table)
+```
+
+{{< pagebreak >}}
+
+# Regression table
+
+`apa.reg.table()` summarizes one or more `lm()` regression models. Build the
+table, then send it to `apa.quarto.docx()` -- its title and note are
+generated automatically, so the chunk needs nothing beyond the label.
+
+```{r}
+#| label: tbl-regression
+#| message: false
+#| warning: true
+blk1 <- lm(sales ~ adverts + airplay, data = album)
+my_table <- apa.reg.table(blk1)
+apa.quarto.docx(my_table)
+```
+
+{{< pagebreak >}}
+
+# Hierarchical (blocks) regression, on a rotated page
+
+`apa.reg.table()` accepts two or more models to compare regression blocks.
+Comparing blocks adds columns, so a blocks table is wider than a
+single-model one -- **and adding more predictors does not widen a regression
+table at all, because predictors are rows.** If you want to see a regression
+table on a rotated page, the blocks form is the one that gets there.
+
+The table for this section is on the next page, and that page is rotated. The table is about 7.3 inches wide (cell padding counted, as Word lays it out); an upright (portrait) page gives a table 6.5 inches. So when this document was rendered, apaTables measured the table, found it would not stand upright, and asked apaquarto for a rotated page. The table is at its full size on that page; no column is cut off and nothing is shrunk. There is nothing in this document's `.qmd` source file that asks for the rotation. The code chunk below is an ordinary code chunk, and the settings block at the top of the source file says nothing about page orientation. A rotated page cannot also carry this upright paragraph, which is why the table moved to a page of its own.
+
+```{r}
+#| label: tbl-regblocks
+#| message: false
+#| warning: true
+blkA <- lm(sales ~ adverts + airplay, data = album)
+blkB <- lm(sales ~ adverts + airplay + I(adverts * airplay), data = album)
+my_table <- apa.reg.table(blkA, blkB)
+apa.quarto.docx(my_table)
+```
+
+{{< pagebreak >}}
+
+# Standardized mean differences (d values)
+
+`apa.d.table()` reports all pairwise standardized mean differences for a single
+independent variable.
+
+**This is the one page in this document that does not let apaTables write the
+title and note.** Every table before it wrote a `#| label` line and nothing
+else. Here `title =` and `note =` are passed to `apa.quarto.docx()` instead, and
+what they say replaces what the table would have said -- compare the title on
+this page with the ones on the pages before it. Markdown notation such as `*M*`
+still renders as italics, so a hand-written note can carry the same formatting.
+
+**Use this only when you genuinely need your own wording.** The generated title
+and note describe the table that is actually there and are re-derived every time
+you render; anything you type here stays as you typed it, so it can quietly stop
+matching the analysis above it. That is the whole reason the rest of this
+document leaves them alone.
+
+```{r}
+#| label: tbl-dvalues
+#| message: false
+#| warning: true
+my_table <- apa.d.table(iv = dose, dv = libido, data = viagra)
+apa.quarto.docx(my_table,
+    title = "Means, Standard Deviations, and My Own d-Value Title",
+    note  = "*M* = mean. *SD* = standard deviation. My own note describing the *d*-values and confidence intervals.")
+```
+
+{{< pagebreak >}}
+
+# ANOVA table
+
+`apa.aov.table()` produces an ANOVA F-table from an `lm()` model. The
+`contrasts` option is set before fitting the model so the sums of squares
+match common software.
+
+```{r}
+#| label: tbl-anova
+#| message: false
+#| warning: true
+options(contrasts = c("contr.sum", "contr.poly"))
+lm_output <- lm(libido ~ dose, data = viagra)
+my_table <- apa.aov.table(lm_output)
+apa.quarto.docx(my_table)
+```
+
+{{< pagebreak >}}
+
+# One-way means and standard deviations
+
+`apa.1way.table()` reports cell means and standard deviations for a one-way
+design.
+
+```{r}
+#| label: tbl-oneway
+#| message: false
+#| warning: true
+my_table <- apa.1way.table(iv = dose, dv = libido, data = viagra)
+apa.quarto.docx(my_table)
+```
+
+{{< pagebreak >}}
+
+# Two-way means and standard deviations
+
+`apa.2way.table()` reports cell means and standard deviations for a two-way
+design.
+
+```{r}
+#| label: tbl-twoway
+#| message: false
+#| warning: true
+my_table <- apa.2way.table(iv1 = gender, iv2 = alcohol,
+                           dv = attractiveness, data = goggles)
+apa.quarto.docx(my_table)
+```
+
+{{< pagebreak >}}
+
+# Repeated-measures ANOVA (afex)
+
+`apa.afex.table()` builds an ANOVA F-table from `afex::aov_ez()` output.
+This table requires two additional packages that do not come with
+apaTables. If rendering stops on this page with a message that afex or
+tidyr is missing, run `install.packages(c("afex", "tidyr"))` once in the
+R console, then render again.
+
+```{r}
+#| label: tbl-afex
+#| message: false
+#| warning: true
+drink_long <- tidyr::pivot_longer(drink_attitude_wide,
+                                  cols = beer_positive:water_neutral,
+                                  names_to = c("drink", "imagery"),
+                                  names_sep = "_",
+                                  values_to = "attitude")
+drink_long$drink <- as.factor(drink_long$drink)
+drink_long$imagery <- as.factor(drink_long$imagery)
+drink_results <- afex::aov_ez(id = "participant", dv = "attitude",
+                              data = drink_long,
+                              within = c("drink", "imagery"))
+my_table <- apa.afex.table(drink_results)
+apa.quarto.docx(my_table)
+```

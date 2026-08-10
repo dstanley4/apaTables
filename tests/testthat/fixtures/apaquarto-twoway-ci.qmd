@@ -1,0 +1,28 @@
+---
+title: "Two-Way CI Smoke"
+shorttitle: "2way-ci"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-pdf
+---
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+twoway_ci_tbl <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
+                                data = goggles, table.number = 3,
+                                show.conf.interval = TRUE)
+```
+
+```{r}
+#| label: tbl-twoway-ci
+#| tbl-cap: "Descriptive Statistics for Attractiveness in a 2(Gender) x 3(Alcohol) Design"
+#| apa-note: "M = mean. SD = standard deviation. CI = confidence interval."
+apa.quarto.pdf(twoway_ci_tbl)
+```

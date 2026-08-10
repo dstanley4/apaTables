@@ -1,0 +1,36 @@
+apaTables bundles the apaquarto Quarto extension in
+inst/_extensions/wjschne/apaquarto/.
+
+apaquarto
+  Copyright (c) W. Joel Schneider
+  https://github.com/wjschne/apaquarto
+  Licence: CC0 1.0 Universal (public domain dedication)
+  CC0 requires no attribution; the author is nonetheless credited in
+  DESCRIPTION's Authors@R with the 'ctb' role as a courtesy ('cph' would
+  be inaccurate -- a CC0 dedication retains no copyright to hold).
+  Local modifications are listed in
+  inst/_extensions/wjschne/apaquarto/PATCHES.md, including to the bundled
+  Word reference document apaquarto.docx (word/styles.xml gains six
+  character/paragraph styles for the Phase 1.6a table emitter, its existing
+  Table style gains a run-properties override setting 10 pt type, four more
+  table styles -- Table9/Table8/Table7/Table6 -- carry the D38 shrink
+  ladder's smaller sizes selected per table by the new apatablesize.lua
+  filter, and (D39) the Table style and its four shrink-ladder clones have
+  their fixed per-cell padding (<w:tblCellMar>) cut from 58 to 15 twips per
+  side -- see PATCHES.md's manual addenda, since apaquarto.docx is binary
+  and outside what dev/sync-apaquarto.R can diff). They are carried in this
+  package only; they have not been offered to the upstream project, and
+  nothing here has been contributed back to it.
+
+apa.csl (inst/_extensions/wjschne/apaquarto/apa.csl)
+  Copyright (c) Brenton M. Wiernik
+  From the Citation Style Language project, https://citationstyles.org/
+  Licence: Creative Commons Attribution-ShareAlike 3.0 Unported
+           https://creativecommons.org/licenses/by-sa/3.0/
+  ATTRIBUTION IS A CONDITION OF THIS LICENCE, unlike the CC0 dedication
+  above, so the author is named here AND credited in DESCRIPTION's
+  Authors@R with 'ctb' and 'cph' roles. The style file names him in its
+  own <author> element.
+  Included unmodified. It cannot be omitted: apaquarto's citeprocr.lua calls
+  citeproc unconditionally, so a document with no citations at all fails to
+  render without it.

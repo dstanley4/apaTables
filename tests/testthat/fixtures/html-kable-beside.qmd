@@ -1,0 +1,39 @@
+---
+title: "Html Kable Beside"
+shorttitle: "Kable Beside"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-html: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Phase 1.18 / D114. Two tables in one document: one apaTables builds, and one
+the READER built themselves. The width rules apaTables added to `apa.css` are
+scoped to a wrapper the package puts on its own tables, and the whole point of
+that scoping is this document -- one of those rules overrides a table's column
+proportions, and a table someone else wrote may carry proportions they chose
+on purpose. So exactly one of the two tables below may come out wrapped.
+
+```{r}
+#| label: tbl-ours
+#| echo: false
+apa.quarto.html(apa.cor.table(attitude[, 1:3]))
+```
+
+```{r}
+#| label: tbl-theirs
+#| tbl-cap: "A table the reader built"
+#| echo: false
+knitr::kable(head(attitude[, 1:2]), col.names = c("rating", "complaints"))
+```
+
+Body text after.

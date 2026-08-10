@@ -1,0 +1,59 @@
+---
+title: "Landscape Caption Interleaved"
+shorttitle: "Caption Interleaved"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+## Results
+
+A rotated table, then an UPRIGHT one, then a rotated one. Floats keep document
+order when they are moved to the end, so this is the arrangement Phase 1.14's
+adjacency check exists for: the two rotated tables are NOT consecutive, and
+merging them would put the upright table inside the landscape section, where it
+would print rotated.
+
+`landscape-caption-run.qmd` cannot see this -- its upright table comes LAST, so
+no rotated float ever follows one and the adjacency branch never runs. Deleting
+that branch left the whole suite green until this fixture existed.
+
+`tbl-inta`: rotated.
+
+```{r}
+#| label: tbl-inta
+#| tbl-cap: "CAPTIONINTA"
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars))
+```
+
+`tbl-intb`: NOT rotated -- it sits BETWEEN the two rotated tables.
+
+```{r}
+#| label: tbl-intb
+#| tbl-cap: "CAPTIONINTB"
+#| echo: false
+apaTables:::apa_quarto_markdown_block(
+  apa.1way.table(iv = dose, dv = libido, data = viagra))
+```
+
+`tbl-intc`: rotated.
+
+```{r}
+#| label: tbl-intc
+#| tbl-cap: "CAPTIONINTC"
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars[, 1:9]))
+```
+
+ENDMARKERINTERLEAVED closes the body.

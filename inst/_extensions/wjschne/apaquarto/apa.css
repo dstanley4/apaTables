@@ -1,0 +1,195 @@
+body {line-height: 2em; font-size: 12pt}
+
+p {text-indent: 0.5in; margin: 0; line-height: 2em}
+div.Author p {
+  text-indent: 0;
+}
+.FigureTitle {font-weight: bold; margin: 5pt 0; font-size: 12pt; color: black;}
+.FigureTitle p {text-indent: 0; text-align: left;}
+.FigureNote p {text-indent: 0; margin: 0; padding: 0}
+.Caption {font-style: italic; font-size: 12pt; color: black; text-align: left}
+.Caption p {text-indent: 0; font-size: 12pt;}
+.quarto-float, .quarto-float-tbl, .figure {margin: 0; margin-block-start: 0; margin-block-end: 0; margin-block-start: 0; margin-inline-start: 0; margin-inline-end: 0}
+
+h1, h2, h3, h4, h5 {border: none; margin: 0; padding: 0;line-height: 2; text-indent: 0 }
+
+h1 {text-align: center;}
+h3 {font-style: italic}
+h4 {font-weight: bold}
+
+h4, h5 {
+text-indent: 0.5in;
+display:inline-block;
+margin: 0
+}
+
+h5 {
+  font-style: italic;
+}
+
+h4 + p, h5 + p {
+  display:inline;
+  text-indent: 0;
+}
+
+
+.Compact {
+  line-height: 1em;
+  text-indent: 0;
+  margin: 0;
+}
+
+
+
+
+
+
+td p, th p, li p {text-indent: 0; margin: 0;}
+
+
+
+li p {text-indent: 0; margin: 0;}
+
+.subtitle {font-size: 12pt; text-align: center; color: #303030; font-weight: bold;}
+
+blockquote, .blockquote {border: none; margin: 0 .5in; padding: 0; font-style: normal; color: #303030;}
+
+.Author {text-align:center; text-indent: 0}
+
+.cell-output-display p {text-indent: 0}
+
+div.hanging-indent {margin-left: 0.5in; text-indent: -0.5in}
+
+div.hanging-indent .csl-entry {margin-left: 0; text-indent: -0.5in;}
+
+.katex {font-size: 1em;}
+.katex-display {font-size: 1.1em;}
+
+.NoIndent p {text-indent: 0}
+
+blockquote p:nth-child(1) {text-indent: 0}
+
+table {
+    font-variant-numeric: tabular-nums;
+}
+
+.table {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  font-variant-numeric: tabular-nums;
+}
+
+.table>thead {
+  border-bottom: 1px solid black;
+}
+
+.table>:not(caption)>*>* {
+  border-bottom: none;
+}
+
+/* apaTables: a spanner's cmidrule. apa_markdown_table() wraps ONLY the
+   spanned header cells of a grid table in a
+   "::: {custom-style=\"ApaTableRule\"}" fenced div (D29) -- pandoc's HTML
+   writer turns that into a <div data-custom-style="ApaTableRule"> nested
+   inside the <th>, one per spanner, so this rule draws a partial rule under
+   exactly the columns each spanner covers. Measured: without this rule the
+   div carries no visible border at all (D37) -- the ordinary table rules
+   above (top of table, bottom of thead, bottom of table, no vertical rules,
+   no interior row rules) already come from apaquarto's own .table CSS with
+   no per-cell markup, so this is the only piece apaTables' HTML output adds. */
+[data-custom-style="ApaTableRule"] {
+  border-bottom: 1px solid black;
+}
+
+/* apaTables Phase 1.8 / D73: an explicit font.size on an HTML render is
+   delivered by wrapping the <table> in a <div class="apa-table-size"
+   style="font-size: Npt;"> (apatablesize.lua) rather than attributing the
+   <table> node directly -- Quarto's HTML pipeline discards a Table node's
+   own attributes before the page is written, measured at both post-quarto
+   and pre-ast, for both a labelled float and an unlabelled table. Without
+   this rule the table would merely INHERIT the wrapper's size, and
+   Bootstrap's `.small` rule (specificity 0,1,0; apaquarto stamps every
+   table `table-sm ... small`) takes 0.875 of any inherited size -- asked
+   8.5 pt, delivered 7.4375 pt, silently. This rule's selector
+   (specificity 0,1,1) outranks `.small` and `inherit` takes the wrapper's
+   pt value verbatim, so the table gets EXACTLY what was requested. */
+.apa-table-size > table { font-size: inherit; }
+
+.tabwid {padding: 0}
+
+.AbstractFirstParagraph p {text-indent: 0}
+
+.sourceCode {
+  font-family: Consolas, "Lucida Console", "Courier New", monospace;
+  font-size: 10pt;
+}
+
+/* apaTables Phase 1.18 / D114: a table wider than the text column was being
+   SQUASHED into it, breaking cells mid-value -- a confidence interval printing
+   as `[22.72,` on one line and `59.53]` on the next. Three things combined, and
+   no one of them alone is the fault: apaquarto sets `grid: body-width: "7in"`
+   (_extension.yml), which Quarto turns into a 6.50in text column that does not
+   move with the window; Bootstrap's `.table{width:100%}` stretches every table
+   to it; and the <colgroup> percentages pandoc writes come from the grid table
+   apaTables builds for the PRINTED page, so a column gets less than its
+   contents need and the cell breaks at the only place it can.
+
+   MEASURED on the shipped example at nine window widths, 500-1600px: 92 pieces
+   of broken text at 1440px before these rules, ZERO after, and the page never
+   scrolls sideways at any width.
+   dev/factcheck/phase118-htmlwidth/VERIFICATION.md.
+
+   SCOPED to `.apa-table-html`, the class apaTables puts on its OWN tables
+   (R/quarto-table.R's APA_QUARTO_HTML_CLASS -> apatablesize.lua's wrapper).
+   Rule 1 overrides column widths, and a table the USER built may carry widths
+   they set deliberately. Do not widen these selectors to `.table`.
+
+   NOT Quarto's own `column-page-right`, which was measured and does work -- it
+   also stretches a table that already FITS from 6.50in to 9.88in, and pinning
+   that back needs apaquarto's body-width written down a second time, here,
+   where the two copies would drift. dev/factcheck/phase118-htmlwidth/
+   SPIKE-column-classes.md records the whole comparison. */
+
+/* 1. Columns size to their own contents, not to the printed page's
+      proportions. */
+.apa-table-html > table.table > colgroup > col { width: auto !important; }
+
+/* 2. The table takes its natural width, and never less than the text column --
+      so the tables that already fit are pixel-identical to before. */
+.apa-table-html > table.table { width: max-content !important; min-width: 100%; }
+
+/* 3. No room to grow into: the table's own box scrolls. Never the page. */
+.apa-table-html { max-width: 100%; overflow-x: auto; }
+
+/* 3b. Room to grow into: the box grows to the RIGHT, into margin that is empty
+       anyway. Right-only, not centred -- a centred overhang was measured to
+       print on top of the table of contents at 1440px.
+       `:has()` is what lets the table overhang the float's own output box,
+       which Quarto gives `overflow-x: auto`. Scoped to a box that CONTAINS one
+       of our tables, deliberately: turning that overflow off for every
+       `.cell-output-display` would reach a user's own wide output and take
+       away Quarto's scroll affordance for it. Where `:has()` is unsupported
+       the page degrades to rule 3 -- the table scrolls in its own box, still
+       whole, still unwrapped, never squashed. */
+@media (min-width: 992px) {
+  .cell-output-display:has(> .apa-table-html) { overflow-x: visible; }
+  .apa-table-html {
+    width: max-content;
+    min-width: 100%;
+    /* HOW FAR A TABLE MAY REACH INTO THE MARGIN, and it must be BOUNDED.
+       An unbounded overhang was measured pushing the whole PAGE sideways for a
+       20-variable correlation table -- natural width 14.42in against a 6.50in
+       column -- which is the one thing the behaviour must never do. The bound
+       is expressed RELATIVE to the text column, so it needs no knowledge of
+       the window or of any table: 1.3in is what still fits in the margin at
+       the narrowest window this branch applies to (measured at 1000, 1050 and
+       1100px, where the room to the right is 8.2in and this box is 7.8in).
+       A table needing MORE than this scrolls in its own box instead -- the
+       same fallback a narrow window gets, reached for the same reason: there
+       is no room. The two tables in the shipped example need 1.09in and
+       1.17in. NOT a table measurement and NOT the width model (D113): one
+       page-layout constant, applied to every table alike. */
+    max-width: calc(100% + 1.3in);
+    overflow-x: auto;
+  }
+}

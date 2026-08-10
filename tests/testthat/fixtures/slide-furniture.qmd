@@ -1,0 +1,19 @@
+---
+title: "Slide furniture"
+format: revealjs
+---
+
+## With furniture {#furniture-on}
+
+```{r}
+#| echo: false
+library(apaTables)
+apa.cor.table(attitude[, 1:3]) |> apa.quarto.revealjs(title = TRUE, note = TRUE)
+```
+
+## Bare {#furniture-off}
+
+```{r}
+#| echo: false
+apa.cor.table(attitude[, 1:3]) |> apa.quarto.revealjs()
+```

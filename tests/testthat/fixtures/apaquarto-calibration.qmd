@@ -1,0 +1,49 @@
+---
+title: "Calibration"
+shorttitle: "Calibration"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-pdf:
+    floatsintext: true
+    keep-tex: true
+---
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+blk1 <- lm(sales ~ adverts + airplay, data = album)
+```
+
+LaTeX reporting its own text block, so the test can read the page this
+document really has instead of the page apaTables believes it has.
+
+```{=latex}
+\noindent APALINEWIDTH=\the\linewidth\par
+\noindent APATEXTHEIGHT=\the\textheight\par
+```
+
+A wide table and a narrow one, both laid out by the ladder: whatever it
+decides, xelatex must report no overfull box for either.
+
+```{r}
+#| label: tbl-wide
+#| tbl-cap: "Wide"
+#| apa-note: "A note under the wide table."
+#| warning: false
+apa.reg.table(blk1)$spec |> apa.quarto.pdf()
+```
+
+```{r}
+#| label: tbl-narrow
+#| tbl-cap: "Narrow"
+#| apa-note: "A note under the narrow table."
+#| warning: false
+apa.cor.table(attitude[, 1:4])$spec |> apa.quarto.pdf()
+```

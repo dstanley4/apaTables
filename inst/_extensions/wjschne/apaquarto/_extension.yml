@@ -1,0 +1,268 @@
+title: My Document in APA Style, Seventh Edition
+author: W. Joel Schneider
+version: 5.0.18+apaTables.26
+quarto-required: ">=1.4.549"
+contributes:
+  formats:
+    common:
+      execute:
+        echo: false
+      citeproc: false
+      link-citations: true
+      fig-cap-location: top
+      tbl-cap-location: top
+      cap-location: top
+      csl: apa.csl
+      toc: false
+      fig-width: 6.5
+      fig-height: 6.5
+      number-depth: 3
+      crossref:
+        subref-labels: alpha A
+      suppress-title-page: false
+      suppress-title-page-number: false
+      suppress-title: false
+      suppress-short-title: false
+      suppress-author: false
+      suppress-affiliation: false
+      suppress-author-note: false
+      suppress-orcid: false
+      suppress-status-change-paragraph: false
+      suppress-disclosures-paragraph: false
+      suppress-credit-statement: false
+      suppress-corresponding-paragraph: false
+      suppress-corresponding-group: false
+      suppress-corresponding-department: false
+      suppress-corresponding-affiliation-name: false
+      suppress-corresponding-address: false
+      suppress-corresponding-city: false
+      suppress-corresponding-region: false
+      suppress-corresponding-postal-code: false
+      suppress-corresponding-country: false
+      suppress-corresponding-email: false
+      suppress-abstract: false
+      suppress-impact-statement: false
+      suppress-keywords: false
+      suppress-title-introduction: false
+      no-ampersand-parenthetical: false
+      language: 
+        citation-last-author-separator: "and"
+        citation-masked-author: "Masked Author"
+        citation-masked-title: "Masked Title"
+        citation-masked-date: "n.d."
+        email: "Email"
+        figure-table-note: "Note"
+        title-block-author-note: "Author Note"
+        title-block-correspondence-note: "Correspondence concerning this article should be addressed to"
+        title-block-role-introduction: "Author roles were classified using the Contributor Role Taxonomy (CRediT; https://credit.niso.org/) as follows:"
+        title-impact-statement: "Impact Statement"
+        title-word-count: "Word Count"
+        references-meta-analysis: "References marked with an asterisk indicate studies included in the meta-analysis."
+      filters:
+        # Sets language defaults other than English
+        - at: pre-ast
+          path: apalanguage.lua
+        # Prepare plain markdown tables to be used by crossrefprefix.lua
+        - at: pre-ast
+          path: markdowntable.lua
+        # Give figures and tables appendix prefixes
+        - at: pre-ast
+          path: crossrefprefix.lua
+        # Move figures and tables to end of document
+        - at: pre-ast
+          path: apafloatstoend.lua
+        # Landscape (rotated) floats in latex when floats move to the end
+        - at: pre-ast
+          path: apalandscapelatex.lua
+ 
+        # Set latex document mode
+        - at: pre-ast
+          path: journalmode.lua
+        # Set latex images to column width by default
+        - at: pre-ast
+          path: apafigurewidthlatex.lua     
+        # Make apa-note an attribute of figure in latex
+        - at: pre-ast
+          path: apanotelatex.lua
+        # Make appendices citable with apx prefix
+        - at: pre-ast
+          path: apaciteappendix.lua
+        # Add a refs div if it was omitted.
+        - at: pre-ast
+          path: apaomitrefsdiv.lua
+        # Finds citations to be masked and converts them to masked citations
+        - at: post-ast
+          path: apamasked.lua
+        # Ensures that images have two-column attribute, when needed
+        - at: post-ast
+          path: apatwocolumnlatex.lua
+        # Formats headers properly
+        - at: pre-quarto
+          path: apaheader.lua
+        # Formats title and authors
+        - at: pre-quarto
+          path: apastriptitle.lua
+        # Word count
+        - at: pre-quarto
+          path: wordcount.lua
+        # Formats title page, abstract (all except latex)
+        - at: pre-quarto
+          path: frontmatter.lua
+        # Formats multi-paragraph quotes
+        - at: pre-quarto
+          path: apaquote.lua
+        # Indentation for latex, allow for no indenting command
+        - at: pre-quarto
+          path: latexnoindent.lua
+        # Inserts appendix prefixes to tables and figures
+        - at: pre-quarto
+          path: apafigtblappendix.lua
+        # Fill in a title and note apaTables generated, where the author gave none
+        - at: post-quarto
+          path: apatablemeta.lua
+        # Process tables and figures in latex
+        - at: post-quarto
+          path: apafloatlatex.lua
+        # Tell latex if there is one author and/or one affiliation
+        - at: post-quarto
+          path: apaoneauthoraffiliation.lua
+        # Removes surrounding table environment for docx figures and tables
+        - at: post-render
+          path: apaextractfigure.lua
+        # Formats notes below figures and tables (docx, html, typst)
+        - at: post-render
+          path: apanote.lua
+        # Adds styles to figures and tables 
+        - at: post-render
+          path: apafloat.lua
+        # Formats captions for figures and tables 
+        - at: post-render
+          path: apacaption.lua
+        # Puts proper spacing for paragraphs after figures and tables
+        - at: post-render
+          path: apaafternote.lua
+        # Process citations, adds asterisks for meta-analysis citations
+        - at: post-render
+          path: citeprocr.lua
+        # Process APA in-text citations (ampersand to and, possessive citation)
+        - at: post-render
+          path: apaandcite.lua
+        # Process appendices in latex
+        - at: post-render
+          path: apaappendixlatex.lua
+        # Attach a long table's apa-note to the table itself (latex).
+        # MUST stay after citeprocr.lua: the note is written out as LaTeX
+        # here, so any citation in it has to be resolved first.
+        - at: post-render
+          path: apalongtablenote.lua
+    native: default
+    html:
+      toc: true
+      toc-location: left
+      anchor-sections: false
+      fig-cap-location: top
+      html-math-method: katex
+      mainfont: Times, Times New Roman, serif
+      monofont: Consolas, Lucida Console, Courier New, monospace
+      grid: 
+        body-width: "7in"
+      css: apa.css
+      theme: 
+        - apa.scss
+      template-partials:
+        - title-block.html
+      knitr: 
+        opts_chunk: 
+          dev: svglite
+      filters:
+        # Phase 1.8: without this, apatablesize.lua (registered below under
+        # docx: only) never loads on an HTML render, so its is_html branch is
+        # unreachable and the {apa-table-size-pt="N"} marker div leaks into
+        # the rendered output unconsumed instead of being turned into a size
+        # and dropped. Found by a real `quarto render`
+        # (test-font-size-render.R); no unit test or bare-pandoc check could
+        # see it, because both bypass Quarto's own per-format filter
+        # registration entirely.
+        #
+        # What that branch does is D73, and it is NOT what an earlier draft of
+        # this comment said: setting the size as an attribute on the <table>
+        # node was MEASURED to be silently discarded by Quarto's HTML
+        # pipeline. The branch wraps the table in a div instead, created here
+        # at post-quarto -- after apaquarto's float collection, so table
+        # placement is untouched -- and apa.css carries the one rule that
+        # makes the table take that size verbatim.
+        - at: post-quarto
+          path: apatablesize.lua
+        # apaTables D119: a column spanner is CENTRED over the columns it
+        # covers. Pandoc gives a spanning cell the alignment of the first
+        # column it covers, which over numeric columns is RIGHT. Set on the
+        # AST, so the same one rule corrects docx as well.
+        - at: post-quarto
+          path: apatablespanner.lua
+    pdf:
+      documentclass: apa7
+      pdf-engine: xelatex
+      suppress-bibliography: false
+      hyperrefoptions: 
+        - linktoc=none
+      block-headings: false
+      template: apatemplate.tex
+      mainfontfallback: Arial
+      template-partials:
+        - doc-class.tex
+        - title.tex
+        - header.tex
+      classoption: "colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue"
+    docx: 
+      reference-doc: apaquarto.docx
+      filters:
+        # Add custom styles to docx
+        - at: post-quarto
+          path: docxstyler.lua
+        # Select the D38 Route A shrink-ladder table style (Table9/8/7/6)
+        - at: post-quarto
+          path: apatablesize.lua
+        # apaTables D119: a column spanner is CENTRED over the columns it
+        # covers -- the same filter and the same reason as the html block
+        # above. Word receives <w:jc w:val="right"/> as DIRECT formatting on
+        # the spanner paragraph, which beats the ApaTableRule style, so this
+        # cannot be done in the reference document.
+        - at: post-quarto
+          path: apatablespanner.lua
+        # D31: apaTables' own landscape section break, replacing Quarto's
+        # own broken .landscape div for tables the layout ladder rotates
+        - at: post-quarto
+          path: apatablelandscape.lua
+        # Moves a rotated table's note inside its own landscape section --
+        # apanote.lua (common, post-render, above) puts the note AFTER the
+        # closer apatablelandscape.lua already wrote, which strands it on
+        # the following PORTRAIT page (see this file's own banner)
+        - at: post-render
+          path: apatablelandscapenote.lua
+        # Phase 1.14: move a rotated table's caption inside its own landscape
+        # section, and keep a RUN of consecutive rotated tables in ONE section.
+        # Kept after apatablelandscapenote.lua, which identifies a rotated
+        # float by its TRAILING landscape closer -- the one this filter
+        # removes when it merges a run. MEASURED: reversing the two changes
+        # only where a zero-width bookmarkEnd lands, because a note the note
+        # filter then fails to relocate is already inside the section that
+        # merging left open. See that filter's banner; the order is retained
+        # because it is what is verified, not because reversing it breaks.
+        - at: post-render
+          path: apatablelandscapecaption.lua
+        # Add line numbers and format Latex symbol
+        - at: post-render
+          path: docxlinenumber.lua
+      knitr: 
+        opts_chunk: 
+          dev: ragg_png
+    typst:
+      filters: 
+        # Process typst-specific styles
+        - at: post-quarto
+          path: typst/formattypst.lua
+      template-partials:
+        - typst/typst-template.typ
+        - typst/typst-show.typ
+      format-resources:
+        - apa.csl

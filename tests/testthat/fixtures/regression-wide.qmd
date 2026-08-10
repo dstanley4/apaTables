@@ -1,0 +1,34 @@
+---
+title: "Regression Wide"
+shorttitle: "Reg Wide"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Body text before. The chunk below deliberately sets neither `tbl-cap` nor
+`apa-note` (Task 10 note: this is the fixture that stands in for B0's own
+regression -- a multi-block `apa.reg.table()`, the widest builder output in
+the suite, whose R-squared / Delta-R-squared columns and their confidence
+intervals were the ones flextable's fixed-inch table silently clipped from a
+rendered `.docx` with no warning and exit 0).
+
+```{r}
+#| label: tbl-widereg
+#| echo: false
+blk1 <- lm(sales ~ adverts + airplay, data = album)
+blk2 <- lm(sales ~ adverts + airplay + attract, data = album)
+apa.quarto.docx(apa.reg.table(blk1, blk2, table.number = 9))
+```
+
+Body text after, ENDMARKER.

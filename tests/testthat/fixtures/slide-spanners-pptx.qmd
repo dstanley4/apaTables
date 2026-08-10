@@ -1,0 +1,15 @@
+---
+title: "Slide spanners pptx"
+format: pptx
+---
+
+## The two-way spanner table
+
+```{r}
+#| echo: false
+library(apaTables)
+options(contrasts = c("contr.sum", "contr.poly"))
+apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
+               data = goggles, show.marginal.means = TRUE) |>
+  apa.quarto.revealjs()
+```

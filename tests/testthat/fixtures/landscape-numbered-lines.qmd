@@ -1,0 +1,44 @@
+---
+title: "Landscape Numbered Lines"
+shorttitle: "Landscape Numbered"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+numbered-lines: true
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+## Method
+
+This paragraph is body text before anything else, so the document has at
+least one ordinary portrait page ahead of the rotated table. With
+`numbered-lines: true` set (a live apaquarto option; journals routinely
+require it under review), this page should keep its line numbers too --
+apatablelandscape.lua's own two closers must carry `<w:lnNumType>`
+themselves (fix round 1, Important), because docxlinenumber.lua appends its
+OWN numbering closer only once, at the very end of the document, and a
+`sectPr` governs content back to the PREVIOUS closer -- so without this,
+everything before and including a rotated table would silently lose its
+line numbers, the same shape of defect D31 convicts Quarto's `.landscape`
+of.
+
+@tbl-wide is wide enough that apaTables' layout ladder rotates it onto a
+landscape page rather than shrinking its type (D7, rotate before shrink).
+
+```{r}
+#| label: tbl-wide
+#| tbl-cap: "Motor Trend Car Road Tests: Correlations"
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars))
+```
+
+This paragraph is body text after the rotated table.

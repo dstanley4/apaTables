@@ -1,0 +1,14 @@
+---
+title: "Slide text after"
+format: revealjs
+---
+
+## A table with the speaker's own text below it
+
+```{r}
+#| echo: false
+library(apaTables)
+apa.cor.table(attitude[, 1:3]) |> apa.quarto.revealjs()
+```
+
+This sentence is written after the chunk and must NOT be shrunk.

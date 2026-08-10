@@ -1,0 +1,52 @@
+---
+title: "Landscape With Figures"
+shorttitle: "Landscape Figures"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+## Method
+
+This paragraph is body text before anything else, so the document has at
+least one ordinary portrait page ahead of the rotated table.
+
+## Results
+
+@fig-scatter shows a figure. It exists so the document is structurally
+capable of exposing a header-relationship-ID shift -- a bare table-only
+fixture cannot (D31): pandoc allocates new relationship IDs above the
+reference document's own header/footer IDs in the order things are added to
+the document, so a fixture with nothing BUT a table cannot tell a correct,
+hardcoded rId8/rId9/rId12 apart from one that happened to be right only
+because nothing else claimed a relationship first.
+
+```{r}
+#| label: fig-scatter
+#| fig-cap: "A Scatterplot"
+#| echo: false
+plot(mpg ~ wt, data = mtcars)
+```
+
+@tbl-wide is wide enough that apaTables' layout ladder rotates it onto a
+landscape page rather than shrinking its type (D7, rotate before shrink).
+
+```{r}
+#| label: tbl-wide
+#| tbl-cap: "Motor Trend Car Road Tests: Correlations"
+#| echo: false
+apaTables:::apa_quarto_markdown_block(apa.cor.table(mtcars))
+```
+
+This paragraph is body text after the rotated table, on whatever page
+follows it.

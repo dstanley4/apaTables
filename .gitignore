@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.DS_Store
+inst/doc
+/doc/
+/Meta/
+*.Rcheck/
+*.tar.gz
+
+# pkgdown build output (site is built by CI and deployed to gh-pages)
+docs/

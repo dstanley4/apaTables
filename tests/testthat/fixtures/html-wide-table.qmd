@@ -1,0 +1,41 @@
+---
+title: "Html Wide Table"
+shorttitle: "Html Wide"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-html: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Body text before. `tbl-wide20` is the same shape of table the whole-branch
+review measured live against `format: apaquarto-html`: wide enough (20
+variables) that the automatic ladder would rotate-then-shrink it on a docx
+render, so a render on THIS format is what proves the fix -- D37 measured
+that HTML has no page, so nothing rotates and nothing shrinks, and the
+ladder's own consequences must never reach an HTML render at all. (The
+size-marker class name itself is deliberately not spelled out in this prose,
+so a substring search for it downstream matches only a genuinely emitted
+div, never this sentence.) `tbl-cap` and `apa-note` are both deliberately
+absent, so the title and note reaching the output are the AUTOMATIC ones
+(Task 7), proving the same automatic pipeline docx already has also reaches
+HTML.
+
+```{r}
+#| label: tbl-wide20
+#| echo: false
+set.seed(1)
+d20 <- as.data.frame(matrix(rnorm(30 * 20), ncol = 20))
+names(d20) <- paste0("Var", 1:20)
+apa.quarto.html(apa.cor.table(d20))
+```
+
+Body text after.

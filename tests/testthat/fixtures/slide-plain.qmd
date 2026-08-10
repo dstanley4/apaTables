@@ -1,0 +1,14 @@
+---
+title: "Slide plain"
+format: revealjs
+---
+
+## The blocks regression table, no arguments
+
+```{r}
+#| echo: false
+library(apaTables)
+blk1 <- lm(sales ~ adverts, data = album)
+blk2 <- lm(sales ~ adverts + airplay + attract, data = album)
+apa.reg.table(blk1, blk2) |> apa.quarto.revealjs()
+```

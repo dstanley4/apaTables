@@ -1,0 +1,33 @@
+---
+title: "Font Size Html"
+shorttitle: "Font Size Html"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-html: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Body text before.
+
+```{r}
+#| label: tbl-exact
+#| echo: false
+apa.quarto.html(apa.cor.table(attitude), font.size = 8.5)
+```
+
+```{r}
+#| label: tbl-default
+#| echo: false
+apa.quarto.html(apa.cor.table(attitude))
+```
+
+Body text after.

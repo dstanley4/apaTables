@@ -1,0 +1,29 @@
+---
+title: "Smoke Test"
+shorttitle: "Smoke"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-pdf
+---
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+```
+
+```{r}
+#| label: tbl-smoke
+#| tbl-cap: "Synthetic Demonstration Table"
+#| apa-note: "N = 200."
+spec <- apa_spec_start(2) |>
+  apa_col("Predictor", "l", list("Adverts", "Airplay")) |>
+  apa_col(apa_sym("b"), "r", list(richtext(".08"), richtext(".90"))) |>
+  apa_spec_finish(title = "Synthetic Demonstration Table", number = 1L)
+apa.quarto.pdf(spec)
+```

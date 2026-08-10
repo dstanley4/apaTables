@@ -1,0 +1,114 @@
+---
+title: "Migrating to apaTables 4.0"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Migrating to apaTables 4.0}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+## What changed at a glance
+
+apaTables 4.0 adds native support for [apaquarto](https://wjschne.github.io/apaquarto/) and Quarto documents. The statistics, the `apa.*.table()` function names, and their arguments are **unchanged** — existing analysis code keeps working without modification. The change is in how tables are *output*: the package now writes `.docx` and `.html` files through the flextable and officer packages, and it integrates directly with Quarto for PDF, Word, and HTML output.
+
+## File output is now `.docx` / `.html`
+
+`apa.save()` writes Word `.docx` and HTML `.html` files, chosen by the file extension you provide. The format is `apa.save(filename, ..., paper)` where `...` accepts one or more table objects created by `apa.*.table()` functions. The old hand-rolled RTF engine is gone.
+
+**Before (apaTables 3.x):** passing a `.doc` or `.rtf` name produced an RTF-format file.
+
+```{r before-save}
+# 3.x — wrote an RTF-based file named Table1.doc
+my_table <- apa.cor.table(data = mtcars)
+apa.save(my_table, filename = "Table1.doc")
+```
+
+**After (apaTables 4.0):** use `.docx` for Word or `.html` for HTML.
+
+```{r after-save}
+# 4.0 — writes a proper Word file
+my_table <- apa.cor.table(data = mtcars)
+apa.save(my_table, filename = "Table1.docx")
+
+# or HTML
+apa.save(my_table, filename = "Table1.html")
+```
+
+If you pass a legacy `.doc` or `.rtf` filename, apaTables 4.0 writes the file as `.docx` and prints a one-time message explaining the change. Nothing silently disappears; the output just lands in a `.docx` file.
+
+Table-builder functions still accept a `filename=` argument directly, which is convenient for one-table workflows:
+
+```{r direct-filename}
+# write directly from the builder
+apa.cor.table(data = mtcars, filename = "Table1.docx")
+```
+
+The `paper` argument of `apa.save()` accepts `"us"` (default, 8.5 x 11 in) or `"a4"` for `.docx` output.
+
+## Table numbers are real by default
+
+`table.number` now defaults to `1`, so a table built without one is Table 1 where 3.x printed "Table 0". `table.number = 0` (or `NA`, or `NULL`) now means the table carries no number at all: none at the console, none in the Word file. `apa.save()` numbers tables left at the default by their position in the file.
+
+## PDF moved to Quarto
+
+[Quarto](https://quarto.org) is a free system for writing documents that
+combine text, R code, and output. [apaquarto](https://wjschne.github.io/apaquarto/)
+is a Quarto extension that makes the rendered document follow APA style
+(7th edition). There is no native PDF writer in apaTables 4.0. To get a
+PDF, place `apa.quarto.pdf()` inside an apaquarto / Quarto document and
+render it.
+
+A minimal Quarto chunk looks like this:
+
+````{r quarto-example}
+# In a .qmd file rendered with apaquarto:
+# ```{r}
+# #| label: tbl-correlations
+# my_table <- apa.cor.table(data = mtcars)
+# apa.quarto.pdf(my_table)
+# ```
+````
+
+The `#| label:` line is the one setting that is not optional, and it must
+begin with `tbl-`. Without it Quarto does not treat the chunk as a table at
+all, so there is no number, no title, and no note, however you try to
+supply them.
+
+Everything else is automatic. apaquarto supplies the table number, the italic
+title, and the "Note." framing, and apaTables writes the title and note
+from the table itself. There is nothing to type for them, and nothing to
+keep in step when your analysis changes. To use your own wording instead, add a
+`tbl-cap` line for the title or an `apa-note` line for the note. The
+helpers `apa_caption()` and `apa_note_text()` return apaTables' own wording
+if you would rather start from that than compose one. `apa.quarto.template()`, run in the R
+console, prints a whole ready-to-paste chunk. A table object returned from a
+chunk is also auto-rendered via `knit_print()`.
+
+For a full walkthrough, see the companion vignette:
+
+```{r see-vignette}
+vignette("apaquarto-usage", package = "apaTables")
+```
+
+## Removed functions
+
+`apa.knit.table.for.pdf()` and `apa.knit.table.for.papaja()` have been removed. Both wrote LaTeX through `kableExtra`, and both are replaced by the `apa.quarto.pdf()` / apaquarto path described above, which produces the table natively:
+
+```{r replacement}
+# was: apa.knit.table.for.pdf(my_table)
+apa.quarto.pdf(my_table)
+```
+
+`apa.knit.table.for.papaja()` only ever implemented the regression branch; every other table type came back as a bare space, which became an empty table in the finished document. For a regression table in a papaja document, the same replacement applies, and `apa.save()` writes the table directly to a file:
+
+```{r replacement-file}
+apa.save(my_table, filename = "Table1.docx")
+```
+
+## Dependency changes
+
+`flextable` and `officer` are now in `Imports` (hard dependencies). `kableExtra` and `papaja` are no longer listed at all — `kableExtra` was needed only by the removed LaTeX path, and `papaja` only by the removed papaja helper.

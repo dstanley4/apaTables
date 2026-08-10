@@ -1,0 +1,52 @@
+---
+title: "Multi Table Shrink"
+shorttitle: "Multi Table"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Text before. Three tables follow: the first is marked to shrink to 9 pt,
+the second carries NO size marker at all (default, 10 pt), and the third
+is marked to shrink to 6 pt -- two DIFFERENT rungs and one unmarked, so a
+filter that shares one size across the whole document (Task 6 fix round 2,
+CRITICAL -- apatablesize.lua's document-wide rescope in fix round 1) would
+give all three the SAME style, the last marker it happened to visit.
+
+```{r}
+#| label: tbl-a
+#| tbl-cap: "Table A, Shrunk to 9 pt"
+#| echo: false
+plan_a <- apaTables:::apa_display_plan(apaTables:::as_spec(apa.cor.table(attitude[, 1:3])))
+body_a <- apaTables:::apa_markdown_table(plan_a, font_size = NULL, rules = TRUE)
+knitr::asis_output(apaTables:::apa_quarto_size_wrap(body_a, 9))
+```
+
+```{r}
+#| label: standin-plain-table
+#| echo: false
+plan_b <- apaTables:::apa_display_plan(apaTables:::as_spec(apa.cor.table(attitude[, 1:2])))
+body_b <- apaTables:::apa_markdown_table(plan_b, font_size = NULL, rules = TRUE)
+knitr::asis_output(body_b)
+```
+
+```{r}
+#| label: tbl-c
+#| tbl-cap: "Table C, Shrunk to 6 pt"
+#| echo: false
+plan_c <- apaTables:::apa_display_plan(apaTables:::as_spec(apa.cor.table(attitude[, 1:4])))
+body_c <- apaTables:::apa_markdown_table(plan_c, font_size = NULL, rules = TRUE)
+knitr::asis_output(apaTables:::apa_quarto_size_wrap(body_c, 6))
+```
+
+Text after.

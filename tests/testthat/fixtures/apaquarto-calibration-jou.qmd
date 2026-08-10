@@ -1,0 +1,42 @@
+---
+title: "Calibration journal mode"
+shorttitle: "Calibration"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-pdf:
+    documentmode: jou
+    keep-tex: true
+---
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+```
+
+LaTeX reporting the width a table really gets in journal mode: apaquarto
+puts a table in its ThreePartTable environment, inside one of two columns.
+
+```{=latex}
+\begin{ThreePartTable}
+APAJOULINEWIDTH=\the\linewidth
+\end{ThreePartTable}
+```
+
+A table that fits an upright manuscript page at full size, and so would be
+left alone by a ladder working from a 6.5 in budget, but is more than
+one-and-a-half times as wide as a journal column.
+
+```{r}
+#| label: tbl-jou
+#| tbl-cap: "Journal column"
+#| apa-note: "A note under the journal table."
+#| warning: false
+apa.cor.table(attitude[, 1:4])$spec |> apa.quarto.pdf()
+```

@@ -1,0 +1,39 @@
+---
+title: "Font Size Docx"
+shorttitle: "Font Size Docx"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Body text before.
+
+```{r}
+#| label: tbl-eleven
+#| echo: false
+apa.quarto.docx(apa.cor.table(attitude), font.size = 11)
+```
+
+```{r}
+#| label: tbl-twelve
+#| echo: false
+apa.quarto.docx(apa.cor.table(attitude), font.size = 12)
+```
+
+```{r}
+#| label: tbl-over
+#| echo: false
+apa.quarto.docx(apa.cor.table(attitude), font.size = 16)
+```
+
+Body text after.

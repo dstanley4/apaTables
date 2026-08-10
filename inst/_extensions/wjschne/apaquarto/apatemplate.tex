@@ -1,0 +1,358 @@
+$doc-class.tex()$
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{setspace}
+$if(docmode)$
+\geometry{inner=1in, outer=1in}
+\fancyhfoffset[LE,RO]{0cm}
+$endif$
+
+$if(geometry)$
+\geometry{$for(geometry)$$geometry$$sep$,$endfor$}
+\fancyhfoffset[LE,RO]{0cm}
+$endif$
+
+$if(lang)$
+\usepackage[bidi=default]{babel}
+$if(babel-lang)$
+\babelprovide[main,import]{$babel-lang$}
+$if(title-block-keywords)$
+\StartBabelCommands{$babel-lang$}{captions} [unicode, fontenc=TU EU1 EU2, charset=utf8] \SetString{\keywordname}{$title-block-keywords$}
+\EndBabelCommands
+$endif$
+
+
+$if(mainfont)$
+\babelfont{rm}[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$$if(mainfontfallback)$,RawFeature={fallback=mainfontfallback}$endif$]{$mainfont$}
+$endif$
+$endif$
+$for(babel-otherlangs)$
+\babelprovide[import]{$babel-otherlangs$}
+$endfor$
+$for(babelfonts/pairs)$
+\babelfont[$babelfonts.key$]{rm}{$babelfonts.value$}
+$endfor$
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+$endif$
+
+\RequirePackage{longtable}
+\RequirePackage{threeparttablex}
+
+% needspace supplies \Needspace*, which apafloatlatex.lua puts in front of a
+% longtable when floats stay in the text so that a short table moves to the
+% next page whole instead of straddling the break. Loaded unconditionally: it
+% defines one macro and adds no output, and loading it only in the modes that
+% use it would make the preamble depend on a mode test that the filter already
+% owns.
+%
+% THE STARRED, EAGER FORM IS DELIBERATE. The lower-case \needspace defers the
+% break decision to TeX's page builder, which by then is inside longtable's
+% output routine -- and that routine repeats the table's header on the new
+% page, above the caption, attached to nothing. Phase 1.16 / D106; the
+% reasoning and the 26-document measurement live in apafloatlatex.lua.
+\usepackage{needspace}
+
+\usepackage{framed}
+
+
+$header.tex()$
+
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+
+$tightlist.tex()$
+
+$tables.tex()$
+
+$graphics.tex()$
+
+
+$citations.tex()$
+
+
+$if(numbered-lines)$
+$if(journalmode)$
+\usepackage[nolongtablepatch]{lineno}
+\setlength\linenumbersep{5pt}
+\setlength\columnsep{25pt}
+$else$
+\usepackage[nolongtablepatch]{lineno}
+$endif$
+
+\linenumbers
+$endif$
+
+$if(linestretch)$
+\setstretch{$linestretch$}
+$endif$
+
+$if(mathspec)$
+\usepackage{mathspec}
+$endif$
+
+$if(mainfont)$
+\usepackage{fontspec} 
+$else$
+\usepackage{newtx}
+$endif$
+
+\defaultfontfeatures{Scale=MatchLowercase}$-- must come before Beamer theme
+\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+
+$if(fontfamily)$
+\usepackage[$for(fontfamilyoptions)$$fontfamilyoptions$$sep$,$endfor$]{$fontfamily$}
+$endif$
+$if(mainfont)$
+  \setmainfont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$$if(mainfontfallback)$,RawFeature={fallback=mainfontfallback}$endif$]{$mainfont$}
+$endif$
+$if(sansfont)$
+  \setsansfont[$for(sansfontoptions)$$sansfontoptions$$sep$,$endfor$$if(sansfontfallback)$,RawFeature={fallback=sansfontfallback}$endif$]{$sansfont$}
+$endif$
+$if(monofont)$
+  \setmonofont[$for(monofontoptions)$$monofontoptions$$sep$,$endfor$]{$monofont$}
+$endif$
+
+$for(fontfamilies)$
+  \setmonofont[$for(monofontoptions)$$monofontoptions$$sep$,$endfor$$if(monofontfallback)$,RawFeature={fallback=monofontfallback}$endif$]{$monofont$}
+$endfor$
+
+$if(mathfont)$
+\setmathfont(Digits,Latin,Greek)[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+$endif$
+
+$if(CJKmainfont)$
+    \usepackage{xeCJK}
+    \setCJKmainfont[$for(CJKoptions)$$CJKoptions$$sep$,$endfor$]{$CJKmainfont$}
+    $if(CJKsansfont)$
+      \setCJKsansfont[$for(CJKoptions)$$CJKoptions$$sep$,$endfor$]{$CJKsansfont$}
+    $endif$
+    $if(CJKmonofont)$
+      \setCJKmonofont[$for(CJKoptions)$$CJKoptions$$sep$,$endfor$]{$CJKmonofont$}
+    $endif$
+$endif$
+
+$title.tex()$
+
+$if(journalmode)$
+\usepackage{pbalance}
+% \usepackage{float}
+\makeatletter
+\let\oldtpt\ThreePartTable
+\let\endoldtpt\endThreePartTable
+\def\ThreePartTable{\@ifnextchar[\ThreePartTable@i \ThreePartTable@ii}
+\def\ThreePartTable@i[#1]{\begin{figure}[!htbp]
+\onecolumn
+\begin{minipage}{0.485\textwidth}
+\oldtpt[#1]
+}
+\def\ThreePartTable@ii{\begin{figure}[!htbp]
+\onecolumn
+\begin{minipage}{0.48\textwidth}
+\oldtpt
+}
+\def\endThreePartTable{
+\endoldtpt
+\end{minipage}
+\twocolumn
+\end{figure}}
+\makeatother
+
+
+\makeatletter
+% apaTables: a longtable that draws its OWN closing \bottomrule (apaTables'
+% native tables do, inside \endlastfoot, so their note prints under it) arms
+% this flag from inside the environment -- \noalign{\csname
+% apatablesownbottomrule\endcsname} as its last row -- and the automatic
+% \hline below stands down for that one table. Without the flag every such
+% table ended with TWO rules: this \hline plus the table's own \bottomrule
+% (apaTables F5, 2026-08-09; rule bands measured 2.4 pt apart at 300 dpi).
+% The flag is cleared, globally, the first time it is consumed, so a
+% following plain markdown table -- whose ONLY bottom rule is this \hline,
+% measured: without it such a table has no closing rule at all -- is
+% unaffected. The arming macro is reached via \csname so the same emitted
+% table is a harmless no-op under a template without this patch (plain
+% format: pdf).
+\newif\ifapatablesownrule
+\def\apatablesownbottomrule{\global\apatablesownruletrue}
+\let\endoldlt\endlongtable
+\def\endlongtable{
+\ifapatablesownrule\noalign{\global\apatablesownrulefalse}\else\hline\fi
+\endoldlt}
+\makeatother
+
+\newenvironment{twocolumntable}% environment name
+{% begin code
+\begin{table*}[!htbp]%
+\onecolumn%
+}%
+{%
+\twocolumn%
+\end{table*}%
+}% end code
+$else$
+\makeatletter
+% Same flag as the journal-mode branch above (only one branch is emitted per
+% document): a longtable carrying its own \bottomrule arms
+% \apatablesownbottomrule and the automatic \hline stands down for it.
+% apaTables F5, 2026-08-09 -- see the twin comment above.
+\newif\ifapatablesownrule
+\def\apatablesownbottomrule{\global\apatablesownruletrue}
+\let\endoldlt\endlongtable
+\def\endlongtable{
+\ifapatablesownrule\noalign{\global\apatablesownrulefalse}\else\hline\fi
+\endoldlt
+}
+\makeatother
+$if(floatsintext)$
+$else$
+$if(manuscriptmode)$
+\RequirePackage{longtable}
+\DeclareDelayedFloatFlavor{longtable}{table}
+% Rotation, when floats are collected at the end of the manuscript.
+%
+% APA asks for the PAGE to be turned for a wide table -- "use landscape
+% orientation on the page with the wide table ... it does not matter if the
+% page header also moves" -- which is what pdflscape does. endfloat, though,
+% defers only the float ENVIRONMENT and drops whatever surrounded it, so a
+% naked landscape wrapper is stripped and the table lands upright. Declaring
+% landscape as a delayed flavour of table makes endfloat defer the whole
+% landscape block as a unit, rotation included. Measured against a control
+% without this line: with it, 40 of 40 rows on landscape pages; without it,
+% 40 of 40 rows on PORTRAIT pages.
+%
+% pdflscape MUST be loaded FIRST. \DeclareDelayedFloatFlavor takes over the
+% \landscape macro immediately, so a \usepackage{pdflscape} arriving later --
+% which is what Quarto adds for a ::: {.landscape} div, in header-includes,
+% below this point -- would define \landscape afresh and quietly undo the
+% deferral. Loading it here means Quarto's later \usepackage is the no-op.
+\RequirePackage{pdflscape}
+\DeclareDelayedFloatFlavor{landscape}{table}
+$endif$
+$if(studentmode)$
+% Student mode collects floats at the end exactly as manuscript mode does
+% (apa7 loads endfloat for both, and utilsapa.delayedfloats says so), so it
+% needs the same two declarations. Only the manuscript branch existed before,
+% which left a tall or rotated table in a student paper going through the
+% path measured to lose rows.
+\RequirePackage{longtable}
+\DeclareDelayedFloatFlavor{longtable}{table}
+\RequirePackage{pdflscape}
+\DeclareDelayedFloatFlavor{landscape}{table}
+$endif$
+$endif$
+$endif$
+
+\urlstyle{same}
+
+
+$for(header-insert)$
+$header-insert$
+$endfor$
+
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+% From https://tex.stackexchange.com/a/645996/211326
+%%% apa7 doesn't want to add appendix section titles in the toc
+%%% let's make it do it
+\makeatletter
+\xpatchcmd{\appendix}
+  {\par}
+  {\addcontentsline{toc}{section}{\@currentlabelname}\par}
+  {}{}
+\makeatother
+
+%% Disable longtable counter
+%% https://tex.stackexchange.com/a/248395/211326
+
+\usepackage{etoolbox}
+
+\makeatletter
+% \newif must be declared BEFORE the macros that test the flag.
+\newif\ifLTpatch@caption
+\patchcmd{\LT@caption}
+  {\bgroup}
+  {\bgroup\global\LTpatch@captiontrue}
+  {}{}
+% The upstream \patchcmd{\longtable}{\par}{...} reset is DELETED. \par is
+% still present in longtable.sty, but \longtable has already been redefined
+% by the time this template runs -- \@efloat{...} under endfloat, and
+% \savenotes\msne$$longtable under floatsintext -- so the patch reports
+% NOT-FOUND and the flag is never reset in ANY real apaquarto document.
+% Resetting inside the same \apptocmd body needs no anchor and runs after
+% the check, in every mode. A SEPARATE \apptocmd does not work: it produced
+% "Table 1, Table 1, Table 2".
+\apptocmd{\endlongtable}
+  {\ifLTpatch@caption\else\addtocounter{table}{-1}\fi
+   \global\LTpatch@captionfalse}
+  {}{}
+\makeatother
+
+\begin{document}
+
+$if(suppress-title-page)$
+$else$
+\maketitle
+$endif$
+
+
+$if(toc)$
+\hypertarget{toc}{}
+\tableofcontents
+\newpage
+\section[Introduction]{$title$}
+$else$
+$if(suppress-title-page)$
+$if(suppress-title-introduction)$
+$else$
+\section[Introduction]{$title$}
+$endif$
+$endif$
+$endif$
+
+$if(numbersections)$
+\setcounter{secnumdepth}{$if(number-depth)$$number-depth$$else$3$endif$}
+$endif$
+
+\setlength\LTleft{0pt}
+
+$if(numbered-lines)$
+\resetlinenumber[1]
+$endif$
+
+$if(first-page)$
+\setcounter{page}{$first-page$}
+$endif$
+
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{snugshade}\begin{singlespace}}{\end{singlespace}\end{snugshade}}\fi
+
+$if(journalmode)$
+$else$
+
+\ifdefined\cslhangindent\else\newlength{\cslhangindent}\fi
+\ifdefined\csllabelwidth\else\newlength{\csllabelwidth}\fi
+\setlength{\cslhangindent}{0.5in}
+
+$endif$
+
+$body$
+
+$before-bib.tex()$
+
+$if(zerocitations)$
+$else$
+$biblio.tex()$
+$endif$
+
+$for(include-after)$
+$include-after$
+$endfor$
+
+$after-body.tex()$
+
+
+\end{document}

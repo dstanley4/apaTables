@@ -1,0 +1,31 @@
+---
+title: "Float page placement: two tables at the end"
+shorttitle: "Float pages two tables"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+UNIQUEBODYMARKER this sentence exists so a test can ask which page it is on.
+
+```{r}
+#| label: tbl-one
+#| echo: false
+apa.quarto.docx(apa.cor.table(attitude[, 1:3]), title = "UNIQUETABLEONE")
+```
+
+```{r}
+#| label: tbl-two
+#| echo: false
+apa.quarto.docx(apa.cor.table(attitude[, 4:6]), title = "UNIQUETABLETWO")
+```

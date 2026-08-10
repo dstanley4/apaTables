@@ -1,0 +1,26 @@
+---
+title: "One-Way Smoke"
+shorttitle: "1way"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-pdf
+---
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+oneway_tbl <- apa.1way.table(iv = dose, dv = libido, data = viagra, table.number = 1)
+```
+
+```{r}
+#| label: tbl-oneway
+#| tbl-cap: "Descriptive Statistics for Libido for Each Level of Dose"
+#| apa-note: "M = mean. SD = standard deviation."
+apa.quarto.pdf(oneway_tbl)
+```

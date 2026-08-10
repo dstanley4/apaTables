@@ -1,0 +1,27 @@
+---
+title: "Two-Way Smoke"
+shorttitle: "2way"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-pdf
+---
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+twoway_tbl <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
+                             data = goggles, table.number = 3)
+```
+
+```{r}
+#| label: tbl-twoway
+#| tbl-cap: "Descriptive Statistics for Attractiveness in a 2(Gender) x 3(Alcohol) Design"
+#| apa-note: "M = mean. SD = standard deviation."
+apa.quarto.pdf(twoway_tbl)
+```

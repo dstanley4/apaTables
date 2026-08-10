@@ -1,0 +1,30 @@
+---
+title: "AFEX Smoke"
+shorttitle: "afex"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-pdf
+---
+
+```{r}
+#| include: false
+#| message: false
+#| warning: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+goggles_results <- afex::aov_ez(id = "participant", dv = "attractiveness",
+                                data = goggles, between = c("gender", "alcohol"))
+afex_tbl <- apa.afex.table(afex.output = goggles_results)
+```
+
+```{r}
+#| label: tbl-afex
+#| tbl-cap: "ANOVA Results"
+#| apa-note: "ges = generalized eta-squared."
+apa.quarto.pdf(afex_tbl)
+```

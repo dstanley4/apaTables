@@ -1,0 +1,54 @@
+---
+title: "Spanner Alignment"
+shorttitle: "Spanners"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format: apaquarto-docx
+---
+
+<!--
+D119: a column spanner is CENTRED over the columns it covers. This fixture
+carries BOTH spanning shapes on purpose, because the filter that centres
+spanners must not touch the other one:
+
+  * tbl-twoway  -- a two-way table, whose HEAD rows carry spanners
+                   (`alcohol` over three level labels, each over M and SD);
+  * tbl-blocks  -- a blocks regression, whose BODY carries row-group labels
+                   ("Model 1", "Model 2") that span every column and are
+                   FLUSH LEFT.
+
+Both are `col_span > 1`. Only the head ones may be centred. A fixture with
+only the two-way table would let a filter that centred every spanning cell
+pass, while silently centring row-group labels in every grouped table --
+which is why both are here. See `a-surviving-mutation-is-a-missing-fixture`.
+-->
+
+```{r}
+#| include: false
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
+                             "/Users/dstanley/os/RDevelopment/apaTables"),
+                  quiet = TRUE)
+twoway_tbl <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
+                             data = goggles, table.number = 1)
+blkA <- lm(sales ~ adverts + airplay, data = album)
+blkB <- lm(sales ~ adverts + airplay + I(adverts + airplay), data = album)
+blocks_tbl <- apa.reg.table(blkA, blkB, table.number = 2)
+```
+
+```{r}
+#| label: tbl-twoway
+#| message: false
+#| warning: true
+apa.quarto.docx(twoway_tbl)
+```
+
+```{r}
+#| label: tbl-blocks
+#| message: false
+#| warning: true
+apa.quarto.docx(blocks_tbl)
+```
