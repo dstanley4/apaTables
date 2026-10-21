@@ -1,36 +1,36 @@
-# Phase 1.18 / D114 -- the ONLY evidence in the suite that the width fix works.
+# The only test in the suite that checks the HTML width fix WORKS, as opposed
+# to checking that its markup is present (test-html-structure.R does that).
 #
-# The rest of the suite cannot see this defect at all. A table whose cells are
-# squashed and broken mid-value and one that prints whole are IDENTICAL HTML --
-# the same blindness D46 recorded for slides, where an overflowing table and a
-# fitted one produce the same markup. Only geometry differs, and geometry lives
-# in a browser. test-html-structure.R asserts the wrapper is THERE; this file is
-# the only thing that asserts it WORKS.
+# A table whose cells are squashed and broken mid-value and one that prints
+# whole are IDENTICAL HTML; only the geometry differs, and geometry lives in a
+# browser. So this renders a 20-variable fixture and measures it in headless
+# Chrome, reporting each table's width and how many text nodes print on more
+# than one line, at a range of window widths.
 #
-# So this shells out to headless Chrome via dev/factcheck/phase118-htmlwidth/
-# measure.py, which reports, per table, its width and how many text nodes print
-# on more than one line.
-#
-# WHERE THIS RUNS: under devtools::test() from the source tree. Inside
-# `R CMD check` it SKIPS, because dev/ is .Rbuildignore'd and the script is not
-# in the tarball -- deliberately; a CRAN machine has no browser either. That
-# makes the skip below load-bearing rather than incidental: if this file reports
-# SKIP on a development machine, the fix is UNTESTED, not fine.
+# MAINTAINER-ONLY. The measuring script lives in the maintainer's local
+# development notes, which are not part of the public repository or the
+# package tarball, and it needs Google Chrome. Everywhere else -- CRAN, CI,
+# a contributor's clone -- this file skips with a message saying so. On the
+# maintainer's machine a SKIP here means the width fix is untested, not fine.
+# Set APATABLES_CHROME to point at a Chrome binary outside the macOS default.
 
 skip_on_cran()
 skip_if_not(nzchar(Sys.which("quarto")), "quarto not installed")
 apa_skip_if_library_stale()
 
-apa_chrome <- "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+apa_chrome <- Sys.getenv("APATABLES_CHROME",
+                         "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 apa_measure <- testthat::test_path("..", "..", "dev", "factcheck",
                                    "phase118-htmlwidth", "measure.py")
 
-skip_if_not(file.exists(apa_chrome), "headless Chrome not available")
-skip_if_not(nzchar(Sys.which("python3")), "python3 not available")
 skip_if_not(file.exists(apa_measure),
-            "measure.py not present (expected inside R CMD check: dev/ is not shipped)")
+            paste("maintainer-only HTML width measurement: needs a local",
+                  "measuring script that is not in the public repository"))
+skip_if_not(file.exists(apa_chrome),
+            "headless Chrome not available (set APATABLES_CHROME to its path)")
+skip_if_not(nzchar(Sys.which("python3")), "python3 not available")
 
-test_that("a wide table on a real HTML render breaks no text at any window width, D114", {
+test_that("a wide table on a real HTML render breaks no text at any window width", {
   # the PATH, not the text: Chrome loads the file from disk, beside its own
   # `_files/` directory, and reads the stylesheets from there.
   html <- apa_render_fixture_html("html-wide-table")
@@ -55,8 +55,7 @@ test_that("a wide table on a real HTML render breaks no text at any window width
   expect_true(all(broken == 0L), info = out)
 
   # and the READER'S PAGE never scrolls sideways, at any width: where there is
-  # no room for the table to grow into, the table's own box scrolls instead
-  # (D114, the author's second ruling).
+  # no room for the table to grow into, the table's own box scrolls instead.
   expect_false(grepl("pageScrollsSideways=true", out), info = out)
 
   # the fallback is actually REACHED, and this fixture is what reaches it: 20
@@ -67,10 +66,10 @@ test_that("a wide table on a real HTML render breaks no text at any window width
   expect_true(grepl("ownScrollbar=true", out, fixed = TRUE), info = out)
 })
 
-test_that("a table that already fits is unchanged, D114", {
+test_that("a table that already fits is unchanged", {
   # The other half of the matrix, and the reason Quarto's own column classes
   # were rejected: they would have stretched this table from the text-column
-  # width to 9.88 in. dev/factcheck/phase118-htmlwidth/SPIKE-column-classes.md.
+  # width to 9.88 in (measured).
   html <- apa_render_fixture_html("html-kable-beside")
 
   out <- suppressWarnings(system2("python3",

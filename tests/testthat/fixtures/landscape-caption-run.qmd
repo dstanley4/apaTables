@@ -19,13 +19,13 @@ library(apaTables)
 ## Results
 
 Two CONSECUTIVE rotated tables followed by an UPRIGHT one. The run of two is
-what Phase 1.14 collapses into a single landscape section; the upright table
+what the bundle collapses into a single landscape section; the upright table
 ends the run and must keep its own layout untouched.
 
 `apa.cor.table(attitude)` is deliberately NOT used here: it measures 5.44 in
-inside a manuscript's 6.5 in block and does not rotate (D61), so it would have
+inside a manuscript's 6.5 in block and does not rotate (measured), so it would have
 made this a one-rotated-table fixture reporting the opposite conclusion. That
-mistake was made once already, in this phase's own measure round.
+mistake was made once already.
 
 `tbl-runa`: rotated.
 

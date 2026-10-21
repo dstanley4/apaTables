@@ -11,13 +11,11 @@ test_that("both example templates ship and are complete", {
                  "apa.aov.table", "apa.1way.table", "apa.2way.table",
                  "apa.afex.table")) expect_match(txt, fn, fixed = TRUE, info = nm)
     # ONE PAGE PER TABLE, asserted as that invariant rather than as a count.
-    # This used to read `expect_identical(..., 7L)` for both templates, and
-    # Phase 3.3 added a NINTH page to the apaquarto variant (the wide
-    # correlation table on a rotated page, D102) -- at which point a hard
-    # number fails for a document that is still correct, and the fix is to
-    # bump a magic constant rather than to check anything. Derived from the
-    # table chunks instead, so the two templates are allowed to differ in
-    # length while both stay one-page-per-table.
+    # Do not hard-code a page count: adding a table (such as the wide
+    # correlation table on a rotated page) would fail a document that is
+    # still correct, and the "fix" would be to bump a magic constant rather
+    # than to check anything. Derived from the table chunks instead, so the
+    # two templates may differ in length while both stay one-page-per-table.
     n_tbl <- lengths(regmatches(txt, gregexpr("#\\| label: tbl-", txt)))
     expect_identical(
       lengths(regmatches(txt, gregexpr("{{< pagebreak >}}", txt, fixed = TRUE))),

@@ -34,26 +34,25 @@ rotation on this render. A DIFFERENT fact from `landscape = FALSE`: one is
 the user declining a rotated page, the other is the render being unable to
 produce one, and only the first is anybody's choice.}
 
-\item{size}{an explicit point size (D26), overriding the whole
+\item{size}{an explicit point size, overriding the whole
 rotate-then-shrink ladder -- because the caller already fixed the size,
 shrinking is no longer an option, so the ONLY question left
 is whether the page needs to rotate to hold it. `NULL` (default) runs
-the ladder exactly as before this parameter existed: this codepath is
-provably unreached when `size` is `NULL`, so the default case is
-byte-identical to the pre-D26 behaviour. Fix round 1 (Task 8): before
-this parameter existed, an explicit `font.size` reached the LaTeX
-emitter with NO re-check at all -- `apa.cor.table(attitude)` at 20 pt
-measures 10.26 in against a 6.5 in upright page and rendered with no
-warning and no rotation. `size` closes that gap by deciding rotation
-from the SIZE ACTUALLY EMITTED rather than the ladder's own 10 pt guess. It keeps exactly the one
-warning that remains true whatever size was requested: a table whose `\\tabcolsep` alone exceeds even the
-rotated budget cannot be rescued by ANY size, explicit or automatic.}
+the automatic ladder, and the override branch is not reached at all.
+Rotation is decided from the SIZE ACTUALLY EMITTED rather than the
+ladder's own 10 pt guess: without this re-check an explicit `font.size`
+would reach the LaTeX emitter unchecked -- `apa.cor.table(attitude)` at
+20 pt measures 10.26 in against a 6.5 in upright page, and would render
+with no warning and no rotation. When the page the table will land on
+(rotated, if rotation is allowed) cannot hold it at that size it warns, naming a smaller size that fits, or --
+for a table whose `\\tabcolsep` alone exceeds the rotated budget --
+saying that no size, explicit or automatic, can fit it.}
 
 \item{col_overhead_in}{fixed per-column overhead in inches that the
 destination adds to every column whatever the type size, and that the
 content model therefore cannot see. `0` (the default) for LaTeX, whose
 own `\\tabcolsep` term is already in the model; the Word render passes
-`APA_WORD_CELL_PADDING_IN` (B6 option 2, Phase 1.12), the bundled
+`APA_WORD_CELL_PADDING_IN`, the bundled
 styles' fixed `<w:tblCellMar>`. Charged on the WIDTH side -- it is part
 of the space the table really occupies -- so every budget in a warning
 is still the true page width.}
@@ -64,7 +63,7 @@ a list with `size` (points), `rotate` (logical), `fits` (did the
   `size`, in inches, `col_overhead_in` included).
 }
 \description{
-The ladder of D7/D7b, run on an exact width rather than a search: 10 pt
+The layout ladder, run on an exact width rather than a search: 10 pt
 upright; if that does not fit, ROTATE and stay at 10 pt; if it still does not fit, shrink by closed-form calculation. If that goes
 below 6 pt, use it anyway so that nothing is ever cut off, and warn.
 }

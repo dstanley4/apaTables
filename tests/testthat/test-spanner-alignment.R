@@ -1,11 +1,11 @@
-# D119: a column spanner is CENTRED over the columns it covers.
+# A column spanner is CENTRED over the columns it covers.
 #
-# THE DEFECT, measured in a real render before the fix: `alcohol` printed hard
-# against the RIGHT edge of the three columns it spans, in BOTH docx and html.
-# Pandoc gives a spanning cell the alignment of the FIRST column it covers,
-# and over numeric columns that is right. The PDF path was already correct and
-# is untouched -- apaTables emits `\multicolumn{n}{c}` there and never builds
-# an AST table for pandoc to align.
+# THE DEFECT, measured in a real render without the filter: `alcohol` prints
+# hard against the RIGHT edge of the three columns it spans, in BOTH docx and
+# html. Pandoc gives a spanning cell the alignment of the FIRST column it
+# covers, and over numeric columns that is right. The PDF path is not
+# affected -- apaTables emits `\multicolumn{n}{c}` there and never builds an
+# AST table for pandoc to align.
 #
 # The fix is `apatablespanner.lua` (bundled), which sets the alignment on the
 # AST at post-quarto, so ONE rule corrects both writers.
@@ -81,8 +81,8 @@ test_that("in Word a head spanner is centred and a body row-group label is not",
 })
 
 test_that("in HTML a head spanner is centred and a body row-group label is not", {
-  # A SEPARATE fixture, whose YAML `format:` and entry-point CALLS agree
-  # (D112a). Rendering the docx fixture to HTML would both fail -- the helper
+  # A SEPARATE fixture, whose YAML `format:` and entry-point CALLS agree.
+  # Rendering the docx fixture to HTML would both fail -- the helper
   # looks for doc.html -- and, if forced, would put a guidance warning in the
   # document that no real user would see.
   h <- apa_html_text(apa_render_fixture_html("spanner-alignment-html"))

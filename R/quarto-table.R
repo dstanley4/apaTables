@@ -1,15 +1,14 @@
-# The public chunk function and the layout ladder (Task 9).
+# The public chunk function and the layout ladder.
 #
-# This is where Tasks 2-8 are joined up. apa_display_plan() gives the
-# structure, R/render-latex.R prices it at a font size and emits the grid, and
-# apaquarto -- patched in inst/_extensions/wjschne/apaquarto/ -- supplies the
-# caption, the number, the note and the page. R decides the size and the
-# rotation; apaquarto executes both. Nothing here writes a float, a caption or
-# a landscape environment (D2).
+# apa_display_plan() gives the structure, R/render-latex.R prices it at a font
+# size and emits the grid, and apaquarto -- patched in
+# inst/_extensions/wjschne/apaquarto/ -- supplies the caption, the number, the
+# note and the page. R decides the size and the rotation; apaquarto executes
+# both. Nothing here writes a float, a caption or a landscape environment.
 
-# The default type size for a Quarto PDF table (D7).
+# The default type size for a Quarto PDF table.
 #
-# Not 12 pt, and the reason is on the record because it will be queried: an
+# Not 12 pt, and the reason is stated because it will be queried: an
 # apaTables Quarto manuscript goes to REVIEWERS, who read on screen and can
 # zoom losslessly, and 10 pt keeps about 19% more content upright than 12 pt
 # would, so fewer tables rotate at all. APA's tables guidance says only "use
@@ -18,52 +17,48 @@
 # FIGURES rule.
 APA_QUARTO_DEFAULT_SIZE <- 10
 
-# The size below which the ladder warns (D7b). It is a WARNING THRESHOLD, and
+# The size below which the ladder warns. It is a WARNING THRESHOLD, and
 # NOTHING ELSE STOPS HERE: the ladder walks straight past it, below 5 pt and
 # below 1 pt if that is what fitting takes, down to
 # APA_LATEX_MIN_EMITTABLE_SIZE. A reviewer can zoom into 3 pt type but cannot
 # recover a column that is not in the file.
 #
-# That this is only a threshold is worth stating twice, because it was NOT
-# true when Task 9 first shipped: apa_size_for_width() and apa_latex_table()
-# both hard-clamped at 5 pt, so a table needing 4 pt was set at 5 pt and
-# clipped -- while this comment, the help page and the test all claimed
-# nothing was ever cut off. Fixed in fix round 1; the clamp is now a
-# degeneracy guard at 0.5 pt, measured (see APA_LATEX_MIN_EMITTABLE_SIZE).
+# Do not reintroduce a hard clamp at this size (or at 5 pt) in
+# apa_size_for_width() or apa_latex_table(): a table needing 4 pt would then
+# be set at 5 pt and clipped, while the help page promises nothing is ever
+# cut off. The only clamp is a degeneracy guard at 0.5 pt, measured (see
+# APA_LATEX_MIN_EMITTABLE_SIZE).
 #
-# Given the reach recorded in D7 (about 17 in of 12-pt-equivalent content on a
+# Given the ladder's reach (about 17 in of 12-pt-equivalent content on a
 # rotated page at 6 pt) this should essentially never fire -- and if it fires
 # on ordinary data the width model is wrong, not the data, which is why it is
 # a real warning and not a silent adjustment.
 APA_QUARTO_READABLE_SIZE <- 6
 
-# D70: the largest cloned table style in the bundled reference document.
+# The largest cloned table style in the bundled reference document.
 # Word's sizes must exist as styles; none can be invented at render time, so
 # this is a real ceiling, not a preference. Kept honest against the binary by
 # tests/testthat/test-word-size-styles.R.
 APA_QUARTO_MAX_SIZE <- 12
 
-# B6 option 2 (Phase 1.12): the FIXED padding a Word table cell carries on
-# each side, in inches -- the bundled styles' <w:tblCellMar> of 15 twips a
-# side (D39 cut it from 58; 1440 twips to the inch), so one column costs
-# 2 x 15 twips whatever the type size. The ladder charges the Word
-# destination for it via apa_layout_decide()'s col_overhead_in: before this,
-# the ladder shrank a dense table until it JUST fit the page and the ignored
-# padding then pushed it back over -- measured (roadmap 1.12, and the
-# phase112-padding spike): every table the ladder shrinks lands immediately
-# below budget by construction, and the widest column pays, wrapping its
-# labels ("10. Var10" split across two lines while "9. Var9" fit). Kept
-# honest against the binary reference document by the D39 block in
+# The FIXED padding a Word table cell carries on each side, in inches -- the
+# bundled styles' <w:tblCellMar> of 15 twips a side (1440 twips to the inch),
+# so one column costs 2 x 15 twips whatever the type size. The ladder charges
+# the Word destination for it via apa_layout_decide()'s col_overhead_in.
+# Ignore it and the ladder shrinks a dense table until it JUST fits the page,
+# then the padding pushes it back over -- measured: every table the ladder
+# shrinks lands immediately below budget by construction, and the widest
+# column pays, wrapping its labels ("10. Var10" split across two lines while
+# "9. Var9" fit). Kept honest against the binary reference document by
 # tests/testthat/test-render-markdown.R.
 APA_WORD_CELL_PADDING_IN <- (2 * 15) / 1440
 
 # The ONE warning that stays true whatever size a table is set at: a
 # table's `\tabcolsep` and per-column rounding cost a fixed amount of width
 # no font size changes, so past about 136 columns on a rotated page (fewer
-# upright) no size -- automatic OR explicit -- can fit it. Factored out of
-# apa_layout_decide() (fix round 1, Task 8) so the automatic ladder's `!fits`
-# branch and the `size =` override branch raise byte-identical text instead
-# of two copies that can drift.
+# upright) no size -- automatic OR explicit -- can fit it. Shared by the automatic
+# ladder's `!fits` branch and the `size =` override branch so both raise
+# byte-identical text instead of two copies that can drift.
 #
 # ONE FLOWING SENTENCE, no newline anywhere in it -- knitr wraps a
 # single-line message and TRUNCATES a multi-line one off the right edge of a
@@ -84,7 +79,7 @@ apa_ladder_no_fit_message <- function(content_12, budget, rotate, size) {
 
 #' Decide the type size and the page orientation for one table
 #'
-#' The ladder of D7/D7b, run on an exact width rather than a search: 10 pt
+#' The layout ladder, run on an exact width rather than a search: 10 pt
 #' upright; if that does not fit, ROTATE and stay at 10 pt; if it still does not fit, shrink by closed-form calculation. If that goes
 #' below 6 pt, use it anyway so that nothing is ever cut off, and warn.
 #'
@@ -118,25 +113,24 @@ apa_ladder_no_fit_message <- function(content_12, budget, rotate, size) {
 #'   rotation on this render. A DIFFERENT fact from `landscape = FALSE`: one is
 #'   the user declining a rotated page, the other is the render being unable to
 #'   produce one, and only the first is anybody's choice.
-#' @param size an explicit point size (D26), overriding the whole
+#' @param size an explicit point size, overriding the whole
 #'   rotate-then-shrink ladder -- because the caller already fixed the size,
 #'   shrinking is no longer an option, so the ONLY question left
 #'   is whether the page needs to rotate to hold it. `NULL` (default) runs
-#'   the ladder exactly as before this parameter existed: this codepath is
-#'   provably unreached when `size` is `NULL`, so the default case is
-#'   byte-identical to the pre-D26 behaviour. Fix round 1 (Task 8): before
-#'   this parameter existed, an explicit `font.size` reached the LaTeX
-#'   emitter with NO re-check at all -- `apa.cor.table(attitude)` at 20 pt
-#'   measures 10.26 in against a 6.5 in upright page and rendered with no
-#'   warning and no rotation. `size` closes that gap by deciding rotation
-#'   from the SIZE ACTUALLY EMITTED rather than the ladder's own 10 pt guess. It keeps exactly the one
-#'   warning that remains true whatever size was requested: a table whose `\\tabcolsep` alone exceeds even the
-#'   rotated budget cannot be rescued by ANY size, explicit or automatic.
+#'   the automatic ladder, and the override branch is not reached at all.
+#'   Rotation is decided from the SIZE ACTUALLY EMITTED rather than the
+#'   ladder's own 10 pt guess: without this re-check an explicit `font.size`
+#'   would reach the LaTeX emitter unchecked -- `apa.cor.table(attitude)` at
+#'   20 pt measures 10.26 in against a 6.5 in upright page, and would render
+#'   with no warning and no rotation. When the page the table will land on
+#'   (rotated, if rotation is allowed) cannot hold it at that size it warns, naming a smaller size that fits, or --
+#'   for a table whose `\\tabcolsep` alone exceeds the rotated budget --
+#'   saying that no size, explicit or automatic, can fit it.
 #' @param col_overhead_in fixed per-column overhead in inches that the
 #'   destination adds to every column whatever the type size, and that the
 #'   content model therefore cannot see. `0` (the default) for LaTeX, whose
 #'   own `\\tabcolsep` term is already in the model; the Word render passes
-#'   `APA_WORD_CELL_PADDING_IN` (B6 option 2, Phase 1.12), the bundled
+#'   `APA_WORD_CELL_PADDING_IN`, the bundled
 #'   styles' fixed `<w:tblCellMar>`. Charged on the WIDTH side -- it is part
 #'   of the space the table really occupies -- so every budget in a warning
 #'   is still the true page width.
@@ -156,15 +150,13 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
   # against is the page the table will land on. apa_page_geometry() falls back
   # to the standard manuscript page when a document's YAML carries something it
   # cannot interpret, and that fallback must not be silent -- a table laid out
-  # for 6.5 in on a page that is not 6.5 in wide is the clipping this phase
-  # exists to prevent. Warn-once per document, and it moved here from
-  # apa_flextable(), whose LaTeX branch Task 10 deleted; without this call the
-  # warning would have lost its only caller and the fallback would have gone
-  # quiet.
+  # for 6.5 in on a page that is not 6.5 in wide is exactly the clipping the
+  # ladder exists to prevent. Warn-once per document. This is the warning's
+  # only caller: without it the fallback would go quiet.
   apa_warn_unknown_geometry(geom)
 
   # The other thing the ladder cannot measure: whether the table will keep
-  # what it is given. In apaquarto's journal mode it may not (B4), and that
+  # what it is given. In apaquarto's journal mode it may not, and that
   # loss is silent in the PDF, so it is stated here where every table passes.
   apa_warn_journal_mode(geom)
 
@@ -191,21 +183,20 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
   # comparison (and is solved for by handing the size solver a target net of
   # it): padding is space the table really occupies, and it does not shrink
   # with the type, so a ladder that ignores it shrinks a table until it JUST
-  # fits and the padding then pushes it back over (B6, Phase 1.12).
+  # fits and the padding then pushes it back over.
   pad_total <- length(content_12) * col_overhead_in
   width_at <- function(s) apa_latex_width_from_content(content_12, s) + pad_total
 
   if (!is.null(size)) {
-    # EXPLICIT SIZE OVERRIDE (D26, fix round 1). Shrinking is not a lever the
-    # caller left available -- the size is fixed -- so the only question is
-    # whether the page has to rotate to hold it. Rotate-before-declare-broken,
-    # the same policy as the automatic ladder: try the requested placement
-    # first (upright, unless landscape asked for rotation up front),
-    # then rotate if that alone is not enough, and only warn -- ONE warning,
-    # the residual "no size can fix this" case -- when even the rotated
-    # budget cannot hold it. There is no "below the readable floor" check
-    # here: that is apa_quarto_font_size()'s job for an explicit size, kept
-    # there so it is not raised twice.
+    # EXPLICIT SIZE OVERRIDE. Shrinking is not a lever the caller left
+    # available -- the size is fixed -- so the only question is whether the
+    # page has to rotate to hold it. Rotate-before-declare-broken, the same
+    # policy as the automatic ladder: try the requested placement first
+    # (upright, unless landscape asked for rotation up front), then rotate if
+    # that alone is not enough, and warn only when even the rotated budget
+    # cannot hold it. There is no "below the readable floor" check here:
+    # that is apa_quarto_font_size()'s job for an explicit size, kept there
+    # so it is not raised twice.
     w <- width_at(size)
     rotate <- isTRUE(landscape) && rotate_allowed
     budget <- if (rotate) rotated else upright
@@ -215,15 +206,14 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
     }
     fits <- w <= budget
     if (!fits) {
-      # TWO DIFFERENT FACTS, and the message must state the right one (fix
-      # F1, Fable pre-push review 2026-08-09; the old code raised
-      # apa_ladder_no_fit_message() for BOTH). "No font size can fit it" is
-      # true only in the degenerate \tabcolsep case; for an ordinary wide
-      # table at an explicit size it was FALSE -- measured, an 11-variable
-      # correlation table fits a rotated page at 10 pt while font.size = 12
-      # warned that no size could fit it. Distinguish them by solving for
-      # the best size and re-checking the fit at it, the same test the
-      # automatic ladder's own warning already rests on.
+      # TWO DIFFERENT FACTS, and the message must state the right one. "No
+      # font size can fit it" is true only in the degenerate \tabcolsep case;
+      # for an ordinary wide table at an explicit size it is FALSE --
+      # measured, an 11-variable correlation table fits a rotated page at
+      # 10 pt, so telling a font.size = 12 caller that no size could fit it
+      # would be wrong. Distinguish them by solving for the best size and
+      # re-checking the fit at it, the same test the automatic ladder's own
+      # warning already rests on.
       best <- apa_size_for_width(plan, budget - pad_total,
                                  content_12 = content_12)
       best_fits <- width_at(best) <= budget
@@ -261,8 +251,8 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
                 fits = TRUE, width = w))
   }
 
-  # ROTATE BEFORE SHRINKING (D7, the author's choice against shrinking one
-  # notch first). It follows APA's own text -- "if a table is too wide to fit
+  # ROTATE BEFORE SHRINKING, deliberately, rather than shrinking one notch
+  # first. It follows APA's own text -- "if a table is too wide to fit
   # on one page, use landscape orientation on the page with the wide table" --
   # and it maximises type size, at the cost of more rotated pages.
   if (!rotate && rotate_allowed) {
@@ -286,8 +276,8 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
     msg <- if (!fits) {
       apa_ladder_no_fit_message(content_12, budget, rotate, size)
     } else {
-      # Every column is present and readable with a zoom -- D7b's trade,
-      # taken deliberately: a reviewer can magnify small type but cannot
+      # Every column is present and readable with a zoom -- a trade taken
+      # deliberately: a reviewer can magnify small type but cannot
       # recover a column that is not in the file.
       sprintf(paste0(
         "This table has been set at %s pt, below the %s pt size APA table ",
@@ -298,28 +288,26 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
         apa_latex_num(size), apa_latex_num(APA_QUARTO_READABLE_SIZE), budget,
         if (rotate) "rotated (landscape)" else "upright")
     }
-    # Fix round 2: a distinct condition CLASS, not a plain warning(), so a
-    # caller that wants to replace THIS specific message (the markdown/docx
-    # path, whose wording is wrong here -- fix round 1's finding 4) can
-    # muffle it selectively with a class-named handler
-    # (withCallingHandlers(..., apaTables_ladder_size = fn)), instead of a
-    # bare `warning = fn` handler, which catches every warning this function
-    # can raise INDISCRIMINATELY -- including apa_warn_unknown_geometry()'s
-    # and apa_warn_journal_mode()'s calls just above, in this same function,
-    # which route through apa_warn_once() (R/apaquarto-version.R). That
-    # helper assign()s its "already warned" flag BEFORE calling warning(), so
-    # muffling it does not just suppress one message -- it permanently burns
-    # the once-per-render key, silencing that warning for the REST of the
-    # render even on a later, completely unguarded call. A blanket
-    # `warning = fn` handler was measured doing exactly this in fix round 2's
-    # review.
+    # A distinct condition CLASS, not a plain warning(), so a caller that
+    # wants to replace THIS specific message (the markdown/docx path, whose
+    # wording is wrong here) can muffle it selectively with a class-named
+    # handler (withCallingHandlers(..., apaTables_ladder_size = fn)). Never
+    # use a bare `warning = fn` handler for that: it catches every warning
+    # this function can raise INDISCRIMINATELY -- including
+    # apa_warn_unknown_geometry()'s and apa_warn_journal_mode()'s calls just
+    # above, which route through apa_warn_once() (R/apaquarto-version.R).
+    # That helper assign()s its "already warned" flag BEFORE calling
+    # warning(), so muffling it does not just suppress one message -- it
+    # permanently burns the once-per-render key, silencing that warning for
+    # the REST of the render even on a later, completely unguarded call
+    # (measured).
     warning(warningCondition(msg, class = "apaTables_ladder_size"))
   }
 
   list(size = size, rotate = rotate, fits = fits, width = achieved)
 }
 
-# THE TRI-STATE (D32/D61). TRUE forces rotation, FALSE forbids it, NA defers
+# THE TRI-STATE. TRUE forces rotation, FALSE forbids it, NA defers
 # to whatever is below it in the precedence -- ultimately to measurement.
 #
 # Anything that is not a length-1 logical becomes NA rather than an error: the
@@ -329,8 +317,8 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
 # typo in a layout hint.
 #
 # NEVER isTRUE() A TRI-STATE. isTRUE(NA) is FALSE, so isTRUE() silently turns
-# "decide by measurement" into "stay portrait" -- the old behaviour, with
-# nothing raised and nothing to notice. That is this phase's top risk.
+# "decide by measurement" into "stay portrait", with nothing raised and
+# nothing to notice.
 #
 # THREE call sites push back against this constraint deliberately, each
 # commented in place with why NA and FALSE genuinely behave the same there:
@@ -344,24 +332,22 @@ apa_landscape_value <- function(x) {
 }
 
 # The precedence, in ONE place because it has three callers (Quarto PDF,
-# Quarto Word, apa.save()). D32 makes this phase a single slice precisely so
-# the rule is not written, reviewed and tested three times; writing it three
-# times is the failure that decision exists to prevent.
+# Quarto Word, apa.save()), so the rule is not written, reviewed and tested
+# three times with copies that can drift.
 apa_landscape_request <- function(chunk = NA, argument = NA) {
   chunk <- apa_landscape_value(chunk)
   if (!is.na(chunk)) return(chunk)
   apa_landscape_value(argument)
 }
 
-# Has the author expressed a view in this chunk? (D5's force override, widened
-# to a tri-state by D32.) Like apa-longtable and apa-twocolumn this is a CHUNK
-# option, so it is read from knitr rather than from the document YAML.
+# Has the user expressed a view in this chunk? Like apa-longtable and
+# apa-twocolumn this is a CHUNK option, so it is read from knitr rather than
+# from the document YAML.
 #
-# THE OLD FORM COLLAPSED `false` AND ABSENT INTO ONE VALUE:
-#   isTRUE(v) || identical(as.character(v), "true")
-# returned FALSE for both, so the only thing anyone could express was "rotate".
-# A user who wanted a wide table kept upright had no way to say so on any
-# path. Three values now, and `false` FORBIDS.
+# Three values, and `false` FORBIDS. Do not collapse `false` and absent into
+# one value, as `isTRUE(v) || identical(as.character(v), "true")` would: it
+# returns FALSE for both, leaving "rotate" as the only thing a user could
+# express, with no way to keep a wide table upright.
 apa_chunk_landscape <- function() {
   if (!isTRUE(getOption("knitr.in.progress"))) return(NA)
   v <- tryCatch(knitr::opts_current$get("apa-landscape"),
@@ -408,8 +394,8 @@ apa_landscape_env$hook <- NULL
 # The label of the chunk being knitted, or NA outside a knit / for an
 # unlabelled chunk. ONE reader, used by both the request and the test of
 # whether the request can succeed, so the two cannot drift apart -- and they
-# drifting apart is precisely the C1 defect: the ladder decided to rotate, the
-# request quietly returned FALSE, and a column went off the page.
+# drifting apart is precisely the defect this prevents: the ladder decides to
+# rotate, the request quietly returns FALSE, and a column goes off the page.
 apa_chunk_label <- function() {
   if (!isTRUE(getOption("knitr.in.progress"))) return(NA_character_)
   if (!requireNamespace("knitr", quietly = TRUE)) return(NA_character_)
@@ -470,13 +456,11 @@ apa_request_landscape <- function() {
   invisible(TRUE)
 }
 
-# The readability floor, shared by every destination (D43/D67/D68). After
-# Phase 1.8 every destination genuinely applies the size it was given, so
-# this warning is TRUE everywhere it fires -- which it was not on HTML
-# before Task 3 (no size was applied there at all), and never fired at all
-# on slides. The RULE is shared; the delivery is not (D68) -- each caller
-# decides for itself whether an explicit size was even given, and what to
-# return. ONE flowing sentence, no newline: an existing test pins the text.
+# The readability floor, shared by every destination. Every destination
+# genuinely applies the size it was given, so this warning is TRUE everywhere
+# it fires. The RULE is shared; the delivery is not -- each caller decides
+# for itself whether an explicit size was even given, and what to return.
+# ONE flowing sentence, no newline: an existing test pins the text.
 apa_quarto_warn_below_floor <- function(size) {
   if (size >= APA_QUARTO_READABLE_SIZE) return(invisible(NULL))
   warning(paste0(
@@ -487,19 +471,18 @@ apa_quarto_warn_below_floor <- function(size) {
     call. = FALSE)
 }
 
-# --- Task 5: the destination policy and the Word rotation decision --------
+# --- The destination policy and the Word rotation decision ---------------
 #
-# The size the ladder or the caller chose. D26: honour any explicit value,
-# warn below 6 pt, never refuse and never truncate.
+# The size the ladder or the caller chose. Honour any explicit value, warn
+# below 6 pt, never refuse and never truncate.
 #
-# D74: the floor is judged on the size DELIVERED, not the size requested.
-# Word cannot deliver below APA_QUARTO_READABLE_SIZE (it rounds the request
-# down onto the cloned styles, D38), so checking the raw request there
-# reproduced this phase's own defect at the other end of the range: a
-# font.size = 5 on docx warned "this table is below the readable floor"
-# (false -- Word delivers 6) ALONGSIDE apa_quarto_warn_word_size()'s true
-# "Word sets this at 6, not the 5 requested" -- two contradictory warnings
-# in the same rendered draft. is_docx = TRUE routes the check through
+# The floor is judged on the size DELIVERED, not the size requested. Word
+# cannot deliver below APA_QUARTO_READABLE_SIZE (it rounds the request down
+# onto the cloned styles), so checking the raw request there would produce
+# two contradictory warnings in the same rendered draft: a font.size = 5 on
+# docx would warn "this table is below the readable floor" (false -- Word
+# delivers 6) ALONGSIDE apa_quarto_warn_word_size()'s true "Word sets this at
+# 6, not the 5 requested". is_docx = TRUE therefore routes the check through
 # apa_quarto_delivered_size(), which can never return below the floor, so
 # the floor warning correctly never fires there and the Word adjustment
 # warning (fired separately by the caller) carries the whole message. PDF,
@@ -510,8 +493,8 @@ apa_quarto_warn_below_floor <- function(size) {
 apa_quarto_font_size <- function(plan, font.size = NULL, decision = NULL,
                                   is_docx = FALSE) {
   if (!is.null(font.size)) {
-    # as.numeric(), NOT as.integer() (fix round 1, Task 8). This helper is
-    # now shared by BOTH destinations, and only one of them needs a whole
+    # as.numeric(), NOT as.integer(). This helper is
+    # shared by BOTH destinations, and only one of them needs a whole
     # number: the markdown/docx path selects a table STYLE by name
     # ("ApaTable8"), a genuinely discrete choice, but that truncation
     # already happens downstream in apa_quarto_size_rung() (its own
@@ -528,21 +511,20 @@ apa_quarto_font_size <- function(plan, font.size = NULL, decision = NULL,
   decision$size
 }
 
-# D38 (measured in real Word, task-5-spike.md): the shrink ladder is FIVE
-# TABLE STYLES (Table10/9/8/7/6, Table10 being the unmodified default
-# "Table" style already in the reference document) selected by a Lua filter,
-# NOT the per-cell "[...]{custom-style=\"ApaTableN\"}" spans
-# apa_markdown_table()'s font_size argument still knows how to write. Route B
-# (per-cell spans) was measured to crush a real table's column ratio from
-# 10.01:1 to 2.12:1 and break a long variable name mid-word -- exactly the
-# defect D35 revised Task 3 to remove, on precisely the tables where columns
-# are already tightest. Route A costs zero width: setting a whole table's
-# style does not touch how apa_md_widths() sized its columns.
+# The shrink ladder is a set of TABLE STYLES -- the reference document's own
+# unmodified "Table" style (10 pt) plus the clones Table6-Table9, Table11 and
+# Table12 -- selected by a Lua filter, NOT the per-cell
+# "[...]{custom-style=\"ApaTableN\"}" spans apa_markdown_table()'s font_size
+# argument still knows how to write. Per-cell spans were measured in real Word
+# to crush a real table's column ratio from 10.01:1 to 2.12:1 and break a long
+# variable name mid-word, on precisely the tables where columns are already
+# tightest. A table style costs zero width: setting a whole table's style
+# does not touch how apa_md_widths() sized its columns.
 #
 # The marker below is a class on an EMPTY sibling div, immediately after the
 # table's own grid syntax, in the same block apatablesize.lua later reads
 # (mirroring how apa_meta_div() already rides alongside the LaTeX block for
-# Task 1's title/note filter). An empty div with an unrecognised class is
+# the title/note filter). An empty div with an unrecognised class is
 # inert everywhere nothing reads it -- HTML, a bare pandoc render, and a
 # quarto render of any OTHER format all pass it through with no visible
 # effect -- so this can be emitted unconditionally without a format check
@@ -550,29 +532,27 @@ apa_quarto_font_size <- function(plan, font.size = NULL, decision = NULL,
 APA_QUARTO_SIZE_CLASS_PREFIX <- "apa-table-size-"
 
 # The size this function is handed can be ANYTHING: a continuous value from
-# apa_size_for_width() (fix round 1, Critical: measured 4.860447 on a
-# 22-variable apa.cor.table(), which the filter's own
-# "^apa%-table%-size%-(%d+)$" pattern cannot match at all -- the marker div
-# is emitted, the filter's Div handler never fires, the table silently stays
-# at the DEFAULT 10 pt, and the shrink the whole D25/D38 ladder exists for
-# never happens, with no warning anywhere), or an explicit font.size the
-# caller chose freely (D26 forbids refusing it, but naming a style that was
-# never cloned is worse than refusing -- pandoc still writes
-# custom-style="TableN", and Word's response to an UNKNOWN table style is not
-# "fall back to 10 pt": it drops the table style assignment entirely, so the
-# table loses the APA rules and cell margins along with the requested size,
-# not merely the size). This function is the ONE place a size becomes a
-# marker, so it is the one place that must snap to a style that is real.
+# apa_size_for_width() (measured 4.860447 on a 22-variable apa.cor.table(),
+# which the filter's own "^apa%-table%-size%-(%d+)$" pattern cannot match at
+# all -- the marker div would be emitted, the filter's Div handler would never
+# fire, and the table would silently stay at the DEFAULT 10 pt with no
+# warning anywhere), or an explicit font.size the caller chose freely (never
+# refused, but naming a style that was never cloned is worse than refusing --
+# pandoc still writes custom-style="TableN", and Word's response to an
+# UNKNOWN table style is not "fall back to 10 pt": it drops the table style
+# assignment entirely, so the table loses the APA rules and cell margins
+# along with the requested size, not merely the size). This function is the
+# ONE place a size becomes a marker, so it is the one place that must snap to
+# a style that is real.
 #
-# D71. NA means "write NO marker", which delivers the reference document's
-# unmodified "Table" style -- already 10 pt (D35). Hence the two edges:
+# NA means "write NO marker", which delivers the reference document's
+# unmodified "Table" style -- already 10 pt. Hence the two edges:
 #
 #   * exactly 10 returns NA, because there is no Table10 clone and naming a
 #     style Word does not know makes it DROP the style assignment entirely,
 #     costing the APA rules and cell margins as well as the size.
 #   * above 12 returns 12, NOT NA. NA there would write no marker, deliver
-#     10 pt, and leave the warning claiming 12 -- this phase's own defect
-#     rebuilt inside its own fix.
+#     10 pt, and leave the warning claiming 12.
 #
 # FLOOR, never round: rounding a ladder size up can put a column back over
 # the edge the ladder shrank it to clear.
@@ -592,7 +572,7 @@ apa_quarto_delivered_size <- function(size) {
   if (is.na(rung)) APA_QUARTO_DEFAULT_SIZE else rung
 }
 
-# D70: Word adjusts, and says so. One message covers both ends and the
+# Word adjusts, and says so. One message covers both ends and the
 # fractional case, because from the user's side they are one fact: "you asked
 # for X, this document has Y". ONE flowing sentence, no newline -- knitr
 # truncates a multi-line warning off the page edge in a knitted PDF, where
@@ -618,7 +598,7 @@ apa_quarto_size_wrap <- function(body, rung) {
 
 # HTML's marker, and deliberately NOT the class form above. The class pattern
 # apatablesize.lua matches is integers-only (`^apa%-table%-size%-(%d+)$`),
-# while HTML must carry the size EXACTLY, fractions included (D44 point 2) --
+# while HTML must carry the size EXACTLY, fractions included --
 # CSS can honour 8.5 pt and Word cannot. An attribute expresses what a class
 # cannot, and keeps the docx marker's input untouched.
 #
@@ -626,15 +606,15 @@ apa_quarto_size_wrap <- function(body, rung) {
 # but as.character(1e5) is "1e+05", which is not a length CSS understands.
 APA_QUARTO_SIZE_PT_ATTR <- "apa-table-size-pt"
 
-# Phase 1.18 / D114. The marker is now emitted on EVERY HTML render, not only a
-# sized one, and this function replaces apa_quarto_size_wrap_exact().
+# The marker is emitted on EVERY HTML render, not only a sized one.
 #
 # WHY UNCONDITIONAL: apatablesize.lua turns this marker into a wrapper div, and
 # apa.css's table-width rules are scoped to that div's class. A table that
-# carries no marker gets no wrapper and no width rules -- which was every
-# apaTables table without an explicit font.size, i.e. almost all of them. The
-# scoping is not decoration: rule 1 overrides a table's column proportions, and
-# it must not reach a kable() table whose widths the user set deliberately.
+# carries no marker gets no wrapper and no width rules -- which, if the marker
+# were emitted only for an explicit font.size, would be almost every
+# apaTables table. The scoping is not decoration: rule 1 overrides a table's
+# column proportions, and it must not reach a kable() table whose widths the
+# user set deliberately.
 #
 # ONE div, carrying the class always and the size attribute only when a size was
 # asked for. NOT two sibling markers: apatablesize.lua pairs a marker with the
@@ -651,23 +631,20 @@ apa_quarto_html_wrap <- function(body, pt = NULL) {
   paste0(body, "\n\n::: {", attrs, "}\n:::\n")
 }
 
-# apa_layout_decide()'s own warning (R/quarto-table.R:147-182) is written for
-# the LaTeX ladder: an absolute point size and apa.save() offered as an
-# alternative destination. Neither is true once it is reached from
-# apa_quarto_markdown_block() (fix round 1, Important): the table is never at
-# the raw continuous size (it is floored to APA_QUARTO_READABLE_SIZE, D38's
-# smallest real style), and apa.save() writing "a full-size Word version" is
-# a strange thing to advise while THIS document already IS a Word document.
-# (Rotation, unlike those two, is no longer a reason this warning's wording
-# is wrong here: since Task 6 the page genuinely CAN be rotated on this path,
-# same as LaTeX -- but the message below never mentions orientation either
-# way, so nothing about it needed to change when that became true.)
+# apa_layout_decide()'s own warning is written for the LaTeX ladder: an
+# absolute point size and apa.save() offered as an alternative destination.
+# Neither is true once it is reached from apa_quarto_markdown_block(): the
+# table is never at the raw continuous size (it is floored to
+# APA_QUARTO_READABLE_SIZE, the smallest real style), and apa.save() writing
+# "a full-size Word version" is a strange thing to advise while THIS document
+# already IS a Word document. (The message below never mentions orientation,
+# so it stays true whether or not the page was rotated.)
 # apa_layout_decide()'s own warning is muffled at the call site and this is
 # what fires instead -- only for the AUTOMATIC ladder (no explicit
 # font.size; that path has its own, already-correct warning inside
 # apa_quarto_font_size() above) when the natural decision would have gone
 # below the readable floor. A docx table's width is a PERCENTAGE of the text
-# area (D23), so unlike LaTeX it cannot run off the page at any size -- there
+# area, so unlike LaTeX it cannot run off the page at any size -- there
 # is no "does not fit even at the smallest size" case to report here.
 apa_quarto_warn_floored <- function() {
   warning(paste0(
@@ -681,14 +658,14 @@ apa_quarto_warn_floored <- function() {
     call. = FALSE)
 }
 
-# D31: Quarto's OWN built-in `.landscape` div for docx closes its rotated
+# Quarto's OWN built-in `.landscape` div for docx closes its rotated
 # section with an EMPTY sectPr, which silently strips the running head and
 # page number from itself AND from every page before it, and its rotated
 # page size is hardcoded A4 rather than matching the manuscript's own page.
 # So this is deliberately a DIFFERENT class from Quarto's own -- using
-# ".landscape" here would hand a wide apaTables table straight to the
-# mechanism D31 already measured broken. `apatablelandscape.lua` (Task 6,
-# bundled in the apaquarto extension) reads this class and writes the
+# ".landscape" here would hand a wide apaTables table straight to that
+# measured-broken mechanism. `apatablelandscape.lua` (bundled in the
+# apaquarto extension) reads this class and writes the
 # section properties itself: a portrait closer and a landscape section that
 # is the SAME real page with width and height swapped, both carrying the
 # running head.
@@ -723,9 +700,9 @@ apa_landscape_wrap <- function(body) {
         body, "\n\n:::\n")
 }
 
-# Is the render CURRENTLY building a docx (fix round 1, Important)?
+# Is the render CURRENTLY building a docx?
 #
-# apa_quarto_markdown_block() serves both docx and html (D24), but rotation
+# apa_quarto_markdown_block() serves both docx and html, but rotation
 # is only EXECUTED for docx (apatablelandscape.lua stands down for every
 # other format, HTML included) -- see that function's own comment on
 # can_execute_rotation for the mispricing this gate exists to prevent.
@@ -745,37 +722,35 @@ apa_quarto_docx_target <- function() {
 #' (`apa_layout_decide()`), same "rotate before shrink" policy, but the
 #' output is a pandoc grid table (`apa_markdown_table()`) rather than raw
 #' LaTeX, and a font-size choice below the default becomes a STYLE MARKER
-#' (D38, Route A) rather than per-cell markup.
+#' (one table style for the whole table) rather than per-cell markup.
 #'
-#' Rotation in Word is DECIDED BY MEASUREMENT by default (D32), but Phase 1.7
-#' (Task 3) makes the `landscape =` argument -- carried on `x$landscape` --
-#' a binding tri-state override. It is resolved against the chunk option by
+#' Rotation in Word is DECIDED BY MEASUREMENT by default, but the
+#' `landscape =` argument -- carried on `x$landscape` -- is a binding
+#' tri-state override. It is resolved against the chunk option by
 #' `apa_landscape_request()`: chunk option first, then the argument, then
-#' `NA` meaning "measurement decides". The two Quarto destinations still
-#' agree with each other, and with PDF (`apa_quarto_latex_block()`), because
-#' both now read the same precedence.
+#' `NA` meaning "measurement decides". The two Quarto destinations agree
+#' with each other, and with PDF (`apa_quarto_latex_block()`), because both
+#' read the same precedence.
 #'
-#' Title and note (Task 7) are attached the same way
+#' Title and note are attached the same way
 #' `apa_quarto_latex_block()` relies on its caller to attach them --
 #' `apa_meta_div_for()`, an empty `::: \{.apa-table-meta\}` div read by the
 #' bundled `apatablemeta.lua`. That filter is registered `at: post-quarto`
 #' in `_extension.yml`'s COMMON filter list, so it already runs on this
 #' destination too (never reimplemented or branched on precedence here; see
 #' that function's own comment for why).
-#' Unlike the LaTeX path, where `apa_quarto_render()` (Task 8; `apa.quarto.
-#' table()` did this before it was retired, D30) combines the two outside `apa_quarto_latex_block()`, here the div is
-#' appended INSIDE this function. This is the one function every non-PDF
-#' entry point (Task 8) and every fixture in this suite already calls
-#' directly.
+#' Unlike the LaTeX path, where `apa_quarto_render()` combines the two
+#' outside `apa_quarto_latex_block()`, here the div is appended INSIDE this
+#' function. This is the one function every non-PDF entry point and every
+#' fixture in the test suite already calls directly.
 #'
 #' @param x an apaTables table or spec.
-#' @param font.size optional explicit point size, overriding the ladder
-#'   (D26).
+#' @param font.size optional explicit point size, overriding the ladder.
 #' @param title optional table title, overriding the one apaTables
 #'   generated, as the `title` argument shared by `apa.quarto.pdf()` /
 #'   `apa.quarto.docx()` / `apa.quarto.html()` does on the LaTeX path too.
-#'   A chunk's `tbl-cap` still wins over this (D22, resolved by
-#'   the filter, not here).
+#'   A chunk's `tbl-cap` still wins over this (resolved by the filter, not
+#'   here).
 #' @param note optional table note, overriding the one apaTables generated,
 #'   mirroring `title` above. A chunk's `apa-note` still wins over this.
 #' @return a `knit_asis` object.
@@ -784,15 +759,15 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
                                       title = NULL, note = NULL) {
   spec <- as_spec(x)
   plan <- apa_display_plan(spec)
-  # D92 (whole-branch review of Phase 1.9, 2026-08-06): a pptx render falls
-  # through to THIS function (apa_quarto_render() special-cases revealjs
-  # and LaTeX only; neither claims pptx, D88), so this is where PowerPoint's
-  # spanner-dropping problem must be handled, even though this function's
-  # own title says it serves docx/html. pandoc's pptx writer drops column
-  # spans outright (D46 section 5) -- a spanner label would otherwise sit
-  # over the wrong column, MEASURED on a real render: "alcohol" over the "M"
-  # of "None" instead of spanning six columns. Gated on the pptx target
-  # alone: docx and HTML both keep their spans (D48 -- HTML draws them
+  # A pptx render falls through to THIS function (apa_quarto_render()
+  # special-cases revealjs and LaTeX only; neither claims pptx), so this is
+  # where PowerPoint's spanner-dropping problem must be handled, even though
+  # this function's own title says it serves docx/html. pandoc's pptx writer
+  # drops column spans outright -- a spanner label would otherwise sit over
+  # the wrong column, MEASURED on a real render: "alcohol" over the "M" of
+  # "None" instead of spanning six columns. A destination apaTables does not
+  # support may get an unstyled table, never a mislabelled one. Gated on the
+  # pptx target alone: docx and HTML both keep their spans (HTML draws them
   # correctly), so flattening must not reach either.
   # apa_slide_flatten_spanners() (R/quarto-slide.R) is a no-op on a plan
   # with no spanner row (`has_span` guard), so this is safe to call
@@ -800,14 +775,12 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   if (identical(apa_quarto_actual_format(), "pptx")) {
     plan <- apa_slide_flatten_spanners(plan)
   }
-  # THE PRECEDENCE, resolved once (D32): chunk option, then the builder
-  # argument, then NA meaning "measurement decides". Before 1.7 this line read
-  # the chunk option ONLY and the argument was ignored on every Quarto path --
-  # deliberately, so PDF and Word would agree from the moment Word existed.
-  # They still agree; they now agree while honouring the user.
+  # THE PRECEDENCE, resolved once: chunk option, then the builder argument,
+  # then NA meaning "measurement decides". The LaTeX path reads the same
+  # precedence, so PDF and Word agree.
   requested <- apa_landscape_request(apa_chunk_landscape(), spec$landscape)
 
-  # can_execute_rotation = apa_quarto_docx_target(), as of Task 6.
+  # can_execute_rotation = apa_quarto_docx_target().
   #
   # The chunk-label question the LaTeX sibling's apa_landscape_executable()
   # answers does not apply here. LaTeX rotation rides on Quarto's OWN
@@ -819,15 +792,13 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   # finds and replaces it with a Pandoc-level walk that recurses into a
   # FloatRefTarget's content when the chunk IS a labelled float, and finds
   # the div sitting in the ordinary block list when it is not -- MEASURED
-  # both ways (task-6 spike): a `tbl-` labelled table (deferred to the
-  # document's end by apafloatstoend.lua, as apaquarto does by default) and
-  # a plain unlabelled table both came back correctly rotated, with a
-  # headerReference on every section, from the same filter with no branch
-  # on label at all.
+  # both ways: a `tbl-` labelled table (deferred to the document's end by
+  # apafloatstoend.lua, as apaquarto does by default) and a plain unlabelled
+  # table both came back correctly rotated, with a headerReference on every
+  # section, from the same filter with no branch on label at all.
   #
-  # A DIFFERENT executability question remains, and fix round 1 (Important)
-  # is what added the gate: this function's own title says it serves BOTH
-  # docx and html (D24, one emitter for every non-PDF destination), but
+  # A DIFFERENT executability question remains: this function serves BOTH
+  # docx and html (one emitter for every non-PDF destination), but
   # apatablelandscape.lua stands down for anything that is not docx
   # (`if FORMAT ~= "docx" then return end`) -- nothing executes rotation on
   # an HTML render. can_execute_rotation must therefore ask WHICH of the two
@@ -835,10 +806,8 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   # unconditional TRUE would price a wide table against the WIDER rotated
   # budget on an HTML render too, emit it at full size with a dead,
   # unprocessed `.apa-table-landscape` div, and never rotate -- the same
-  # shape of mispricing Phase 2's whole-branch review found on the LaTeX
-  # path before apa_landscape_executable() existed there. Not user-visible
-  # today (Task 9 is what routes HTML through this function at all), which
-  # is exactly why it must not be left ungated in the meantime.
+  # shape of mispricing apa_landscape_executable() prevents on the LaTeX
+  # path.
   #
   # apa_quarto_docx_target() is a thin, MOCKABLE wrapper around
   # knitr::pandoc_to("docx") -- this file's own established testing
@@ -849,21 +818,21 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   # apa_layout_decide()'s own ladder-size warning is muffled here and
   # re-raised, if appropriate, by apa_quarto_warn_floored() below -- see that
   # function's comment for why its own wording is wrong on this path. The
-  # handler is keyed on the "apaTables_ladder_size" CLASS (fix round 2), not
-  # a blanket `warning = fn`: apa_layout_decide() also calls
+  # handler is keyed on the "apaTables_ladder_size" CLASS, not a blanket
+  # `warning = fn`: apa_layout_decide() also calls
   # apa_warn_unknown_geometry() and apa_warn_journal_mode() before it ever
   # reaches the ladder, and both of those route through apa_warn_once()
   # (R/apaquarto-version.R), which assign()s its once-per-render flag BEFORE
   # calling warning() -- so a handler that muffled every warning would not
-  # just suppress the ladder's message, it would PERMANENTLY BURN the B4
+  # just suppress the ladder's message, it would PERMANENTLY BURN the
   # journal-mode and unknown-page-geometry keys for the rest of the render,
-  # silencing them even on a later, completely unguarded call. Measured
-  # exactly this way in fix round 2's review. Naming the handler by class
-  # means only a warning actually carrying that class is caught; every other
-  # warning apa_layout_decide() can raise passes through untouched.
+  # silencing them even on a later, completely unguarded call (measured).
+  # Naming the handler by class means only a warning actually carrying that
+  # class is caught; every other warning apa_layout_decide() can raise passes
+  # through untouched.
   is_docx <- apa_quarto_docx_target()
   decision <- withCallingHandlers(
-    # col_overhead_in for Word only (B6 option 2, Phase 1.12): Word's fixed
+    # col_overhead_in for Word only: Word's fixed
     # <w:tblCellMar> is real occupied width the content model cannot see.
     # HTML has no page (nothing here is fitted) and pptx has no Word styles,
     # so both keep the model unchanged.
@@ -876,7 +845,7 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   size <- apa_quarto_font_size(plan, font.size = font.size, decision = decision,
                                 is_docx = is_docx)
   rung <- apa_quarto_size_rung(size)
-  # D70: an explicit size Word cannot deliver is REPORTED, not silently
+  # An explicit size Word cannot deliver is REPORTED, not silently
   # adjusted. Gated on is_docx because it is Word's style mechanism that
   # imposes the range -- PDF, HTML and slides honour any size exactly -- and
   # on !is.null(font.size) because the automatic ladder's own out-of-range
@@ -885,20 +854,19 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
     apa_quarto_warn_word_size(size, apa_quarto_delivered_size(size))
   }
   # The floor warning and the `apa-table-size-N` marker div are both
-  # consequences of the docx-only shrink ladder (D25): the AUTOMATIC ladder
-  # never runs on HTML at all (D37 -- HTML has no page, so nothing rotates
-  # and nothing shrinks automatically there), and no HTML CSS was ever
-  # written for the `apa-table-size-*` CLASS markers apatablesize.lua reads
-  # for docx (its HTML delivery, D73, is the unrelated `apa-table-size-pt`
-  # ATTRIBUTE marker below, written only for an explicit font.size and never
-  # by this automatic path; apatablesize.lua itself has no early return for
-  # other formats -- see that file's own header -- it consumes every marker
-  # it finds and only branches on which one to apply). Gating both on
-  # `is_docx` -- the same value already asked at :634 to decide whether
-  # rotation can execute -- keeps an HTML render from pricing, warning about,
-  # and marking a shrink it never performs; without the gate the reader's
-  # manuscript carried a warning asserting a floor that HTML output never
-  # applied.
+  # consequences of the docx-only shrink ladder: the AUTOMATIC ladder never
+  # runs on HTML at all (HTML has no page, so nothing rotates and nothing
+  # shrinks automatically there), and no HTML CSS reads the
+  # `apa-table-size-*` CLASS markers apatablesize.lua reads for docx (HTML's
+  # size travels on the separate `apa-table-size-pt` ATTRIBUTE marker below,
+  # set only for an explicit font.size and never by this automatic path;
+  # apatablesize.lua itself has no early return for other formats -- see
+  # that file's own header -- it consumes every marker it finds and only
+  # branches on which one to apply). Gating both on `is_docx` -- the same
+  # value that decides above whether rotation can execute -- keeps an HTML
+  # render from pricing, warning about, and marking a shrink it never
+  # performs; without the gate the reader's manuscript would carry a warning
+  # asserting a floor that HTML output never applies.
   if (is_docx && is.null(font.size) && decision$size < APA_QUARTO_READABLE_SIZE) {
     apa_quarto_warn_floored()
   }
@@ -910,38 +878,31 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   if (is_docx) {
     if (!is.na(rung)) body <- apa_quarto_size_wrap(body, rung)
   } else if (!isFALSE(apa_quarto_html_target())) {
-    # Phase 1.18 / D114: the `!is.null(font.size)` half of this condition is
-    # GONE, so the marker is emitted on every HTML render. It is no longer only
-    # a size marker -- it is what apa.css's table-width rules are scoped to,
-    # and a table without it gets no width rules at all. The size half is now
-    # expressed by what is PASSED (NULL or a size), not by whether the call
-    # happens. Everything below still holds and still governs the size.
+    # Emitted on every HTML render, not only a sized one: the marker is also
+    # what apa.css's table-width rules are scoped to, and a table without it
+    # gets no width rules at all. The size is expressed by what is PASSED
+    # (NULL or a size), not by whether the call happens.
     #
-    # D68: the size goes on the TABLE ELEMENT, never on an ancestor. A div
-    # around the table is wrong twice and silently -- Bootstrap's .small rule
-    # takes 0.875 of any inherited size (asked 6 pt, measured 5.25 pt), and a
+    # R never wraps the table in a sized div. A div written HERE, around the
+    # table, is wrong twice and silently -- Bootstrap's .small rule takes
+    # 0.875 of any inherited size (asked 6 pt, measured 5.25 pt), and a
     # wrapper defeats apaquarto's float collection, MOVING the table in the
-    # user's manuscript. Measured both ways:
-    # dev/factcheck/phase18-spike/FINDINGS.md sections 3 and 5.
+    # user's manuscript. Both measured.
     #
-    # Only for an EXPLICIT size. D37/D43 stand: nothing shrinks automatically
-    # on HTML, because a web page has no page to fit.
+    # The size attribute is set only for an EXPLICIT size: nothing shrinks
+    # automatically on HTML, because a web page has no page to fit.
     #
-    # D73: this R-side call still never wraps the table -- true as scoped
-    # here -- but the size DOES end up delivered by an ancestor div on HTML,
-    # built safely by apatablesize.lua at post-quarto, after float
-    # collection, which is why it avoids both failures above. See D73 before
-    # "simplifying" that filter's div away.
+    # The size DOES end up delivered by an ancestor div on HTML, but one
+    # apatablesize.lua builds at post-quarto, after float collection, which
+    # is why it avoids both failures above. Do not "simplify" that filter's
+    # div away, and do not move the wrapping into R.
     #
-    # Phase 1.11 item 7: gated on apa_quarto_html_target() being anything but
-    # FALSE. HTML consumes this marker (apatablesize.lua, registered for html
-    # and docx); a typst render consumes nothing, so the marker was emitted
-    # and never read. Measured (dev/factcheck/phase111-typst/MEASUREMENT.md):
-    # pandoc's typst writer silently drops an empty attributed Div, so NO
-    # rendered document was ever damaged -- the same silent-drop class as
-    # D54. The fix is the boundary argument: do not emit what nothing
-    # consumes, and do not depend on that downstream accident. The
-    # regression was PHASE 1.8's, not this phase's (this is 1.11 item 7).
+    # Gated on apa_quarto_html_target() being anything but FALSE. HTML
+    # consumes this marker (apatablesize.lua, registered for html and docx);
+    # a typst render consumes nothing, so the marker would go unread there.
+    # Pandoc's typst writer happens to drop an empty attributed Div silently
+    # (measured), but do not depend on that downstream accident: do not emit
+    # what nothing consumes.
     # !isFALSE(), not isTRUE(): outside a knit the helper answers NA and the
     # marker must still be emitted, which is what every direct unit call in
     # the suite reads.
@@ -953,8 +914,8 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   # landscape wrap included -- and separated by a blank line, exactly as
   # apa_quarto_render() already does for the LaTeX block: pandoc swallows the
   # `::: {.apa-table-meta}` fence into whatever came immediately before it
-  # without one (Task 4's measurement, the same trap either path can walk
-  # into). The div is a sibling of the (possibly wrapped) table, not
+  # without one (measured; the same trap either path can walk into). The div
+  # is a sibling of the (possibly wrapped) table, not
   # content inside the landscape div -- apatablelandscape.lua only acts on
   # its own class and leaves any other sibling block alone, and
   # apatablemeta.lua's own walk of float.content finds a Div wherever it
@@ -963,11 +924,10 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   knitr::asis_output(paste0(body, "\n\n", meta_div))
 }
 
-# The LaTeX half of what is now apa_quarto_render() (apa.quarto.table()
-# before Task 8 retired it, D30), split out so it can be exercised
+# The LaTeX half of apa_quarto_render(), split out so it can be exercised
 # without a knitr session: decide, ask for the page, emit the grid.
 #
-# knitr::asis_output() is NOT a raw-LaTeX guarantee (D12). Pandoc treats a
+# knitr::asis_output() is NOT a raw-LaTeX guarantee. Pandoc treats a
 # COMPLETE \begin{env}...\end{env} as raw TeX, but it re-parses neighbouring
 # lines as markdown -- measured, it turned a trailing "%" into "\%". What
 # apa_latex_table() returns is exactly one self-contained environment with
@@ -975,53 +935,45 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
 # is safe; anything else emitted here would need an explicit ```{=latex}
 # fence.
 #
-# NO apa_restore_emph() CALL HERE, AND THAT WAS A MEASURED DECISION, NOT AN
-# OVERSIGHT -- the helper existed for one reason: flextable's LaTeX
-# dependencies load ulem WITHOUT [normalem], which redefines \emph as
-# UNDERLINING document-wide, so apaquarto's italic "Note." and any *italics*
-# in an apa-note came out underlined. This path never loaded flextable, so
-# there was nothing for it to correct here -- confirmed by rendering the same
-# document three ways and rasterizing the note at 600 dpi:
+# NO \normalem FIX IS NEEDED ON THIS PATH, and that is measured, not
+# assumed. flextable's LaTeX dependencies load ulem WITHOUT [normalem], which
+# redefines \emph as UNDERLINING document-wide, so apaquarto's italic "Note."
+# and any *italics* in an apa-note come out underlined. This path never loads
+# flextable, so there is nothing to correct -- confirmed by rendering the
+# same document three ways and rasterizing the note at 600 dpi:
 #
-#   native path, no call    "ulem" appears 0 times in doc.tex; note ITALIC
-#   native path, with call  ulem + \normalem added; note ITALIC (unchanged)
+#   native path, as is        "ulem" appears 0 times in doc.tex; note ITALIC
+#   native path + \normalem   ulem + \normalem added; note ITALIC (unchanged)
 #   ulem loaded, no normalem  note UPRIGHT and UNDERLINED, 3 rows of the crop
 #                             more than 85% dark -- the defect, and proof the
 #                             check can see it
 #
-# apa_restore_emph() ITSELF NO LONGER EXISTS (Task 9, Phase 1.6a): the last
-# thing that could still reach apa_flextable() from a LaTeX destination --
-# nine .qmd test fixtures calling apaTables:::apa_flextable() directly, found
-# and measured live in that task -- was migrated to apa.quarto.pdf() (this
-# function), which is what makes the comment above still true rather than
-# merely convenient: there is now no LaTeX-reaching flextable call left
-# anywhere for a restore-emph fix to matter to.
-# font.size: optional explicit point size, overriding the ladder (D26).
+# No LaTeX destination calls flextable at all, which is what keeps this true;
+# a flextable call reaching this path would bring the underlining back.
+#
+# font.size: optional explicit point size, overriding the ladder.
 # Honoured on the LaTeX path exactly as on the markdown path in what it
 # PROMISES -- a value is used whatever it is, a value below the readable
 # floor warns, nothing is ever refused -- but NOT in how "nothing is cut
 # off" is kept true: the markdown/docx path gets that for free from
 # percentage-width tables; this path has to actually re-check the fit at
 # the size it is about to emit, which is what passing `size = font.size`
-# into apa_layout_decide() below does (fix round 1, Task 8 -- see that
-# parameter's own comment for the defect this closes: a 20 pt
-# apa.cor.table(attitude) measures 10.26 in against a 6.5 in page and used
-# to render with no warning and no rotation).
+# into apa_layout_decide() below does (see that parameter's documentation:
+# a 20 pt apa.cor.table(attitude) measures 10.26 in against a 6.5 in page
+# and would otherwise render with no warning and no rotation).
 apa_quarto_latex_block <- function(x, font.size = NULL) {
   spec <- as_spec(x)
   plan <- apa_display_plan(spec)
 
   # ASK FIRST. apa_request_landscape() can only mark a chunk Quarto turns into
-  # a float, and its answer used to be discarded -- the ladder rotated, the
-  # request refused, and the table was set for a page it never got. The answer
-  # is now an INPUT to the decision, so a table that cannot be rotated is
+  # a float, so whether it can succeed is an INPUT to the decision. Discard
+  # it and the ladder rotates, the request is refused, and the table is set
+  # for a page it never gets; as an input, a table that cannot be rotated is
   # shrunk to the upright page instead and keeps every column.
   #
-  # THE PRECEDENCE, resolved once (D32): chunk option, then the builder
-  # argument, then NA meaning "measurement decides". Before 1.7 this line read
-  # the chunk option ONLY and the argument was ignored on every Quarto path --
-  # deliberately, so PDF and Word would agree from the moment Word existed.
-  # They still agree; they now agree while honouring the user.
+  # THE PRECEDENCE, resolved once: chunk option, then the builder argument,
+  # then NA meaning "measurement decides". The markdown path reads the same
+  # precedence, so PDF and Word agree.
   requested <- apa_landscape_request(apa_chunk_landscape(), spec$landscape)
   executable <- apa_landscape_executable()
 
@@ -1038,24 +990,23 @@ apa_quarto_latex_block <- function(x, font.size = NULL) {
   # ladder's own 10 pt guess, and raises its own warning ONLY for the
   # residual "no size can fix this" case (that warning's own text is true
   # regardless of what size was requested, so it is never muffled here --
-  # muffling it was fix round 1's finding: it silenced the one warning that
-  # should have caught this class of defect in the first place).
-  # apa_warn_unknown_geometry() / apa_warn_journal_mode(), also called
-  # inside apa_layout_decide(), are UNAFFECTED either way: nothing here
-  # wraps the call in a warning handler of any kind any more.
+  # muffling it would silence the one warning that catches this class of
+  # defect). apa_warn_unknown_geometry() / apa_warn_journal_mode(), also
+  # called inside apa_layout_decide(), are UNAFFECTED either way: nothing
+  # here wraps the call in a warning handler of any kind.
   decision <- apa_layout_decide(plan, landscape = requested,
                                 can_execute_rotation = executable,
                                 size = size_arg)
   if (isTRUE(decision$rotate)) apa_request_landscape()
 
-  # A rotation the author asked for BY NAME -- whether by chunk option or by
+  # A rotation the user asked for BY NAME -- whether by chunk option or by
   # the `landscape =` argument, apa_landscape_request() already resolved
   # which -- and cannot have is the one case worth saying out loud, because
   # there is a real fix and it is one word: the chunk needs a label beginning
   # `tbl-`. The automatic case (requested is NA) says nothing -- it silently
-  # shrinks, and the table is complete either way. WIDENED IN 1.7: this used
-  # to fire only for the chunk option, so a user who asked by ARGUMENT and
-  # could not have it was told nothing at all.
+  # shrinks, and the table is complete either way. It fires for a request by
+  # ARGUMENT as well as by chunk option; otherwise a user who asked by
+  # argument and could not have it would be told nothing at all.
   #
   # isTRUE(requested) is correct here, even though `requested` is the
   # tri-state apa_landscape_request() returns (NA/TRUE/FALSE) -- this is a
@@ -1078,13 +1029,13 @@ apa_quarto_latex_block <- function(x, font.size = NULL) {
 }
 
 # The metadata div that carries the generated title/note past Quarto's
-# starring decision (Task 1's measurement): a `tbl-`labelled chunk becomes a
-# float whose caption is empty and whose apa-note attribute is absent when
-# the author wrote no tbl-cap/apa-note, and a filter (Task 5) can still fill
-# both in AT THAT STAGE, before Quarto decides whether the float is starred.
-# So R's job here is only to hand the filter the values it would otherwise
-# have to recompute; the filter, not this code, decides precedence (D22) by
-# populating only whatever the float still lacks.
+# starring decision (measured): a `tbl-`labelled chunk becomes a float whose
+# caption is empty and whose apa-note attribute is absent when the user
+# wrote no tbl-cap/apa-note, and a filter can still fill both in AT THAT
+# STAGE, before Quarto decides whether the float is starred. So R's job here
+# is only to hand the filter the values it would otherwise have to
+# recompute; the filter, not this code, decides precedence by populating
+# only whatever the float still lacks.
 
 # Escape a value for a pandoc div attribute: NO BACKSLASH-ESCAPED QUOTE EVER.
 # Both quote characters are written as numeric character references instead,
@@ -1205,7 +1156,7 @@ apa_md_value <- function(v) {
 
 # Resolve argument-or-spec and build the div. The chunk option (tbl-cap /
 # apa-note) is NOT consulted here: the filter resolves that by populating
-# only what is empty (D22), so this function never needs to know it exists.
+# only what is empty, so this function never needs to know it exists.
 apa_meta_div_for <- function(x, title = NULL, note = NULL) {
   sp <- as_spec(x)
   t_md <- apa_md_value(title)
@@ -1220,22 +1171,16 @@ apa_meta_div_for <- function(x, title = NULL, note = NULL) {
   apa_meta_div(t_md, n_md)
 }
 
-# --- Task 8: the four format-named entry points (D30) ---------------------
+# --- The four format-named entry points ------------------------------------
 #
-# apa.quarto.table() is RETIRED OUTRIGHT here, not deprecated (D30): it was
-# never released -- CRAN carries 3.0.1, master is local-only -- so this is the
-# last moment removal is free. A deprecation shim would keep a discouraged
-# name visible in the index indefinitely for no user it could actually help.
-#
-# WHY FOUR NAMES INSTEAD OF ONE FUNCTION WITH A DESTINATION ARGUMENT. The
-# author's principle, verbatim: "I don't like it when software has features
-# that are 'discoverable' instead of being easy to determine they exist." A
+# WHY FOUR NAMES INSTEAD OF ONE FUNCTION WITH A DESTINATION ARGUMENT. A
+# feature should be easy to see exists, not merely "discoverable". A
 # function's existence in the package index advertises the capability; an
 # argument value inside one function's help page does not. apa.save() already
 # names a destination with a function rather than an argument, so this
 # extends the package's own existing pattern.
 #
-# THE NAMES ARE FORGIVING, AND THAT IS A DELIBERATE TRADE (D30). The render
+# THE NAMES ARE FORGIVING, AND THAT IS A DELIBERATE TRADE. The render
 # TARGET, not the function name, decides the mechanism: apa.quarto.pdf() in a
 # document whose YAML says apaquarto-docx still produces a correct Word
 # table. Quarto's output format is a property of the DOCUMENT, not of a code
@@ -1256,11 +1201,10 @@ apa_meta_div_for <- function(x, title = NULL, note = NULL) {
 # format key (as these functions and apa.quarto.template()'s target=
 # argument spell it) -> the matching apaquarto YAML `format:` value.
 #
-# Phase 1.9 Task 2 (D91): the "slide" key is renamed "revealjs" here, in
-# apa.quarto.template()'s target= argument and everywhere else the key is
-# used -- "slide" was never purely internal (target= is exported), and
-# leaving it would ship apa.quarto.revealjs() and
-# apa.quarto.template(target = "slide") naming one destination two ways.
+# The slide key is "revealjs" here, in apa.quarto.template()'s exported
+# target= argument and everywhere else the key is used, so
+# apa.quarto.revealjs() and apa.quarto.template(target = ...) name the
+# destination one way. Do not reintroduce a second spelling such as "slide".
 APA_QUARTO_ENTRY_YAML <- c(
   pdf      = "apaquarto-pdf",
   docx     = "apaquarto-docx",
@@ -1270,7 +1214,7 @@ APA_QUARTO_ENTRY_YAML <- c(
 
 # format key -> the word used in prose ("To produce ___, set ...").
 #
-# "reveal.js slides", not "slides" (D91): the word now matches the string
+# "reveal.js slides", not "slides": the word matches the string
 # typed on the same line ("set `format: revealjs`"), rather than staying
 # vague about which slide format is meant.
 APA_QUARTO_ENTRY_PROSE <- c(
@@ -1284,7 +1228,7 @@ APA_QUARTO_ENTRY_PROSE <- c(
 # "-variant"/"+extension" suffix, e.g. "docx+lots_of_stuff" -> "docx") ->
 # the format key our entry points and apa.quarto.template() use. LaTeX and
 # beamer both compile through pandoc's "latex" writer family and both mean
-# "pdf" here; "beamer" itself is out of scope (D30: no apaquarto support).
+# "pdf" here; "beamer" itself is out of scope (apaquarto does not support it).
 # HTML has more than one writer spelling ("html", "html4", "html5"), matched
 # by prefix. "revealjs" maps to itself (APA_REVEALJS_FORMATS in
 # R/quarto-slide.R). Anything else (gfm, typst, ...) returns NA: this
@@ -1296,19 +1240,18 @@ apa_quarto_actual_entry <- function(to) {
   if (identical(to, "docx")) return("docx")
   if (identical(to, "html") || grepl("^html", to)) return("html")
   if (to %in% APA_REVEALJS_FORMATS) return("revealjs")
-  # Phase 1.9 (D88/D90, 2026-08-06): "pptx" is DELIBERATELY NOT "revealjs"
-  # any more, and it is given its own explicit arm rather than just falling
-  # through to the NA_character_ below so a future reader sees this was a
-  # decision, not an omission. PowerPoint left the Quarto path entirely --
-  # Quarto slide support is revealjs only now (APA_REVEALJS_FORMATS no
-  # longer contains "pptx") -- so this function must not classify a pptx
-  # render as any known entry, including a new "pptx" entry of its own.
-  # That does NOT mean a pptx render goes unmentioned: apa_quarto_dispatch()
-  # checks `actual == "pptx"` directly (this function's NA answer is exactly
-  # what tells it the generic mismatch gate has nothing to say) and raises
-  # its own not-yet-supported message via apa_quarto_target_message() below.
-  # Do not "fix" this by mapping pptx back onto "revealjs" -- that is the
-  # exact classification that hid the defect this phase exists to remove.
+  # "pptx" is DELIBERATELY NOT "revealjs", and it has its own explicit arm
+  # rather than falling through to the NA_character_ below so a reader sees
+  # this is a decision, not an omission. Quarto slide support is revealjs
+  # only (APA_REVEALJS_FORMATS does not contain "pptx"), so this function
+  # must not classify a pptx render as any known entry, including a "pptx"
+  # entry of its own. That does NOT mean a pptx render goes unmentioned:
+  # apa_quarto_render() checks for "pptx" directly and raises its own
+  # not-yet-supported message via apa_quarto_target_message() below, and
+  # this function's NA answer is exactly what tells apa_quarto_dispatch()'s
+  # generic mismatch gate it has nothing to say. Do not map pptx back onto
+  # "revealjs": that classification hides a PowerPoint render behind the
+  # supported slide destination.
   if (identical(to, "pptx")) return(NA_character_)
   NA_character_
 }
@@ -1328,12 +1271,10 @@ apa_quarto_actual_entry <- function(to) {
 # classify, and it is wider than "typst, gfm, pptx": "latex"/"beamer" map to
 # "pdf", "docx" stays "docx", "revealjs" maps to "revealjs" -- so this helper
 # withholds the exact-size marker on PDF, Word and the slide destination,
-# not just on the unclassified writers (typst, gfm, and pptx as of Phase
-# 1.9), all of which also produce FALSE here (identical(NA_character_,
-# "html") is FALSE, not NA). Phase 1.8 emitted the marker on all of those;
-# the leak this phase fixed (item 7) was that a typst render carried it
-# through unconsumed, because apatablesize.lua is registered for html and
-# docx only.
+# not just on the unclassified writers (typst, gfm, pptx), all of which also
+# produce FALSE here (identical(NA_character_, "html") is FALSE, not NA).
+# apatablesize.lua is registered for html and docx only, so a marker emitted
+# on, say, a typst render would pass through unconsumed.
 apa_quarto_html_target <- function() {
   to <- apa_quarto_actual_format()
   if (is.na(to)) return(NA)
@@ -1343,15 +1284,6 @@ apa_quarto_html_target <- function() {
 # The document's ACTUAL render target, as the raw pandoc token (never
 # normalised here) -- NA_character_ when there is nothing to report: no knit
 # in progress, knitr unavailable, or the pandoc token itself is empty.
-#
-# This USED TO also answer NA_character_ when apa.save()'s
-# apa_direct_output_active() was in effect (apa.save() writes a file of its
-# own; what chunk it happens to be called from must not leak in, exactly as
-# apa_latex_target() guarded against for the LaTeX-package question -- see
-# that function's own comment in R/render-flextable.R). apa_direct_output()
-# was measured active zero times reaching this function and removed in Phase
-# 1.11, so that guard is gone; the three conditions below are the whole
-# contract now.
 #
 # A thin, MOCKABLE wrapper around knitr::pandoc_to() rather than an inline
 # call -- this file's own established convention (apa_quarto_docx_target()
@@ -1365,13 +1297,14 @@ apa_quarto_actual_format <- function() {
   to
 }
 
-#' The guidance message for a name/target mismatch (D30)
+#' The guidance message for a name/target mismatch
 #'
-#' The table renders correctly either way (the TARGET decides the
-#' mechanism, never the call name); the message states the one useful
-#' fact: which YAML line would make the call name and the render agree. Exported as an internal helper (not part
-#' of the public API) so it can be tested and reused without duplicating the
-#' format tables above.
+#' Used when a chunk calls an entry point that does not match the render
+#' target, e.g. \code{apa.quarto.pdf()} in a document rendering to Word. The
+#' table renders correctly either way, because the render target decides the
+#' mechanism and the function name does not; the message states the one
+#' useful fact, which YAML line would make the two agree. A separate internal
+#' function so the tests can check the wording directly.
 #'
 #' @param called the format key of the function that was called
 #'   (\code{"pdf"}, \code{"docx"}, \code{"html"}, or \code{"revealjs"}).
@@ -1382,26 +1315,21 @@ apa_quarto_actual_format <- function() {
 #' @return A length-1 character string.
 #' @keywords internal
 apa_quarto_target_message <- function(called, actual) {
-  # D90 (Phase 1.9, 2026-08-06): PowerPoint gets its OWN sentence, checked
-  # first and regardless of `called`. apa_quarto_actual_entry("pptx") answers
-  # NA_character_ (it is deliberately not classified as any entry, including
-  # "revealjs" -- see that function's own comment), so the generic branch
-  # below would otherwise fall through to the "unclassified writer" wording
-  # ("This document renders to `pptx`. To produce ..."), which is TRUE but
-  # not the useful fact here. The useful fact is that PowerPoint is not
-  # served through Quarto at all yet, and where the supported slide
-  # destination is. RENDER, THEN WARN (D90): the table is never refused --
-  # apa_quarto_render() (R/quarto-table.R) raises this warning FIRST, then
-  # builds the table, so it never skips the render. I1 (whole-branch review,
-  # 2026-08-06) corrected this comment: it used to say the warning is raised
-  # "AFTER the table has already been produced", which was backwards, and
-  # the message text below used to say "the table above" for the same wrong
-  # reason. knitr captures a warning() and the chunk's own output in the
-  # ORDER they occur during evaluation, so warn-then-render means the
-  # warning text lands ABOVE the table in the rendered document -- "the
-  # table below" is what is actually true, and is now what the message says.
-  # "not yet supported", never "unsupported" -- Phase 1.13 (PowerPoint via
-  # officer) is scheduled, real future work, not abandoned.
+  # PowerPoint gets its OWN sentence, checked first and regardless of
+  # `called`. apa_quarto_actual_entry("pptx") answers NA_character_ (it is
+  # deliberately not classified as any entry, including "revealjs" -- see
+  # that function's own comment), so the generic branch below would
+  # otherwise fall through to the "unclassified writer" wording ("This
+  # document renders to `pptx`. To produce ..."), which is TRUE but not the
+  # useful fact here. The useful fact is that PowerPoint is not served
+  # through Quarto at all yet, and where the supported slide destination is.
+  # RENDER, THEN WARN: the table is never refused -- apa_quarto_render()
+  # raises this warning FIRST, then builds the table. knitr captures a
+  # warning() and the chunk's own output in the ORDER they occur during
+  # evaluation, so the warning text lands ABOVE the table in the rendered
+  # document -- hence "the table below" in the message. "not yet
+  # supported", never "unsupported": PowerPoint output is planned work, not
+  # abandoned.
   if (identical(actual, "pptx")) {
     return(paste0(
       "This document renders to PowerPoint, where apaTables tables are ",
@@ -1410,17 +1338,11 @@ apa_quarto_target_message <- function(called, actual) {
       "`format: revealjs` in the YAML for the supported slide destination."))
   }
   actual_entry <- apa_quarto_actual_entry(actual)
-  # I1 (whole-branch review, 2026-08-04) used to branch here: "slide" was the
-  # one entry TWO raw tokens mapped to (APA_SLIDE_FORMATS: "revealjs" AND
-  # "pptx"), so reading APA_QUARTO_ENTRY_YAML[["slide"]] unconditionally
-  # could report a PowerPoint render as "renders to `revealjs`" -- a false
-  # statement. Phase 1.9 Task 2 removed the branch (confirmed dead, not
-  # merely simplified): the pptx arm above now returns before this point is
-  # ever reached for a pptx render, and apa_quarto_actual_entry() only
-  # returns "revealjs" for `actual == "revealjs"` (APA_REVEALJS_FORMATS
-  # contains nothing else), so APA_QUARTO_ENTRY_YAML[["revealjs"]] -- itself
-  # "revealjs" -- can never disagree with `actual` here. The condition that
-  # used to pick the RAW-token branch could no longer be TRUE.
+  # No special case is needed for revealjs: the pptx arm above has already
+  # returned, and apa_quarto_actual_entry() returns "revealjs" only for
+  # `actual == "revealjs"` (APA_REVEALJS_FORMATS contains nothing else), so
+  # APA_QUARTO_ENTRY_YAML[["revealjs"]] -- itself "revealjs" -- can never
+  # disagree with `actual` here.
   yaml_actual  <- if (!is.na(actual_entry)) {
     APA_QUARTO_ENTRY_YAML[[actual_entry]]
   } else {
@@ -1432,9 +1354,9 @@ apa_quarto_target_message <- function(called, actual) {
         prose_called, ", set `format: ", yaml_called, "` in the YAML.")
 }
 
-# The one body shared by all four entry points (D30: "identical behaviour,
-# three names" for the manuscript trio; Phase 1.6b added apa.quarto.revealjs()
-# on top of the same apa_quarto_dispatch(), so it is now four). `called` is
+# The one body shared by all four entry points (the three manuscript entry
+# points behave identically; apa.quarto.revealjs() goes through the same
+# apa_quarto_dispatch()). `called` is
 # the only thing that differs between them, and it is used for nothing but
 # the mismatch message -- the dispatch decision itself is read fresh from the
 # actual render, never from which of the four names was typed.
@@ -1449,26 +1371,20 @@ apa_quarto_target_message <- function(called, actual) {
 # for that alone.
 #
 # THE LANDMINE THIS FUNCTION IS BUILT TO AVOID: apa_quarto_markdown_block()
-# already composes its own .apa-table-meta div internally (Task 7) --
+# already composes its own .apa-table-meta div internally --
 # apa_meta_div_for() must NEVER be called again around its result here, or
 # TWO divs reach apatablemeta.lua, whose walk has no early exit, so the
 # SECOND one silently wins (a wrong title/note, not a crash). Only the LaTeX
-# branch composes the div, exactly as apa.quarto.table() used to; the
-# markdown branch's return value is passed straight through untouched.
-# The render itself, with NO mismatch message -- factored out of
-# apa_quarto_dispatch() so that knit_print.apa_table_spec() (a bare `table1`
-# on its own line in a chunk, with no function name typed at all) can share
-# the identical LaTeX/markdown routing and the identical meta-div-composition
-# safety without a "called" name to compare the render against. There is
-# nothing to be forgiving ABOUT when no name was ever stated.
+# branch composes the div; the markdown branch's return value is passed
+# straight through untouched.
+
 # Validate an explicit font.size ONCE, at the one chokepoint every public
-# route passes through (fix F3, Fable pre-push review 2026-08-09). Before
-# this, apa.quarto.pdf(t, font.size = "abc") died mid-render with base R's
-# bare "missing value where TRUE/FALSE needed" -- a loud failure, which is
-# correct, with a message naming neither the argument nor the fix, which is
-# not. A numeric-looking character ("10") is still accepted, as it always
-# was: the coercion is the same as.numeric() the downstream code applies,
-# performed once and checked.
+# route passes through. Without this, apa.quarto.pdf(t, font.size = "abc")
+# dies mid-render with base R's bare "missing value where TRUE/FALSE needed"
+# -- a loud failure, which is correct, with a message naming neither the
+# argument nor the fix, which is not. A numeric-looking character ("10") is
+# accepted: the coercion is the same as.numeric() the downstream code
+# applies, performed once and checked.
 apa_quarto_font_size_value <- function(font.size) {
   if (is.null(font.size)) return(NULL)
   v <- suppressWarnings(as.numeric(font.size))
@@ -1480,19 +1396,23 @@ apa_quarto_font_size_value <- function(font.size) {
   v
 }
 
+# The render itself, with NO mismatch message -- factored out of
+# apa_quarto_dispatch() so that knit_print.apa_table_spec() (a bare `table1`
+# on its own line in a chunk, with no function name typed at all) can share
+# the identical LaTeX/markdown routing and the identical meta-div-composition
+# safety without a "called" name to compare the render against. There is
+# nothing to be forgiving ABOUT when no name was ever stated.
 apa_quarto_render <- function(x, title = NULL, note = NULL, font.size = NULL) {
   font.size <- apa_quarto_font_size_value(font.size)
-  # C1 (whole-branch review, 2026-08-06): checked FIRST, before any routing
-  # decision, because this function has TWO callers and only one of them
-  # used to warn. apa_quarto_dispatch() (used by apa.quarto.pdf/docx/html/
-  # revealjs) warned here; apa_quarto_knit_print() (R/quarto.R) -- called by
-  # knit_print.apa_table() and knit_print.apa_table_spec() for the ordinary
-  # case of a bare table left as a chunk's last line, with no function name
-  # typed at all -- called this function DIRECTLY and skipped the warning
-  # entirely. MEASURED: a bare `apa.cor.table(attitude)` as a chunk's last
-  # line in a `format: pptx` deck emitted a full table and no warning. Every
-  # route into this function passes through here, so this is now the one
-  # place that decides it. `called = "revealjs"` because
+  # The pptx check is made FIRST, before any routing decision, and HERE
+  # rather than in apa_quarto_dispatch(), because this function has TWO
+  # callers: apa_quarto_dispatch() (apa.quarto.pdf/docx/html/revealjs) and
+  # apa_quarto_knit_print() (R/quarto.R), which knit_print.apa_table() and
+  # knit_print.apa_table_spec() call for the ordinary case of a bare table
+  # left as a chunk's last line, with no function name typed at all. A check
+  # in only one caller misses the other -- measured: a bare
+  # `apa.cor.table(attitude)` as a chunk's last line in a `format: pptx`
+  # deck emitted a full table and no warning. `called = "revealjs"` because
   # apa_quarto_target_message()'s pptx arm ignores `called` entirely (its
   # own comment explains why) -- it is passed only to satisfy that
   # function's signature. Keyed on a constant, not on `called`/`actual`
@@ -1502,9 +1422,9 @@ apa_quarto_render <- function(x, title = NULL, note = NULL, font.size = NULL) {
   pptx_notice <- NULL
   if (identical(apa_quarto_actual_format(), "pptx")) {
     msg <- apa_quarto_target_message(called = "revealjs", actual = "pptx")
-    # Quarto's pptx render suppresses R warnings by default (measured
-    # 2026-08-09: a plain warning() in a chunk reaches neither the deck nor
-    # the render console under `format: pptx`, while the same chunk under
+    # Quarto's pptx render suppresses R warnings by default (measured: a
+    # plain warning() in a chunk reaches neither the deck nor the
+    # render console under `format: pptx`, while the same chunk under
     # HTML shows it; an explicit `execute: warning: true` restores it). So
     # the warning() below is invisible on exactly the render it is about,
     # and the deck's own body must carry the sentence or the deck goes out
@@ -1516,24 +1436,23 @@ apa_quarto_render <- function(x, title = NULL, note = NULL, font.size = NULL) {
     }
   }
 
-  # Slides first (Phase 1.6b), but ONLY revealjs -- apa_quarto_revealjs_target()
-  # answers non-NA for "revealjs" alone (D88; APA_REVEALJS_FORMATS no longer
-  # contains "pptx"). A revealjs deck loads no apaquarto, so it must not
+  # Slides first, but ONLY revealjs -- apa_quarto_revealjs_target() answers
+  # non-NA for "revealjs" alone (APA_REVEALJS_FORMATS does not contain
+  # "pptx"). A revealjs deck loads no apaquarto, so it must not
   # reach apa_quarto_markdown_block(), which composes an .apa-table-meta div
   # no filter will read and which decides the docx-only size marker and
   # landscape wrap. Neither is quiet by construction here -- both are quiet
   # only because apa_quarto_docx_target() is FALSE -- so route around it
   # rather than relying on that.
   #
-  # M1 (whole-branch review, 2026-08-06): a pptx deck is NOT routed here and
-  # DOES fall through to apa_quarto_markdown_block() below, deliberately.
-  # apa_latex_target() is also FALSE for it, so it reaches the markdown
-  # branch at the bottom of this function -- the same branch docx and HTML
-  # share -- which is exactly where D92's apa_slide_flatten_spanners() call
-  # now lives (R/quarto-table.R's apa_quarto_markdown_block()). The docx-only
-  # markers that function also composes stay inert for pptx the same way
-  # they already do for HTML: apa_quarto_docx_target() and
-  # apa_quarto_html_target() both answer FALSE for a pptx render.
+  # A pptx deck is NOT routed here and DOES fall through to
+  # apa_quarto_markdown_block() below, deliberately. apa_latex_target() is
+  # also FALSE for it, so it reaches the markdown branch at the bottom of
+  # this function -- the same branch docx and HTML share -- which is exactly
+  # where its apa_slide_flatten_spanners() call lives. The docx-only markers
+  # that function also composes stay inert for pptx the same way they do for
+  # HTML: apa_quarto_docx_target() and apa_quarto_html_target() both answer
+  # FALSE for a pptx render.
   if (!is.na(apa_quarto_revealjs_target())) {
     return(apa_quarto_revealjs_block(x, font.size = font.size,
                                      title = title, note = note))
@@ -1544,15 +1463,15 @@ apa_quarto_render <- function(x, title = NULL, note = NULL, font.size = NULL) {
     meta_div <- apa_meta_div_for(x, title = title, note = note)
     # A blank line is REQUIRED between the raw LaTeX block and the div, or
     # pandoc swallows the `::: {.apa-table-meta}` fence as part of the raw
-    # LaTeX and it never becomes a Div node (Task 4's measurement). The div
+    # LaTeX and it never becomes a Div node (measured). The div
     # goes inside the SAME asis_output as the longtable so it lands inside
     # the float Quarto builds from this chunk.
     return(knitr::asis_output(
       paste0(as.character(latex_block), "\n\n", meta_div)))
   }
 
-  # apa_quarto_markdown_block() composes its OWN meta div (Task 7) -- do not
-  # add another one here. See this function's own comment above.
+  # apa_quarto_markdown_block() composes its OWN meta div -- do not add
+  # another one here. See the landmine comment above this function.
   block <- apa_quarto_markdown_block(x, font.size = font.size, title = title,
                                      note = note)
   # Only a pptx render ever sets pptx_notice, and a pptx render always
@@ -1565,36 +1484,25 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
                                 font.size = NULL) {
   actual <- apa_quarto_actual_format()
   actual_entry <- apa_quarto_actual_entry(actual)
-  # C1 (whole-branch review, 2026-08-06): the pptx warning USED TO be raised
-  # here, keyed on `identical(actual, "pptx")`. MEASURED: apa_quarto_render()
-  # (below) has a SECOND caller, apa_quarto_knit_print() (R/quarto.R), which
-  # knit_print.apa_table() and knit_print.apa_table_spec() both call
-  # directly for the ordinary case of a bare table left as a chunk's last
-  # line -- and that route never passes through this function at all. A
-  # bare `apa.cor.table(attitude)` as a chunk's last line in a `format:
-  # pptx` deck produced a full table and NO warning, on a documented
-  # exported path -- this phase's own release-blocker, still live. The pptx
-  # check now lives in apa_quarto_render() itself, where every route into it
-  # passes, so this function no longer special-cases pptx at all; the
-  # generic name/target mismatch below is unchanged.
+  # No pptx case here: that check lives in apa_quarto_render(), where every
+  # route passes -- including apa_quarto_knit_print() (R/quarto.R), which
+  # never passes through this function. Only the generic name/target
+  # mismatch is handled here.
   if (!is.na(actual_entry) && !identical(actual_entry, called)) {
-    # ONCE per (called, actual) pair per document (fix round 1, Task 8), via
-    # the same apa_warn_once() registry page-geometry.R and
-    # docx-landscape.R already use for a document-wide fact -- not a
-    # per-table one. Before this fix a manuscript with N tables that all
-    # called the wrong-named entry point printed N IDENTICAL guidance
-    # lines in the rendered draft (measured: 8, in this task's own
-    # example-document verification) -- R4's binding acceptance
-    # requirement is that no warning reaches the rendered manuscript at
-    # all, and a line repeated N times is exactly the noise "solve, don't
-    # warn" exists to prevent. Keyed on BOTH `called` and `actual`, not a
+    # ONCE per (called, actual) pair per document, via the same
+    # apa_warn_once() registry page-geometry.R and docx-landscape.R use for a
+    # document-wide fact -- not a per-table one. Without it a manuscript with
+    # N tables that all call the wrong-named entry point prints N IDENTICAL
+    # guidance lines in the rendered draft (measured: 8, in the example
+    # document), and a line repeated N times is exactly the noise a rendered
+    # manuscript must not carry. Keyed on BOTH `called` and `actual`, not a
     # constant string: a document that mixes apa.quarto.pdf() and
     # apa.quarto.html() calls against one actual render states two
     # genuinely different facts (which call is wrong), so each pattern is
     # still told once, not silenced by the other having already fired. A
-    # pptx render no longer reaches this branch at all (`actual_entry` is
-    # NA for it, see apa_quarto_actual_entry()'s own comment) -- it gets its
-    # own key, "quarto-pptx-not-supported", in apa_quarto_render() below.
+    # pptx render never reaches this branch (`actual_entry` is NA for it,
+    # see apa_quarto_actual_entry()'s own comment) -- it gets its own key,
+    # "quarto-pptx-not-supported", in apa_quarto_render() above.
     apa_warn_once(
       paste("quarto-target-mismatch", called, actual, sep = "\r"),
       apa_quarto_target_message(called = called, actual = actual))

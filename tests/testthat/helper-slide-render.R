@@ -34,23 +34,14 @@ apa_render_slide_fixture <- function(name, to = c("revealjs", "pptx")) {
   out
 }
 
-# apa_pptx_slide2_xml() and apa_pptx_table_rows() (pptx XML extraction
-# helpers, D54/D46) were REMOVED here in Phase 1.9 Task 2 -- grep-confirmed
-# zero remaining callers once Task 1 deleted the pptx-specific tests in
-# test-slide-render.R that used them, on the premise that PowerPoint had
-# left the Quarto path entirely (D88/D90) and there was nothing left in
-# THIS package's output for them to read.
-#
-# RESTORED (D92, whole-branch review of Phase 1.9, 2026-08-06). D92
-# reversed the "no output worth checking" premise: a pptx render still
-# gets a table from this package (D90's render-then-warn), and D92 exists
-# specifically because that table's OWN correctness (spanner flattening)
-# needed verifying against a real render, the same way D54 first found the
-# table-less-slide defect these helpers were built to catch. They read
-# pandoc's pptx writer output, which is still what a pptx render produces
-# today -- Phase 1.13's officer-based route is a different, NOT-YET-BUILT
-# mechanism and will need its own extraction helpers when it exists; these
-# stay pandoc-pptx-writer-specific on purpose.
+# apa_pptx_slide2_xml() and apa_pptx_table_rows(): pptx XML extraction
+# helpers. PowerPoint is not a supported destination, but a pptx render
+# still gets a table from this package (rendered, then warned about), and
+# that table's OWN correctness -- spanner flattening -- has to be verified
+# against a real render. These read pandoc's pptx writer output, which is
+# what a pptx render produces today. A future officer-based PowerPoint route
+# would need its own extraction helpers; these stay
+# pandoc-pptx-writer-specific on purpose.
 apa_pptx_slide2_xml <- function(path) {
   con <- unz(path, "ppt/slides/slide2.xml")
   on.exit(close(con), add = TRUE)
@@ -58,8 +49,9 @@ apa_pptx_slide2_xml <- function(path) {
 }
 
 # The text of every <a:t> run in a pptx slide that contains a table, as a
-# list of rows of cell strings -- the same extraction the D46 measurement
-# used, so an assertion here is comparable with the recorded evidence.
+# list of rows of cell strings -- the same extraction used to measure how
+# PowerPoint lays out spanner rows, so an assertion here is comparable with
+# that measurement.
 apa_pptx_table_rows <- function(path) {
   xml <- apa_pptx_slide2_xml(path)
   rows <- regmatches(xml, gregexpr("<a:tr [^>]*>.*?</a:tr>", xml))[[1]]

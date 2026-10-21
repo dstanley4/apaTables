@@ -2,7 +2,7 @@
 % Please edit documentation in R/quarto-table.R
 \name{apa_quarto_target_message}
 \alias{apa_quarto_target_message}
-\title{The guidance message for a name/target mismatch (D30)}
+\title{The guidance message for a name/target mismatch}
 \usage{
 apa_quarto_target_message(called, actual)
 }
@@ -19,10 +19,11 @@ does that itself via \code{apa_quarto_actual_entry()}.}
 A length-1 character string.
 }
 \description{
-The table renders correctly either way (the TARGET decides the
-mechanism, never the call name); the message states the one useful
-fact: which YAML line would make the call name and the render agree. Exported as an internal helper (not part
-of the public API) so it can be tested and reused without duplicating the
-format tables above.
+Used when a chunk calls an entry point that does not match the render
+target, e.g. \code{apa.quarto.pdf()} in a document rendering to Word. The
+table renders correctly either way, because the render target decides the
+mechanism and the function name does not; the message states the one
+useful fact, which YAML line would make the two agree. A separate internal
+function so the tests can check the wording directly.
 }
 \keyword{internal}

@@ -1,10 +1,10 @@
-# D104: the documented way to display a table is TWO LINES AND NO PIPE --
-# build the object, then pass it to a plain call. The author ruled this from
+# The documented way to display a table is TWO LINES AND NO PIPE --
+# build the object, then pass it to a plain call. This rule comes from
 # real CRAN rejections.
 #
-# NOTHING ELSE IN THE SUITE CAN SEE THIS. Phase 3.2 swept 73 sites across the
-# roxygen, the vignettes, the shipped example documents and the README, and
-# the suite stayed green at every point -- before, during and after. A style
+# NOTHING ELSE IN THE SUITE CAN SEE THIS. Rewriting every taught example
+# across the roxygen, the vignettes, the shipped example documents and the
+# README leaves the rest of the suite green whether it is done or not. A style
 # rule with no assertion behind it is a rule that survives exactly as long as
 # the memory of it does.
 #
@@ -28,8 +28,8 @@ test_that("the shipped example documents teach two lines, never the pipe", {
     expect_equal(piped, character(0),
                  info = paste(basename(f), "-- piped into an entry point"))
 
-    # 2. And no prose teaches the arrow. D104 DELETES those sentences rather
-    #    than rewording them, so their absence is the assertion. Checked
+    # 2. And no prose teaches the arrow. Such sentences are deleted rather
+    #    than reworded, so their absence is the assertion. Checked
     #    separately from (1) because a sentence naming the arrow contains no
     #    apa.quarto call and would slip past the first check entirely.
     arrow <- grep("\\|>.{0,20}arrow|arrow.{0,20}\\|>", txt, value = TRUE)
@@ -42,7 +42,7 @@ test_that("every entry-point call in a shipped example takes an argument", {
   # The complement of the check above, and the reason it is not redundant:
   # deleting a pipe satisfies "no pipe" while leaving `apa.quarto.pdf()` with
   # nothing to display -- a chunk that renders no table and reports no error.
-  # This is the assertion that would have caught a bad split during the sweep.
+  # This is the assertion that catches a bad two-line split.
   dir <- system.file("templates", package = "apaTables")
   skip_if(!nzchar(dir), "templates not installed")
 
@@ -53,13 +53,12 @@ test_that("every entry-point call in a shipped example takes an argument", {
     # `apa.quarto.pdf()` by name many times, and those are not calls.
     calls <- grep("^\\s*apa\\.quarto\\.(pdf|docx|html|revealjs)\\(", txt,
                   value = TRUE)
-    # EVERY template must now have one (D120). This used to skip a file with
-    # no call, because apaquarto-new.qmd -- the STARTER document
-    # apa.quarto.new() writes -- displayed its table by the bare-chunk path
-    # instead, a table object as the chunk's last line rendered by
-    # knit_print(). That is still a supported feature, but the FIRST document
-    # a new user opens no longer teaches a different shape from every other
-    # example, so the exemption is gone and the skip with it.
+    # EVERY template must have one, including apaquarto-new.qmd -- the
+    # STARTER document apa.quarto.new() writes. The bare-chunk path (a table
+    # object as the chunk's last line, rendered by knit_print()) is still a
+    # supported feature, but the FIRST document a new user opens must not
+    # teach a different shape from every other example, so no file is
+    # exempt.
     expect_true(length(calls) > 0L,
                 info = paste(basename(f), "-- no entry-point call at all"))
     seen <- seen + 1L

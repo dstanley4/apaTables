@@ -20,12 +20,9 @@ Body text before.
 
 @tbl-wide14 is wide enough that the layout ladder BOTH rotates it AND still
 has to shrink its type below the 10 pt default to fit the rotated budget --
-the combination D38 (dev/specs/2026-07-31-phase2-decisions.md; the Route A
-shrink ladder, carried by apaquarto fork commit 125cbe4 on branch
-apatables-bundle) left unverified through a real render ("rotation's
-interaction with this marker is NOT yet built or verified... a table that
-both rotates AND shrinks is untested here"), because apatablelandscape.lua
-(Task 6) did not exist yet.
+a combination the shrink ladder (cloned Word table styles) could not
+verify through a real render until apatablelandscape.lua existed: a table
+that both rotates AND shrinks is otherwise untested.
 
 ```{r}
 #| label: tbl-wide14

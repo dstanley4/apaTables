@@ -112,8 +112,8 @@ apa.quarto.example <- function(filename = "apaTables-examples.qmd", overwrite = 
     }
   }
   # Both examples use apaquarto, so put the extension beside them --
-  # otherwise the documents this writes cannot render, which is the exact
-  # failure this whole phase exists to remove. `filename` itself is never
+  # otherwise the documents this writes cannot render, and a new user's first
+  # render would fail before any table appeared. `filename` itself is never
   # written (only the two derived -pdf/-docx files are), so normalizePath()
   # must act on its parent directory, not on `filename`.
   apa.quarto.setup(parent)

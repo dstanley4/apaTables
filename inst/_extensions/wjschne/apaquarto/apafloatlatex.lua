@@ -198,7 +198,7 @@ local processfloat = function(float)
       -- without a murmur.
       --
       -- IT IS \Needspace*, THE EAGER FORM, AND THE LOWER-CASE \needspace IS A
-      -- MEASURED DEFECT -- do not "simplify" it back (Phase 1.16, D106).
+      -- MEASURED DEFECT -- do not "simplify" it back.
       --
       -- \needspace works by GLUE: it lays down `\vskip 0pt plus X`, a
       -- `\penalty-100`, and a matching negative skip, which makes a break in
@@ -232,7 +232,7 @@ local processfloat = function(float)
       -- \Needspace* is better on every axis that applies: short tables still
       -- never straddle, tall tables are never stranded, and it costs two pages
       -- FEWER than \needspace, which was pushing tall tables off pages they had
-      -- half a column left on. dev/factcheck/phase116-strandedhead/.
+      -- half a column left on.
       --
       -- WHY 12, AND WHAT IT HAS TO COVER. The reserve must span the WHOLE
       -- table -- caption, header, rows, and \endlastfoot, which carries the
@@ -255,14 +255,6 @@ local processfloat = function(float)
       -- 12 IS RE-CONFIRMED UNDER \Needspace* and was not simply carried over:
       -- 12, 18 and 24 all give short tables 0 straddles, and 18 and 24 cost 4
       -- and 6 extra pages for it. 12 is still the cheapest value that works.
-      --
-      -- THAT SWEEP'S OWN CLAIM OF "no change in total page count" WAS TRUE OF
-      -- WHAT IT MEASURED AND FALSE IN GENERAL, which is worth keeping: it
-      -- checked that every ROW survived and that the NOTE did not go adrift,
-      -- and it recorded seeing "a repeated continuation header" and read that
-      -- as part of the note-adrift symptom. It never looked at the page the
-      -- table moved TO. A sweep can be exhaustive over the region it chose and
-      -- blind to the region beside it.
       --
       -- NOT in the default placement, for three separate reasons, any one of
       -- which is sufficient. endfloat re-emits the deferred environment alone

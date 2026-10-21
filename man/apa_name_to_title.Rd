@@ -2,11 +2,11 @@
 % Please edit documentation in R/apa-title-case.R
 \name{apa_name_to_title}
 \alias{apa_name_to_title}
-\title{A variable name as title text (D21)}
+\title{A variable name as title text}
 \usage{
 apa_name_to_title(x)
 }
 \description{
-A variable name as title text (D21)
+A variable name as title text
 }
 \keyword{internal}

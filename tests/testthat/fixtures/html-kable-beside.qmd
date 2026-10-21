@@ -16,7 +16,7 @@ format:
 library(apaTables)
 ```
 
-Phase 1.18 / D114. Two tables in one document: one apaTables builds, and one
+HTML width rules. Two tables in one document: one apaTables builds, and one
 the READER built themselves. The width rules apaTables added to `apa.css` are
 scoped to a wrapper the package puts on its own tables, and the whole point of
 that scoping is this document -- one of those rules overrides a table's column

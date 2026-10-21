@@ -153,8 +153,8 @@ apa_docx_text <- function(docx) {
 # suite of pure documents would pass against stock apaquarto and prove nothing.
 #
 # The fourth table is not decoration and the mix is not "any mix". Measured
-# against stock apaquarto (dev/factcheck/bundled-extension-spike.md, and
-# re-confirmed here by reverting the patch in a rendered project):
+# against stock apaquarto (and re-confirmed by reverting the patch in a
+# rendered project):
 #
 #   fits fits fits             1 2 3    stock is CORRECT
 #   spans spans spans          1 2 3    stock is CORRECT
@@ -213,24 +213,16 @@ apa_acceptance_qmd <- function(placement, orientation, format,
   # In the landscape cells EVERY table is rotated, including the one that spans
   # pages, and including it in the placement that collects tables at the end.
   #
-  # That combination used to be excluded here, and the exclusion is what let
-  # the defect live. While rotation meant apa7's sidewaystable -- a FLOAT, and
-  # a longtable cannot sit in a float -- a rotated multi-page table at the end
-  # came out upright, starred, 51 of 60 rows, with its note missing from the
-  # PDF entirely, and nothing in this suite asked for it. Rotation is now a
-  # literal landscape block that endfloat defers whole, so the cell is
-  # restored, and it is the one that closes the gap Phase 1.5 could not: WIDE
-  # and LONG, tables collected at the end.
+  # Do not exclude that combination: it is the one that matters. Rotating with
+  # apa7's sidewaystable -- a FLOAT, and a longtable cannot sit in a float --
+  # turns a rotated multi-page table at the end upright, starred, 51 of 60
+  # rows, with its note missing from the PDF entirely. Rotation is a literal
+  # landscape block that endfloat defers whole, and this cell is what covers
+  # WIDE and LONG, tables collected at the end.
   tbl <- function(k, cap, n, longtable) {
-    # NO page argument any more, and nothing replaces it. It used to read
-    # `apaTables:::apa_flextable(page = "landscape")`, kept deliberately so
-    # that the FLEXTABLE path had landscape coverage somewhere. Task 10 removed
-    # `page =` from apa_flextable() altogether, so that path no longer has a
-    # landscape concept to cover: it is Word's writer now (D14), and Word's
-    # orientation comes from the table's own `landscape` field, not from a page
-    # argument. What rotates the page here is the ::: {.landscape} div around
-    # the chunk, which is unchanged and is what these cells were always really
-    # testing.
+    # No page argument: what rotates the page here is the ::: {.landscape}
+    # div around the chunk. (apa_flextable() has no `page =` argument; Word's
+    # orientation comes from the table's own `landscape` field.)
     paste0(
       "```{r}\n",
       "#| label: tbl-t", k, "\n",
@@ -241,22 +233,15 @@ apa_acceptance_qmd <- function(placement, orientation, format,
       # still render -- but KNOW WHAT THAT COSTS. The branch in
       # apafloatlatex.lua reads `apa-longtable == "true" OR
       # haslongtable(float)`, so this line satisfies the first disjunct and
-      # the detection is never reached. MEASURED: with Task 6's interim
-      # landscape guard restored by hand, every cell of this matrix stays
-      # GREEN, including the landscape/end cell, while the dedicated test
-      # below fails with 19 rows missing. So the matrix does NOT cover that
-      # regression and must not be counted as covering it; the fixture below,
-      # which carries no such option, is the only thing that does.
-      #
-      # REVISITED IN TASK 10, as the note that stood here asked. The second
-      # reason for keeping the line is now GONE: apa_check_missing_longtable()
-      # -- which used to type "add the settings line '#| apa-longtable: true'"
-      # into any manuscript that dropped it -- has been deleted, so the cells
-      # would no longer go red on a warning about a defect the code no longer
-      # has. The line stays for its FIRST reason only: this matrix is the
+      # the detection is never reached. MEASURED: with an interim landscape
+      # guard (one that blocks the longtable detection) restored by hand,
+      # every cell of this matrix stays GREEN, including the landscape/end
+      # cell, while the dedicated test below fails with 19 rows missing. So
+      # the matrix does NOT cover that regression and must not be counted as
+      # covering it; the fixture below, which carries no such option, is the
+      # only thing that does. The line stays only because this matrix is the
       # backward-compatibility cell, where a document written against the
-      # previous release is checked to still render unchanged. The coverage
-      # caveat above is unaffected and still binding.
+      # previous release is checked to still render unchanged.
       if (longtable) "#| apa-longtable: true\n" else "",
       "#| echo: false\n",
       "#| message: false\n",
@@ -321,43 +306,37 @@ apa_acceptance_qmd <- function(placement, orientation, format,
     "declared.\n")
 }
 
-# A one-table document holding the combination that had no test anywhere: a
-# table that continues onto the next page, inside a ::: {.landscape} div, in a
+# A one-table document holding the hardest combination: a table that
+# continues onto the next page, inside a ::: {.landscape} div, in a
 # manuscript that collects its tables at the end.
 #
-# It is the hardest cell in the design, because the two things it asks for used
-# to be incompatible. Rotation was apa7's sidewaystable, which is a float, and
-# a longtable cannot live in a float: the table came out upright, starred, 51
-# of 60 rows, with its note missing from the PDF entirely and not a word said.
-# Rotation is now a literal landscape block that endfloat defers whole, so
-# rotation no longer needs a float and this document is simply correct.
+# The two things it asks for are incompatible if rotation is apa7's
+# sidewaystable, which is a float, because a longtable cannot live in a float:
+# the table comes out upright, starred, 51 of 60 rows, with its note missing
+# from the PDF entirely and not a word said. Rotation is a literal landscape
+# block that endfloat defers whole, so it needs no float and this document is
+# simply correct.
 #
 # THE CHUNK CARRIES NO `apa-longtable` OPTION, AND THAT ABSENCE IS THE WHOLE
-# TEST. It did carry one, and the fixture was therefore unable to observe the
-# defect it exists for: the branch in apafloatlatex.lua reads
+# TEST. With one, the fixture cannot observe the defect it exists for: the
+# branch in apafloatlatex.lua reads
 #
 #   apa-longtable == "true"  OR  haslongtable(float)
 #
 # so the option satisfies the FIRST disjunct and the second -- the detection
-# the removed guard used to stand in front of -- is never reached. Measured:
-# with the interim guard restored by hand AND the option present, this
-# document renders 60 of 60 rows, unstarred, no float, rotated -- identical to
-# the passing case, so the suite stayed green against the exact regression
-# Step 2a exists to catch. With the option gone and the guard restored it
-# drops to 22 of 60, note absent from the PDF entirely, and the test fails
-# loudly.
+# itself -- is never reached. Measured: with an interim guard in front of the
+# detection restored by hand AND the option present, this document renders
+# 60 of 60 rows, unstarred, no float, rotated -- identical to the passing
+# case, so the suite stays green against the exact regression it exists to
+# catch. With the option gone and the guard restored it drops to 22 of 60,
+# note absent from the PDF entirely, and the test fails loudly.
 #
 # A fixture must never hand the code under test the answer it is supposed to
 # work out.
 #
-# The table is delivered through the native LaTeX emitter, which is the path
-# Phase 2 builds and the only one that can now put a table on a rotated page.
-# The reason originally recorded here -- that apa_flextable() would otherwise
-# have typed a warning into this manuscript telling the author to add the very
-# line whose absence is the point -- has been settled rather than worked
-# around: Task 10 deleted apa_check_missing_longtable(), because the render is
-# correct without the line and a warning describing a defect the code no longer
-# has is a falsehood typed into someone's paper.
+# The table is delivered through the native LaTeX emitter, the only path that
+# can put a table on a rotated page. No warning asks for the missing line:
+# the render is correct without it.
 apa_landscape_longtable_qmd <- function() {
   paste0(
     "---\n",
@@ -390,8 +369,8 @@ apa_landscape_longtable_qmd <- function() {
     "#| apa-note: \"NOTE-MARKER-1 is the note belonging to this table.\"\n",
     "#| echo: false\n",
     "#| message: false\n",
-    # warning: true, deliberately. The old behaviour came with a warning typed
-    # into the manuscript, and suppressing it here would hide a regression
+    # warning: true, deliberately. A regression here could come with a
+    # warning typed into the manuscript, and suppressing it would hide that
     # from the very test that exists to catch one.
     "#| warning: true\n",
     "knitr::asis_output(apaTables:::apa_latex_table(\n",
@@ -446,8 +425,8 @@ apa_unpatch_extension <- function(dir) {
 }
 
 # ---------------------------------------------------------------------------
-# Task 6 (Phase 1.6a): structural .docx helpers, built for
-# tests/testthat/test-docx-structure.R and reused by Task 10.
+# Structural .docx helpers, built for tests/testthat/test-docx-structure.R
+# and reused elsewhere.
 #
 # Everything here reads values back out of a REAL rendered .docx, the same
 # discipline the PDF helpers above follow -- a claim about a section break or
@@ -490,12 +469,10 @@ apa_render_fixture_docx <- function(name) {
 # The HTML sibling of apa_render_fixture_docx() above -- same scratch-project
 # discipline (the CURRENT bundled apaquarto extension travels with the
 # render, never a stale project directory's copy), same loud failure on a
-# missing output file. Built for the whole-branch-review Critical-1/
-# Important-1 findings: apa.quarto.html() had no rendered fixture at all,
-# which is what let a docx-only shrink-ladder consequence (the
-# `apa-table-size-N` marker div, and its floor warning) leak into HTML
-# output undetected -- every existing HTML assertion mocked
-# apa_latex_target() rather than rendering.
+# missing output file. HTML needs a REAL rendered fixture: assertions that
+# only mock apa_latex_target() cannot see a docx-only shrink-ladder
+# consequence (the `apa-table-size-N` marker div, and its floor warning)
+# leaking into HTML output.
 apa_render_fixture_html <- function(name) {
   src <- testthat::test_path("fixtures", paste0(name, ".qmd"))
   if (!file.exists(src)) {
@@ -542,20 +519,20 @@ apa_docx_document_xml <- function(docx) {
 # (a section break mid-document) and the final, unwrapped one at the very
 # end of <w:body> (the document's default/trailing section). One vector
 # entry per block; apa_docx_sections() does no interpretation of what is
-# inside them, which is deliberately left to the caller (the D31 test reads
-# w:orient and w:pgSz off each one itself).
+# inside them, which is deliberately left to the caller (the section
+# orientation tests read w:orient and w:pgSz off each one themselves).
 #
-# Task 10 hardening: the original pattern was `<w:sectPr\b.*?</w:sectPr>`
-# alone, which cannot see a genuinely SELF-CLOSING `<w:sectPr/>` (no
-# attributes, no children -- the shape Quarto's own broken `.landscape` div
-# closer used to leave behind, D31) -- that block would simply be dropped
-# from the returned vector, silently SHORTENING it, the worst failure mode
-# for an all-items loop (a caller iterating "every section" would just never
-# see the missing one, rather than getting an error). No fixture in this
-# suite happens to produce one any more (apatablelandscape.lua replaced the
-# mechanism that did), so this is proven by a synthetic string, not a
-# render: `<w:sectPr/>` in, and the OLD single-alternative pattern is
-# demonstrably blind to it (see the "self-closing" test below).
+# The pattern has TWO alternatives on purpose. `<w:sectPr\b.*?</w:sectPr>`
+# alone cannot see a genuinely SELF-CLOSING `<w:sectPr/>` (no attributes, no
+# children -- the shape Quarto's own `.landscape` div closer can leave
+# behind) -- that block would simply be dropped from the returned vector,
+# silently SHORTENING it, the worst failure mode for an all-items loop (a
+# caller iterating "every section" would just never see the missing one,
+# rather than getting an error). No fixture in this suite produces one
+# (apatablelandscape.lua replaces that mechanism), so this is proven by a
+# synthetic string, not a render: `<w:sectPr/>` in, and the single-
+# alternative pattern is demonstrably blind to it (see the "self-closing"
+# test).
 apa_docx_sections <- function(doc_xml) {
   m <- regmatches(doc_xml,
                   gregexpr("<w:sectPr\\b[^>]*/>|<w:sectPr\\b.*?</w:sectPr>",
@@ -564,8 +541,8 @@ apa_docx_sections <- function(doc_xml) {
 }
 
 # Every <w:tblGrid>...</w:tblGrid> block's own <w:gridCol w:w="..."> widths
-# (twips), one integer vector per table, in document order -- Task 10, B2
-# layer 1's geometry check. Unlike apa_docx_table_styles() below, a
+# (twips), one integer vector per table, in document order -- for the docx
+# column-geometry checks. Unlike apa_docx_table_styles() below, a
 # <w:tblGrid> is self-contained (its own open/close tag, never nested inside
 # another table's), so there is no cross-table boundary for a lazy scan to
 # run past and no bounding is needed here.
@@ -592,12 +569,11 @@ apa_docx_xml_int_attr <- function(tag, name) {
 }
 
 # The `custom-style` a table ended up with, one entry per `<w:tbl>` in
-# document order -- Task 6 fix round 2, built for the multi-table
-# regression that CRITICAL finding needed (apatablesize.lua's document-wide
-# rescope in fix round 1 shared ONE size across every table in the
-# document; the fix pairs each marker with only the table it belongs to,
-# and this is how the pairing is checked from the rendered .docx rather
-# than trusted from the filter's own logic). Every table pandoc's docx
+# document order -- built for the multi-table regression check:
+# apatablesize.lua must pair each size marker with only the table it belongs
+# to, never share ONE size across every table in the document, and this is
+# how the pairing is checked from the rendered .docx rather than trusted
+# from the filter's own logic. Every table pandoc's docx
 # writer produces from the bundled reference document carries an explicit
 # `<w:tblStyle w:val="...">` inside its own `<w:tblPr>`, immediately after
 # `<w:tbl>` and before any row content, so bounding the search to that
@@ -605,16 +581,15 @@ apa_docx_xml_int_attr <- function(tag, name) {
 # anywhere in the document) is what keeps this correct even when SOME
 # tables in the document have no marker at all.
 #
-# Phase 1.7 Task 8: this used to be a single lazy scan across the WHOLE
-# document (`<w:tbl>\\s*<w:tblPr>.*?<w:tblStyle w:val="([^"]+)"`) with no stop
-# at the next `<w:tbl`, so a table genuinely lacking a `<w:tblStyle>` let the
-# search run forward and pick up a LATER table's style -- silent
-# misattribution, safe today only because pandoc stamps a style on every
-# table it writes. Rewritten to work one table at a time: split the document
-# into its own `<w:tbl>...</w:tbl>` blocks first (tables are never nested in
-# anything this codebase produces -- apa_docx_tbl_grids()'s own comment makes
-# the same assumption), then search each block in isolation. A table with no
-# `<w:tblStyle>` now reports NA_character_ at ITS OWN position instead of
+# Do not replace this with a single lazy scan across the WHOLE document
+# (`<w:tbl>\\s*<w:tblPr>.*?<w:tblStyle w:val="([^"]+)"`): with no stop at the
+# next `<w:tbl`, a table genuinely lacking a `<w:tblStyle>` lets the search
+# run forward and pick up a LATER table's style -- silent misattribution.
+# So it works one table at a time: split the document into its own
+# `<w:tbl>...</w:tbl>` blocks first (tables are never nested in anything
+# this codebase produces -- apa_docx_tbl_grids()'s own comment makes the same
+# assumption), then search each block in isolation. A table with no
+# `<w:tblStyle>` reports NA_character_ at ITS OWN position instead of
 # silently vanishing and letting the next table's style shift into its slot.
 apa_docx_table_styles <- function(doc_xml) {
   tbls <- regmatches(doc_xml, gregexpr(
@@ -628,8 +603,8 @@ apa_docx_table_styles <- function(doc_xml) {
 
 # The HEADER relationship IDs a rendered .docx's word/_rels/document.xml.rels
 # actually carries, as a named character vector (id -> target file), sorted
-# by increasing numeric ID -- the same order D31 measured stable
-# (rId8/rId9/rId12) and apatablelandscape.lua hardcodes. Footer
+# by increasing numeric ID -- the order measured stable (rId8/rId9/rId12)
+# and that apatablelandscape.lua hardcodes. Footer
 # relationships are deliberately excluded: the one caller that exists
 # (test-docx-structure.R) checks this against apaTables' own hardcoded
 # header IDs, and including footers here would make that comparison silently
@@ -651,15 +626,15 @@ apa_docx_header_rels <- function(docx) {
 }
 
 # Both header AND footer relationships, same shape as apa_docx_header_rels()
-# above (id -> target file, sorted by numeric id) -- Phase 1.7 Task 5.
+# above (id -> target file, sorted by numeric id).
 #
 # apa_docx_header_rels() deliberately excludes footers, and its own comment
-# says why: its one caller compared them against apaTables' hardcoded HEADER
-# ids, and folding footers into that vector would have made the comparison
+# says why: its one caller compares them against apaTables' hardcoded HEADER
+# ids, and folding footers into that vector would make the comparison
 # silently permissive. But apatablelandscape.lua hardcodes SIX references,
-# not three -- rId10/rId11/rId13 are footers -- and those three were checked
-# against no rendered document at all. This is the vector that lets them be,
-# without weakening the header-only comparison that already exists.
+# not three -- rId10/rId11/rId13 are footers. This is the vector that lets
+# those be checked against a rendered document, without weakening the
+# header-only comparison.
 apa_docx_hdrftr_rels <- function(docx) {
   d <- tempfile(); dir.create(d)
   on.exit(unlink(d, recursive = TRUE))
@@ -678,18 +653,18 @@ apa_docx_hdrftr_rels <- function(docx) {
 }
 
 # ---------------------------------------------------------------------------
-# Phase 1.10: where apafloatstoend.lua puts its page breaks.
+# Where apafloatstoend.lua puts its page breaks.
 #
 # The runs of content BETWEEN the explicit page breaks apafloatstoend.lua
 # emits, in document order, as plain text.
 #
-# This is the only shape in which Phase 1.10's two defects are observable from
-# the file (D93). A trailing EMPTY segment IS the blank page a reader sees, and
+# This is the only shape in which two end-float defects are observable from
+# the file: a trailing blank page, and Table 1 printing under the reference
+# list. A trailing EMPTY segment IS the blank page a reader sees, and
 # "which segment is Table 1 in" is how you ask whether it shares a page with
 # the reference list. Nothing that counts words or tables can see either: the
 # blank page carries a running head and a page number, so a text extractor does
-# not call it empty. That is exactly why the author found this by LOOKING at a
-# rendered PDF and no automated check ever did.
+# not call it empty -- only LOOKING at a rendered page, or this, shows it.
 #
 # NOT a page model, and no assertion here may pretend otherwise. Word breaks
 # pages by itself as content overflows; these are only the breaks the FILTER

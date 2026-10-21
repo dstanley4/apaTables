@@ -63,13 +63,12 @@ apa_note_text <- function(x) {
 # so the chunk's label and its object agree instead of quietly differing.
 APA_TEMPLATE_OBJECT <- "mytable"
 
-# table.type -> the builder that produces it (D108).
+# table.type -> the builder that produces it.
 #
-# THIS MAP DID NOT EXIST BEFORE PHASE 3.1 and it is the one cost of naming the
-# real builder in the template's commented build line. A table object records
-# its `table.type` but NOT the function that made it, so without this the
-# placeholder could only say "..." -- which teaches the shape but not which
-# function to look up.
+# This map is the one cost of naming the real builder in the template's
+# commented build line. A table object records its `table.type` but NOT the
+# function that made it, so without this the placeholder could only say
+# "..." -- which teaches the shape but not which function to look up.
 #
 # IT IS A SECOND COPY OF A FACT THE BUILDERS ALREADY STATE, so it is guarded
 # rather than trusted: test-quarto.R asserts that every exported apa.*.table()
@@ -81,9 +80,9 @@ APA_TEMPLATE_OBJECT <- "mytable"
 # "twoway" and "twoway-ci" both come from apa.2way.table() -- the CI variant is
 # the same builder with a different argument, not a different function.
 #
-# THE KEYS ARE THE SPEC'S `meta$table.type`, WHICH IS NOT ALWAYS THE OBJECT'S
-# `$table.type`. For `apa.aov.table()` the object says "aovstats" and the spec
-# says "aov" -- five of the six builders agree and that one does not. An
+# THE KEYS ARE THE SPEC'S `meta$table.type`, NOT THE OBJECT'S `$table.type`.
+# The two now agree for every builder, but they are different fields and once
+# disagreed (apa.aov.table()'s object said "aovstats", its spec "aov"). An
 # earlier draft of this map keyed on the OBJECT field, its guard test read the
 # OBJECT field too, the test passed, and `R CMD check` then died running the
 # `apa.aov.table` example. **The test agreed with itself and not with the
@@ -317,10 +316,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
                                            "revealjs")) {
   # match.arg() both supplies the default ("pdf", the format the rest of this
   # function's own documentation and every YAML example uses) and validates
-  # the value. "revealjs" was refused through the rest of Phase 1.6a and most
-  # of 1.6b (D30: apa.quarto.revealjs() did not exist yet, and was called
-  # apa.quarto.slide() with entry key "slide" before Phase 1.9 Task 2's
-  # rename, D91) and is accepted as of Task 8, now that it does.
+  # the value.
   target <- match.arg(target)
   is_revealjs <- identical(target, "revealjs")
 
@@ -332,21 +328,19 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
     label <- apa_quarto_label(x_expr)
   }
   spec <- as_spec(x)
-  # NO TITLE LINE AND NO apa-note LINE, and nothing computes either
-  # (D16-D22, D118). `cap <- apa_caption(spec)` stood here to fill a
-  # `#| tbl-cap:` line; that line is gone, so the caption is no longer
-  # computed at all. apa_caption() remains exported and documented -- it is
-  # how an author gets the generated wording when they DO want to start from
-  # it -- it is simply not called on this path. The entry point
-  # (apa.quarto.pdf()/docx()/html()) now supplies the note from the spec by
-  # default, so a printed apa-note
-  # line would only ever repeat what the table already provides -- exactly
-  # the retyping this slice exists to remove (see the design doc's "Why").
-  # An author who wants a different note adds #| apa-note: (or note = in the
-  # call) by hand; nothing here needs to suggest the wording.
+  # NO TITLE LINE AND NO apa-note LINE, and nothing computes either: there
+  # is no `#| tbl-cap:` line to fill, so the caption is not computed on this
+  # path at all. apa_caption() remains exported and documented -- it is how
+  # an author gets the generated wording when they DO want to start from
+  # it -- it is simply not called here. The entry point
+  # (apa.quarto.pdf()/docx()/html()) supplies the title and note from the
+  # spec by default, so a printed tbl-cap or apa-note line would only ever
+  # repeat what the table already provides, retyped by hand. An author who
+  # wants a different note adds #| apa-note: (or note = in the call) by
+  # hand; nothing here needs to suggest the wording.
   #
-  # THE SAME DECISION THE CHUNK WILL MAKE, from the same function -- and,
-  # since the fix below, with the same INPUT: spec$landscape is passed as
+  # THE SAME DECISION THE CHUNK WILL MAKE, from the same function, with the
+  # same INPUT: spec$landscape is passed as
   # `landscape` explicitly. There is no chunk yet at template time (the
   # document does not exist), so apa_landscape_request()'s chunk-option leg
   # is not needed here -- spec$landscape already IS what that function would
@@ -354,24 +348,23 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
   # OVERRIDES the argument; before the chunk exists, the argument is the
   # whole answer.
   #
-  # This used to measure with flextable -- sum(flextable_dim(...)$widths) --
-  # and rotate when that exceeded 6.5 in. Once the LaTeX entry point started
-  # laying tables out as native LaTeX, the two measurements described
-  # different tables and the template began giving wrong advice: for
+  # Do not measure with flextable here (sum(flextable_dim(...)$widths)): the
+  # LaTeX entry point lays tables out as native LaTeX, so the two
+  # measurements describe different tables and the advice goes wrong. For
   # apa.cor.table(attitude) flextable reports 8.6 in and the native model
-  # 5.29 in, so the template printed "too wide for a portrait PDF page" and
-  # wrapped a table that fits upright in ::: {.landscape} -- rendered, and
-  # the table landed on a rotated page it did not need. Two measurements of
-  # one fact is the defect D5 designs out; there is now one.
+  # 5.29 in, so a flextable-based template prints "too wide for a portrait
+  # PDF page" and wraps a table that fits upright in ::: {.landscape} -- and
+  # the table lands on a rotated page it does not need. One fact, one
+  # measurement.
   #
   # suppressWarnings: the ladder's warnings belong in the RENDERED DRAFT,
-  # where the author sees them beside the table, not in the console output of
+  # where the user sees them beside the table, not in the console output of
   # a function whose job is to print a chunk to copy.
   #
   # can_execute_rotation is FALSE only for target = "html": apaquarto's
   # rotation machinery (apatablelandscape.lua for docx, apafloatlatex.lua's
-  # landscapewrap for PDF) is never invoked on an HTML render (D24's own
-  # gating, apa_quarto_docx_target()/apa_landscape_executable()), so telling
+  # landscapewrap for PDF) is never invoked on an HTML render (gated by
+  # apa_quarto_docx_target()/apa_landscape_executable()), so telling
   # an HTML author their table "will be placed on a rotated page" would be
   # advice the render cannot carry out. Pricing against can_execute_rotation
   # = FALSE instead lets the ladder answer honestly: such a table shrinks
@@ -384,30 +377,29 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
   # table to the slide by an entirely different, already-automatic model
   # (R/quarto-slide.R's height/width constraints), so there is no width
   # figure here that would mean anything to print, and nothing to rotate.
-  # WHY is the table rotating (or not)? -- fix round 2. The paragraph below
-  # this block used to have one wording, written for the MEASURED case (an
-  # NA landscape, too wide upright). Once the ladder started seeing the
-  # actual `landscape` argument (this fix's own earlier change), the same
-  # wording became reachable for a table the AUTHOR forced onto a rotated
-  # page with landscape = TRUE -- and "too wide"/"automatically"/"nothing to
-  # add" are each false there: the table may fit upright easily, the
-  # rotation happened because of the argument the author typed, not
-  # measurement, and removing that argument would change the result. A
-  # third case -- landscape = FALSE forbidding a rotation the table would
-  # otherwise have gotten -- says nothing at all today, which is not false
-  # but leaves the shrink silent. `landscape_requested` / `landscape_forbidden`
-  # read spec$landscape (the same tri-state already passed into
-  # apa_layout_decide() above) to tell the three cases apart; `shrunk_upright`
-  # reads decision$size against the ladder's own default (apa_size_for_width()
-  # only returns something smaller than APA_QUARTO_DEFAULT_SIZE when the
-  # table did not fit its budget at full size) -- no second measurement.
+  #
+  # WHY is the table rotating (or not)? The advice printed below has three
+  # cases and one wording cannot serve them all. The MEASURED wording (an NA
+  # landscape, too wide upright) says "too wide"/"automatically"/"nothing to
+  # add", and each is false for a table the user forced onto a rotated page
+  # with landscape = TRUE: the table may fit upright easily, the rotation
+  # happens because of the argument the user typed, not measurement, and
+  # removing that argument would change the result. The third case --
+  # landscape = FALSE forbidding a rotation the table would otherwise have
+  # gotten -- reports the shrink instead. `landscape_requested` /
+  # `landscape_forbidden` read spec$landscape (the same tri-state already
+  # passed into apa_layout_decide() above) to tell the three cases apart;
+  # `shrunk_upright` reads decision$size against the ladder's own default
+  # (apa_size_for_width() only returns something smaller than
+  # APA_QUARTO_DEFAULT_SIZE when the table did not fit its budget at full
+  # size) -- no second measurement.
   if (is_revealjs) {
     needs_landscape <- FALSE
     landscape_requested <- FALSE
     shrunk_upright <- FALSE
   } else {
-    # col_overhead_in matches the real render's own pricing (B6, Phase
-    # 1.12): a docx table is judged with Word's fixed cell padding counted,
+    # col_overhead_in matches the real render's own pricing: a docx table
+    # is judged with Word's fixed cell padding counted,
     # so the advice printed here has to price it the same way or it
     # describes a decision the render will not make.
     decision <- suppressWarnings(apa_layout_decide(
@@ -420,29 +412,27 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
     landscape_value <- apa_landscape_value(spec$landscape)
     landscape_requested <- needs_landscape && isTRUE(landscape_value)
     landscape_forbidden <- identical(landscape_value, FALSE)
-    # target != "html": fix round 3. apa_layout_decide()'s SHRINK math is not
+    # target != "html": apa_layout_decide()'s SHRINK math is not
     # gated by can_execute_rotation the way its ROTATE math is -- it shrinks
     # decision$size below APA_QUARTO_DEFAULT_SIZE for a wide table whether or
     # not html is the target, because shrinking is not the thing
     # can_execute_rotation was written to gate. Left ungated here, this
-    # branch printed "does not fit an upright (portrait) PDF page ... stays
-    # upright and is printed at N pt instead" on an HTML render, where D37
-    # means neither clause is true: nothing rotates AND nothing shrinks on
-    # HTML, which has no page to fit. needs_landscape and landscape_requested
+    # branch would print "does not fit an upright (portrait) PDF page ...
+    # stays upright and is printed at N pt instead" on an HTML render, where
+    # neither clause is true: nothing rotates AND nothing shrinks on HTML,
+    # which has no page to fit. needs_landscape and landscape_requested
     # above are already safe because they both require decision$rotate,
     # which can_execute_rotation DOES gate.
     shrunk_upright <- !needs_landscape && landscape_forbidden &&
       target != "html" && decision$size < APA_QUARTO_DEFAULT_SIZE
   }
 
-  # ONE display line, whatever the page (D5/D6/D8). The old two-form version
-  # emitted page = "landscape" in exactly the chunks that also got the marker
-  # lines, because the R code in a chunk cannot see the markers around it and
-  # had to be told which page it was on. It no longer has to be told: R
-  # measures the table and asks apaquarto for the page, so there is only one
-  # fact and only one place it is stated.
+  # ONE display line, whatever the page. The R code in a chunk cannot see
+  # any markers around it, and it does not need to be told which page it is
+  # on (no page = "landscape"): R measures the table and asks apaquarto for
+  # the page, so there is only one fact and only one place it is stated.
   #
-  # THE CALL MATCHES THE REQUESTED TARGET (D30, Task 8): the three entry
+  # THE CALL MATCHES THE REQUESTED TARGET: the entry
   # points are forgiving about the ACTUAL render, but the template still has
   # to commit to a name, because it is the one artifact a user reads before
   # ever rendering anything.
@@ -450,10 +440,10 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
                  html = "apa.quarto.html",
                  revealjs = "apa.quarto.revealjs")[[target]]
 
-  # TWO LINES, NOT A PIPE (D104, D108). Build the object, then pass it to a
-  # plain call. The author ruled this from REAL CRAN REJECTIONS, and this is
-  # the site that matters most: every other place the pipe appeared is prose a
-  # reader MIGHT see, while this is code the package HANDS the user to paste.
+  # TWO LINES, NOT A PIPE. Build the object, then pass it to a plain call.
+  # This is deliberate, because of REAL CRAN REJECTIONS, and this is the site
+  # that matters most: prose is something a reader MIGHT see, while this is
+  # code the package HANDS the user to paste.
   #
   # TWO CASES, because substitute() above captured the CALLER'S EXPRESSION:
   #
@@ -465,11 +455,11 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
   #   apa.quarto.template(my_table)  -> only the NAME is known. The build line
   #     is a COMMENTED placeholder sitting exactly where the real line goes.
   #
-  # WHY A COMMENT RATHER THAN THE PROSE SENTENCE THIS REPLACES. The old
-  # version printed "Remember to include the code that creates `my_table`..."
-  # in a paragraph above the block. A novice copies the block, runs it, and
-  # meets the failure having already scrolled past the explanation -- the
-  # prose and the code were separated at the moment the prose mattered.
+  # WHY A COMMENT RATHER THAN A PROSE SENTENCE ("Remember to include the
+  # code that creates `my_table`...") in a paragraph above the block. A
+  # novice copies the block, runs it, and meets the failure having already
+  # scrolled past the explanation -- the prose and the code are separated at
+  # the moment the prose matters.
   #
   # BOTH CASES PRINT THE SAME SHAPE, which is the point: the thing being
   # taught is "build on one line, pass on the next", and a demonstrator that
@@ -484,35 +474,33 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
   }
   call_line <- sprintf("%s(%s)", target_fn, obj)
 
-  # NO '#| apa-longtable: true', AND NOTHING REPLACES IT (D3). That line asked
+  # NO '#| apa-longtable: true', AND NOTHING REPLACES IT. That line asked
   # apaquarto to skip the float wrapper, because a longtable sealed in a
   # \begin{table} cannot page-break and loses every row past the bottom in
   # silence. apaTables now always emits a splittable longtable grid, and the
   # bundled apaquarto reads that off the LaTeX itself and skips the wrapper
   # with no attribute at all -- so the line is a fact about the table that the
-  # extension already knows, and one the author would have had to keep true by
-  # hand as a table grew. A document that still carries the line renders
-  # exactly as before; it is simply no longer something to teach.
+  # extension already knows, and one a user would have to keep true by hand
+  # as a table grew. A document that still carries the line renders exactly
+  # as before; it is simply not something to teach.
   #
   # message: false keeps package-loading chatter out of the document;
   # warning: true (knitr's default, stated deliberately) lets apaTables
   # tell you in the draft if a table cannot fit.
   #
-  # NO `#| tbl-cap:` LINE (D118). It used to be printed as an "editable
-  # starting point" carrying the title apaTables had just generated -- which
-  # is the reader typing back into their document the very text the package
-  # writes for them, and the author ruled that out for every shipped example
-  # (D117: "example materials should not have hand typed captions - they
-  # should be generated by apaTables"). This chunk is not an example, it is
-  # the artifact the package HANDS people to paste, so leaving it here would
-  # have made the package the last remaining source of the habit its own
-  # examples had just stopped teaching. A typed title also silently stops
+  # NO `#| tbl-cap:` LINE. Printing the title apaTables just generated as an
+  # "editable starting point" would have the reader type back into their
+  # document the very text the package writes for them -- and deliberately,
+  # no shipped example hand-types a caption either: captions are generated
+  # by apaTables. This chunk is the artifact the package HANDS people to
+  # paste, so printing the line here would make the package the source of
+  # the habit its own examples avoid. A typed title also silently stops
   # matching the moment the analysis above it changes; a generated one is
   # re-derived on every render.
   #
-  # SLIDE STILL GETS NO `#| label:` EITHER. The label exists only to build a
+  # SLIDE GETS NO `#| label:` EITHER. The label exists only to build a
   # float -- something for Quarto to number -- and a deck has no float at all
-  # (D46/D48; see apa.quarto.revealjs()'s own help page). Printing it would
+  # (see apa.quarto.revealjs()'s own help page). Printing it would
   # ask an author to maintain a setting Quarto never reads on this
   # destination.
   lines <- if (is_revealjs) {
@@ -549,7 +537,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
     # points supply both automatically and tbl-cap/apa-note override them;
     # apa.quarto.revealjs() supplies NEITHER unless title = TRUE / note = TRUE
     # is passed, so there is no generated wording to describe as "editable"
-    # here (D27, and apa.quarto.revealjs()'s own help page).
+    # here (see apa.quarto.revealjs()'s own help page).
     cat(sprintf(paste0(
       "\nThis chunk shows the table alone, with no title or note: a slide ",
       "deck has no\nlist of tables to number against, so %s() never adds ",
@@ -557,7 +545,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
       "Pass title = TRUE and/or\nnote = TRUE to add the ones apaTables ",
       "generated, or a string for your own.\n"), target_fn))
   } else {
-    # NEITHER a title line NOR a note line is printed (D118, D16-D22): the
+    # NEITHER a title line NOR a note line is printed: the
     # entry point supplies both from the table, so any line here could only
     # repeat what the package already writes. The message says the title and
     # note are coming and how to override them, rather than handing over
@@ -570,12 +558,11 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
       "or an #| apa-note line for the note (or pass title = / note = to it).\n"),
       target_fn))
   }
-  # THE "Remember to include the code that creates ..." SENTENCE STOOD HERE
-  # AND IS DELETED (D108). It described, in a paragraph above the block, the
-  # thing the chunk's own commented build line now SHOWS in the place the
-  # missing line goes. Keeping both would state one fact twice -- the shape
-  # this project has found a Critical of in four consecutive phases.
-  # Computed ONCE, not once per branch below (fix round 3): the three
+  # No "Remember to include the code that creates ..." sentence: the chunk's
+  # own commented build line SHOWS that, in the place the missing line goes,
+  # and saying it here too would state one fact twice, inviting the copies
+  # to drift.
+  # Computed ONCE, not once per branch below: the three
   # branches only fire when target is "pdf" or "docx" -- needs_landscape and
   # shrunk_upright both require can_execute_rotation / the explicit
   # target != "html" check above, and is_revealjs forces both FALSE -- so this
@@ -583,8 +570,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
   # explicit match with no default-to-"PDF" precisely so that stays true: a
   # target this switch does not recognise raises an error naming the target,
   # rather than silently mislabelling the page the way `if (target == "docx")
-  # "Word" else "PDF"` did for every OTHER target, including "html" once
-  # shrunk_upright could reach it.
+  # "Word" else "PDF"` would for every OTHER target, including "html".
   if (needs_landscape || shrunk_upright) {
     page_word <- switch(target,
       pdf = "PDF", docx = "Word",
@@ -612,8 +598,8 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
     # FORBIDDEN: spec$landscape is FALSE on a table that would otherwise
     # have rotated. It stays upright, at a smaller size, rather than losing
     # a column. Reached only for pdf/docx (see the target != "html" gate
-    # above) -- HTML gets neither this nor any other landscape advice, per
-    # D37: no page there, so nothing rotates and nothing shrinks.
+    # above) -- HTML gets neither this nor any other landscape advice: it
+    # has no page, so nothing rotates and nothing shrinks.
     cat(sprintf(paste0(
       "\nThis table does not fit an upright (portrait) %s page at full ",
       "size. Because\nlandscape = FALSE was passed to the call that built ",
@@ -635,7 +621,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
 # Only a bare name can be used: a pipeline or a function call is not a name
 # and has no natural chunk name, so those fall back to the fixed
 # "tbl-mytable" (the printed chunk shows the name, so a second such chunk is
-# visibly the author's to rename).
+# visibly the user's to rename).
 #
 # Anything outside letters and digits becomes a hyphen. That matters for the
 # dots R users put in object names: "@tbl-my.table" in the document text
@@ -649,18 +635,17 @@ apa_quarto_label <- function(expr) {
   paste0("tbl-", nm)
 }
 
-# The height model stood here: APA_TABLE_LINE_PT, APA_TABLE_ROW_PT,
-# APA_CHARS_PER_INCH, apa_rt_nlines(), apa_table_height() and
-# apa_quarto_longtable_report().
-# It existed to answer one question -- will this table run past the bottom of
-# its page, so that the chunk needs '#| apa-longtable: true'? -- and D3 removed
-# the question rather than the answer. apaTables now always emits a splittable
-# longtable grid, and the bundled apaquarto detects one and declines to seal it
-# in a float, so no height has to be predicted for a row to survive. Height is
-# now cosmetic (\Needspace* decides whether a short table moves down whole),
-# and its argument is a hint: too large moves a table that did not need moving,
-# too small lets it split, and neither loses a row. A model that had to be
-# RIGHT became a model nothing reads.
+# NO HEIGHT MODEL, deliberately -- do not add one (apa_table_height() and
+# its helpers are gone). It would answer one question -- will this table run
+# past the bottom of its page, so that the chunk needs
+# '#| apa-longtable: true'? -- and that question no longer exists. apaTables
+# always emits a splittable longtable grid, and the bundled apaquarto detects
+# one and declines to seal it in a float, so no height has to be predicted
+# for a row to survive. Height is cosmetic (\Needspace* decides whether a
+# short table moves down whole), and its argument is a hint: too large moves
+# a table that did not need moving, too small lets it split, and neither
+# loses a row. A height model would have to be RIGHT, and nothing would read
+# it.
 
 
 #' Knit-print method for apa_table_spec (displays the table in a Quarto chunk)
@@ -673,7 +658,7 @@ apa_quarto_label <- function(expr) {
 #' for a table too wide to stand upright. "Rendering" the document turns it
 #' into the finished Word, PDF, or HTML file; this method supplies the table's
 #' contribution to that finished file. There is no function name here for a
-#' name/target mismatch message to name (D30's guidance is a property of the
+#' name/target mismatch message to name (that guidance is a property of the
 #' three named entry points, not of this automatic path), so none is ever
 #' printed for a bare table.
 #'
@@ -687,11 +672,10 @@ knit_print.apa_table_spec <- function(x, ...) {
   apa_quarto_knit_print(x, ...)
 }
 
-# apa_quarto_render() (R/quarto-table.R) already returns a knit_asis object
-# on every path since Task 8 (D14 is complete: the interim flextable branch
-# is gone), so there is no longer a flextable case to hand to
-# knitr::knit_print() here -- the `...` is accepted for interface stability
-# but apa_quarto_render() does not use it.
+# apa_quarto_render() (R/quarto-table.R) returns a knit_asis object on every
+# path, so there is no flextable case to hand to knitr::knit_print() here --
+# the `...` is accepted for interface stability but apa_quarto_render() does
+# not use it.
 apa_quarto_knit_print <- function(x, ...) {
   apa_quarto_render(x)
 }
@@ -714,30 +698,17 @@ rt_to_markdown <- function(rt) {
   paste0(vapply(runs, one, character(1)), collapse = "")
 }
 
-# apa_restore_emph() USED TO live here: flextable's LaTeX dependencies load
-# ulem WITHOUT [normalem], which turns \emph into underlining document-wide,
-# so apaquarto's italic "Note." and any *italics* in apa-note rendered
-# underlined in PDF wherever apa_flextable() reached a LaTeX destination.
-#
-# REMOVED in Task 9 (Phase 1.6a), MEASURED rather than assumed. Task 8 had
-# already retired apa.quarto.table(), the last PACKAGE call site that could
-# reach apa_flextable() from a LaTeX render, but nine .qmd test fixtures
-# still called apaTables:::apa_flextable() directly inside a `format:
-# apaquarto-pdf` document, entirely outside apa.save() and the
-# apa_direct_output() guard it used to call there -- so this function was NOT
-# yet dead when Task 9 started. Rendering one of those fixtures through real
-# xelatex, with and without this call, confirmed it live: the rendered
-# "Note." came back correctly italic with the call in place, and UPRIGHT AND
-# UNDERLINED with it removed (rasterized at 300 dpi; see the task-9 report).
-# Task 9 then migrated all nine fixtures to apa.quarto.pdf() (the native
-# LaTeX emitter), re-rendered, and confirmed no `ulem` package is loaded
-# anywhere in the output any more -- at which point this function's body
-# could never run again (apa_flextable() is now reachable only from
-# apa.save(), which used to run it inside apa_direct_output(), and from
-# direct unit-test calls with no knit session in progress), so it was
-# deleted. test-quarto-table.R asserts it no longer exists.
-# apa_direct_output() itself was later measured active zero times (twice,
-# nine days apart) and removed as vestigial in Phase 1.11.
+# NO apa_restore_emph() HERE, deliberately. flextable's LaTeX dependencies
+# load ulem WITHOUT [normalem], which turns \emph into underlining
+# document-wide, so apaquarto's italic "Note." and any *italics* in apa-note
+# render UPRIGHT AND UNDERLINED in PDF wherever apa_flextable() reaches a
+# LaTeX destination (measured, rasterized at 300 dpi). Nothing does: every
+# LaTeX render goes through apa.quarto.pdf()'s native LaTeX emitter, no
+# `ulem` package is loaded anywhere in its output, and apa_flextable() is
+# reachable only from apa.save() and from direct unit-test calls with no
+# knit session in progress. test-quarto-table.R asserts the function no
+# longer exists. Routing a LaTeX render through apa_flextable() again would
+# bring the underlining back.
 
 #' Knit-print method for apa_table builder results (displays the table in a chunk)
 #'

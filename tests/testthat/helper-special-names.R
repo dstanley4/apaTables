@@ -2,7 +2,7 @@
 # survive one. It lives in a helper rather than in one test file because three
 # files now use it -- the spec/.docx sweep
 # (test-special-characters-in-names.R), the LaTeX emitter sweep
-# (test-render-latex.R) and the end-to-end render (test-phase2-acceptance.R) --
+# (test-render-latex.R) and the end-to-end render (test-render-acceptance.R) --
 # and a second copy would drift the moment one of them gained a character.
 #
 # WHAT A COLUMN NAME CAN ACTUALLY HOLD, MEASURED -- this is what bounds the
@@ -30,7 +30,7 @@
 #
 # The last two can complete with exit status 0 and no warning at all, so for
 # those a successful render is not evidence: the name itself has to be found in
-# the rendered PDF's text. test-phase2-acceptance.R is where that is done.
+# the rendered PDF's text. test-render-acceptance.R is where that is done.
 #
 # A name containing a NEWLINE lands in a first-column cell, which is where the
 # emitter's blank-line guard lives (apa_latex_collapse_newlines): a single

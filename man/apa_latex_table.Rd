@@ -18,7 +18,7 @@ a length-1 character string: one \code{longtable} environment.
 Writes the GRID and nothing else: one complete \code{longtable}
 environment, with no caption, no label, no note and no surrounding float.
 }
-\section{Why there is no caption (D9, measured)}{
+\section{Why there is no caption (measured)}{
 
 Quarto's \code{main.lua} rewrites any raw-LaTeX \code{longtable} that
 contains no \code{\\caption} into \code{longtable*}, and every later fixup
@@ -40,7 +40,7 @@ and note around it.
 
 \code{\\begin{longtable}} with the column spec carrying the size and the
 inter-column spacing (never a \code{\\setlength} in front of the
-environment -- see \code{apa_latex_colspec()} and D10), then the strut fix,
+environment -- see \code{apa_latex_colspec()}), then the strut fix,
 then \code{\\toprule} / header rows / \code{\\midrule} twice, for
 \code{\\endfirsthead} and \code{\\endhead}. \code{\\endfoot} draws NOTHING --
 no rule may appear at a page break in the middle of a table -- but it is not

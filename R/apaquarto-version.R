@@ -13,11 +13,10 @@
 # strips it silently). Reading the version out of the project's own copy is
 # what lets those messages say something true.
 #
-# The feature-minimum constants that used to head this file
-# (APA_APAQUARTO_MIN_LONGTABLE and its siblings) went with the render-time
-# warnings they gated: Phase 2's bundled extension decides the longtable and
-# the rotation itself, from the LaTeX it is handed, so there is no longer a
-# setting a copy can silently ignore.
+# There are no feature-minimum version constants and no render-time version
+# warnings: the bundled extension decides the longtable and the rotation
+# itself, from the LaTeX it is handed, so there is no setting a copy can
+# silently ignore.
 
 # Directories to search for an _extensions folder, nearest first.
 #

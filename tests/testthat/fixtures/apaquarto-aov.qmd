@@ -12,9 +12,7 @@ format: apaquarto-pdf
 
 ```{r}
 #| include: false
-pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
-                             "/Users/dstanley/os/RDevelopment/apaTables"),
-                  quiet = TRUE)
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT"), quiet = TRUE)
 op <- options(contrasts = c("contr.helmert", "contr.poly"))
 lm_output <- lm(libido ~ dose, data = viagra)
 aov_tbl <- apa.aov.table(lm_output, table.number = 4)

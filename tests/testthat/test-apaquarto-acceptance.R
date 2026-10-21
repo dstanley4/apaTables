@@ -1,8 +1,8 @@
 # The acceptance matrix for the bundled apaquarto extension.
 #
-# Three requirements are binding on this phase of work, and this file is the
-# only thing that decides whether they hold. Each is checked by reading values
-# back out of a real rendered manuscript, never by inspecting the source:
+# Three requirements are binding, and this file is the only thing that
+# decides whether they hold. Each is checked by reading values back out of a
+# real rendered manuscript, never by inspecting the source:
 #
 #   R1  Both placements work -- tables floating in the text (floatsintext) AND
 #       tables collected at the end (apaquarto's default, apa7 endfloat).
@@ -54,10 +54,10 @@ apa_skip_if_library_stale()
 # document -- every cell contains a table that spans pages and three that do
 # not -- because the numbering defect only appears when shapes are mixed.
 #
-# Landscape is asserted for PDF only: landscape in .docx is a known upstream
-# defect (Quarto emits A4 pages inside a Letter manuscript with a bare sectPr
-# that strips the running head, page numbers and double spacing) and belongs to
-# Phase 1.6.
+# Landscape is asserted for PDF only: Quarto's own landscape in .docx is a
+# known upstream defect (it emits A4 pages inside a Letter manuscript with a
+# bare sectPr that strips the running head, page numbers and double spacing),
+# and the bundled replacement for it is checked in test-docx-structure.R.
 cells <- expand.grid(
   placement   = c("end", "intext"),
   orientation = c("portrait", "landscape"),

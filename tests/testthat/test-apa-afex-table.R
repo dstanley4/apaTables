@@ -119,12 +119,12 @@ test_that("apa.afex.table works with mixed design", {
 })
 
 test_that("epsilon is derived from the df, so it agrees with them and never exceeds 1", {
-     # D126. Epsilon is a sphericity correction and CANNOT exceed 1, but the
-     # Huynh-Feldt ESTIMATOR can. apaTables used to read it from
-     # summary()$pval.adjustments, which returns it UNCAPPED (1.0744 for
-     # `looks` here) while afex had already used 1 for the df -- so the table
-     # printed an impossible epsilon next to df that did not incorporate it,
-     # contradicting its own note. It is now DERIVED as corrected df over
+     # Epsilon is a sphericity correction and CANNOT exceed 1, but the
+     # Huynh-Feldt ESTIMATOR can. Do not read it from
+     # summary()$pval.adjustments: that returns it UNCAPPED (1.0744 for
+     # `looks` here) while afex has already used 1 for the df -- so the table
+     # would print an impossible epsilon next to df that do not incorporate
+     # it, contradicting its own note. It is DERIVED as corrected df over
      # uncorrected df, which is the multiplier actually applied.
      skip_if_not_installed("afex")
      skip_if_not_installed("tidyr")

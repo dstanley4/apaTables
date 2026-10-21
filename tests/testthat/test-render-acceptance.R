@@ -1,12 +1,12 @@
-# The Phase 2 acceptance matrix: the native LaTeX emitter, end to end.
+# The acceptance matrix for the native LaTeX emitter, end to end.
 #
-# test-apaquarto-acceptance.R is the Phase 1.5 matrix and still covers the
-# FLEXTABLE path. This file covers the path Phase 2 built -- every table here
-# goes through apa.quarto.pdf(), which measures the table, decides its type
-# size and whether the page turns, and writes the longtable grid itself.
+# test-apaquarto-acceptance.R is the older matrix and still covers the
+# FLEXTABLE path. This file covers the native path -- every table here goes
+# through apa.quarto.pdf(), which measures the table, decides its type size
+# and whether the page turns, and writes the longtable grid itself.
 #
-# The four requirements are the author's, and they are binding. A matrix that
-# is green while any of them is broken is worse than no matrix at all:
+# The four requirements are binding. A matrix that is green while any of them
+# is broken is worse than no matrix at all:
 #
 #   R1  BOTH PLACEMENTS WORK -- tables floating in the text (floatsintext) AND
 #       tables collected at the end of the manuscript (apaquarto's default,
@@ -24,12 +24,12 @@
 #   short    fits, upright, one page      rotates, one page
 #   long     spans pages, upright         SPANS PAGES AND ROTATES
 #
-# The last is the cell Phase 1.5 could not deliver: rotation meant apa7's
-# sidewaystable, a FLOAT, and a longtable cannot live in a float, so a wide and
-# long table with tables collected at the end came out upright, starred, 51 of
-# 60 rows, with its note missing from the PDF entirely -- exit 0, no error, no
-# warning. All four shapes are in every document, because the numbering defect
-# only appears when shapes are MIXED.
+# The last is the hardest cell: if rotation used apa7's sidewaystable, a
+# FLOAT, a longtable could not live in it, and a wide and long table with
+# tables collected at the end would come out upright, starred, 51 of 60
+# rows, with its note missing from the PDF entirely -- exit 0, no error, no
+# warning (measured). All four shapes are in every document, because the
+# numbering defect only appears when shapes are MIXED.
 #
 # THE ORDER OF THE FOUR TABLES IS NOT ARBITRARY: spans, fits, fits, spans. The
 # upstream counter defect latches on the first captioned longtable and then
@@ -37,19 +37,20 @@
 # one shape numbers correctly even with the patch reverted, and a matrix built
 # on one would certify nothing.
 #
-# WATCHED FAILING, against the PRE-PHASE-2 bundle (5.0.18+apaTables.1) with
-# this branch's R: captions read 1, 2, 3 -- the fourth table's caption is not
+# WATCHED FAILING, against an older bundle (5.0.18+apaTables.1) with the
+# current R code: captions read 1, 2, 3 -- the fourth table's caption is not
 # renumbered, it is GONE, because the environment came out starred and a
 # starred longtable carries no caption. The same run lost Td49 and Td50, left
 # the wide tables upright, dropped a note out of the PDF entirely, and exited
-# 0. Full record in the Task 11 report.
+# 0.
 #
 # NOTHING IN THESE DOCUMENTS ASKS FOR WHAT IT IS MEANT TO RECEIVE. There is no
 # `::: {.landscape}` div, no `#| apa-landscape` option and no
 # `#| apa-longtable` option anywhere in the matrix -- asserted of the document
-# text before it is rendered. That is not tidiness. Task 8 measured that with
-# `#| apa-longtable: true` present, EVERY cell of the Phase 1.5 matrix stayed
-# green while the interim landscape guard was restored by hand, because the Lua
+# text before it is rendered. That is not tidiness. With
+# `#| apa-longtable: true` present, EVERY cell of the older matrix stayed
+# green while an interim landscape guard was restored by hand (measured),
+# because the Lua
 # branch reads `apa-longtable == "true" OR haslongtable(float)` and the option
 # satisfies the first disjunct before the detection under test is ever reached.
 # The option is still supported, and there is a cell below that uses it -- but
@@ -58,8 +59,8 @@
 # HOW EACH THING IS DECIDED:
 #
 #   rows        DISTINCT MARKER SETS, compared with setdiff in BOTH
-#               directions, never a tally -- a tally read 37 of 40 during the
-#               spikes and looked like data loss that was not there.
+#               directions, never a tally -- a tally once read 37 of 40 and
+#               looked like data loss that was not there.
 #   rotation    by RASTERIZING the page. `strings file.pdf | grep /Rotate`
 #               returned 0 on a genuinely rotated document and pdfinfo's
 #               per-page report was no better.
@@ -81,7 +82,7 @@
 #               fail; it silently runs into the margin, and `Overfull \hbox` is
 #               the only thing that says so.
 #
-# A SUCCESSFUL RENDER PROVES NOTHING. Measured this phase: a starred
+# A SUCCESSFUL RENDER PROVES NOTHING. Measured: a starred
 # environment dropped 15 of 60 rows in one document and 38 of 60 in another,
 # the page still correctly rotated, both exiting 0 with no warning. Every
 # assertion here is about content.
@@ -118,13 +119,13 @@ apa_skip_if_library_stale()
 #   4 columns of cells -> 3.133 in   fits the 6.5 in upright text block
 #  10 columns of cells -> 7.217 in   past it, inside the 9 in rotated one
 # so "narrow" and "wide" here mean what the ladder decides, and the wide ones
-# are in the branch D7 exists for: rotate, and stay at 10 pt.
+# are in the ladder's rotate branch: rotate, and stay at 10 pt.
 #
 # EVERY TABLE HAS ITS OWN COLUMN-HEADING PREFIX as well as its own row prefix,
-# and that is not cosmetic. Fix round 1: the heading check used to look for one
-# shared "Bb01..BbN" across the whole document, so it could only ever see
-# document-wide heading loss -- deleting a heading from the narrow tables left
-# it TRUE, because the wide table still carried the same string. A per-table
+# and that is not cosmetic. A heading check that looks for one shared
+# "Bb01..BbN" across the whole document can only ever see document-wide
+# heading loss -- deleting a heading from the narrow tables leaves it TRUE,
+# because the wide table still carries the same string. A per-table
 # prefix makes the heading check exactly the set comparison the row check is,
 # and it fails when ONE table loses a heading.
 p2_shapes <- list(
@@ -157,8 +158,8 @@ p2_setup <- paste0(
 p2_yaml <- function(fmt, opts) {
   paste0(
     "---\n",
-    "title: \"A Phase 2 Acceptance Manuscript\"\n",
-    "shorttitle: \"Phase 2 Acceptance\"\n",
+    "title: \"A Render Acceptance Manuscript\"\n",
+    "shorttitle: \"Render Acceptance\"\n",
     "author:\n  - name: Test Author\n    corresponding: true\n",
     "    email: test@example.org\n    affiliations:\n",
     "      - name: Test University\n",
@@ -176,7 +177,7 @@ p2_qmd <- function(placement, format) {
   opts <- c(if (identical(format, "pdf")) c("keep-tex: true", "latex-clean: false"),
             if (identical(placement, "intext")) "floatsintext: true")
 
-  # THE CALL MATCHES THE RENDER TARGET, deliberately (Task 8, D30): a
+  # THE CALL MATCHES THE RENDER TARGET, deliberately: a
   # docx cell calling apa.quarto.pdf() would still produce a correct table
   # (the entry points are forgiving), but it would ALSO fire the
   # name/target mismatch message into the rendered document -- and R4 is
@@ -270,7 +271,7 @@ for (i in seq_len(nrow(cells))) {
   cell <- cells[i, ]
   label <- paste(cell$format, cell$placement, sep = "-")
 
-  test_that(paste("phase 2 acceptance:", label), {
+  test_that(paste("render acceptance:", label), {
     qmd <- p2_qmd(cell$placement, cell$format)
 
     # The document must not be able to ask for what it is meant to receive.
@@ -374,15 +375,15 @@ for (i in seq_len(nrow(cells))) {
       for (tf in tex_files) {
         tex <- readLines(tf, warn = FALSE)
         where <- paste(label, basename(tf))
-        # D9: unstarred. Quarto rewrites a captionless raw longtable to
+        # Unstarred. Quarto rewrites a captionless raw longtable to
         # longtable*, which every later longtable fixup is blind to and which
         # silently loses rows.
         expect_equal(sum(grepl("\\begin{longtable}", tex, fixed = TRUE)), 4L,
                      info = where)
         expect_false(any(grepl("\\begin{longtable*}", tex, fixed = TRUE)),
                      info = paste(where, "-- an environment came out starred"))
-        # A longtable cannot live in a float. sidewaystable is a float, and is
-        # what Phase 2 replaced.
+        # A longtable cannot live in a float, and sidewaystable is a float:
+        # rotation must come from the landscape wrapper instead.
         expect_false(any(grepl("\\begin{table}", tex, fixed = TRUE)),
                      info = paste(where, "-- a longtable is inside a float"))
         expect_false(any(grepl("sidewaystable", tex, fixed = TRUE)), info = where)
@@ -484,8 +485,8 @@ for (i in seq_len(nrow(cells))) {
 #     apa-longtable == "true"  OR  haslongtable(float)
 #
 # so the option satisfies the FIRST disjunct and the detection -- the thing the
-# removed interim guard used to stand in front of -- is never reached. Measured
-# in Task 8: with the guard restored by hand AND the option present, this
+# removed interim guard used to stand in front of -- is never reached.
+# Measured: with the guard restored by hand AND the option present, this
 # document renders 60 of 60 rows, unstarred, rotated, indistinguishable from
 # correct. With the option gone and the guard restored it drops to 22 of 60,
 # 38 rows missing FROM THE MIDDLE, the note absent from the PDF entirely, the
@@ -605,10 +606,9 @@ test_that("the legacy apa-longtable option still renders a correct table", {
 # ---------------------------------------------------------------------------
 # SPECIAL CHARACTERS IN VARIABLE NAMES, THROUGH A REAL RENDER.
 #
-# An underscore in a variable name broke a previous version of apaTables, and
-# until Phase 2 the LaTeX path had no coverage of any of this: one unit
-# assertion on apa_latex_escape("a_b") and nothing carrying a real builder spec
-# through the emitter, let alone through a render.
+# An underscore in a variable name broke a previous version of apaTables. A
+# unit assertion on apa_latex_escape("a_b") is not enough: this carries real
+# builder specs through the emitter and through a render.
 #
 # The names are the shared `tricky_names` (helper-special-names.R) -- all ten
 # LaTeX specials, a non-ASCII letter, a single newline, two consecutive
@@ -637,17 +637,17 @@ p2_special_groups <- split(unname(tricky_names),
 # THIS IS NOT A LOOPHOLE, AND IT WAS MEASURED RATHER THAN ASSUMED. A straight
 # apostrophe typeset by any TeX engine comes out as U+2019, the right single
 # quotation mark: a two-line document containing "it's" and nothing else, run
-# through xelatex, gives "it" + U+2019 + "s" out of pdftotext. It is a property of TeX's
-# ligature table, applies to every LaTeX document ever written, and no escaping
-# decision of apaTables' is involved. Undoing it here keeps this cell about the
-# characters that can LOSE content -- "%" swallowing the rest of a line, "&"
-# shifting cells into the wrong column -- instead of failing on the one
-# character TeX renders more prettily than it was typed.
+# through xelatex, gives "it" + U+2019 + "s" out of pdftotext. It is a property
+# of TeX's ligature table, applies to every LaTeX document ever written, and no
+# escaping decision of apaTables' is involved. Undoing it here keeps this cell
+# about the characters that can LOSE content -- "%" swallowing the rest of a
+# line, "&" shifting cells into the wrong column -- instead of failing on the
+# one character TeX renders more prettily than it was typed.
 #
-# It IS a real deviation from verbatim display and it is recorded as one in the
-# Task 11 report: in a PDF the name "it's" reads with U+2019 in place of the apostrophe, while the .docx
-# path keeps the straight apostrophe. Nothing is lost and nothing shifts, so it
-# is a typography question for the author, not a defect this gate blocks on.
+# It IS a real deviation from verbatim display: in a PDF the name "it's" reads
+# with U+2019 in place of the apostrophe, while the .docx path keeps the
+# straight apostrophe. Nothing is lost and nothing shifts, so it is a
+# typography question, not a defect this gate blocks on.
 # The mapping is deliberately narrow -- quotes and dashes only -- so it cannot
 # absorb anything else.
 p2_untypeset <- function(x) {
@@ -716,17 +716,16 @@ for (placement in c("end", "intext")) {
 }
 
 # ---------------------------------------------------------------------------
-# Task 10 (Phase 1.6a): THE OTHER HOLE THE MATRIX ABOVE CANNOT SEE.
+# THE OTHER HOLE THE MATRIX ABOVE CANNOT SEE.
 #
 # Every docx cell of the matrix above sets BOTH `tbl-cap` and `apa-note` on
 # every chunk (the `chunk()` closure inside `p2_qmd()`, a few hundred lines
-# up) -- and so does every one of the 12 pre-existing `apaquarto-*.qmd`
-# fixtures elsewhere in this suite (CLAUDE.md's "COVERAGE THE PLAN MUST NOT
-# LEAN ON" note: 12 of 12 set `tbl-cap`, 11 of 12 set `apa-note`). So nothing
-# in the suite has ever run THIS matrix's own numbering (R2) and note-
+# up) -- and so do the `apaquarto-*.qmd` fixtures elsewhere in this suite
+# (every one sets `tbl-cap`, nearly every one `apa-note`). Without this cell
+# nothing in the suite would run THIS matrix's own numbering (R2) and note-
 # adjacency (R3b) assertions -- the ones that specifically exist to catch a
 # numbering counter defect or a stranded note -- against a docx table whose
-# title and note are the AUTOMATIC ones Task 7 built (D-series), rather than
+# title and note are the AUTOMATIC ones generated from the table, rather than
 # typed chunk-option text. If a future change tied numbering or note
 # placement to the PRESENCE of an explicit tbl-cap/apa-note (a plausible
 # enough bug: the automatic path takes a different code branch through
@@ -751,8 +750,8 @@ for (placement in c("end", "intext")) {
 # `w:pStyle w:val="FigureNote"` style token along with every other tag) and
 # counted between each table's own last row and the next boundary -- the
 # same "exactly one, bracketed on both sides" technique
-# test-docx-structure.R's rotated-note-position test (Task 7 fix round 1)
-# uses for the same reason: a plain text search misses text split across
+# test-docx-structure.R's rotated-note-position test uses for the same
+# reason: a plain text search misses text split across
 # run boundaries, but a style token never is.
 p2_qmd_notitle <- function(placement) {
   opts <- c(if (identical(placement, "intext")) "floatsintext: true")
@@ -780,7 +779,7 @@ p2_qmd_notitle <- function(placement) {
 for (placement in c("end", "intext")) {
   label <- paste("docx-notitle", placement, sep = "-")
 
-  test_that(paste("phase 2 acceptance, tbl-cap/apa-note ABSENT:", label), {
+  test_that(paste("render acceptance, tbl-cap/apa-note ABSENT:", label), {
     qmd <- p2_qmd_notitle(placement)
     expect_false(grepl("tbl-cap", qmd, fixed = TRUE))
     expect_false(grepl("apa-note", qmd, fixed = TRUE))

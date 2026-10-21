@@ -1,9 +1,6 @@
-# Phase 1.7 acceptance, apa.save() half. D61: this path measures its OWN
-# output -- flextable, 12 pt -- against apa_usable_width(rotate, paper),
-# never the Quarto/LaTeX prediction. D66: this file's bodies were rewritten
-# from the plan's sketch after the widths it assumed were re-measured (see
-# task-4-report.md); the shape and the mutation table survive, the specific
-# numbers do not all match the sketch.
+# Landscape acceptance, apa.save() side. This path measures its OWN output
+# -- flextable, 12 pt -- against apa_usable_width(rotate, paper), never the
+# Quarto/LaTeX prediction. The widths quoted below are measured.
 
 # The FIRST <w:pgSz> in a saved .docx is the table's own section; the LAST is
 # officer's untouched document default (no w:orient attribute at all, so it
@@ -18,7 +15,7 @@ sect_orient <- function(path) {
 }
 
 # The table's own <w:tblGrid>, read as twips (sum) and as a column count --
-# shared by the D7b consequence check below and the paper-differs-contents
+# shared by the shrink-not-clip check below and the paper-differs-contents
 # check at the bottom of this file, rather than defined twice.
 grid_widths <- function(xml) {
      grid <- regmatches(xml, regexpr("<w:tblGrid>.*?</w:tblGrid>", xml, perl = TRUE))
@@ -54,9 +51,9 @@ test_that("apa.save() honours an explicit landscape in both directions", {
      apa.save(f1, tb1)
      expect_equal(sect_orient(f1), "portrait")   # forbidden: shrink, do not rotate
 
-     # D7b's policy consequence, pinned rather than left to hold by accident:
-     # forbidding rotation must still get the table onto the page by
-     # SHRINKING it, never by clipping or dropping a column. Read off the
+     # Pinned rather than left to hold by accident: forbidding rotation must
+     # still get the table onto the page by SHRINKING it, never by clipping
+     # or dropping a column. Read off the
      # rendered .docx, not inferred from the code path.
      xml1 <- apa_docx_document_xml(f1)
      usable1_twips <- apaTables:::apa_usable_width(FALSE, "us") * 1440
@@ -70,19 +67,17 @@ test_that("apa.save() honours an explicit landscape in both directions", {
      expect_equal(sect_orient(f2), "landscape")  # forced on a 2.16 in table
 })
 
-# --- Task 7: the cross-destination matrix ---------------------------------
+# --- The cross-destination matrix ------------------------------------------
 #
-# D66: the plan brief's Step 1 sketch is a set of HYPOTHESES about what a
-# cross-destination test should look like, not a script to transcribe. Two
-# of its three sketched tests already exist, verbatim in substance, once the
-# rest of this file and test-landscape-tristate.R are read:
+# Two cross-destination checks already exist, in substance, in the rest of
+# this file and test-landscape-tristate.R, and are not duplicated here:
 #
-#   - Sketch test 2 ("the argument beats measurement on apa.save()") IS the
-#     existing "apa.save() honours an explicit landscape in both directions"
-#     test above (lines 67-70 of this file): apa.1way.table(..., landscape =
-#     TRUE) forced to "landscape" on a 2.16 in table. Not duplicated here.
-#   - Sketch test 1's PRECEDENCE CLAIM (chunk beats argument) is already
-#     unit-tested in isolation by test-landscape-tristate.R's
+#   - "The argument beats measurement on apa.save()" IS the existing
+#     "apa.save() honours an explicit landscape in both directions" test
+#     above: apa.1way.table(..., landscape = TRUE) forced to "landscape" on
+#     a 2.16 in table.
+#   - The PRECEDENCE CLAIM (chunk beats argument) is already unit-tested in
+#     isolation by test-landscape-tristate.R's
 #     "apa_landscape_request() puts the chunk option above the argument",
 #     in both directions. What is NOT tested anywhere is that the two real
 #     Quarto call sites (R/quarto-table.R:631 and :791) actually pass
@@ -130,7 +125,7 @@ test_that("the chunk option beats the argument at the real Quarto call sites, no
   expect_identical(captured_md, FALSE)      # same precedence, same call shape, Word's own site
 })
 
-test_that("Quarto PDF and Quarto Word reach the SAME rotate decision from the SAME chunk override, because they share one page model (D61) -- unlike apa.save(), which legitimately does not", {
+test_that("Quarto PDF and Quarto Word reach the SAME rotate decision from the SAME chunk override, because they share one page model -- unlike apa.save(), which legitimately does not", {
   # apa.2way.table() with marginals is 3.61 in and fits upright on its own
   # (see test-landscape-tristate.R's "landscape = TRUE rotates a table that
   # does not need it"). Here the CHUNK option (mocked, not the argument)
@@ -155,7 +150,7 @@ test_that("Quarto PDF and Quarto Word reach the SAME rotate decision from the SA
   expect_match(out_md, "apa-table-landscape", fixed = TRUE)   # Word: the div was actually emitted
 })
 
-test_that("the rotation threshold comes from paper, not a literal (D65)", {
+test_that("the rotation threshold comes from paper, not a literal", {
      # A CONSTRUCTED table sized into the 7.27-7.50 in band -- between A4's
      # portrait usable width and US Letter's. No real apaTables table lands
      # there (see helper-landscape.R); band membership is asserted here so a
@@ -175,7 +170,7 @@ test_that("the rotation threshold comes from paper, not a literal (D65)", {
      expect_equal(sect_orient(f_a4), "landscape")
 })
 
-test_that("the ROTATED threshold also comes from paper (D65)", {
+test_that("the ROTATED threshold also comes from paper", {
      # apa.reg.table() with two blocks measures 10.23 in -- inside the
      # rotated-page gap (US 10.00 / A4 10.69 in). Rotated on both papers;
      # shrunk on US (exceeds 10.00), full size on A4 (fits under 10.69). A
@@ -197,19 +192,19 @@ test_that("the ROTATED threshold also comes from paper (D65)", {
 
      # The US copy was shrunk to fit the 10.00 in rotated budget; the A4 copy,
      # under the wider 10.69 in budget, was left at its natural 10.23 in --
-     # the discriminating half of D65's claim that this table's *contents*,
+     # the discriminating half of the claim that this table's *contents*,
      # not just its rotation, differ by paper.
      xml_us <- apa_docx_document_xml(f_us)
      xml_a4 <- apa_docx_document_xml(f_a4)
      expect_lt(grid_widths(xml_us), grid_widths(xml_a4))
 })
 
-test_that("the measured row DIFFERS between destinations, and that is correct (D61) -- not a bug, not a tolerance", {
+test_that("the measured row DIFFERS between destinations, and that is correct -- not a bug, not a tolerance", {
      # apa.cor.table(attitude), no explicit landscape anywhere -- pure
      # measurement, on both destinations. THE SAME RULE (measure this
      # destination's own output against this destination's own page) fires
      # on both sides and legitimately reaches OPPOSITE answers, because the
-     # two destinations do not share a page model (D61): Quarto prices the
+     # two destinations do not share a page model: Quarto prices the
      # LaTeX rendering at 10 pt against a 6.5 in portrait / 9.0 in rotated
      # text block; apa.save() prices its OWN flextable rendering at 12 pt
      # against apa_usable_width(rotate, "us") (7.50 in portrait / 10.00 in
@@ -218,9 +213,7 @@ test_that("the measured row DIFFERS between destinations, and that is correct (D
      #   apa.save(): 8.61 in at 12 pt against 7.50 in -> rotate -> 8.61 in
      #               against 10.00 in rotated budget -> fits -> ROTATED
      # A matrix that forced these to agree would be asserting something
-     # FALSE about the two destinations' independently-correct page models;
-     # see this file's Task 7 block comment above for the sketch this test
-     # replaces and why forcing agreement here would be wrong.
+     # FALSE about the two destinations' independently-correct page models.
      tb   <- apa.cor.table(attitude)
      plan <- apa_display_plan(as_spec(tb))
 

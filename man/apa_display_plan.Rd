@@ -20,7 +20,7 @@ Walks an \code{apa_table_spec} once and produces a plan describing how the
 table should be laid out, with every destination-specific decision left to
 the caller. The plan is consumed by \code{apa_latex_table()} (Quarto PDF,
 the native LaTeX emitter) and by \code{\link{apa_flextable}()} (which now
-writes only Word and HTML, per D14), and will also be consumed by a
+writes only Word and HTML), and will also be consumed by a
 pandoc-markdown emitter -- so it carries only
 structure: column count and alignment codes, header rows (with spans and
 rule ranges expressed as column indices, never as \code{\\cmidrule} or

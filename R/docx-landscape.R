@@ -1,6 +1,6 @@
-# Task 6: the landscape section-break filter's R half.
+# The landscape section-break filter's R half.
 #
-# D31 measured Quarto's own `.landscape` div broken twice over for docx: its
+# Quarto's own `.landscape` div is broken twice over for docx (measured): its
 # portrait closer is a COMPLETELY EMPTY sectPr (so every page before a
 # rotated table loses the running head and page number, not just the
 # rotated page itself), and its rotated page size is hardcoded A4 regardless
@@ -22,8 +22,7 @@
 # never assumed -- if a future reference document ships a different paper
 # (an A4 variant, say) this reads its real page without any code change.
 #
-# WHICH COPY OF apaquarto.docx IS READ (Phase 1.7 Task 5; this used to be a
-# recorded assumption rather than a behaviour). The render does NOT use the
+# WHICH COPY OF apaquarto.docx IS READ. The render does NOT use the
 # installed package's reference document -- it uses the one in the rendering
 # PROJECT's own `_extensions/wjschne/apaquarto/`, the copy
 # `apa.quarto.new()` / `apa.quarto.setup()` puts there and that Quarto
@@ -31,11 +30,11 @@
 # Reading the installed copy instead was identical for every project this
 # package's own tooling sets up, but silently divergent the moment a user
 # edits THEIR copy -- which is supported, and is exactly where an asymmetric
-# margin (a thesis binding edge) lives. D64 makes that divergence matter
-# more, because the rotated section now carries those margins round with the
-# page rather than ignoring them. So apa_docx_reference_sectpr() prefers the
-# project's copy, found by the same upward walk apa.quarto.setup() already
-# uses (apa_quarto_search_dirs(), R/apaquarto-version.R -- Quarto's own
+# margin (a thesis binding edge) lives. That divergence matters more because
+# the rotated section carries those margins round with the page rather than
+# ignoring them. So apa_docx_reference_sectpr() prefers the project's copy,
+# found by the same upward walk apa.quarto.setup() already uses
+# (apa_quarto_search_dirs(), R/apaquarto-version.R -- Quarto's own
 # resolution order), and falls back to system.file() when there is none.
 
 # One numeric attribute off a self-closing OOXML element, e.g. reading "w"
@@ -58,8 +57,8 @@ apa_docx_xml_attr <- function(xml, name) {
 # reference, US Letter; there is no a4paper equivalent for docx the way
 # R/page-geometry.R has one for LaTeX, see this file's banner).
 #
-# Deliberately does NOT return the header/footer relationship IDs -- D31
-# measured those STABLE under pandoc's own docx writer (preserved from the
+# Deliberately does NOT return the header/footer relationship IDs -- they
+# are STABLE under pandoc's own docx writer (measured; preserved from the
 # reference document, new relationships allocated above them: a probe with
 # twelve new relationships left rId8..rId13 untouched), so
 # apatablelandscape.lua hardcodes rId8/rId9/rId12 directly rather than
@@ -134,12 +133,11 @@ apa_docx_project_reference <- function(start = NULL) {
   ""
 }
 
-# WHICH reference document, and whose. Split out of
-# apa_docx_reference_sectpr() (fix round 1, Important 2) so the failure
-# WARNING can name the file it actually tried and give advice that fits it:
-# once the project's own copy is preferred, "reinstall apaTables" is the
-# wrong instruction for the likeliest failure, because the file that would
-# not parse is the user's, not ours.
+# WHICH reference document, and whose. Kept separate from
+# apa_docx_reference_sectpr() so the failure WARNING can name the file it
+# actually tried and give advice that fits it: because the project's own
+# copy is preferred, "reinstall apaTables" is the wrong instruction for the
+# likeliest failure -- the file that would not parse is the user's, not ours.
 #
 # `project` is the whole difference the message turns on, so it is returned
 # as a flag rather than re-derived by comparing paths at the call site.
@@ -164,20 +162,17 @@ apa_docx_reference_sectpr <- function() {
 # page geometry, so the table stays upright rather than being rotated onto
 # a landscape section built from guessed numbers.
 #
-# NAMES THE FILE AND FITS THE ADVICE TO IT (fix round 1, Important 2). Before
-# the project's copy was preferred there was only one candidate, so "its own
-# bundled apaquarto.docx ... reinstall apaTables" was true by construction.
-# It is not any more: the likelier failure now is a project's own copy that
-# has been hand-edited, truncated or half-written, and reinstalling apaTables
-# would not touch it -- apa.quarto.setup() is what restores it. Saying
-# "reinstall apaTables" there would be a false instruction printed into a
-# rendered manuscript, the category this project treats as release-relevant.
+# NAMES THE FILE AND FITS THE ADVICE TO IT. The likelier failure is a
+# project's own copy that has been hand-edited, truncated or half-written,
+# and reinstalling apaTables would not touch it -- apa.quarto.setup() is what
+# restores it. Saying "reinstall apaTables" there would be a false
+# instruction printed into a rendered manuscript; that advice is given only
+# when the file that failed is the installed package's own copy.
 #
-# ONE FLOWING SENTENCE, NO "\n" ANYWHERE (auto-memory
-# `knitr-warning-newline-trap`): knitr only wraps single-line warnings, so an
-# embedded newline pushes the rest of the text off the right edge of a
-# knitted page while pdftotext still reports it -- invisible to the reader
-# AND to a grep-based check.
+# ONE FLOWING SENTENCE, NO "\n" ANYWHERE: knitr only wraps single-line
+# warnings, so an embedded newline pushes the rest of the text off the right
+# edge of a knitted page while pdftotext still reports it -- invisible to
+# the reader AND to a grep-based check.
 apa_warn_no_docx_geometry <- function(ref = apa_docx_reference_path()) {
   where <- if (isTRUE(ref$project)) {
     paste0("the apaquarto reference document this project is using, ",

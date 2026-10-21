@@ -1,7 +1,7 @@
--- apaTables' Word shrink ladder (D38, Route A). apa_quarto_markdown_block()
+-- apaTables' Word table-size ladder. apa_quarto_markdown_block()
 -- (R/quarto-table.R) emits a table at its DEFAULT 10 pt with zero per-cell
 -- markup -- the reference document's "Table" table style already carries
--- 10 pt (D35) -- and for a shrunken table appends an empty sibling marker
+-- 10 pt -- and for any other size appends an empty sibling marker
 -- div immediately after the grid table's own markdown:
 --
 --   ::: {.apa-table-size-9}
@@ -9,66 +9,48 @@
 --
 -- naming the target point size. This filter finds that marker inside the
 -- same float, reads the size, selects the matching cloned table style
--- (Table9/Table8/Table7/Table6, each a clone of "Table" differing only in
+-- (Table6-Table9, Table11, Table12, each a clone of "Table" differing only in
 -- <w:sz>/<w:szCs>) as the Table AST node's custom-style, and removes the
 -- marker div so it leaves no trace in the rendered document.
 --
 -- MUST be a Lua filter operating on the AST, not the markdown-level
 -- `: {custom-style="TableN"}` caption-attribute syntax: that syntax works
 -- under bare pandoc but is SILENTLY DEFEATED by Quarto's own crossref/float
--- pipeline under a real `quarto render` -- measured in the task-5 spike
--- (dev/.../2026-08-03-phase16a-manuscript-emitter-plan/task-5-spike.md).
+-- pipeline under a real `quarto render` (measured).
 --
 -- Registration mirrors docxstyler.lua (post-quarto, docx only).
 --
--- FOUND BY A Pandoc-LEVEL WALK, NOT A FloatRefTarget HANDLER (Task 6 fix
--- round 1, Important -- this was FloatRefTarget-scoped originally, on the
--- reasoning that "a `tbl-` labelled chunk's table lives inside a Quarto
--- FloatRefTarget custom AST node at this stage". That reasoning was correct
--- for a LABELLED chunk but incomplete: apa_quarto_markdown_block() emits
--- the size marker unconditionally, whatever the chunk's label, and Task 6
--- made ROTATION reachable for an unlabelled chunk too (apatablelandscape.lua
--- finds its own marker the same way, for the same reason -- see that file's
--- banner). A FloatRefTarget-only handler here silently does nothing for an
--- unlabelled wide table: it would rotate (Task 6) but keep the "Table"
--- style at 10 pt, leaving an inert `apa-table-size-N` div in the rendered
--- docx -- exactly the defect class this phase has repeatedly found the hard
--- way, just not caught here until it was reachable. MEASURED (fix round 1
--- spike): a `Pandoc`-level walk recurses into a `FloatRefTarget`'s content
--- automatically, so ONE handler now covers both the labelled and
--- unlabelled cases, mirroring apatablelandscape.lua's own resolution of
--- the identical question.
+-- FOUND BY A Pandoc-LEVEL WALK, NOT A FloatRefTarget HANDLER. Only a
+-- `tbl-` labelled chunk's table lives inside a FloatRefTarget at this
+-- stage, but apa_quarto_markdown_block() emits the size marker whatever the
+-- chunk's label (apatablelandscape.lua finds its own marker the same way,
+-- for the same reason -- see that file's banner). A FloatRefTarget-only
+-- handler here silently does nothing for an unlabelled table: a wide one
+-- would rotate but keep the "Table" style at 10 pt, leaving an inert
+-- `apa-table-size-N` div in the rendered docx. MEASURED: a `Pandoc`-level
+-- walk recurses into a `FloatRefTarget`'s content automatically, so ONE
+-- handler covers both the labelled and unlabelled cases.
 --
--- BUT rescoping from FloatRefTarget to a document-wide walk introduced a
--- document-wide, LAST-MARKER-WINS bug of its own (Task 6 fix round 2,
--- CRITICAL) -- see `process_blocks()`'s own comment below for the
--- mechanism and the fix. The walk mechanism named above (recursing into a
--- FloatRefTarget's content) is still exactly right; what changed in round
--- 2 is which NODE TYPE the walk handles (`Blocks`, a whole sibling list at
--- a time, not `Div` and `Table` as two separate document-wide passes).
+-- The walk handles `Blocks` (a whole sibling list at a time), NOT `Div` and
+-- `Table` as two separate document-wide passes -- see `process_blocks()`'s
+-- own comment below for why.
 --
 -- IMPORTANT: this script returns EXACTLY the plain, universal apaquarto
 -- filter shape, `{ { Pandoc = process_pandoc } }`, with no extra keys. A
 -- filter returning a table with a stray non-array key is silently SKIPPED
--- by Quarto's own filter loader (main.lua) -- confirmed the hard way more
--- than once this phase (apatablemeta.lua's own history) -- while bare
+-- by Quarto's own filter loader (main.lua) -- confirmed more than once
+-- (see apatablemeta.lua) -- while bare
 -- `pandoc --lua-filter=` and `pandoc lua` both tolerate the same stray key,
 -- so verifying against either is not verifying; this was checked only
 -- through an end-to-end `quarto render`.
 
--- Phase 1.8: this filter now serves TWO destinations. Word takes its size
--- from a cloned table STYLE (D38); HTML takes it from a wrapper DIV that
--- this filter builds HERE, at post-quarto, after apaquarto's own float
--- collection has already run, paired with a `.apa-table-size > table {
--- font-size: inherit; }` rule in apa.css (D73) -- NOT a style attribute set
--- directly on the Table node, which was MEASURED to be silently discarded
--- by Quarto's HTML pipeline before the page is written (see the D73 comment
--- on the apply step below). This is deliberately NOT the wrapper D68
--- forbade: D68's wrapper sat in the SOURCE MARKDOWN, where the float
--- collector could see it and move the table, and set a plain inherited
--- size that Bootstrap's `.small` rule then took 0.875 of. This div is built
--- after collection, lives inside the float, and its CSS rule targets the
--- table element directly, beating `.small`.
+-- This filter serves TWO destinations. Word takes its size from a cloned
+-- table STYLE; HTML takes it from a wrapper DIV that this filter builds
+-- HERE, at post-quarto, after apaquarto's own float collection has already
+-- run, paired with a `.apa-table-size > table { font-size: inherit; }` rule
+-- in apa.css -- NOT a style attribute set directly on the Table node, which
+-- was MEASURED to be silently discarded by Quarto's HTML pipeline before
+-- the page is written (see the comment on the apply step below).
 --
 -- No early return for other formats: the walk still runs everywhere so that
 -- a marker div is always CONSUMED, never left as dead weight in an output
@@ -78,7 +60,7 @@ local is_html = FORMAT:match("^html") ~= nil
 
 local sizeclass = "^apa%-table%-size%-(%d+)$"
 local sizeattr = "apa-table-size-pt"
--- Phase 1.18 / D114. Mirrors APA_QUARTO_HTML_CLASS in R/quarto-table.R: R
+-- Mirrors APA_QUARTO_HTML_CLASS in R/quarto-table.R: R
 -- writes this class on the marker div, this filter turns it into the wrapper,
 -- and apa.css scopes the table-width rules to it. Three copies of one name,
 -- unavoidably -- they are checked against each other by
@@ -86,20 +68,19 @@ local sizeattr = "apa-table-size-pt"
 -- place all three meet.
 local htmlclass = "apa-table-html"
 
--- Fix round 2, finding 2 (second half): the only sizes with a cloned table
--- style in the reference document are Table9/Table8/Table7/Table6 (D38).
--- R's apa_quarto_size_rung() (round 1) already refuses to write a marker
--- naming anything else, but this filter is a bundled, independently
--- loadable artifact -- another caller, a future R change, or a hand-authored
--- `::: {.apa-table-size-11}` in someone's own document must not be trusted
--- just because today's only caller behaves. Handing this filter ANY digit
--- string and concatenating it blindly (the pre-fix behaviour) would write
--- custom-style="Table11" into the docx for a style that was never cloned,
--- and Word's response to an unknown table style is to drop the style
--- assignment ENTIRELY -- losing the APA rules and cell margins along with
--- the requested size. So the check is repeated here, independently.
--- D70: the range is 6-12, and there is deliberately NO "10". The reference
--- document's unmodified "Table" style already carries 10 pt (D35), so a
+-- The only sizes with a cloned table style in the reference document are
+-- Table6-Table9, Table11 and Table12. R's apa_quarto_size_rung() already
+-- refuses to write a marker naming anything else, but this filter is a
+-- bundled, independently loadable artifact -- another caller, a future R
+-- change, or a hand-authored `::: {.apa-table-size-5}` in someone's own
+-- document must not be trusted just because today's only caller behaves.
+-- Concatenating ANY digit string blindly would write custom-style="Table5"
+-- into the docx for a style that was never cloned, and Word's response to
+-- an unknown table style is to drop the style assignment ENTIRELY -- losing
+-- the APA rules and cell margins along with the requested size. So the
+-- check is repeated here, independently.
+-- The range is 6-12, and there is deliberately NO "10". The reference
+-- document's unmodified "Table" style already carries 10 pt, so a
 -- table wanting 10 pt gets it by carrying NO marker at all; a "Table10"
 -- style does not exist and must not be named. R's apa_quarto_size_rung()
 -- enforces the same rule, and tests/testthat/test-word-size-styles.R
@@ -110,24 +91,16 @@ local valid_sizes = {
 }
 
 -- ONE marker div per TABLE, scoped to the Blocks LIST that table and its
--- own marker actually sit in together -- fix round 2, CRITICAL. The
--- original two-pass version (round 1: a single Div walk finding the
--- marker, keeping ONE `size` local shared across the ENTIRE document, then
--- a single Table walk applying that ONE size to EVERY Table node in the
--- document) was correct only by accident, while it was still scoped to a
--- single FloatRefTarget's own content by its caller. Rescoping to a
--- document-wide Pandoc-level walk (the round-1 fix for the UNLABELLED
--- case, still right) turned that single shared `size` into a
--- DOCUMENT-GLOBAL, LAST-MARKER-WINS bug: three tables marked 9/unmarked/6
--- all came out `Table6`, the size of whichever marker the walk visited
--- last -- REPRODUCED with bare `pandoc --lua-filter=` even, confirming it
--- was never about Quarto's pipeline. A table that should stay at the 10 pt
--- default could be shrunk because some OTHER table in the same manuscript
--- needed shrinking, and a plain user-authored table with nothing to do
--- with apaTables could be silently restyled -- exactly the kind of defect
--- this phase exists to catch, this time in code this same fix round wrote.
+-- own marker actually sit in together. Two document-wide passes (a Div
+-- walk finding markers into ONE shared `size`, then a Table walk applying
+-- it to EVERY Table node) is a LAST-MARKER-WINS bug: three tables marked
+-- 9/unmarked/6 all came out `Table6` -- reproduced even with bare
+-- `pandoc --lua-filter=`, so it is not about Quarto's pipeline. A table
+-- that should stay at the 10 pt default would be resized because some
+-- OTHER table needed it, and a plain user-authored table with nothing to
+-- do with apaTables could be silently restyled.
 --
--- The fix uses pandoc's `Blocks` filter type (a handler that runs once per
+-- So this uses pandoc's `Blocks` filter type (a handler that runs once per
 -- BLOCKS LIST anywhere in the tree, not once per node) instead of `Div`/
 -- `Table`, because it is the one traversal pandoc offers whose UNIT is a
 -- sibling list rather than a single node -- exactly the scope a marker and
@@ -136,8 +109,8 @@ local valid_sizes = {
 -- own grid markdown with nothing else between them, so table and marker
 -- are ALWAYS adjacent elements of the SAME immediate Blocks list, whatever
 -- divs surround that list (a FloatRefTarget's content, an unlabelled
--- chunk's own cell div, nested arbitrarily deep) -- MEASURED (fix round 2
--- spike, a three-table probe: one plain, one marked 9, one marked 6): a
+-- chunk's own cell div, nested arbitrarily deep) -- MEASURED (a
+-- three-table probe: one plain, one marked 9, one marked 6): a
 -- `Blocks` handler run via `doc.blocks:walk({ Blocks = fn })` visits the
 -- exact two-element [Table, marker Div] list for each marked table
 -- separately, and the ONE plain table's own singleton [Table] list on its
@@ -167,7 +140,7 @@ local function process_blocks(blocks)
       -- both here keeps this filter correct whichever one it is handed.
       local exact = el.attributes[sizeattr]
 
-      -- Phase 1.18 / D114: the class apaTables now puts on EVERY table it
+      -- The class apaTables puts on EVERY table it
       -- sends to an HTML render, sized or not. It carries no size of its own;
       -- it is what apa.css's table-width rules are scoped to, so that an
       -- apaTables table gets them and a table the user built themselves does
@@ -183,49 +156,43 @@ local function process_blocks(blocks)
         if is_docx and size then
           tbl.attr.attributes["custom-style"] = "Table" .. size
         end
-        -- No `elseif is_html and exact` arm here: setting a `style`
-        -- attribute directly on the Table node was MEASURED (D73) to be
-        -- silently discarded by Quarto's HTML pipeline before the page is
-        -- written, even though it survives inside this filter's own AST.
-        -- HTML is delivered by the wrapper div below instead, whose
-        -- attributes DO survive. Do not re-add this arm.
-        -- D73: Quarto's HTML pipeline discards a Table node's own
-        -- attributes -- measured at both post-quarto and pre-ast, for both
-        -- a labelled float and an unlabelled table, so it is neither a
-        -- stage question nor a float question. A `style` attribute assigned
-        -- directly to the Table node survives inside this filter's own AST
-        -- but never reaches the rendered page -- which is exactly what the
-        -- removed attribute arm above did, and why it is gone. Div-level
-        -- attributes DO survive, so on HTML the table is wrapped in a div
-        -- instead of attributed directly.
+        -- No `elseif is_html and exact` arm here: Quarto's HTML pipeline
+        -- discards a Table node's own attributes -- measured at both
+        -- post-quarto and pre-ast, for both a labelled float and an
+        -- unlabelled table, so it is neither a stage question nor a float
+        -- question. A `style` attribute assigned directly to the Table node
+        -- survives inside this filter's own AST but never reaches the
+        -- rendered page. Div-level attributes DO survive, so on HTML the
+        -- table is wrapped in a div instead of attributed directly. Do not
+        -- re-add this arm.
         --
-        -- This LOOKS like the wrapper D68 forbade. It is not, for two
+        -- This is NOT a wrapper in the source markdown, which fails for two
         -- independent reasons, both measured:
-        --   1. D68's wrapper sat in the SOURCE MARKDOWN, around the whole
-        --      chunk, where apaquarto's float collector could see it and
-        --      stop collecting the table -- moving it in the document. This
+        --   1. A wrapper in the SOURCE MARKDOWN, around the whole chunk, is
+        --      seen by apaquarto's float collector, which then stops
+        --      collecting the table -- moving it in the document. This
         --      div is built here, at post-quarto, AFTER collection has
         --      already run, and lives INSIDE the float the table was
         --      already collected into. Measured: the sized table stays
         --      collected at the end, alongside an unsized one.
-        --   2. D68's wrapper set a plain inherited size, which Bootstrap's
-        --      `.small` rule (specificity 0,1,0) then took 0.875 of --
+        --   2. A wrapper setting a plain inherited size loses to Bootstrap's
+        --      `.small` rule (specificity 0,1,0), which takes 0.875 of it --
         --      asked 6 pt, delivered 5.25 pt. The `.apa-table-size > table`
         --      rule in apa.css targets the table element directly at
         --      specificity (0,1,1), beating `.small`, and `font-size:
         --      inherit` takes the wrapper's exact size verbatim.
         -- Do not revert this to a plain attribute assignment on `tbl`.
-        -- Phase 1.18 / D114: ONE div, whether or not a size was asked for.
+        -- ONE div, whether or not a size was asked for.
         -- The `apa-table-html` class is what apa.css's width rules are scoped
         -- to; the `apa-table-size` class and the style attribute are added
         -- beside it only when a size was asked for.
         --
-        -- ONE div, NOT two nested. `.apa-table-size > table` (D73) is a CHILD
+        -- ONE div, NOT two nested. `.apa-table-size > table` is a CHILD
         -- selector, so a second wrapper between it and the table would break
         -- an explicit font.size SILENTLY -- the size would fall through to
         -- Bootstrap's `.small`, which takes 0.875 of the inherited value
-        -- (asked 6 pt, delivered 5.25 pt, which is the measurement D73 exists
-        -- because of). Both classes go on the same div for that reason, and
+        -- (asked 6 pt, delivered 5.25 pt). Both classes go on the same div
+        -- for that reason, and
         -- tests/testthat/test-html-structure.R asserts it on a real render.
         if is_html then
           local classes = {htmlclass}
@@ -239,7 +206,7 @@ local function process_blocks(blocks)
           out[last_table_idx] = tbl
         end
         -- This if/else is the ONE place `out[last_table_idx]` is written
-        -- for this marker: the `is_html and exact` arm replaces it with the
+        -- for this marker: the `is_html` arm replaces it with the
         -- wrapper div described above, and the `else` arm writes `tbl` back
         -- unwrapped -- still carrying the docx custom-style set in the
         -- is_docx branch above, when that branch fired -- for every other

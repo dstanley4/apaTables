@@ -18,7 +18,7 @@ library(apaTables)
 
 ## Results
 
-Four floats, covering the four cases fix round 1 of Task 7 required verified
+Four floats, covering the four cases that have to be verified
 together: a rotated table with a generated note, a rotated table with an
 explicit chunk note, a rotated table with NO note at all, and a non-rotated
 table with a generated note. `apatablelandscapenote.lua` (bundled) must move

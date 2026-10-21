@@ -52,7 +52,7 @@ test_that("the shipped reference document carries exactly the clone styles the l
   styles <- apa_shipped_table_styles()
   skip_if(length(styles) == 0, "apaquarto.docx not in the installed package")
 
-  # "Table" itself is the unmodified default and already carries 10 pt (D35),
+  # "Table" itself is the unmodified default and already carries 10 pt,
   # which is why there is no Table10 and must never be one.
   expect_true("Table" %in% styles)
   expect_false("Table10" %in% styles)
@@ -68,7 +68,7 @@ test_that("the Lua filter's valid_sizes matches the clone styles in the binary",
 })
 
 # The clone-style sizes the shipped binary actually carries, as integers.
-# "Table" itself is the unmodified default (10 pt, D35) and names no rung --
+# "Table" itself is the unmodified default (10 pt) and names no rung --
 # apa_quarto_size_rung() returns NA for 10, meaning "write NO marker and let
 # the reference document's own size stand", so it is correctly absent here.
 apa_binary_rungs <- function() {

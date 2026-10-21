@@ -1,14 +1,11 @@
 # Calibration against reality.
 #
 # What survives here is the PAGE: the text block each kind of document gives a
-# table (R/page-geometry.R), which is what the Phase 2 ladder measures against.
-# A wrong page is a clipped table however good the width model is.
+# table (R/page-geometry.R), which is what the LaTeX layout ladder measures
+# against. A wrong page is a clipped table however good the width model is.
 #
-# The flextable width model and the height model were calibrated here too, and
-# Task 10 deleted both -- the first superseded by R/render-latex.R's native
-# model (calibrated in test-render-latex.R), the second removed outright
-# because D3 made height cosmetic rather than data-critical. Their tests went
-# with them.
+# The width model itself is calibrated in test-render-latex.R. There is no
+# height model: table height is cosmetic, not data-critical.
 #
 # A test that checks a constant by recomputing it cannot fail: if apa7 changes
 # its text block, model and test drift together and the suite stays green while

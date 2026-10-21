@@ -7,7 +7,7 @@ test_that("apa_title_case follows the APA rules", {
                "Statistics for Libido by Dose")
   # the first word capitalizes even when it is a minor word
   expect_equal(apa_title_case("a design"), "A Design")
-  # an author's capital on a function word is corrected
+  # a capital the user typed on a function word is corrected
   expect_equal(apa_title_case("Score For Test"), "Score for Test")
 })
 
@@ -26,7 +26,7 @@ test_that("apa_name_to_title separates, splits and title-cases", {
 })
 
 test_that("a lowercase acronym cannot be recovered, and that is documented", {
-  # no signal that iq is an acronym; tbl-cap is the remedy (D21)
+  # no signal that iq is an acronym; tbl-cap is the remedy
   expect_equal(apa_name_to_title("iq_score"), "Iq Score")
   # the known residual: mRNA splits like selfEsteem
   expect_equal(apa_name_to_title("mRNA"), "M RNA")
@@ -138,8 +138,8 @@ test_that("the d in the d-value title is a lowercase ITALIC statistic symbol", {
 })
 
 test_that("the d-table says the SAME thing on the console, in LaTeX and in the spec", {
-  # These three paths used to carry three different titles. Unifying them is
-  # the point of the D19 change, so assert it rather than trusting it.
+  # These three paths must carry ONE title. Assert it rather than trusting
+  # it: they are built in three different places and can drift apart.
   op <- options(contrasts = c("contr.sum", "contr.poly")); on.exit(options(op))
   data(viagra)
   tbl <- apa.d.table(iv = dose, dv = libido, data = viagra)

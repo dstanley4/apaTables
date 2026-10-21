@@ -24,15 +24,15 @@ least one ordinary portrait page ahead of the rotated table. With
 `numbered-lines: true` set (a live apaquarto option; journals routinely
 require it under review), this page should keep its line numbers too --
 apatablelandscape.lua's own two closers must carry `<w:lnNumType>`
-themselves (fix round 1, Important), because docxlinenumber.lua appends its
+themselves, because docxlinenumber.lua appends its
 OWN numbering closer only once, at the very end of the document, and a
 `sectPr` governs content back to the PREVIOUS closer -- so without this,
 everything before and including a rotated table would silently lose its
-line numbers, the same shape of defect D31 convicts Quarto's `.landscape`
-of.
+line numbers, the same shape of defect as Quarto's own `.landscape`
+handling.
 
 @tbl-wide is wide enough that apaTables' layout ladder rotates it onto a
-landscape page rather than shrinking its type (D7, rotate before shrink).
+landscape page rather than shrinking its type (rotate before shrink).
 
 ```{r}
 #| label: tbl-wide

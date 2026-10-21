@@ -19,6 +19,13 @@ below describes what changed for someone upgrading from that version. Versions
   silently reverts the extension to the stock, unpatched copy -- while
   reporting `[No Change]` -- undoing the fixes; running `apa.quarto.setup()`
   again puts the tested copy back.
+* In an apaquarto PDF, a document containing tables written as plain
+  markdown now numbers every table 1, 2, 3, ... and its cross-references
+  match. With the stock extension under Quarto 1.9, each markdown table is
+  captioned "Table 1" and every reference to one reads "Table 1"; in a
+  document that mixes markdown tables with apaTables tables, the apaTables
+  table after each markdown table repeats its number instead. The bundled
+  extension (5.0.18+apaTables.27) carries the fix.
 * Tables drop directly into apaquarto documents. Build the table on one line
   and pass it to the entry point named for the document's own destination on
   the next: `apa.quarto.pdf()`, `apa.quarto.docx()`, `apa.quarto.html()` or

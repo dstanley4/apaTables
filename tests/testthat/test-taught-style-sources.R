@@ -1,21 +1,20 @@
 # The taught-style rule, checked in the PROSE surfaces as well as the templates.
 #
-# D104, ruled from real CRAN rejections and not open to re-argument: taught code
-# builds the table on one line and displays it on the next --
+# A deliberate rule, settled by real CRAN rejections: taught code builds the
+# table on one line and displays it on the next --
 # `my_table <- apa.cor.table(attitude)` then `apa.quarto.pdf(my_table)` -- never
-# the pipe, and never the chained one-liner. C2: a sentence teaching *"the `|>`
+# the pipe, and never the chained one-liner. A sentence teaching *"the `|>`
 # arrow"* is DELETED, not reworded.
 #
 # WHY THIS FILE EXISTS SEPARATELY FROM test-taught-style.R. That file guards
 # `inst/templates/`, which an installed package carries, so it runs everywhere.
 # The roxygen and the vignettes are SOURCE-ONLY: an installed package has the
-# rendered `.Rd` and `.html`, not the files an author edits. The 2026-08-06
-# sweep therefore left roughly 60 swept sites guarded by review alone -- open
-# register item 5 -- and this closes it for the surfaces that can be read.
+# rendered `.Rd` and `.html`, not the files an author edits, so without this
+# file the roughly 60 taught sites in them would be guarded by review alone.
 #
 # WHAT IS DELIBERATELY NOT IN SCOPE: implementation pipes. Four exist
 # (`vapply(...) |> paste0(collapse = )` and friends) and they are fine --
-# **D104 governs what the reader is TAUGHT, not how the package is written.**
+# **the rule governs what the reader is TAUGHT, not how the package is written.**
 # That is why R files are searched only on roxygen (`#'`) lines: everything a
 # reader is taught in an R file lives in a comment, and everything else is the
 # package talking to itself.
@@ -73,8 +72,8 @@ test_that("no document teaches the pipe by name", {
   root <- apa_source_root()
   skip_if(is.na(root), "source tree not available (installed package or R CMD check)")
 
-  # C2: four sentences taught *"the `|>` arrow"* and were DELETED rather than
-  # reworded. This catches the sentence coming back in words even if the
+  # Sentences teaching *"the `|>` arrow"* are DELETED rather than reworded.
+  # This catches the sentence coming back in words even if the
   # operator itself does not appear -- "the arrow operator", "pipe the table".
   # NOT a pattern for the operator itself -- the test above catches any
   # literal `|>` anywhere in these files, so a second pattern for it would be

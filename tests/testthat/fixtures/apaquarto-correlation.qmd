@@ -12,9 +12,7 @@ format: apaquarto-pdf
 
 ```{r}
 #| include: false
-pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
-                             "/Users/dstanley/os/RDevelopment/apaTables"),
-                  quiet = TRUE)
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT"), quiet = TRUE)
 cor_tbl <- apa.cor.table(attitude, table.number = 1)
 ```
 

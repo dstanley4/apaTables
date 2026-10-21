@@ -30,14 +30,12 @@
 # structure pandoc expects -- so every element is split on "\n" after
 # markdown conversion, before anything else touches it.
 #
-# A literal tab is EXPANDED HERE to four literal spaces, not left alone.
-# Superseded Task 1/2 decision: a raw tab byte was passed through, reasoning
-# "pandoc itself expands a tab to spaces at tab stop 4 on input, which is
-# pandoc's behaviour to accept, not apaTables's to prevent" -- measured false
-# once Task 3 added a one-character list-marker escape ("1. " -> "1\\. ") in
-# front of a tab-bearing name: the same tab now sits ONE COLUMN further right
-# in the source line, pandoc's tab-stop-4 expansion produces a DIFFERENT
-# number of spaces than it did before, the expanded line's length no longer
+# A literal tab is EXPANDED HERE to four literal spaces, not left alone. Do
+# not pass a raw tab byte through on the theory that pandoc expands tabs to
+# stop 4 on input -- measured false: put a one-character list-marker escape
+# ("1. " -> "1\\. ") in front of a tab-bearing name and the same tab sits ONE
+# COLUMN further right in the source line, pandoc's tab-stop-4 expansion
+# produces a DIFFERENT number of spaces, the expanded line's length no longer
 # matches the "+---+" boundary this file computed from nchar() (which counts
 # a tab as one character, not its expanded width), and the grid loses a "|"
 # and merges two columns -- silent, and dependent on the exact column
@@ -141,10 +139,9 @@ apa_md_widen_range <- function(w, from, to, deficit) {
   w
 }
 
-# The spanner half of Task 1's known gap: apa_md_widths() measured only the
-# last header row (the column labels) and "data" body rows, so a spanner
-# label -- a header cell at a HIGHER level, covering several columns with no
-# internal "|" -- was never checked against the width it would actually need.
+# apa_md_widths() measures each column from its own span-1 cells, so a
+# spanner label -- a header cell covering several columns with no internal
+# "|" -- needs its own check against the width it will actually need.
 # Walk every header row (a spanner can appear at any level), and for each
 # cell whose span > 1, treat its escaped/marked-up label as a constraint on
 # the TOTAL width of the columns it covers: sum(w[i:(i+k-1)]) + (k - 1) must
@@ -194,8 +191,8 @@ apa_md_widths <- function(plan, pad = 2L, font_size = NULL, rules = TRUE) {
   floor_w <- integer(n)
   bump <- function(j, cell) {
     rendered[j] <<- max(rendered[j], max(nchar(apa_md_plain_lines(cell))))
-    # `markup` (escaped text only) drives the PROPORTIONAL scale `s` below,
-    # same as before Task 3 -- escaping overhead (e.g. "|" -> "\|") grows
+    # `markup` (escaped text only) drives the PROPORTIONAL scale `s` below:
+    # escaping overhead (e.g. "|" -> "\|") grows
     # roughly with the content, so a single ratio applied to every column is
     # the right model for it.
     #
@@ -209,43 +206,38 @@ apa_md_widths <- function(plan, pad = 2L, font_size = NULL, rules = TRUE) {
     # characters wide -- watched directly (a 6-column cor table came out at
     # 200+ characters per column) before this split. `floor_w` carries the
     # STYLED width instead, applied only as a per-column ADDITIVE minimum via
-    # pmax() below, exactly like `markup` was applied pre-Task-3 -- never
-    # blended into `s`. D34/D35: neither the last header row nor an ordinary
-    # body cell is ever rule-divided any more (only a spanner cell is, and
-    # that overhead is measured separately by apa_md_span_widen() below), so
-    # this no longer needs a rule-div branch at all.
+    # pmax() below -- never blended into `s`. Neither the last header row
+    # nor an ordinary body cell is ever rule-divided (only a spanner cell
+    # is, and that overhead is measured separately by apa_md_span_widen()
+    # below), so this needs no rule-div branch.
     esc <- apa_md_escape(apa_md_cell_lines(cell))
     markup[j]  <<- max(markup[j], max(nchar(esc)))
     styled <- apa_md_style_span(esc, font_size)
     floor_w[j] <<- max(floor_w[j], max(nchar(styled)))
   }
-  # D55 (2026-08-04): every header row, not only the last, and only its
-  # `span == 1` cells -- a `span > 1` cell is a spanner label, budgeted
-  # across its whole range by apa_md_span_widen() below, and must NOT also
-  # be measured per-column here or its overhead would be double-counted.
+  # Every header row, not only the last, and only its `span == 1` cells --
+  # a `span > 1` cell is a spanner label, budgeted across its whole range by
+  # apa_md_span_widen() below, and must NOT also be measured per-column here
+  # or its overhead would be double-counted.
   #
-  # Before this, only the LAST header row (the column-label row) was
-  # measured; every OTHER header row was reached by NEITHER mechanism once
-  # its cells were `span == 1` -- which never happened before Task 5, because
-  # every non-final header row was pure spanners (`span > 1`) plus
-  # `richtext("")` filler, both handled elsewhere or empty. D46 section 5's
-  # pptx spanner flattening changed that: `apa_slide_flatten_spanners()`
-  # turns a spanner label into an ordinary `span == 1` cell sitting in a
-  # non-final header row, and NOTHING was measuring it -- the flattened
-  # label just inherited whatever width the data columns already needed. A
+  # Do not narrow this to the LAST header row (the column-label row). The
+  # pptx spanner flattening, `apa_slide_flatten_spanners()`, turns a spanner
+  # label into an ordinary `span == 1` cell sitting in a NON-final header
+  # row, which neither mechanism would otherwise measure -- the flattened
+  # label would just inherit whatever width the data columns already need. A
   # label one character wider than its column (measured: "Marginal", 8
   # characters, against a 7-character column) desyncs the row's own `|`
   # positions from the separator line's, and pandoc's grid-table parser
   # reads the overflow as literal text: the shipped cell content came back
   # as `"Marginal|"`, with a phantom empty trailing column on every row.
   #
-  # PROVEN, not just argued, to be a no-op for every OTHER destination
-  # (Task 7 report, D55): on the two-way spanner table, a non-final header
-  # row holds ONLY `span > 1` cells and `richtext("")` gap cells in the
-  # unflattened pipeline every destination but pptx uses, and an empty cell
-  # contributes `nchar("") == 0` to a `max()` -- changing nothing. The eight
-  # builders' `apa_md_widths()` output was compared before and after this
-  # change and found byte-identical in every case.
+  # PROVEN, not just argued, to be a no-op for every OTHER destination: on
+  # the two-way spanner table, a non-final header row holds ONLY `span > 1`
+  # cells and `richtext("")` gap cells in the unflattened pipeline every
+  # destination but pptx uses, and an empty cell contributes
+  # `nchar("") == 0` to a `max()` -- changing nothing. The eight builders'
+  # `apa_md_widths()` output is byte-identical with and without the
+  # non-final header rows measured.
   for (row in plan$header) {
     at <- 1L
     for (cell in row$cells) {
@@ -277,7 +269,7 @@ apa_md_widths <- function(plan, pad = 2L, font_size = NULL, rules = TRUE) {
   # reasoning as the row-group label above, scoped to the span's own range
   # instead of the whole table. Left unmeasured, a spanner label longer than
   # the columns beneath it collapses the grid exactly like the row-group
-  # case Task 1 already guards. See apa_md_span_widen() below.
+  # case. See apa_md_span_widen() above.
   w <- apa_md_span_widen(plan, w, pad, font_size, rules)
   w
 }
@@ -357,8 +349,8 @@ apa_md_style_span <- function(lines, font_size) {
 
 # A cell that needs a rule beneath it carries a fenced div, which sets that
 # cell's PARAGRAPH style. Pandoc has no cell borders, so this is the only
-# mechanism -- and it is what gives partial (cmidrule) rules under spanners
-# (D29): a spanner covers several columns, and only the cells under IT get
+# mechanism -- and it is what gives partial (cmidrule) rules under spanners:
+# a spanner covers several columns, and only the cells under IT get
 # the div, so the rule stops and starts exactly where the spanner does.
 apa_md_rule_div <- function(lines) c("::: {custom-style=\"ApaTableRule\"}", lines, ":::")
 
@@ -384,10 +376,10 @@ apa_markdown_table <- function(plan, font_size = NULL, rules = TRUE) {
     for (cell in hrow$cells) {
       span <- as.integer(cell$span)
       lines <- apa_md_style_span(apa_md_escape(apa_md_cell_lines(cell$rt)), font_size)
-      # D34/D35: apaquarto's Table style already draws a continuous rule
-      # under the LAST header row (one-row and multi-row headers alike), so
-      # the rule div is applied ONLY to the spanned cells named by this row's
-      # own `rules` ranges -- D29's partial (cmidrule) rule under a spanner,
+      # apaquarto's Table style already draws a continuous rule under the
+      # LAST header row (one-row and multi-row headers alike), so the rule
+      # div is applied ONLY to the spanned cells named by this row's own
+      # `rules` ranges -- the partial (cmidrule) rule under a spanner,
       # never a blank span-1 filler beside it, and never the last header row,
       # whose `rules` is always empty (R/display-plan.R). A paragraph border
       # cannot span a cell boundary, so a per-cell div could never draw the

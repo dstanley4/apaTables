@@ -6,14 +6,13 @@
 # same "escape the payload, then add markup" ordering problem this file
 # does, and is the closest analogue.
 #
-# ROOT-CAUSE FIX (fix round 1): an earlier version of this file called
-# apa_latex_symbolize() (which injects macros like "\ensuremath{\beta}" --
-# backslashes and braces) and THEN called apa_latex_escape() on the result,
-# which re-escaped the macro syntax it had just introduced
+# ONE PASS, NEVER TWO. Do not substitute symbols (which injects macros like
+# "\ensuremath{\beta}" -- backslashes and braces) and THEN escape the result:
+# the escape re-escapes the macro syntax just introduced
 # ("\ensuremath{\beta}" -> "\textbackslash{}ensuremath\{\textbackslash{}beta\}").
-# The fix is not to reorder those two calls (that just moves which stage's
-# output gets re-examined by the other) but to remove the second pass
-# entirely: apa_latex_run_map below maps EVERY character -- Greek codepoint
+# Reordering the two calls does not help either (that just moves which stage's
+# output gets re-examined by the other). Instead there is no second pass at
+# all: apa_latex_run_map below maps EVERY character -- Greek codepoint
 # or LaTeX-special character -- directly to its final LaTeX text in ONE
 # combined lookup, applied in a SINGLE traversal of the run's original,
 # untouched text (apa_latex_map_chars()). Because there is only one pass
@@ -27,12 +26,9 @@
 # the note above apa_latex_escape_map for why a placeholder could not be
 # made collision-free).
 
-# Fix round 2 (Important finding): a raw C0 control byte that survives
-# apa_latex_escape() unchanged is not safe just because it is no longer
-# misread as a placeholder. Compiled real .tex files containing each C0
-# control character (dev/landscape-verify/control-char-test/, both
-# pdflatex and xelatex, -interaction=nonstopmode) to find out which ones
-# actually break a render rather than guessing:
+# C0 control bytes. Real .tex files containing each C0 control character
+# were compiled (both pdflatex and xelatex, -interaction=nonstopmode) to find
+# out which ones actually break a render rather than guessing:
 #   - U+0000, U+0001, U+0002, U+0008, U+000B, U+000E..U+001F, and U+007F
 #     (DEL) each produced a genuine TeX ERROR under pdflatex ("Unicode
 #     character ^^X (U+00XX) not set up for use with LaTeX" or "Text line
@@ -55,14 +51,12 @@
 #
 # LF and CR get one more deliberate decision on top of "TeX won't error on
 # them": rt_run()'s text field has no documented multi-line semantics
-# today (stacking a cell's lines is richtext_lines(), a mechanism one
-# level above a single run), but Task 5's longtable emitter is the layer
-# that will decide how a stacked CI/p line becomes a LaTeX line break
-# inside \makecell. Converting \n to a space here would erase that
-# information before Task 5 ever sees it, so this backend reserves LF/CR
-# for Task 5 to interpret rather than deciding for it -- it only commits to
-# the (empirically confirmed) claim that leaving them raw does not break a
-# render.
+# (stacking a cell's lines is richtext_lines(), a mechanism one level above
+# a single run), and the longtable emitter below is the layer that decides
+# what a newline means (see apa_latex_collapse_newlines()). This backend
+# therefore leaves LF/CR for the emitter to interpret rather than deciding
+# for it -- it only commits to the (empirically confirmed) claim that
+# leaving them raw does not break a render.
 apa_latex_control_codes <- c(0x00:0x08, 0x0B, 0x0C, 0x0E:0x1F, 0x7F)
 apa_latex_control_strip <- stats::setNames(
   rep("", length(apa_latex_control_codes)),
@@ -73,28 +67,28 @@ apa_latex_control_strip <- stats::setNames(
 # tilde, caret -- so that arbitrary user/data text (variable names, notes)
 # can be dropped into a LaTeX document without the characters LaTeX treats
 # as syntax aborting or corrupting the render. An underscore starts math
-# mode and ABORTS the render outright ("! Missing $ inserted.") -- this was
-# hit for real on a marker string during a Phase 2 spike and cost a full
-# re-render. Also folds in apa_latex_control_strip (above) -- the unsafe C0
-# controls and DEL -- so escaping and control-byte stripping happen in the
+# mode and ABORTS the render outright ("! Missing $ inserted.") -- this has
+# been hit for real on a marker string. Also folds in
+# apa_latex_control_strip (above) -- the unsafe C0 controls and DEL -- so
+# escaping and control-byte stripping happen in the
 # same single pass as everything else.
 #
-# An earlier version of this table was applied via a chain of gsub() calls,
-# with backslash routed through a "\x01" placeholder character (expanded to
-# "\textbackslash{}" only after every other substitution had run) to keep
-# the brace-escaping step from re-escaping the braces that substitution
-# introduces. That placeholder is not safe: cell text arrives from variable
+# Do not apply this table via a chain of gsub() calls with backslash routed
+# through a "\x01" placeholder character (expanded to "\textbackslash{}"
+# only after every other substitution has run) to keep the brace-escaping
+# step from re-escaping the braces that substitution introduces. That
+# placeholder is not safe: cell text arrives from variable
 # names, factor levels, and note text that routinely comes from SPSS/SAS/CSV
 # imports or copy-paste, any of which can carry a stray "\x01" control byte,
 # and that byte would be silently reinterpreted as a backslash the user
-# never typed (confirmed: apa_latex_escape("a\x01b") produced
+# never typed (confirmed: the gsub version turned "a\x01b" into
 # "a\textbackslash{}b"). Picking a rarer placeholder only narrows the
 # window; it does not close it. apa_latex_map_chars() below closes it by
 # construction: it splits the input into individual characters ONCE and
 # maps each one through this lookup ONCE, so no substitution's own output
 # is ever re-read as input to a later substitution, and no sentinel
 # character is needed at all. (U+0001 itself is additionally covered by
-# apa_latex_control_strip above, so it is now stripped outright rather than
+# apa_latex_control_strip above, so it is stripped outright rather than
 # merely not misread.)
 apa_latex_escape_map <- c(
   "\\" = "\\textbackslash{}",
@@ -117,7 +111,7 @@ apa_latex_escape_map <- c(
 # and a second call cannot tell those apart from a backslash or brace the
 # user actually typed, so it escapes its own output again
 # (confirmed: apa_latex_escape(apa_latex_escape("a&b\\c")) produces
-# "\textbackslash{}textbackslash\{\}c", not a no-op). Task 5's emitter (or
+# "\textbackslash{}textbackslash\{\}c", not a no-op). The emitter below (or
 # any future caller) must escape each piece of raw text exactly once on its
 # way into the document, never re-run this function (or apa_latex_map_chars()
 # generally) on text that has already been mapped once, or on text that
@@ -143,7 +137,7 @@ apa_latex_escape <- function(txt) {
 # each macro appear in text mode (the APA table cells this renders into are
 # never already inside math mode).
 #
-# A literal UTF-8 beta SILENTLY VANISHED from a spike's rendered PDF -- no
+# A literal UTF-8 beta SILENTLY VANISHES from a rendered PDF -- no
 # error, no warning, just a missing character -- which is why every symbol
 # is round-tripped through this table rather than passed through unescaped.
 apa_latex_symbol_map <- c(
@@ -214,18 +208,16 @@ rt_to_latex <- function(rt) {
 }
 
 # ---------------------------------------------------------------------------
-# The width model (Task 4). D11 (dev/specs/2026-07-31-phase2-decisions.md)
-# OVERRIDES the plan's Step 3 formula, which omitted flextable's cell padding
-# entirely and used the wrong \tabcolsep term -- both confirmed by measuring
-# real LaTeX \LT@entry column widths against R's prediction for four tables
-# at two sizes (dev/factcheck/phase2-preflight.md section 3). Evidence for
-# every constant below lives there; this file only carries the corrected
+# The width model. Its constants come from measuring real LaTeX \LT@entry
+# column widths against R's prediction for four tables at two sizes; a
+# naive formula that omits flextable's cell padding, or uses the wrong
+# \tabcolsep term, mis-predicts those measured widths. This file carries the corrected
 # arithmetic and the reasoning for where each correction is applied.
 #
 # What a flextable's declared column width IS, and WHY the constant below is
-# 5/27 in and not the "obvious" 10/72 in (fix round 1, empirical correction).
+# 5/27 in and not the "obvious" 10/72 in (an empirical correction).
 #
-# The brief's -- and this file's first draft's -- assumption was
+# The obvious assumption is
 #   w_j(s) = content_j(s) + padding.left + padding.right
 # with padding.left/right at flextable's documented default, 5 pt EACH (the
 # package's theme, apa_flextable_theme(), sets only padding.top/bottom, to
@@ -246,38 +238,36 @@ rt_to_latex <- function(rt) {
 # instead worked at 10-12 pt (where the two constants differ by little
 # enough, relative to the two-decimal column rounding, that no fixture
 # comparison caught it) but silently mis-sized every column below 10 pt --
-# precisely the range D6/D7's ladder shrinks INTO after rotating, and the
-# range no LaTeX measurement had ever checked until this fix (see the sub-
-# 10 pt fixture entries `cor_attitude_6`/`twoway_6` added alongside this
-# fix: `\LT@entry` widths from a real longtable, not an R prediction).
+# precisely the range the rotate-then-shrink ladder shrinks INTO after
+# rotating (the sub-10 pt fixture entries `cor_attitude_6`/`twoway_6` guard
+# it: `\LT@entry` widths from a real longtable, not an R prediction).
 #
 # WHERE the subtraction happens, and why that point is correct (this is the
-# "subtlety" the brief's linear-scaling formula gets wrong if applied
-# blindly): `K` is a PER-COLUMN, FONT-INDEPENDENT constant -- the regression
-# above is what establishes that, empirically, not an assumption -- while
-# content DOES scale with size (glyph advance widths are proportional to
-# point size for any vector font, so a column's content width at size s is
-# content_j(12) * s / 12, exactly, once `K` is out of it). So `K` is
-# subtracted from EACH column's declared width INDIVIDUALLY, measured once
-# at 12 pt, BEFORE that column's content is scaled to the requested size and
-# BEFORE anything is summed across columns or rounded. Subtracting it later
-# -- after scaling, or after summing -- would subtract the wrong quantity: an
-# already-scaled or already-summed `K` term is not "5/27 in", it is
-# "5/27 in * s/12" or "5/27 in * n", neither of which is what a native
-# longtable actually omits (it omits exactly 5/27 in of this constant per
-# column, at every size, because it has no equivalent of its own to scale).
+# subtlety a linear-scaling formula gets wrong if applied blindly): `K` is a
+# PER-COLUMN, FONT-INDEPENDENT constant -- the regression above is what
+# establishes that, empirically, not an assumption -- while content DOES scale
+# with size (glyph advance widths are proportional to point size for any vector
+# font, so a column's content width at size s is content_j(12) * s / 12,
+# exactly, once `K` is out of it). So `K` is subtracted from EACH column's
+# declared width INDIVIDUALLY, measured once at 12 pt, BEFORE that column's
+# content is scaled to the requested size and BEFORE anything is summed across
+# columns or rounded. Subtracting it later -- after scaling, or after summing --
+# would subtract the wrong quantity: an already-scaled or already-summed `K`
+# term is not "5/27 in", it is "5/27 in * s/12" or "5/27 in * n", neither of
+# which is what a native longtable actually omits (it omits exactly 5/27 in of
+# this constant per column, at every size, because it has no equivalent of its
+# own to scale).
 #
 # The \tabcolsep term. flextable's own LaTeX writer sets \tabcolsep = 2 pt,
-# so its grid costs 4 pt PER COLUMN (2 pt each side); the width model apaTables
-# used before Phase 2 reproduced that as a flat 4n. A native
-# longtable emitted with "@{}" on BOTH outer edges (Task 5's emitter) removes
-# one gap's worth entirely, so the term is (4n - 4) pt, not 4n -- measured
+# so its grid costs 4 pt PER COLUMN (2 pt each side), a flat 4n. A native
+# longtable emitted with "@{}" on BOTH outer edges (apa_latex_table() below)
+# removes one gap's worth entirely, so the term is (4n - 4) pt, not 4n -- measured
 # directly against LaTeX's own layout, not assumed.
 #
 # corrected_up(n, s) = sum_j ceil100( w_j(s) - 5/27 )  +  (4n - 4) / 72.27
 #
-# ceil100() rounds UP to the nearest 0.01 in, per column -- "round every
-# intermediate up" (brief Step 3), so any error this model still carries
+# ceil100() rounds UP to the nearest 0.01 in, per column -- every
+# intermediate is rounded up, so any error this model still carries
 # costs a needlessly rotated/shrunk page, never a table run off the edge.
 # `K` is stated in ordinary points (1/72 in, gdtools'/officer's convention,
 # matching how it was measured); \tabcolsep is a LaTeX length and LaTeX's
@@ -290,97 +280,87 @@ apa_latex_padding_in <- 5 / 27
 # across seven probe strings, NOT proportional -- fitting a per-column
 # constant to seven strings would just be new calibration under an old
 # name), plus the 0.0415 in worst-case gap between the boxed-tabular proxy
-# and LaTeX's own longtable \LT@entry widths (dev/factcheck/phase2-preflight.md
-# section 3).
+# and LaTeX's own longtable \LT@entry widths (both measured).
 #
-# Raised to 0.10 in (fix round 2, IMPORTANT 1; was 0.05 in). With `K`
-# corrected to the measured 5/27 in (fix round 1), the model's RAW error
-# (cushion minus whatever margin is added) shrank enough that 0.05 in
-# stopped being a comfortable margin and became most of the protection:
+# Why 0.10 in and not 0.05 in. With `K` at the measured 5/27 in, the model's
+# RAW error (cushion minus whatever margin is added) is small enough that
+# 0.05 in would be most of the protection rather than a comfortable margin:
 # at the tightest measured point (`twoway` at 6 pt) the raw error is only
-# +0.026 in, and 0.05 in cleared the 0.0415 in worst-case measurement
-# uncertainty (dev/factcheck/phase2-preflight.md section 3) by just
-# 0.0085 in. D7 requires the two directions to cost differently -- an
+# +0.026 in, and 0.05 in clears the 0.0415 in worst-case measurement
+# uncertainty by just 0.0085 in. The two directions cost differently -- an
 # under-estimate is content off the page edge (an overfull \hbox, typically
 # an unbreakable token like a CI bound spilling into the margin), an
 # over-estimate is only a page rotated or shrunk one step further than it
 # needed to be -- so the margin should be comfortable, not marginal.
 #
-# 0.10 in was checked against every measured case (8, after fix round 2
-# added 2 more) for whether it flips any rotate/fit verdict on a 6.5 in
-# portrait page: it does not -- all 8 agree with the true (measured)
-# verdict at BOTH 0.05 in and 0.10 in, including `apa.cor.table(attitude)`
-# at 10 pt (guarded 5.39 -> 5.44 in, actual 5.29 in, comfortably upright
-# both times) and the two closest-to-the-line real cases,
-# `apa.reg.table()` 2 blocks at 10 pt (actual 6.64 in) and `cor_mtcars` at
-# 8 pt (actual 6.53 in), both correctly called "rotate" under either
-# margin. Raising it here is free insurance in the measured set, not a
-# trade against it.
+# 0.10 in was checked against every measured case (8) for whether it flips any
+# rotate/fit verdict on a 6.5 in portrait page: it does not -- all 8 agree with
+# the true (measured) verdict at BOTH 0.05 in and 0.10 in, including
+# `apa.cor.table(attitude)` at 10 pt (guarded 5.39 -> 5.44 in, actual 5.29 in,
+# comfortably upright both times) and the two closest-to-the-line real cases,
+# `apa.reg.table()` 2 blocks at 10 pt (actual 6.64 in) and `cor_mtcars` at 8 pt
+# (actual 6.53 in), both correctly called "rotate" under either margin. Raising
+# it here is free insurance in the measured set, not a trade against it.
 APA_LATEX_WIDTH_MARGIN_IN <- 0.10
 
 # The size the linear-scaling measurement is taken at. Any positive
 # reference size would do arithmetically (content scales proportionally
-# from any baseline), but 12 pt is what the brief's formula and D11's own
-# probe script both used, and reusing it means a direct look at
+# from any baseline), but 12 pt is what the width measurements used, and
+# reusing it means a direct look at
 # `apa_ft_at_size(apa_flextable_from_plan(plan), 12)` reproduces exactly
 # what this file measures.
 APA_LATEX_WIDTH_REFERENCE_SIZE <- 12
 
-# The largest size apa_size_for_width() will ever return (fix round 1,
-# IMPORTANT 2). Deliberately the SAME value as the reference size above --
-# not a coincidence, two independent reasons land on it: (1) APA's own body
-# type is never set above 12 pt (D7), so a "size to use" function has no
-# legitimate reason to answer larger than that; (2) the linear-scaling model
-# is measured AT 12 pt and only ever verified by extrapolating DOWN from it
-# (D6/D11's own probes never measured above 12 pt either), so reporting a
+# The largest size apa_size_for_width() will ever return. Deliberately the
+# SAME value as the reference size above -- not a coincidence, two
+# independent reasons land on it: (1) APA's own body type is never set above
+# 12 pt, so a "size to use" function has no legitimate reason to answer
+# larger than that; (2) the linear-scaling model is measured AT 12 pt and
+# only ever verified by extrapolating DOWN from it (nothing was measured
+# above 12 pt), so reporting a
 # larger size would also be extrapolating the model past where anything has
 # checked it. Without this cap, a target wider than the table's own natural
 # 12 pt width solves the un-rounded linear formula for an s in the
 # thousands (a one-column plan at a merely generous target can already clear
 # 12; `target = 1000` on a real spec returns north of 2000 pt) -- answers
 # with no meaning as a font size. Capping here, in the one function whose
-# whole purpose is choosing a size, means every caller (Task 9's ladder
-# included) gets a sane answer without having to remember to clamp it
+# whole purpose is choosing a size, means every caller (the rotate-then-shrink
+# ladder included) gets a sane answer without having to remember to clamp it
 # themselves.
 APA_LATEX_MAX_FONT_SIZE <- APA_LATEX_WIDTH_REFERENCE_SIZE
 
-# The smallest size the emitter and the size solver will produce (fix round 1,
-# IMPORTANT 1). This is a DEGENERACY guard, not a legibility floor, and the
-# distinction is the whole of D7b: "shrink past 6 pt as far as the table needs
-# so nothing is ever cut off, and warn". A legibility floor of 5 pt -- which
-# is what both functions used until this fix -- silently CLIPPED any table
-# that needed less, which is the failure mode this phase exists to remove. A
-# reader can zoom into 3 pt type; nobody can recover a column that is not in
-# the file.
+# The smallest size the emitter and the size solver will produce. This is a
+# DEGENERACY guard, not a legibility floor, and the distinction matters: the
+# design is "shrink past 6 pt as far as the table needs so nothing is ever cut
+# off, and warn". Do not reintroduce a legibility floor (e.g. 5 pt): it
+# silently CLIPS any table that needs less. A reader can zoom into 3 pt type;
+# nobody can recover a column that is not in the file.
 #
-# WHY 0.1 pt, AND IT IS MEASURED RATHER THAN CHOSEN -- the first value written
-# here WAS chosen, and the measurement contradicted it. Real 12-column tables
-# were emitted at 5, 3, 1, 0.5 and 0.1 pt, rendered through the full
-# apaquarto -> xelatex path, and read back out of the PDF
-# (dev/factcheck/phase2-subfive/). All five produced a COMPLETE table (12 of
-# 12 markers each) and, by pdftotext -bbox on a marker word, all five were
-# HONOURED rather than substituted: rendered word width is linear in the
-# requested size right down to 0.1 pt (26.007, 15.437, 5.202, 2.573 and
-# 0.503 pt -- 5.03 to 5.20 pt of width per requested pt). No "size not
-# available / substituted" warning at any of them. The constant had first been
-# written as 0.5 pt on the theory that xelatex would substitute below it;
-# there is no such substitution, so the floor is the smallest size actually
-# verified.
+# WHY 0.1 pt, AND IT IS MEASURED RATHER THAN CHOSEN. Real 12-column tables were
+# emitted at 5, 3, 1, 0.5 and 0.1 pt, rendered through the full apaquarto ->
+# xelatex path, and read back out of the PDF. All five produced a COMPLETE table
+# (12 of 12 markers each) and, by pdftotext -bbox on a marker word, all five
+# were HONOURED rather than substituted: rendered word width is linear in the
+# requested size right down to 0.1 pt (26.007, 15.437, 5.202, 2.573 and 0.503 pt
+# -- 5.03 to 5.20 pt of width per requested pt). No "size not available /
+# substituted" warning at any of them. Do not raise it to 0.5 pt on the theory
+# that xelatex substitutes below that; there is no such substitution, so the
+# floor is the smallest size actually verified.
 #
 # It is close to irrelevant in practice, and that is the point: this floor is
 # reachable ONLY when NO size fits (see below), where the ladder is warning
 # about clipping anyway. It never constrains a table that could have fitted.
 #
-# THE HONEST LIMIT THAT REMAINS, stated plainly because D7b's promise is
-# absolute and this is the one thing that can defeat it: the width model has a
-# term that does NOT scale with the type size. The inter-column \tabcolsep is
-# (4n - 4) pt whatever the font, and apa_latex_width_from_content() rounds
-# every column UP to the next 0.01 in, so a table of n columns can never be
-# narrower than 0.01*n + (4n - 4)/72.27 + the margin, at ANY size. Past about
-# 136 columns that alone exceeds a 9 in rotated page. apa_size_for_width()
-# detects exactly that case and the ladder warns that content WILL be cut off,
-# naming apa.save(). No apaTables builder produces such a table from real
-# data.
+# THE HONEST LIMIT THAT REMAINS, stated plainly because the never-cut-off
+# promise is absolute and this is the one thing that can defeat it: the width
+# model has a term that does NOT scale with the type size. The inter-column
+# \tabcolsep is (4n - 4) pt whatever the font, and
+# apa_latex_width_from_content() rounds every column UP to the next 0.01 in, so
+# a table of n columns can never be narrower than 0.01*n + (4n - 4)/72.27 + the
+# margin, at ANY size. Past about 136 columns that alone exceeds a 9 in rotated
+# page. apa_size_for_width() detects exactly that case and the ladder warns that
+# content WILL be cut off, naming apa.save(). No apaTables builder produces such
+# a table from real data.
 APA_LATEX_MIN_EMITTABLE_SIZE <- 0.1
 
 # Per-column content width at the reference size (12 pt), padding already
@@ -411,9 +391,9 @@ apa_latex_width_from_content <- function(content_12, size) {
 #' Measures the plan's cell strings ONCE, at 12 pt, with the same
 #' font metrics flextable's own `autofit()` depends on, then scales
 #' the CONTENT term (only) to `size` and applies the corrected `K`
-#' (empirically fit, fix round 1 -- see the block comment above this
-#' function in `R/render-latex.R`, NOT D11's original 10/72 in), the
-#' `\\tabcolsep` arithmetic, and a 0.10 in margin (fix round 2). The result
+#' (empirically fit -- see the block comment above this function in
+#' `R/render-latex.R`; NOT the theoretical 10/72 in), the
+#' `\\tabcolsep` arithmetic, and a 0.10 in margin. The result
 #' is biased HIGH against real LaTeX layout by design: across the 8
 #' fixture entries now measured (6, 8, and 10 pt; 4 different real specs),
 #' +0.13 to +0.24 in (2.4-7.5\%) -- so an error here costs a needlessly
@@ -448,15 +428,14 @@ apa_latex_natural_width <- function(plan, size) {
 #' 0.001 pt steps, re-checking against the real (rounded) formula, until it
 #' fits.
 #'
-#' @section There is no legibility floor (D7b):
-#' This function used to stop at the flextable fitter's 5 pt floor, which meant a
-#' table needing less was returned at 5 pt and CLIPPED. D7b makes 6 pt a
-#' warning threshold and never a hard stop, so the walk now continues below
-#' 5 pt -- and below 1 pt -- to whatever size actually fits, bottoming out
-#' only at `APA_LATEX_MIN_EMITTABLE_SIZE` (**0.1 pt**, the smallest size a
+#' @section There is no legibility floor:
+#' A 5 pt floor here would return a table needing less at 5 pt, CLIPPED.
+#' 6 pt is a warning threshold and never a hard stop, so the walk continues
+#' below 5 pt -- and below 1 pt -- to whatever size actually fits, bottoming
+#' out only at `APA_LATEX_MIN_EMITTABLE_SIZE` (**0.1 pt**, the smallest size a
 #' rendered table was measured to be set at rather than substituted; see that
-#' constant, and do NOT restore the 0.5 pt figure an earlier draft of this
-#' sentence carried -- 0.5 pt was assumed and the measurement disproved it).
+#' constant, and do NOT use a 0.5 pt figure -- 0.5 pt was assumed and the
+#' measurement disproved it).
 #'
 #' @section The invariant, and the one case that genuinely cannot fit:
 #' `apa_latex_natural_width(plan, apa_size_for_width(plan, target)) <=
@@ -468,15 +447,15 @@ apa_latex_natural_width <- function(plan, size) {
 #' is never narrower than `0.01*n + (4n - 4)/72.27 + APA_LATEX_WIDTH_MARGIN_IN`.
 #' When `target` is below that, this function returns
 #' `APA_LATEX_MIN_EMITTABLE_SIZE` and the predicted width exceeds `target`.
-#' A caller that needs to know whether the fit actually succeeded -- Task 9's
-#' ladder, deciding whether to warn -- must check
+#' A caller that needs to know whether the fit actually succeeded -- the
+#' rotate-then-shrink ladder, deciding whether to warn -- must check
 #' `apa_latex_natural_width(plan, result) <= target` itself; this function's
 #' return value alone does not carry that information.
 #'
 #' @param plan a display plan, from `apa_display_plan()`.
 #' @param target target width in inches.
 #' @param content_12 optional per-column content vector already measured by
-#'   `apa_latex_content_at_12()`. Supplying it is what lets Task 9's ladder
+#'   `apa_latex_content_at_12()`. Supplying it is what lets the ladder
 #'   make its whole decision from ONE font measurement: that measurement runs
 #'   flextable's `autofit()` and costs about 0.66 s on a 14-column table, and
 #'   the ladder needs the same vector for the width at 10 pt, for the solve,
@@ -504,8 +483,8 @@ apa_size_for_width <- function(plan, target, content_12 = NULL) {
   }
 
   # Closed-form estimate: ignores only the per-column ceil100 rounding
-  # (D6/D11: content scales linearly with size to within measured
-  # tolerance), so it lands within a few thousandths of a point of the
+  # (content scales linearly with size to within measured tolerance), so it
+  # lands within a few thousandths of a point of the
   # true crossing before the walk-down below ever runs. Clamped into
   # [APA_LATEX_MIN_EMITTABLE_SIZE, APA_LATEX_MAX_FONT_SIZE] before that
   # walk-down -- never handed an out-of-range starting point to correct from
@@ -523,7 +502,7 @@ apa_size_for_width <- function(plan, target, content_12 = NULL) {
 }
 
 # ---------------------------------------------------------------------------
-# The emitter (Task 5). apa_latex_table() turns a display plan into ONE
+# The emitter. apa_latex_table() turns a display plan into ONE
 # complete `longtable` environment and nothing else -- no caption, no label,
 # no note, no float, no size command in front of it. Everything below that is
 # not obvious is here because a render measured it, not because it reads
@@ -531,22 +510,22 @@ apa_size_for_width <- function(plan, target, content_12 = NULL) {
 
 # The inter-column gap, in LaTeX points, written into the column spec.
 #
-# WHY 4 pt and not the 2 pt the design sketch shows. The gap has to equal what
-# the Task 4 width model was MEASURED against, or the model and the emitter
-# describe different tables. That model's \tabcolsep term is (4n - 4) pt (see
-# apa_latex_width_from_content() above and dev/factcheck/phase2-preflight.md
-# section 3), and its ground truth is dev/factcheck/phase2-preflight/width*/
-# ltprobe.tex, which sets \tabcolsep = 2 pt with "@{}" on both outer edges.
+# WHY 4 pt and not 2 pt. The gap has to equal what the width model was
+# MEASURED against, or the model and the emitter describe different tables.
+# That model's \tabcolsep term is (4n - 4) pt (see
+# apa_latex_width_from_content() above), and its ground truth is a
+# hand-written longtable probe that sets \tabcolsep = 2 pt with "@{}" on both
+# outer edges.
 # In a tabular, \tabcolsep is applied on BOTH sides of every column, so a
 # 2 pt \tabcolsep puts 2 + 2 = 4 pt between two adjacent columns and
 # n - 1 gaps make 4n - 4 pt. One "@{\hspace{...}}" replaces a whole gap, both
 # halves, so it must carry 4 pt to reproduce the geometry that was measured.
 # Emitting 2 pt would make every real table 2(n - 1) pt narrower than
 # apa_latex_natural_width() predicts -- for a 10-column regression table
-# 0.25 in of phantom width, which under D6/D7 is enough to rotate or shrink a
-# page that did not need it.
+# 0.25 in of phantom width, which is enough to rotate or shrink a page that
+# did not need it.
 #
-# CONFIRMED, not argued: the emitter's output and ltprobe.tex's hand-written
+# CONFIRMED, not argued: the emitter's output and the probe's hand-written
 # equivalent, compiled in the SAME document, give byte-identical total widths
 # -- 4.1463 in for cor_attitude at 6 pt and 2.0357 in for twoway at 6 pt, from
 # the .aux \LT@entry sums. (Per-column the two differ by 2 pt at each outer
@@ -570,14 +549,14 @@ apa_latex_size_cmd <- function(size) {
           apa_latex_num(size), apa_latex_num(size * 1.2))
 }
 
-# WHERE THE FONT SIZE GOES, AND WHY IT IS SPELLED THIS WAY (D10).
+# WHERE THE FONT SIZE GOES, AND WHY IT IS SPELLED THIS WAY.
 #
-# D10 is binding and measured: `endfloat` defers the ENVIRONMENT ALONE to the
+# Measured: `endfloat` defers the ENVIRONMENT ALONE to the
 # .ttt file and drops whatever preceded it, so a
 # "\bgroup\fontsize{10}{12}\selectfont" written in front of \begin{longtable}
 # is silently gone from a table collected at the end of the document -- inside
 # the deferred table \the\fontdimen6\font printed 12.0pt against 10.0pt for
-# the same document with floatsintext (that is B3). The size therefore has to
+# the same document with floatsintext. The size therefore has to
 # live INSIDE the environment. kableExtra hides it in \begin{table}; a
 # longtable has no float to hide in.
 #
@@ -608,21 +587,21 @@ apa_latex_size_cmd <- function(size) {
 # it should be, which also changes where it breaks across pages.
 #
 # apa_latex_strut_fix() repairs that from INSIDE the environment, which is the
-# only place D10 leaves available. A \noalign is legal as the very first thing
-# after \begin{longtable}{...} (that is exactly how \toprule gets in), and
-# rebuilding \@arstrutbox there -- at the table's own size, with array.sty's
-# own definition -- gives every row, head rows included, the right height. The
+# only place endfloat leaves available. A \noalign is legal as the very first
+# thing after \begin{longtable}{...} (that is exactly how \toprule gets in), and
+# rebuilding \@arstrutbox there -- at the table's own size, with array.sty's own
+# definition -- gives every row, head rows included, the right height. The
 # \setbox is \global because \noalign{...} is a group and a local box would be
-# discarded with it. Be precise about what that global write costs, because
-# the two obvious statements differ: the BOX ITSELF does persist after the
-# table (measured: \ht\@arstrutbox reads 7.2pt after a 6 pt table, against
-# 0pt in a control that never ran the fix), but nothing downstream reads that
-# stale value, because \@array rebuilds \@arstrutbox at the start of every
-# array and tabular. So the leak is real and its EFFECT is nil -- also
-# measured: an ordinary 12 pt tabular following the table has a row pitch of
-# 14.446 pt whether or not the fix ran. Say "the stale box is never read",
-# not "nothing leaks"; a reader who checks the box rather than the pitch
-# would otherwise go hunting for a bug that is not there.
+# discarded with it. Be precise about what that global write costs, because the
+# two obvious statements differ: the BOX ITSELF does persist after the table
+# (measured: \ht\@arstrutbox reads 7.2pt after a 6 pt table, against 0pt in a
+# control that never ran the fix), but nothing downstream reads that stale
+# value, because \@array rebuilds \@arstrutbox at the start of every array and
+# tabular. So the leak is real and its EFFECT is nil -- also measured: an
+# ordinary 12 pt tabular following the table has a row pitch of 14.446 pt
+# whether or not the fix ran. Say "the stale box is never read", not "nothing
+# leaks"; a reader who checks the box rather than the pitch would otherwise go
+# hunting for a bug that is not there.
 #
 # Confirmed on a real render -- with the fix the emitted table's row pitch is
 # 7.173 pt, matching the outside-the-environment reference to the last
@@ -631,9 +610,9 @@ apa_latex_size_cmd <- function(size) {
 # \makeatletter/\makeatother are needed for \@arstrutbox and \z@ and are safe
 # here: \noalign's body is processed incrementally, not absorbed as an
 # argument, so a catcode change inside it takes effect for the tokens that
-# follow it on the same line (the probe compiles clean; the earlier version
-# using \csname @arstrutbox\endcsname but leaving \z@ alone printed a stray
-# "@" into the table, which is what pinned this down).
+# follow it on the same line (the probe compiles clean; a variant using
+# \csname @arstrutbox\endcsname but leaving \z@ alone prints a stray "@"
+# into the table).
 apa_latex_strut_fix <- function(size) {
   paste0("\\noalign{\\makeatletter", apa_latex_size_cmd(size),
          "\\global\\setbox\\@arstrutbox\\hbox{",
@@ -648,7 +627,7 @@ apa_latex_strut_fix <- function(size) {
 #
 # NO VERTICAL RULES, ever -- APA forbids them, and this is the only place a
 # vertical rule could enter a table, because a "|" anywhere else is cell data
-# (Task 3 established that "|" needs no escaping under fontenc=TU, so a
+# ("|" needs no escaping under fontenc=TU, so a
 # variable name may legitimately contain one). The test that asserts their
 # absence targets THIS string, not the emitted document.
 apa_latex_colspec <- function(align, size) {
@@ -660,19 +639,19 @@ apa_latex_colspec <- function(align, size) {
 
 # The spec for a \multicolumn covering columns from..to.
 #
-# \multicolumn replaces the preamble entries of every column it spans,
-# INCLUDING the inter-column material that array.sty folded into them, and
-# then puts \tabcolsep back on each side of its own spec unless "@{}" says
-# otherwise. \tabcolsep is 6 pt here (this emitter never issues \setlength --
-# see D10), so a bare "\multicolumn{2}{c}{...}" would silently add 12 pt that
-# no other row has. Both edges are therefore always stated:
+# \multicolumn replaces the preamble entries of every column it spans, INCLUDING
+# the inter-column material that array.sty folded into them, and then puts
+# \tabcolsep back on each side of its own spec unless "@{}" says otherwise.
+# \tabcolsep is 6 pt here (this emitter never issues \setlength -- see the
+# font-size comment above), so a bare "\multicolumn{2}{c}{...}" would silently
+# add 12 pt that no other row has. Both edges are therefore always stated:
 #   left  -- always "@{}": at column 1 that reproduces the table's own leading
 #            "@{}", and past column 1 the slot is empty anyway because the gap
 #            before it belongs to the previous column.
 #   right -- "@{}" at the last column (the table's trailing edge), otherwise
 #            the gap itself, which the span has just eaten.
 # Checked against the reference: a twoway table emitted this way and
-# ltprobe.tex's hand-written spanner rows give the same total width to four
+# the probe's hand-written spanner rows give the same total width to four
 # decimal places in the same document.
 apa_latex_mc_spec <- function(from, to, align, n_col, size) {
   right <- if (to >= n_col) "@{}" else
@@ -684,19 +663,18 @@ apa_latex_mc_spec <- function(from, to, align, n_col, size) {
 # and it is deliberately absolute.
 #
 # rt_to_latex() leaves LF and CR raw on purpose (see the block comment at the
-# top of this file): TeX treats a single one mid-cell as an ordinary
-# inter-word space, and Task 3 left the interpretation to this layer. Here is
-# the interpretation. A cell that STACKS lines does not use newlines at all --
-# it arrives as an apa_richtext_lines value and is emitted as a nested tabular
-# (apa_latex_cell() below) -- so a newline inside a single run is never
-# structure. It is stray data: variable names and factor levels come from CSV,
-# SPSS/SAS imports and Word paste, all of which carry embedded line breaks.
+# top of this file): TeX treats a single one mid-cell as an ordinary inter-word
+# space, and the interpretation is left to this layer. Here it is. A cell that
+# STACKS lines does not use newlines at all -- it arrives as an
+# apa_richtext_lines value and is emitted as a nested tabular (apa_latex_cell()
+# below) -- so a newline inside a single run is never structure. It is stray
+# data: variable names and factor levels come from CSV, SPSS/SAS imports and
+# Word paste, all of which carry embedded line breaks.
 #
 # A DOUBLE newline in that position is not merely untidy, it aborts the
 # render. The crash was reproduced against THIS emitter's own output, with
-# this function stubbed out, rather than taken on trust -- and doing that
-# corrected the received account of it, which is worth recording because the
-# correction makes the guard MORE necessary, not less:
+# this function stubbed out, and the details make the guard MORE necessary,
+# not less:
 #
 #   - A blank line inside a plain (or nested) tabular CELL compiles cleanly.
 #     Measured: a stacked cell built as richtext_lines("top\n\nstill top",
@@ -737,13 +715,10 @@ apa_latex_collapse_newlines <- function(txt) {
 
 # The leading-bracket guard. "\\" scans for an optional argument, so a cell or
 # a stacked line that BEGINS with "[" is eaten as "\\[dimen]": "! Illegal unit
-# of measure (pt inserted)", or in the flextable path the content silently
-# vanished (fixed there at c3ea4a9 with a zero-width space; reproduced
-# natively in the Phase 2 spike). Every APA confidence interval starts with
-# "[", so this is the common case, not the corner case. "{}" in front is the
-# same guard kableExtra emitted ("{}[56.48, 64.77]" in
-# dev/factcheck/kableextra-reference/kableextra-reference.tex) and costs
-# nothing in the output.
+# of measure (pt inserted)", or the cell's content silently vanishes. Every APA confidence
+# interval starts with "[", so this is the common case, not the corner case.
+# "{}" in front is the same guard kableExtra emitted ("{}[56.48, 64.77]") and
+# costs nothing in the output.
 apa_latex_bracket_guard <- function(txt) {
   ifelse(substr(txt, 1L, 1L) == "[", paste0("{}", txt), txt)
 }
@@ -753,8 +728,8 @@ apa_latex_bracket_guard <- function(txt) {
 # stack in a d-value table) becomes a nested tabular of the cell's own
 # alignment.
 #
-# WHY A NESTED TABULAR AND NOT \makecell. The design sketch says \makecell,
-# and \makecell would be fine -- if the package were loaded. It is not:
+# WHY A NESTED TABULAR AND NOT \makecell. \makecell would be fine -- if the
+# package were loaded. It is not:
 # makecell reached the old kableExtra path only because kableExtra declared it
 # as a LaTeX dependency, and this native path has no kableExtra (the package
 # no longer depends on it at all -- the LaTeX path it served was removed in
@@ -765,12 +740,11 @@ apa_latex_bracket_guard <- function(txt) {
 # nowhere in apa7.cls. An undefined \makecell aborts the render, and this
 # emitter returns a bare string -- it has no way to add a \usepackage. The
 # nested tabular needs no package at all, and it is exactly the construct the
-# Task 4 width ground truth was measured with
-# (dev/factcheck/phase2-preflight/width6/ltprobe.tex uses
+# width model's ground truth was measured with (the probe uses
 # "\begin{tabular}[t]{@{}r@{}}" for every stacked cell), so the emitter and
 # the width model continue to describe the same table. "[t]" aligns the
-# stack's first line with the row's baseline. If a later task adds
-# \usepackage{makecell} to the extension header, switching is a one-line
+# stack's first line with the row's baseline. If \usepackage{makecell} is
+# ever added to the extension header, switching is a one-line
 # change here -- the blank-line guard above is what both constructs need.
 apa_latex_cell <- function(rt, align) {
   if (inherits(rt, "apa_richtext_lines")) {
@@ -840,7 +814,7 @@ apa_latex_foot_reserve <- function(n_col, size) {
 #' Writes the GRID and nothing else: one complete \code{longtable}
 #' environment, with no caption, no label, no note and no surrounding float.
 #'
-#' @section Why there is no caption (D9, measured):
+#' @section Why there is no caption (measured):
 #' Quarto's \code{main.lua} rewrites any raw-LaTeX \code{longtable} that
 #' contains no \code{\\caption} into \code{longtable*}, and every later fixup
 #' -- Quarto's own and apaquarto's \code{apalongtablenote.lua} alike -- matches
@@ -859,7 +833,7 @@ apa_latex_foot_reserve <- function(n_col, size) {
 #' @section Structure:
 #' \code{\\begin{longtable}} with the column spec carrying the size and the
 #' inter-column spacing (never a \code{\\setlength} in front of the
-#' environment -- see \code{apa_latex_colspec()} and D10), then the strut fix,
+#' environment -- see \code{apa_latex_colspec()}), then the strut fix,
 #' then \code{\\toprule} / header rows / \code{\\midrule} twice, for
 #' \code{\\endfirsthead} and \code{\\endhead}. \code{\\endfoot} draws NOTHING --
 #' no rule may appear at a page break in the middle of a table -- but it is not
@@ -882,17 +856,14 @@ apa_latex_table <- function(plan, size = 10) {
          call. = FALSE)
   }
   # CLAMP, do not merely validate -- but clamp at DEGENERACY, not at
-  # legibility. This guard was written against the old 5 pt font floor in
-  # Task 5, which made a 5 pt table the smallest thing the emitter could
-  # produce and so made D7b FALSE: a table needing 4 pt to fit was set at 5 pt
-  # and CLIPPED, silently, which is the exact failure mode this phase exists
-  # to remove. D7b is binding -- 6 pt is a warning threshold, never a hard
-  # stop, and content is never cut off -- so the floor is now the smallest
+  # legibility. A legibility floor (e.g. 5 pt) would set a table needing 4 pt
+  # to fit at 5 pt and CLIP it, silently. 6 pt is a warning threshold, never a
+  # hard stop, and content is never cut off -- so the floor is the smallest
   # size that still produces a real table rather than the smallest legible
   # one. A reader can zoom into 3 pt type; nobody can recover a column that is
   # not in the file.
   #
-  # The real defect the original guard caught remains guarded:
+  # The real degenerate case stays guarded:
   # apa_latex_num() formats to four decimals, so a size below 0.00005 renders
   # as "\fontsize{0}{0}\selectfont" -- not a small table, a broken one.
   size <- max(size, APA_LATEX_MIN_EMITTABLE_SIZE)
@@ -953,8 +924,8 @@ apa_latex_table <- function(plan, size = 10) {
     "\\bottomrule",
     "\\endlastfoot",
     body,
-    # THIS TABLE DRAWS ITS OWN BOTTOM RULE -- tell apaquarto so (F5, Fable
-    # pre-push review 2026-08-09). apaquarto's template appends an \hline to
+    # THIS TABLE DRAWS ITS OWN BOTTOM RULE -- tell apaquarto so. apaquarto's
+    # template appends an \hline to
     # EVERY longtable at \end{longtable} (upstream code, and load-bearing
     # there: a plain pandoc markdown table was MEASURED to have no closing
     # rule at all without it). This table's \bottomrule lives in

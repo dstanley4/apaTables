@@ -1,7 +1,7 @@
 # A longtable must never be wrapped in a LaTeX float -- and nothing in the
 # chunk should have to say so.
 #
-# The bundled apaquarto used to skip the float wrapper only when the author
+# The bundled apaquarto used to skip the float wrapper only when the user
 # wrote `#| apa-longtable: true`. Forgetting it did not produce an error or a
 # warning: LaTeX cannot page-break a longtable inside \begin{table}, so the
 # rows past the bottom of the page were dropped from a document that compiled

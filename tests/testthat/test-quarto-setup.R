@@ -16,21 +16,19 @@ test_that("the bundled extension declares our own build version", {
 
 # The FLOOR, and why a floor rather than an existence check.
 #
-# Commit 63c4359 swept the Phase 2 apaquarto patches out of this branch and
-# e72a1ed put them back. The cause is still live and still unguarded: a
-# concurrent `git checkout master -- inst/_extensions` STAGES what it restores,
-# so the bundle reverts to an earlier build with nothing in the working tree to
-# show for it. The only assertion standing between that and a merge was that
-# PATCHES.md exists -- which an older bundle also satisfies, every file of it
-# intact and every Phase 2 patch gone.
+# The bundled apaquarto patches have been silently reverted before: a
+# `git checkout <branch> -- inst/_extensions` STAGES what it restores, so the
+# bundle reverts to an earlier build with nothing in the working tree to show
+# for it. That PATCHES.md exists is not enough -- an older bundle also
+# satisfies it, every file of it intact and every longtable patch gone.
 #
 # Two independent readings, because the version string is metadata and can be
 # right while the code is not: the declared build must be at or above the one
-# this branch needs, and the code the branch depends on must be IN the files.
+# the package needs, and the code the package depends on must be IN the files.
 APA_REQUIRED_EXT_VERSION <- "5.0.18"
 APA_REQUIRED_EXT_BUILD <- 5L
 
-test_that("the bundled apaquarto is at or above the build this branch needs", {
+test_that("the bundled apaquarto is at or above the build the package needs", {
   v <- apa_bundled_version()
   expect_false(is.na(v))
   expect_true(apa_quarto_is_ours(v))
@@ -40,36 +38,36 @@ test_that("the bundled apaquarto is at or above the build this branch needs", {
   expect_gte(apa_ext_build(v), APA_REQUIRED_EXT_BUILD)
 })
 
-test_that("the bundled apaquarto carries the PHASE 2 patches, not just a version", {
-  # Each of these arrived in a numbered Phase 2 task and each is load-bearing:
-  # without it a rendered table loses rows, its note or its rotation, silently.
-  # This is the assertion that would have caught 63c4359 on the day.
+test_that("the bundled apaquarto carries the longtable patches, not just a version", {
+  # Each of these is load-bearing: without it a rendered table loses rows,
+  # its note or its rotation, silently. This is the assertion that catches a
+  # reverted bundle on the day.
   lua_lines <- readLines(file.path(apa_bundled_ext_dir(), "apafloatlatex.lua"),
                          warn = FALSE)
   lua <- paste(lua_lines, collapse = "\n")
-  # Task 6: the float wrapper is dropped when the CONTENT is a longtable, with
+  # The float wrapper is dropped when the CONTENT is a longtable, with
   # no chunk option required.
   expect_true(grepl("haslongtable", lua, fixed = TRUE))
-  # Task 8, D4: rotation is a literal landscape block, never sidewaystable.
+  # Rotation is a literal landscape block, never sidewaystable.
   expect_true(grepl("landscapewrap", lua, fixed = TRUE))
-  # LIVE CODE, not comments: D4's reversal is explained in comments that
-  # (necessarily) name the construct it replaced, which a whole-file grepl()
-  # reads as the construct still being emitted.
+  # LIVE CODE, not comments: the move away from sidewaystable is explained in
+  # comments that (necessarily) name the construct it replaced, which a
+  # whole-file grepl() reads as the construct still being emitted.
   lua_code <- lua_lines[!grepl("^\\s*--", lua_lines)]
   expect_false(any(grepl("sidewaystable", lua_code, fixed = TRUE)))
-  # Task 7: a short longtable is kept whole where floats stay in the text.
+  # A short longtable is kept whole where floats stay in the text.
   #
   # AGAINST LIVE CODE, for the reason stated just above, and it is not
-  # hypothetical here: Phase 1.16 changed the emitted command from \needspace
-  # to \Needspace* while leaving the word "needspace" all over the comments
-  # explaining WHY. A whole-file grepl() for "needspace" passed throughout and
-  # would have gone on passing had the emission been deleted outright.
+  # hypothetical here: the emitted command is \Needspace*, not \needspace,
+  # while the word "needspace" appears all over the comments explaining WHY.
+  # A whole-file grepl() for "needspace" would go on passing had the emission
+  # been deleted outright.
   expect_true(any(grepl("\\Needspace*{", lua_code, fixed = TRUE)))
   expect_false(any(grepl("\\needspace{", lua_code, fixed = TRUE)))
   tex <- paste(readLines(file.path(apa_bundled_ext_dir(), "apatemplate.tex"),
                          warn = FALSE), collapse = "\n")
   expect_true(grepl("needspace", tex, fixed = TRUE))
-  # Task 8: without this, a wide AND long table collected at the end does not
+  # Without this, a wide AND long table collected at the end does not
   # rotate at all -- endfloat defers the table and leaves the wrapper behind.
   expect_true(grepl("DeclareDelayedFloatFlavor{landscape}{table}", tex,
                     fixed = TRUE))

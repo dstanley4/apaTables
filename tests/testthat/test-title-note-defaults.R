@@ -1,6 +1,6 @@
 # The rendered acceptance suite for automatic table titles and notes.
 #
-# apa.quarto.pdf() now supplies the title and the note from the spec by
+# apa.quarto.pdf() supplies the title and the note from the spec by
 # default. `title =` / `note =` arguments override the spec, and the chunk's
 # own `tbl-cap` / `apa-note` settings lines override both. R emits an empty
 # ::: {.apa-table-meta} div carrying the generated values and the bundled Lua
@@ -19,7 +19,7 @@
 #
 #   * ROUND TRIP, never a literal string. What is asserted to reach the page is
 #     `as_plaintext(as_spec(x)$title)` and the spec's own notes, computed here
-#     at test time. This slice rewords the generated titles; a hard-coded
+#     at test time. Generated titles get reworded; a hard-coded
 #     expectation would fail later for the wrong reason and be "fixed" by
 #     retyping it, which is exactly how the statistic-italics defect survived.
 #   * REAL BUILDERS. apa.cor.table(), apa.reg.table(), apa.d.table(),
@@ -49,15 +49,14 @@ apa_skip_if_library_stale()
 # ---------------------------------------------------------------------------
 # The document under test
 #
-# Six floats in one document, because every measurement in this slice until now
-# used exactly one, and "the title is right" is a different claim from "each of
-# six titles is right and they are numbered 1 to 6". Each float is a different
-# point in the precedence matrix, and each is a different real builder so that
-# no single wording carries the whole file:
+# Six floats in one document, because "the title is right" is a different claim
+# from "each of six titles is right and they are numbered 1 to 6". Each float
+# is a different point in the precedence matrix, and each is a different real
+# builder so that no single wording carries the whole file:
 #
 #   1 tbl-auto       nothing set          -> generated title AND generated note
-#   2 tbl-capmixed   tbl-cap only         -> author's title, generated note
-#                                            (THE AUTHOR'S PRIMARY CASE, and the
+#   2 tbl-capmixed   tbl-cap only         -> user's title, generated note
+#                                            (THE PRIMARY CASE, and the
 #                                            harder one: a user-set tbl-cap means
 #                                            Quarto builds the float itself and R
 #                                            has no container to hang a note on)
@@ -231,12 +230,13 @@ tnd_note_tex <- function(tex, label) {
 #
 # This exists because tnd_note() above cannot see the answer, and neither can
 # any other cell in this file. tnd_note() derives its expectation by joining
-# the spec's entries with a space -- which is what the production code did --
-# and the page text is flattened before comparison, so a note printed as one
-# paragraph and the same note printed as three are the SAME STRING to every
-# other assertion here. 141 of them passed while apa.cor.table() and
-# apa.reg.table(), the two most-used builders, printed their significance-star
-# sentence run into the body of the note instead of on its own line.
+# the spec's entries with a space -- the same join a broken production path
+# would make -- and the page text is flattened before comparison, so a note
+# printed as one paragraph and the same note printed as three are the SAME
+# STRING to every other assertion here. 141 of them once passed while
+# apa.cor.table() and apa.reg.table(), the two most-used builders, printed
+# their significance-star sentence run into the body of the note instead of on
+# its own line.
 #
 # Asked of the UNFLATTENED .tex on purpose: tnd_float_tex() flattens, and
 # flattening is precisely what destroys the evidence. A blank line is what
@@ -395,9 +395,9 @@ for (placement in c("end", "intext")) local({
     expect_equal(note_page, cap_page)
   })
 
-  # ---- Cell 2: THE AUTHOR'S PRIMARY CASE -----------------------------------
+  # ---- Cell 2: THE PRIMARY CASE --------------------------------------------
   test_that(paste0("mixed, the primary case (", where,
-                   "): the author's tbl-cap survives and the note is generated"), {
+                   "): the document's own tbl-cap survives and the note is generated"), {
     r <- tnd_render(pl)
     rg <- tnd_specs()$reg
     expect_true(grepl("Capmixed Author Wrote This Title", r$flat, fixed = TRUE))
@@ -650,15 +650,19 @@ for (placement in c("end", "intext")) local({
 # carrier could print, and nothing else in the suite looks. It is checked as
 # an artefact question -- does anything from the div reach the page -- rather
 # than as a note question, because with no filter there is nothing to
-# populate the note. The vehicle used to be the shipped
-# example-without-apaquarto.qmd twin; that file was retired (the example
-# twins are now -pdf/-docx, both apaquarto), so the document is built inline
-# here -- one table is all the property needs.
+# populate the note. The document is built inline here -- one table is all
+# the property needs.
 test_that("plain Quarto: the meta div reaches the page as nothing at all", {
   tmp <- tempfile("tnd-plain"); dir.create(tmp)
   on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
   pkg <- Sys.getenv("APATABLES_PKG_ROOT",
-                    "/Users/dstanley/os/RDevelopment/apaTables")
+                    normalizePath(test_path("..", ".."), mustWork = FALSE))
+  # The document load_all()s the SOURCE tree, so a built copy (R CMD check)
+  # or covr's installed copy, where R/ holds no .R files, cannot run it.
+  skip_if_not(file.exists(file.path(pkg, "DESCRIPTION")) &&
+                dir.exists(file.path(pkg, "R")) &&
+                length(list.files(file.path(pkg, "R"), pattern = "[.]R$")) > 0,
+              "apaTables source tree not available (e.g. inside R CMD check or covr)")
   qmd <- file.path(tmp, "plain.qmd")
 
   # keep-md is what turns the assertions below from advertised coverage into
@@ -714,37 +718,33 @@ test_that("plain Quarto: the meta div reaches the page as nothing at all", {
 })
 
 # ---------------------------------------------------------------------------
-# Task 7: title and note on the markdown (docx) path.
+# Title and note on the markdown (docx) path.
 #
-# Everything above this line is the PDF acceptance suite Task 1 of the
-# title/note slice built, and its own banner already states the coverage
-# trap this task inherits verbatim: every fixture in THIS file sets
-# tbl-cap, and most set apa-note too, so a cell that does either would look
-# covered and prove nothing about the default. The fixture below
+# Everything above this line is the PDF acceptance suite, and its banner
+# states the coverage trap that applies here verbatim: every fixture in THIS
+# file sets tbl-cap, and most set apa-note too, so a cell that does either
+# would look covered and prove nothing about the default. The fixture below
 # (fixtures/title-note-defaults-docx.qmd) is built to set NEITHER, on a
 # `tbl-` labelled chunk that calls apa_quarto_markdown_block() directly --
-# the same way the existing landscape-*.qmd fixtures already exercise that
-# function, and the only way to reach the docx path before Task 8 wires
-# apa.quarto.pdf() itself over to it.
+# the same way the landscape-*.qmd fixtures exercise that function.
 #
 # apatablemeta.lua (inst/_extensions/wjschne/apaquarto/apatablemeta.lua) is
 # registered `at: post-quarto` in the COMMON filter list (_extension.yml),
 # not inside the docx-only block -- so the SAME filter that already serves
 # the PDF path above serves this one too, once R hands it a meta div to
-# read. Nothing about the filter or the precedence decision (D22) is
-# reimplemented here; only apa_quarto_markdown_block() itself changes, to
-# emit the div the way apa_quarto_latex_block()'s caller already does.
+# read. Nothing about the filter or the precedence rules is reimplemented on
+# this path; apa_quarto_markdown_block() emits the div the way
+# apa_quarto_latex_block()'s caller does.
 skip_on_cran()
 skip_if_not(nzchar(Sys.which("quarto")), "quarto not installed")
 apa_skip_if_library_stale()
 
-# apa_docx_text() strips tags but does not decode XML entities -- never
-# exercised before this task, because no earlier caller in this suite
-# compared it against text containing "<", "&" or ">". apa.cor.table()'s
-# significance-star note does ("indicates *p* < .05"), so word/document.xml's
-# literal "&lt;" would otherwise make the note compare unequal to itself.
-# Local to this file rather than a change to the shared helper, since this is
-# the first caller that needs it.
+# apa_docx_text() strips tags but does not decode XML entities.
+# apa.cor.table()'s significance-star note contains "<" ("indicates *p* <
+# .05"), so word/document.xml's literal "&lt;" would otherwise make the note
+# compare unequal to itself. Local to this file rather than a change to the
+# shared helper, since no other caller compares text containing "<", "&" or
+# ">".
 tnd_docx_text <- function(d) {
   x <- apa_docx_text(d)
   x <- gsub("&lt;", "<", x, fixed = TRUE)
@@ -841,7 +841,7 @@ test_that("apa_quarto_markdown_block() proves all three precedence cases, plus t
   # is a single hand-written string, so it must be exactly ONE paragraph --
   # a space-joined multi-part note would ALSO be one paragraph, so this
   # alone would not catch that defect, which is why cases 1-3's per-part
-  # substring checks above are the ones that do (D34's trap).
+  # substring checks above are the ones that do.
   expect_equal(sum(styles == "FigureNote"), 7L, info = paste(styles, collapse = ", "))
 
   # No leftover marker text anywhere in the document.

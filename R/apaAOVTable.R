@@ -416,15 +416,13 @@ apa.aov.table<-function(lm_output,filename=NA,table.number=1, conf.level=.90,typ
      tbl_console$latex.body         <- table_body
 
      tbl_console$landscape      <- apa_landscape_value(landscape)
-     # "aov", NOT "aovstats". This was the ONE builder in six whose object
-     # field disagreed with its own spec's meta$table.type, which is what the
-     # type-to-builder map in R/quarto.R keys on -- so anyone who reasonably
-     # assumed the two were the same field got a value the map has no entry
-     # for. Unified rather than documented: "aovstats" was introduced on the
-     # v3 line, and v3 was never on CRAN (the released predecessor to 4.0.0 is
-     # 2.0.8), so no user code can be relying on it (D62). Nothing in R/ ever
-     # READ this field -- verified -- so the change is confined to what the
-     # object reports about itself.
+     # "aov", NOT "aovstats": this field must agree with the spec's
+     # meta$table.type, which is what the type-to-builder map in R/quarto.R
+     # keys on -- anyone who reasonably assumes the two are the same field
+     # must get a value the map has an entry for. "aovstats" existed only on
+     # the unreleased v3 line (the released predecessor to 4.0.0 is 2.0.8), so
+     # no user code relies on it. Nothing in R/ reads this field; it only
+     # reports what the object is.
      tbl_console$table.type      <- "aov"
 
      tbl_console$spec <- aov_build_spec(

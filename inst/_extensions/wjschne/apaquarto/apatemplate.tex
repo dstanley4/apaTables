@@ -50,8 +50,8 @@ $endif$
 % THE STARRED, EAGER FORM IS DELIBERATE. The lower-case \needspace defers the
 % break decision to TeX's page builder, which by then is inside longtable's
 % output routine -- and that routine repeats the table's header on the new
-% page, above the caption, attached to nothing. Phase 1.16 / D106; the
-% reasoning and the 26-document measurement live in apafloatlatex.lua.
+% page, above the caption, attached to nothing. The reasoning and the
+% 26-document measurement live in apafloatlatex.lua.
 \usepackage{needspace}
 
 \usepackage{framed}
@@ -168,7 +168,7 @@ $if(journalmode)$
 % apatablesownbottomrule\endcsname} as its last row -- and the automatic
 % \hline below stands down for that one table. Without the flag every such
 % table ended with TWO rules: this \hline plus the table's own \bottomrule
-% (apaTables F5, 2026-08-09; rule bands measured 2.4 pt apart at 300 dpi).
+% (rule bands measured 2.4 pt apart at 300 dpi).
 % The flag is cleared, globally, the first time it is consumed, so a
 % following plain markdown table -- whose ONLY bottom rule is this \hline,
 % measured: without it such a table has no closing rule at all -- is
@@ -197,7 +197,6 @@ $else$
 % Same flag as the journal-mode branch above (only one branch is emitted per
 % document): a longtable carrying its own \bottomrule arms
 % \apatablesownbottomrule and the automatic \hline stands down for it.
-% apaTables F5, 2026-08-09 -- see the twin comment above.
 \newif\ifapatablesownrule
 \def\apatablesownbottomrule{\global\apatablesownruletrue}
 \let\endoldlt\endlongtable
@@ -278,16 +277,27 @@ $endfor$
   {\bgroup}
   {\bgroup\global\LTpatch@captiontrue}
   {}{}
-% The upstream \patchcmd{\longtable}{\par}{...} reset is DELETED. \par is
-% still present in longtable.sty, but \longtable has already been redefined
-% by the time this template runs -- \@efloat{...} under endfloat, and
-% \savenotes\msne$$longtable under floatsintext -- so the patch reports
-% NOT-FOUND and the flag is never reset in ANY real apaquarto document.
-% Resetting inside the same \apptocmd body needs no anchor and runs after
-% the check, in every mode. A SEPARATE \apptocmd does not work: it produced
-% "Table 1, Table 1, Table 2".
+% longtable (2020 and later) steps the \LTcaptype counter when a longtable
+% begins, whether or not a caption follows, so an uncaptioned longtable would
+% use up a table number; the decrement below gives that number back.
+%
+% Pandoc 3.8 and later (Quarto 1.9) emit a captioned table as a float whose
+% caption sits OUTSIDE the longtable, with \def\LTcaptype{none} inside so the
+% longtable steps nothing. Decrementing there cancels the float's number, and
+% every table in a manuscript-mode PDF prints as "Table 1". So decrement only
+% when the longtable was itself counting as a table (\LTcaptype is "table")
+% and no caption consumed the number.
+%
+% The flag is reset here rather than by patching \longtable: by the time this
+% template runs, \longtable has already been redefined (endfloat in man/stu
+% mode, the footnote wrapper under floatsintext), so a \patchcmd on it reports
+% not-found and never resets the flag; the first captioned longtable then
+% latched it true for the rest of the document.
 \apptocmd{\endlongtable}
-  {\ifLTpatch@caption\else\addtocounter{table}{-1}\fi
+  {\ifLTpatch@caption\else
+     \edef\LTpatch@type{\LTcaptype}\def\LTpatch@table{table}%
+     \ifx\LTpatch@type\LTpatch@table\addtocounter{table}{-1}\fi
+   \fi
    \global\LTpatch@captionfalse}
   {}{}
 \makeatother

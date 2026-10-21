@@ -23,7 +23,7 @@ test_that("apa.d.table attaches a well-formed spec (woven d/CI -> multi-line cel
   expect_match(as_plaintext(s$body[[3]][[4]]), "1.93", fixed = TRUE)
   expect_match(as_plaintext(s$body[[3]][[5]]), "1.24", fixed = TRUE)
   # title carries italic d; note has no "Note." prefix and cites Borenstein
-  # D19: generated from the iv and dv rather than a stock string.
+  # Generated from the iv and dv rather than a stock string.
   expect_equal(as_plaintext(s$title),
                "Means, Standard Deviations, and d-Values for Libido by Dose")
   expect_false(grepl("Note\\.", as_plaintext(s$notes[[1]])))

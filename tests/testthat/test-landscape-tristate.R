@@ -1,5 +1,5 @@
-# Phase 1.7 / D32 / D61. The tri-state and its precedence, tested at the
-# level where all three destinations share it.
+# The landscape tri-state and its precedence, tested at the level where all
+# three destinations share it.
 
 test_that("apa_landscape_value() normalises anything that is not a logical scalar to NA", {
   expect_true(is.na(apa_landscape_value(NULL)))
@@ -94,7 +94,7 @@ test_that("apa_chunk_landscape() is a tri-state outside a knit", {
 
 test_that("apa_chunk_landscape() reads all three states from the chunk option", {
   # In-process coverage of R/quarto-table.R's isFALSE(v)/"true"/"false"/
-  # length-guard branches, which Task 3's render test (skip_on_cran() plus a
+  # length-guard branches, which the render test (skip_on_cran() plus a
   # quarto guard) is the ONLY other coverage for -- on a machine with no
   # quarto that capability would otherwise be untested. knitr::opts_current
   # works this way outside a real knit (verified): $set()/$get() operate on
@@ -158,29 +158,27 @@ test_that("apa.afex.table defaults landscape to NA and carries an explicit value
   }
 })
 
-test_that("apa.aov.table() accepts landscape, which it never could before (D63)", {
+test_that("apa.aov.table() accepts landscape", {
   # The one builder that could not express a preference. In Quarto the chunk
   # option already covered it; apa.save() had no way to say anything at all.
   expect_true(is.na(apa.aov.table(lm(libido ~ dose, data = viagra))$landscape))
   expect_true(apa.aov.table(lm(libido ~ dose, data = viagra), landscape = TRUE)$landscape)
 })
 
-# --- Task 3: the Quarto PDF and Word emitters read the argument -----------
+# --- the Quarto PDF and Word emitters read the argument -------------------
 #
-# Both Quarto emitters ignored landscape = entirely before 1.7 (D32 required
-# that of 1.6/1.6a, so PDF and Word would agree). They must read it now.
+# Both Quarto emitters must read landscape =, and read it the same way, so
+# that PDF and Word agree.
 
 test_that("apa_quarto_latex_block() passes the builder argument into the layout decision, which it never did", {
-  # SUPERSEDES the plan brief's own sketch for this name, which asserted the
-  # substring "landscape" was absent from the rendered LaTeX text. That
-  # assertion could not have failed under any mutation: apa_quarto_latex_
-  # block() never writes the word "landscape" anywhere in its returned
-  # characters -- rotation is signalled ONLY as a side effect on a knitr
-  # chunk hook, via apa_request_landscape() (R/quarto-table.R) -- so a text
-  # grep on the output is blind to whether the argument was read at all.
-  # Rewritten (D66) to watch what apa_layout_decide() is actually called
-  # with, which is the one place the wiring this task adds can be observed
-  # directly.
+  # Do not test this by grepping the rendered LaTeX for "landscape": such an
+  # assertion cannot fail under any mutation. apa_quarto_latex_block() never
+  # writes the word "landscape" anywhere in its returned characters --
+  # rotation is signalled ONLY as a side effect on a knitr chunk hook, via
+  # apa_request_landscape() (R/quarto-table.R) -- so a text grep on the
+  # output is blind to whether the argument was read at all. This watches
+  # what apa_layout_decide() is actually called with, which is the one place
+  # the wiring can be observed directly.
   captured <- NULL
   testthat::local_mocked_bindings(
     apa_layout_decide = function(plan, geom = NULL, geom_landscape = NULL,
@@ -194,10 +192,10 @@ test_that("apa_quarto_latex_block() passes the builder argument into the layout 
   apa_quarto_latex_block(apa.cor.table(mtcars, landscape = FALSE))
   expect_identical(captured, FALSE)
 
-  # Fix round 1 (Important 3): FALSE alone does not prove the tri-state
-  # survives the trip -- isTRUE(spec$landscape) also reduces FALSE to FALSE,
-  # collapsing every DEFAULT (NA) table into a silent FORBID and losing
-  # automatic rotation without any test here noticing. A default-built table
+  # FALSE alone does not prove the tri-state survives the trip --
+  # isTRUE(spec$landscape) also reduces FALSE to FALSE, collapsing every
+  # DEFAULT (NA) table into a silent FORBID and losing automatic rotation
+  # without any test here noticing. A default-built table
   # must still arrive as NA.
   apa_quarto_latex_block(apa.cor.table(mtcars))
   expect_true(is.na(captured))
@@ -220,8 +218,8 @@ test_that("apa_quarto_markdown_block() passes the builder argument into the layo
   apa_quarto_markdown_block(apa.cor.table(mtcars, landscape = FALSE))
   expect_identical(captured, FALSE)
 
-  # Fix round 1 (Important 3): see the sibling test above for why a default
-  # (NA) table needs its own assertion here, distinct from FALSE.
+  # See the sibling test above for why a default (NA) table needs its own
+  # assertion here, distinct from FALSE.
   apa_quarto_markdown_block(apa.cor.table(mtcars))
   expect_true(is.na(captured))
 })

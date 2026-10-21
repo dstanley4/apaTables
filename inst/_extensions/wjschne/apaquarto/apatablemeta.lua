@@ -14,18 +14,14 @@
 -- IMPORTANT: this script returns EXACTLY the plain, universal apaquarto
 -- filter shape, `{ { FloatRefTarget = processfloat } }`, with no extra
 -- keys -- matching every sibling filter (apafloatlatex.lua and the rest).
--- An earlier version instead attached `decide` as an extra key on the
--- returned table, so a bare `pandoc lua` test harness could reach it
--- directly without a second file. That was verified to work under bare
--- `pandoc --lua-filter=` and under `pandoc lua`, but NOT under Quarto's own
--- filter loader (main.lua): registered at post-quarto exactly where
--- apafloatlatex.lua expects it and rendered against a real
--- apa.quarto.table() document, `processfloat` was invoked zero times --
--- exit 0, PDF produced, caption and note both silently empty. Loading the
--- decision logic from a sibling file instead, the same way every other
--- apaquarto filter loads utilsapa.lua, avoids the problem entirely and was
--- confirmed end to end with a real Quarto render (see the apaTables repo's
--- task-5 report for this slice).
+-- Do NOT attach `decide` as an extra key on the returned table so a bare
+-- `pandoc lua` harness can reach it: bare `pandoc --lua-filter=` and
+-- `pandoc lua` tolerate the stray key, but under Quarto's own filter loader
+-- (main.lua) `processfloat` is then invoked zero times -- exit 0, PDF
+-- produced, caption and note both silently empty (measured). Loading the
+-- decision logic from a sibling file, the same way every other apaquarto
+-- filter loads utilsapa.lua, avoids the problem and is confirmed end to end
+-- with a real Quarto render.
 local scriptdir = PANDOC_SCRIPT_FILE:match("(.*[/\\])") or "./"
 local M = dofile(scriptdir .. "apatablemeta-decide.lua")
 

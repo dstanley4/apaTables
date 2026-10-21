@@ -5,27 +5,24 @@
 # skip unless the full toolchain is present (quarto + a LaTeX engine + pdftotext
 # + the apaquarto extension sandbox + the apaTables source tree).
 #
-# These fixtures called apaTables:::apa_flextable() directly until Task 9
-# (Phase 1.6a) migrated all nine to apa.quarto.pdf() -- the native LaTeX
-# emitter every real apaquarto-pdf document actually uses. They had been
-# reaching apa_flextable() from a real LaTeX render entirely outside
-# apa.save() and the apa_direct_output() guard it used to run its calls
-# inside (removed as vestigial in Phase 1.11), which is what made
-# apa_restore_emph() (deleted in that task) still load-bearing right up until
-# this file's fixtures were rewritten; see the task-9 report. CONSEQUENCE OF
-# THAT MIGRATION: flextable's own output (what apa.save() actually writes)
-# has no end-to-end rendered coverage through a real toolchain in ANY suite
-# any more -- only unit-level coverage (test-render-flextable.R and friends,
-# which build a flextable object and inspect it directly, never through Word
-# or LibreOffice) and test-apa-save.R's docx-structure checks.
+# The fixtures call apa.quarto.pdf() -- the native LaTeX emitter every real
+# apaquarto-pdf document uses -- never apa_flextable(). CONSEQUENCE:
+# flextable's own output (what apa.save() actually writes) has no end-to-end
+# rendered coverage through a real toolchain in ANY test file -- only
+# unit-level coverage (test-render-flextable.R and friends, which build a
+# flextable object and inspect it directly, never through Word or
+# LibreOffice) and test-apa-save.R's docx-structure checks.
 
 # Resolve apaquarto paths from env vars (with sane defaults) and export
 # APATABLES_PKG_ROOT so the spawned quarto R session can load_all().
 apaq_paths <- function() {
-  ext <- Sys.getenv("APATABLES_APAQUARTO_EXT",
-                    "/Users/dstanley/os/cat-self-dev/apaquarto-starter/_extensions")
   pkg <- Sys.getenv("APATABLES_PKG_ROOT",
                     normalizePath(test_path("..", ".."), mustWork = FALSE))
+  # The extension apaTables ships, which is the one a user renders with. Set
+  # APATABLES_APAQUARTO_EXT to an `_extensions` folder to render against a
+  # different copy (for example stock apaquarto).
+  ext <- Sys.getenv("APATABLES_APAQUARTO_EXT",
+                    file.path(pkg, "inst", "_extensions"))
   # These tests pkgload::load_all() the SOURCE tree inside a spawned quarto R
   # session. Skip when that source tree is not available -- e.g. inside
   # R CMD check / devtools::check(), where tests run from a built copy and `pkg`
@@ -136,14 +133,14 @@ test_that("a two-way CI table renders through apaquarto to PDF (row groups)", {
   expect_match(txt, "[", fixed = TRUE)               # a CI bracket
 })
 
-# The fixture kept its ::: {.landscape} markers and lost its page = "landscape"
-# argument (Task 10 removed the argument). What is asserted is unchanged and is
-# a documented promise: a document that ALREADY wraps a chunk in the markers
-# keeps rendering exactly as before. The extension sandbox these tests render
-# against is STOCK apaquarto, where the emitter's own rotation request is
-# inert -- which is what makes this a test of the markers rather than of the
-# request. Automatic rotation, which needs the bundled extension, is the
-# acceptance matrix's job.
+# The fixture wraps its chunk in ::: {.landscape} markers and passes no
+# rotation argument. What is asserted is a documented promise: a document that
+# ALREADY wraps a chunk in the markers keeps rendering with a rotated page.
+# It tests the MARKERS even against the bundled extension, whose automatic
+# rotation is live: the table is a single-model regression, which never
+# rotates on its own (measured: the same fixture without the markers renders
+# with no rotated page). Automatic rotation is tested in
+# test-landscape-matrix.R and friends.
 test_that("template-style landscape markers produce a rotated PDF page", {
   skip_if_not(nzchar(Sys.which("pdfinfo")), "pdfinfo (poppler) not available")
   pdf <- render_apaquarto_pdf("apaquarto-landscape.qmd", "landscape",
@@ -162,23 +159,20 @@ test_that("template-style landscape markers produce a rotated PDF page", {
   txt <- paste(system2("pdftotext", c(pdf, "-"), stdout = TRUE), collapse = "\n")
   expect_match(txt, "Fit", fixed = TRUE)
 
-  # This fixture is a MIXED case -- it sets tbl-cap and no apa-note -- and
-  # until the title/note slice nothing here looked at either. What it can
-  # honestly be asked depends on which extension it renders against, and the
-  # answer is measured rather than assumed: the sandbox above is STOCK
-  # apaquarto (version 5.0.18, no +apaTables suffix, no apatablemeta.lua), so
-  # the generated note has no filter to place it and does not appear. Asserting
-  # that it DOES would be asserting a fact about a different extension.
+  # This fixture is a MIXED case -- it sets tbl-cap and no apa-note. Whether
+  # the generated note appears depends on which extension it renders against:
+  # the bundled one places it (apatablemeta.lua), stock apaquarto has no
+  # filter to place it. So nothing here asserts the note either way.
   #
-  # Two things can be asked, and both are real:
+  # Two things hold against either extension, and both are asserted:
   #
-  #   * the author's own tbl-cap survived. R now emits a title of its own on
-  #     every LaTeX render, and a mechanism that overwrote a caption the author
-  #     wrote would be the single worst outcome of this slice.
+  #   * the document's own tbl-cap survived. R emits a title of its own on
+  #     every LaTeX render, and a mechanism that overwrote a caption the user
+  #     wrote would be the single worst outcome.
   #   * the ::: {.apa-table-meta} div that carries the generated title and note
-  #     printed NOTHING. With no filter present the div survives all the way
-  #     into pandoc's output, so this render -- and the plain-Quarto twin -- are
-  #     the two places where the carrier could reach a finished page.
+  #     printed NOTHING. With no filter present (stock apaquarto, or plain
+  #     Quarto) the div survives all the way into pandoc's output, which is
+  #     where the carrier could reach a finished page.
   #
   # The other half of the mixed case, the generated note actually arriving on a
   # ROTATED page, needs the bundled extension and is covered against it in
@@ -198,16 +192,15 @@ test_that("the PDF example renders warning-free with rotated pages", {
   tmp <- tempfile("apaqex"); dir.create(tmp)
   on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
   suppressMessages(apa.quarto.example(file.path(tmp, "ex.qmd")))
-  # NO file.copy() of the stock sandbox extension over the one
-  # apa.quarto.example() just installed, and that omission is now
-  # load-bearing. The example document carries no ::: {.landscape} markers
-  # any more (Task 12): its one wide table -- the blocks regression, 7.12 in
-  # -- reaches a rotated page only because R measures it and the BUNDLED
-  # apaquarto acts on the request. Overwriting the bundle with stock made the
-  # request inert and the rot: 90 assertion below fail, which is exactly the
-  # right answer for stock and the wrong document to ask it of: what a user
-  # gets from apa.quarto.example() is the bundle, so that is what is rendered
-  # here.
+  # NO file.copy() of p$ext over the extension apa.quarto.example() just
+  # installed, and that omission is load-bearing. The example document carries
+  # no ::: {.landscape} markers: its one wide table -- the blocks regression,
+  # 7.12 in -- reaches a rotated page only because R measures it and the
+  # BUNDLED apaquarto acts on the request. Overwriting the bundle with stock
+  # apaquarto makes the request inert and the rot: 90 assertion below fail,
+  # which is the right answer for stock and the wrong document to ask it of:
+  # what a user gets from apa.quarto.example() is the bundle, so that is what
+  # is rendered here.
   qmd <- file.path(tmp, "ex-pdf.qmd")
   # point the document at the dev package, not the installed copy
   txt <- readLines(qmd, warn = FALSE)
@@ -257,8 +250,7 @@ test_that("the Word example renders through apaquarto-docx with a rotated page",
   expect_no_match(xml, "Registered S3", fixed = TRUE)
 })
 
-# The plain-Quarto route the retired -without-apaquarto twin used to
-# demonstrate is STILL SUPPORTED -- an ordinary `format: pdf` document with
+# The plain-Quarto route is SUPPORTED -- an ordinary `format: pdf` document with
 # no extension renders apaTables table bodies, with tbl-cap captions and
 # hand-placed ::: {.landscape} markers. The route now lives in the vignette
 # ("Using apaTables tables in an ordinary Quarto document"); this test is
@@ -272,8 +264,7 @@ test_that("apaTables tables render in an ordinary Quarto document (no apaquarto)
     nzchar(Sys.which("xelatex")) || nzchar(Sys.which("pdflatex"))
   skip_if_not(has_latex, "no LaTeX engine available for PDF rendering")
 
-  pkg <- Sys.getenv("APATABLES_PKG_ROOT",
-                    "/Users/dstanley/os/RDevelopment/apaTables")
+  pkg <- apaq_paths()$pkg
   tmp <- tempfile("plainq"); dir.create(tmp)
   on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
   qmd <- file.path(tmp, "plain.qmd")

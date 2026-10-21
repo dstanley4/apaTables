@@ -279,13 +279,12 @@ apa_page_geometry <- function(page = "portrait", meta = NULL,
        config = config, unknown = unknown)
 }
 
-# apa_geometry_is_journal() stood here. Journal mode used to need a branch of
-# its own in every caller, because the remedies differed there: a rotated page
-# does not widen a two-column body. Phase 2's ladder needs no such branch --
+# There is deliberately no journal-mode predicate here, and callers need no
+# journal branch, although a rotated page does not widen a two-column body:
 # apa_layout_decide() rotates only when the rotated geometry is WIDER than the
 # upright one, and in journal mode both report the same column, so the
-# comparison stands journal mode down by itself. The predicate had no caller
-# left, and one nobody calls is one nobody keeps true.
+# comparison stands journal mode down by itself. Do not add a predicate with
+# no caller -- one nobody calls is one nobody keeps true.
 
 # Warn -- once per render -- that the page could not be identified.
 #
@@ -307,7 +306,7 @@ apa_warn_unknown_geometry <- function(geom) {
     "your_table)."))
 }
 
-# Journal mode is not supported, and this is where it says so (B4).
+# Journal mode is not supported, and this is where it says so.
 #
 # THIS WARNING IS NOT A FIX AND IS NOT OFFERED AS ONE. The rule in this
 # package is that a warning stands beside a real fix and never instead of
@@ -318,7 +317,7 @@ apa_warn_unknown_geometry <- function(geom) {
 # either: apafloatlatex.lua's longtable branch stands down in journal mode
 # because REMOVING that guard ABORTS the render outright ("Package longtable
 # Error: longtable not in 1-column mode"), so in `jou` it is the grid that
-# has to change, which is a phase of its own. Until that phase runs, the
+# has to change, which is a larger piece of work. Until then, the
 # honest thing is to stop the loss being silent and to say the same in the
 # documentation rather than let `jou` look supported.
 #

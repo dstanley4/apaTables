@@ -98,19 +98,13 @@ apa.save <- function(filename, ..., paper = "us") {
           ext <- "docx"
      }
 
-     # apa_direct_output() USED TO wrap the two calls below: the file written
-     # here is its own document, so it must not be shaped by whatever knitr
-     # happens to be rendering. That mattered for two real reasons -- calling
-     # apa.save() from a chunk of a PDF manuscript laid the table out for a
-     # 6.5 in LaTeX page (6 pt type in a Word file on a 10 in landscape page)
-     # and inserted a LaTeX-only bracket guard -- but both mechanisms are gone
-     # (Phase 2 Task 10 deleted the width fitter; Task 9, Phase 1.6a, deleted
-     # the bracket guard and apa_restore_emph() as confirmed dead). The flag
-     # was then VESTIGIAL: nothing apa_save_docx()/apa_save_html() call ever
-     # read it any more, measured by counting calls to both readers with
-     # options(knitr.in.progress = TRUE) set -- zero in Phase 1.6a, zero again
-     # in Phase 1.11, which removed apa_direct_output() and unwrapped these
-     # two calls.
+     # The file written here is its own document, so it must not be shaped by
+     # whatever knitr happens to be rendering (e.g. apa.save() called from a
+     # chunk of a PDF manuscript). Nothing apa_save_docx()/apa_save_html()
+     # call reads knitr state -- measured by counting calls to the knitr
+     # readers with options(knitr.in.progress = TRUE) set: zero. So no
+     # wrapper that hides knitr state is needed here; if a knitr-aware
+     # mechanism is ever added below, it must not see the calling document.
      if (ext == "docx") {
           apa_save_docx(filename, tables, paper)
      } else if (ext == "html") {
@@ -160,9 +154,9 @@ apa_document_numbers <- function(tables) {
 #
 # Named `rotate`, not `landscape`: every caller passes apa_save_rotate()'s
 # plain logical (TRUE/FALSE, never NA), so the isTRUE() below is harmless --
-# but the old name `landscape` claimed a tri-state this parameter never was,
-# which is exactly the shape of the confusion D32's tri-state work exists to
-# rule out. (Whole-branch review Finding 5.)
+# but the name `landscape` would claim a tri-state this parameter never is,
+# and confusing the resolved flag with the builders' tri-state `landscape`
+# argument is exactly the mistake to rule out.
 apa_doc_section <- function(rotate, paper) {
      dims <- if (identical(paper, "a4")) c(8.27, 11.69) else c(8.5, 11)
      orient <- if (isTRUE(rotate)) "landscape" else "portrait"
@@ -181,8 +175,7 @@ apa_usable_width <- function(rotate, paper) {
 }
 
 
-# Does THIS table, in THIS document, want a rotated page? (D32's rule, D61's
-# arithmetic.)
+# Does THIS table, in THIS document, want a rotated page?
 #
 # The rule is shared with the Quarto destinations; the ARITHMETIC IS NOT, and
 # that is deliberate. apa.save() sets its tables at 12 pt on a page with 0.5 in
@@ -241,9 +234,9 @@ apa_save_docx <- function(filename, tables, paper = "us") {
           # properties are written as the document's closing section instead:
           # a break there leaves officer's default body-level section -- A4,
           # empty -- after it, which Word renders as a blank trailing page
-          # (Fable review round 2, F6; measured in real Word's own PDF
-          # export). The closing section carries the last table's own
-          # orientation, so a landscape final table stays landscape.
+          # (measured in real Word's own PDF export). The closing section
+          # carries the last table's own orientation, so a landscape final
+          # table stays landscape.
           if (i < length(tables)) {
                doc <- officer::body_end_block_section(doc,
                          officer::block_section(apa_doc_section(rotate, paper)))

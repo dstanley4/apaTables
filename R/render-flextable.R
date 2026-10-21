@@ -1,24 +1,13 @@
-# apa_direct_output()/apa_direct_output_active() USED TO answer "is the table
-# being built right now destined for the document that knitr is rendering?",
-# guarding apa.save()'s own file against whatever knit context happened to be
-# in progress around it. That mattered for two real mechanisms -- the LaTeX
-# width fitter (deleted Phase 2 Task 10) and the leading-bracket escape in
-# rt_to_paragraph() plus apa_restore_emph() (both deleted Phase 1.6a Task 9,
-# confirmed dead by rendering) -- and once both were gone the flag was
-# vestigial: MEASURED (Task 9 fix round 1) at zero calls to either reader
-# during apa.save(docx) or apa.save(html) with options(knitr.in.progress =
-# TRUE) set. Phase 1.11 re-measured only apa_direct_output_active() on the
-# tree three phases later, got zero calls again, and removed
-# apa_direct_output(), apa_direct_output_active() and the apa_direct env,
-# plus the two call sites in R/save.R.
+# TRUE when knitr is rendering LaTeX output. apa_quarto_render()
+# (R/quarto-table.R) uses it to choose the native LaTeX block over the native
+# markdown block for a bare table object, which has nothing to do with
+# flextable and is outside apa.save()'s call chain entirely.
 #
-# apa_latex_target() ITSELF SURVIVED the removal: apa_quarto_render()
-# (R/quarto-table.R:1327) still uses it to choose the native LaTeX block over
-# the native markdown block for a bare table object (D30's dispatch), which
-# has nothing to do with flextable. That call site is outside apa.save()'s
-# chain entirely -- settled by static reachability, not by the zero-call
-# count above, which only ever covered apa_direct_output_active(). Only the
-# apa_direct_output_active() early return went with the rest.
+# apa.save() deliberately consults no knit context: the file it writes is its
+# own, whatever document knitr happens to be rendering around it.
+# apa_flextable() writes only .docx and .html, so no LaTeX-specific fix
+# belongs on its path (measured: no knit-context check is reached during
+# apa.save(docx) or apa.save(html) with options(knitr.in.progress = TRUE)).
 apa_latex_target <- function() {
   requireNamespace("knitr", quietly = TRUE) && knitr::is_latex_output()
 }
@@ -27,35 +16,31 @@ apa_latex_target <- function() {
 #
 # autofit(add_w = 0) recomputes every column width from the text as it is set
 # at that size. That is what makes this a MEASUREMENT of the content rather
-# than arithmetic on a 12 pt figure, and it is why Task 4's native-LaTeX width
+# than arithmetic on a 12 pt figure, and it is why the native-LaTeX width
 # model (R/render-latex.R) calls it: apa_latex_natural_width() measures the
 # per-column content ONCE at a reference size through this function, then
 # prices every candidate size from that vector. Nothing else uses it.
 #
-# It survived Task 10, which deleted the flextable fitter it was written for
-# (apa_fit_by_measure(), apa_latex_table_width()), because the measurement it
-# performs is destination-neutral: it reports how wide flextable lays the
-# CONTENT out, and both the old flextable fitter and the new LaTeX width model
-# start from that.
+# The measurement is destination-neutral: it reports how wide flextable lays
+# the CONTENT out, and the LaTeX width model starts from that.
 apa_ft_at_size <- function(ft, size) {
   ft <- flextable::fontsize(ft, size = size, part = "all")
   flextable::autofit(ft, add_w = 0, add_h = 0)
 }
 
 # Build the themed flextable body -- data frame, header labels, group-label
-# rows, spanner rows, alignment -- straight from a display plan (Task 2's
-# apa_display_plan()), with none of apa_flextable()'s x-specific finishing
+# rows, spanner rows, alignment -- straight from a display plan
+# (apa_display_plan()), with none of apa_flextable()'s x-specific finishing
 # (the correlation/d-value row spacing, which depends on x$meta and is a
 # vertical-only padding.bottom with no effect on width; set_table_properties
 # for margin sharing).
 #
-# Factored out of apa_flextable() (Task 4, render-latex.R's width model) so
-# that apa_latex_natural_width()/apa_size_for_width() -- which receive a
-# plan, not a spec -- measure against EXACTLY the same styled flextable
-# (font, size, theme) that the real Word/PDF-via-flextable path renders,
-# rather than a hand-rolled approximation that could quietly drift from it.
-# apa_flextable(x, ...) below is unchanged behaviourally: it now calls this
-# helper instead of inlining the same steps.
+# Separate from apa_flextable() so that apa_latex_natural_width() and
+# apa_size_for_width() (R/render-latex.R) -- which receive a plan, not a
+# spec -- measure against EXACTLY the same styled flextable (font, size,
+# theme) that apa.save() renders, rather than a hand-rolled approximation
+# that could quietly drift from it. apa_flextable(x, ...) below calls this
+# helper.
 apa_flextable_from_plan <- function(plan) {
   n_col <- plan$n_col
   keys <- paste0("c", seq_len(n_col))
@@ -103,7 +88,7 @@ apa_flextable_from_plan <- function(plan) {
     }
   }
 
-  # column alignment (header + body), matching the Plan-1 calls so flat specs are unchanged
+  # column alignment (header + body)
   align_map <- c(l = "left", r = "right", c = "center")
   for (j in seq_len(n_col)) {
     ft <- flextable::align(ft, j = keys[j], align = align_map[[plan$align[j]]], part = "all")
@@ -148,60 +133,38 @@ apa_flextable_from_plan <- function(plan) {
 
 #' Convert an apaTables table to a flextable (internal)
 #'
-#' INTERNAL as of Phase 2 (D8): the public chunk functions are
-#' \code{\link{apa.quarto.pdf}} / \code{\link{apa.quarto.docx}} /
-#' \code{\link{apa.quarto.html}}. D14 is complete as of Phase 1.6a (Task 8):
-#' this builder is now used for exactly the ONE destination D14 always meant
-#' to leave it -- \code{\link{apa.save}} writing a \code{.docx} or
-#' \code{.html} file of its own. None of the three Quarto entry points reach
-#' it any more; they route through the native pandoc grid-table emitter
-#' (\code{apa_quarto_markdown_block()}) on every non-PDF destination.
-#' Un-exporting cost nothing only because \code{apa_flextable()} arrived with
-#' the unreleased 4.0 work; CRAN carries 3.0.1, which has no such function.
+#' Internal. Its one caller is \code{\link{apa.save}}, when it writes a
+#' \code{.docx} or \code{.html} file of its own. The Quarto entry points
+#' (\code{\link{apa.quarto.pdf}}, \code{\link{apa.quarto.docx}},
+#' \code{\link{apa.quarto.html}}) never reach it: PDF gets native LaTeX and
+#' every other destination gets a pandoc grid table
+#' (\code{apa_quarto_markdown_block()}).
 #'
 #' \code{apa_flextable()} converts an apaTables table (an
-#' \code{apa.*.table()} result) into a "flextable" -- a table format, from
-#' the \pkg{flextable} package, that displays correctly when a document is
-#' turned into Word, PDF, or HTML. Place the call inside a code chunk of an
-#' apaquarto document and the table appears with APA styling (horizontal
-#' rules only, Times New Roman 12 point).
+#' \code{apa.*.table()} result) into a "flextable", a table object from the
+#' \pkg{flextable} package, styled for APA: horizontal rules only, Times New
+#' Roman 12 point. The result holds the table body and column headers; the
+#' table number, title and note are added by \code{\link{apa.save}}.
 #'
-#' The result contains only the table body and column headers. The table
-#' number, title, and note are added by apaquarto from the \code{tbl-cap}
-#' and \code{apa-note} settings lines of the chunk -- see the \emph{Quarto
-#' documents} section of any table function's help page (for example,
-#' \code{?apa.cor.table}), or run \code{\link{apa.quarto.template}} in the
-#' R console, which writes the whole chunk for you to copy into your Quarto
-#' document. The helpers \code{\link{apa_caption}} and
-#' \code{\link{apa_note_text}} supply the caption and note text.
-#'
-#' Nothing here is affected by the shape of any page. The width fitting that
-#' used to live in this function -- and with it the \code{fit_to_page} and
-#' \code{page} arguments -- belonged to the Quarto PDF path, which now emits
-#' native LaTeX from \code{\link{apa.quarto.pdf}} and decides size and
-#' rotation there (Task 10 removed both arguments). What reaches Word is fitted
-#' by \code{\link{apa.save}} against the page it is actually writing.
+#' Nothing here depends on the shape of a page. Fitting a table to the page
+#' it is written on is \code{\link{apa.save}}'s job.
 #'
 #' @param x An apaTables table (an \code{apa.*.table()} result or an
 #'   \code{apa_table_spec}).
 #' @return A \code{flextable} object that displays the table body.
 #' @keywords internal
 apa_flextable <- function(x) {
-  # apa_restore_emph() USED TO be called here (the ulem/normalem fix for
-  # flextable's LaTeX dependencies) -- removed in Task 9 (Phase 1.6a) as
-  # confirmed dead: apa_flextable() is reachable only from apa.save() (which
-  # used to shield its own document with apa_direct_output(), removed as
-  # vestigial in Phase 1.11) and from direct unit-test calls with no knit
-  # session in progress, so the LaTeX-only defect it corrected can no longer
-  # occur. See the comment above apa_latex_target()'s definition in this file.
+  # No LaTeX emphasis fix (ulem/normalem) is applied here: apa_flextable() is
+  # reachable only from apa.save() and from direct unit-test calls, and never
+  # reaches a LaTeX destination. See the comment above apa_latex_target().
   x <- as_spec(x)
   plan <- apa_display_plan(x)
   ft <- apa_flextable_from_plan(plan)
 
   # Needed again below (the final hline-per-spanner pass) --
   # apa_flextable_from_plan() computes the same value internally but does not
-  # return it, since a caller building only a width measurement (Task 4) has
-  # no use for header borders.
+  # return it, since a caller building only a width measurement has no use for
+  # header borders.
   spanner_rows <- plan$header[-length(plan$header)]
 
   # correlation / d-value tables: a blank line of separation below each
@@ -247,14 +210,12 @@ rt_run_to_chunk <- function(r) {
 #' Map one richtext (or richtext_lines) to a flextable as_paragraph value
 #' @keywords internal
 #
-# A LaTeX bracket guard used to live here: in PDF/LaTeX output, flextable cell
-# content (or an in-cell line) that BEGINS with "[" silently vanished, because
-# a leading "[" is parsed as an optional-argument bracket. It was removed in
-# Task 9 (Phase 1.6a) as confirmed dead, for the same reason recorded above
-# apa_latex_target()'s definition in this file: apa_flextable() can no longer
-# reach a LaTeX destination (the apa_direct_output() guard that used to gate
-# apa.save()'s call chain was itself removed as vestigial in Phase 1.11), so
-# there is no PDF for a leading "[" to vanish from.
+# No LaTeX bracket guard here. In LaTeX output, flextable cell content (or an
+# in-cell line) that BEGINS with "[" silently vanishes, because a leading "["
+# is parsed as an optional-argument bracket -- but apa_flextable() never
+# reaches a LaTeX destination (see the comment above apa_latex_target()), so
+# there is no PDF for it to vanish from. If that ever changes, a guard is
+# needed again.
 rt_to_paragraph <- function(rt) {
   if (inherits(rt, "apa_richtext_lines")) {
     parts <- list()

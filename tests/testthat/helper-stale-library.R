@@ -6,13 +6,13 @@
 # source tree. Running one against a stale library certifies the library, not
 # the branch.
 #
-# The guard used to compare the EXTENSION ONLY. That half is necessary and was
-# never sufficient: edit R/render-latex.R, skip the reinstall, and every
-# extension file still matched, so four render files certified the OLD
-# INSTALLED EMITTER under a message saying the tree was current. C1 -- the
-# ladder deciding to rotate where nothing could rotate, and a column leaving
-# the page unwarned -- is exactly the kind of defect that hides there. Both
-# halves are compared now.
+# Comparing the EXTENSION ONLY is necessary and never sufficient: edit
+# R/render-latex.R, skip the reinstall, and every extension file still
+# matches, so the render files certify the OLD INSTALLED EMITTER under a
+# message saying the tree is current. A defect in the R layout code -- say,
+# the ladder deciding to rotate where nothing can rotate, and a column
+# leaving the page unwarned -- is exactly the kind that hides there. So both
+# halves are compared.
 #
 # The R half cannot be an md5 of R/*.R: an installed package has no .R files,
 # only a lazy-load database. What it does have is the namespace, so both sides
@@ -93,10 +93,9 @@ apa_skip_if_library_stale <- function() {
 
   skip_if_not(requireNamespace("apaTables", quietly = TRUE),
               "apaTables is not installed, so quarto cannot load it")
-  # apa.quarto.table() is RETIRED (Task 8, D30) -- its ABSENCE is what a
-  # current install now has, so it can no longer be the marker. The newest
-  # export is one of its three replacements; apa.quarto.docx() marks the
-  # same currency the old check did, the cheap way, before the full R-code
+  # apa.quarto.table() is RETIRED -- a current install does not have it, so
+  # it cannot be the marker. apa.quarto.docx(), one of its three
+  # replacements, marks currency the cheap way, before the full R-code
   # digest below.
   skip_if_not("apa.quarto.docx" %in% getNamespaceExports("apaTables"),
               loud("the installed apaTables predates apa.quarto.docx()"))

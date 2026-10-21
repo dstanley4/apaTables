@@ -1,15 +1,14 @@
-# Phase 1.14. A rotated table's CAPTION belongs on the rotated page with its
+# A rotated table's CAPTION belongs on the rotated page with its
 # table, and a run of consecutive rotated tables belongs in ONE landscape
 # section rather than returning to portrait -- and opening a blank page --
 # between each pair.
 #
 # THESE ASSERTIONS CANNOT SEE A PAGE. Pagination happens in Word, and a
 # six-page document and an eight-page one differ here only in which section
-# closers are present. Everything below is STRUCTURAL. The page evidence for
-# this phase is a real Word export the author looked at:
-# dev/factcheck/phase114-caption/VERIFICATION.md. A green run of this file
-# proves the closers are where we intend, NOT that the document paginates
-# correctly -- the same limit D46 records for slide fitting.
+# closers are present. Everything below is STRUCTURAL; the pagination itself
+# was checked by exporting from real Word and looking. A green run of this
+# file proves the closers are where we intend, NOT that the document
+# paginates correctly -- the same limit the slide-fitting tests have.
 
 skip_on_cran()
 skip_if_not(nzchar(Sys.which("quarto")), "quarto not installed")
@@ -18,12 +17,10 @@ skip_if_not(nzchar(Sys.which("quarto")), "quarto not installed")
 # package, not this source tree -- see helper-stale-library.R. A green test
 # rendered against a stale library certifies the library, not the branch.
 #
-# THIS GUARD WAS MISSING FROM THIS FILE UNTIL A MUTATION EXPOSED IT. Editing
-# the filter in inst/ and re-running gave `PASS 7` here while
-# test-docx-structure.R -- which has the guard -- correctly refused to run.
-# The pass was against the unmutated installed copy: the file read green
-# while testing something other than the branch, which is the exact trap the
-# project's notes record firing four times in one branch.
+# DO NOT REMOVE THIS GUARD. Without it, editing the filter in inst/ and
+# re-running gives `PASS 7` here against the unmutated installed copy, while
+# test-docx-structure.R -- which has the guard -- correctly refuses to run:
+# the file reads green while testing something other than the branch.
 apa_skip_if_library_stale()
 
 test_that("a rotated table's caption sits INSIDE its own landscape section", {
@@ -51,7 +48,7 @@ test_that("consecutive rotated tables share ONE landscape section", {
   # Two rotated tables and one upright. Merged, the run contributes exactly
   # one closer of each kind; unmerged it contributes two of each. Counting is
   # the whole assertion -- the defect IS an extra pair, and the extra pair is
-  # what opens the blank page between the two tables (D98).
+  # what opens the blank page between the two tables.
   land <- gregexpr('w:orient="landscape"', doc, fixed = TRUE)[[1]]
   expect_equal(length(land), 1L)
 
@@ -62,10 +59,9 @@ test_that("consecutive rotated tables share ONE landscape section", {
   #
   # THE EXPECTED TOTAL IS 3, NOT 2: every apaquarto .docx also carries the
   # reference document's own trailing sectPr, which is not ours and is not
-  # removable. Measured -- an earlier draft of this assertion guessed the
-  # number instead and expected 1, which is why it is spelled out here.
-  # Before this phase the same fixture gave 5: two closers per rotated table
-  # plus that trailing one.
+  # removable (measured -- do not "correct" this to 1). Without the merge
+  # the same fixture gives 5: two closers per rotated table plus that
+  # trailing one.
   expect_equal(length(apa_docx_sections(doc)), 3L)
 
   # BOTH rotated tables' notes stay inside the merged section, and only the

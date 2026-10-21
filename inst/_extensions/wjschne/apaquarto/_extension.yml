@@ -1,6 +1,6 @@
 title: My Document in APA Style, Seventh Edition
 author: W. Joel Schneider
-version: 5.0.18+apaTables.26
+version: 5.0.18+apaTables.27
 quarto-required: ">=1.4.549"
 contributes:
   formats:
@@ -175,7 +175,7 @@ contributes:
         opts_chunk: 
           dev: svglite
       filters:
-        # Phase 1.8: without this, apatablesize.lua (registered below under
+        # Without this, apatablesize.lua (registered below under
         # docx: only) never loads on an HTML render, so its is_html branch is
         # unreachable and the {apa-table-size-pt="N"} marker div leaks into
         # the rendered output unconsumed instead of being turned into a size
@@ -184,17 +184,16 @@ contributes:
         # see it, because both bypass Quarto's own per-format filter
         # registration entirely.
         #
-        # What that branch does is D73, and it is NOT what an earlier draft of
-        # this comment said: setting the size as an attribute on the <table>
-        # node was MEASURED to be silently discarded by Quarto's HTML
-        # pipeline. The branch wraps the table in a div instead, created here
+        # What that branch does: setting the size as an attribute on the
+        # <table> node is MEASURED to be silently discarded by Quarto's HTML
+        # pipeline, so the branch wraps the table in a div instead, created here
         # at post-quarto -- after apaquarto's float collection, so table
         # placement is untouched -- and apa.css carries the one rule that
         # makes the table take that size verbatim.
         - at: post-quarto
           path: apatablesize.lua
-        # apaTables D119: a column spanner is CENTRED over the columns it
-        # covers. Pandoc gives a spanning cell the alignment of the first
+        # A column spanner is CENTRED over the columns it covers. Pandoc
+        # gives a spanning cell the alignment of the first
         # column it covers, which over numeric columns is RIGHT. Set on the
         # AST, so the same one rule corrects docx as well.
         - at: post-quarto
@@ -219,17 +218,17 @@ contributes:
         # Add custom styles to docx
         - at: post-quarto
           path: docxstyler.lua
-        # Select the D38 Route A shrink-ladder table style (Table9/8/7/6)
+        # Select the table-size ladder style (Table6-Table9, Table11, Table12)
         - at: post-quarto
           path: apatablesize.lua
-        # apaTables D119: a column spanner is CENTRED over the columns it
-        # covers -- the same filter and the same reason as the html block
+        # A column spanner is CENTRED over the columns it covers -- the
+        # same filter and the same reason as the html block
         # above. Word receives <w:jc w:val="right"/> as DIRECT formatting on
         # the spanner paragraph, which beats the ApaTableRule style, so this
         # cannot be done in the reference document.
         - at: post-quarto
           path: apatablespanner.lua
-        # D31: apaTables' own landscape section break, replacing Quarto's
+        # apaTables' own landscape section break, replacing Quarto's
         # own broken .landscape div for tables the layout ladder rotates
         - at: post-quarto
           path: apatablelandscape.lua
@@ -239,7 +238,7 @@ contributes:
         # the following PORTRAIT page (see this file's own banner)
         - at: post-render
           path: apatablelandscapenote.lua
-        # Phase 1.14: move a rotated table's caption inside its own landscape
+        # Move a rotated table's caption inside its own landscape
         # section, and keep a RUN of consecutive rotated tables in ONE section.
         # Kept after apatablelandscapenote.lua, which identifies a rotated
         # float by its TRAILING landscape closer -- the one this filter

@@ -1,5 +1,4 @@
--- A column spanner is CENTRED over the columns it covers (APA; author's
--- ruling, apaTables D119).
+-- A column spanner is CENTRED over the columns it covers (APA).
 --
 -- THE DEFECT. In a two-way table the spanner `alcohol` sits over `None`,
 -- `2 Pints` and `4 Pints`, and those are numeric columns, so they are
@@ -25,7 +24,7 @@
 -- it is DIRECT formatting, which wins over any style. Putting a centred `jc`
 -- into the ApaTableRule style would change nothing.
 --
--- THE PDF PATH IS UNTOUCHED, AND WAS ALREADY CORRECT. apaTables emits raw
+-- THE PDF PATH NEEDS NOTHING. apaTables emits raw
 -- LaTeX there -- `\multicolumn{n}{c}{...}`, centred explicitly -- so no AST
 -- table is ever built and this filter has nothing to match.
 --

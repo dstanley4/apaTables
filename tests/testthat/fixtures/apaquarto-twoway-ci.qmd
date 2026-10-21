@@ -12,9 +12,7 @@ format: apaquarto-pdf
 
 ```{r}
 #| include: false
-pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
-                             "/Users/dstanley/os/RDevelopment/apaTables"),
-                  quiet = TRUE)
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT"), quiet = TRUE)
 twoway_ci_tbl <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
                                 data = goggles, table.number = 3,
                                 show.conf.interval = TRUE)

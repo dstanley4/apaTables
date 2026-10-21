@@ -1,7 +1,7 @@
--- Companion to apatablelandscape.lua (Task 6): moves a rotated table's note
+-- Companion to apatablelandscape.lua: moves a rotated table's note
 -- INSIDE its own landscape section.
 --
--- MEASURED, twice over -- fix round 1 review of Task 7. apatablelandscape.lua
+-- MEASURED, twice over. apatablelandscape.lua
 -- (post-quarto) replaces the `::: {.apa-table-landscape}` div with THREE
 -- things, in this order, as direct children of the float's own Div (e.g.
 -- `tbl-wide14`): a portrait closer, the table, a landscape closer. apanote.lua
@@ -25,16 +25,15 @@
 -- landscape closer, and removes the now-empty sibling wrapper -- so the
 -- closer keeps closing the SAME section, just with the note now inside it.
 --
--- A NEW FILE rather than a change to apatablelandscape.lua itself (Task 6,
--- already reviewed and signed off): this only reads the note div apanote.lua
--- already built and repositions it; process_div/process_pandoc there are
--- untouched, and this file's own match is narrow -- it fires only when a
+-- A SEPARATE FILE, leaving apatablelandscape.lua untouched: this only reads
+-- the note div apanote.lua already built and repositions it, and its match
+-- is narrow -- it fires only when a
 -- Div's LAST content block is literally the landscape-closer RawBlock this
 -- extension itself writes, immediately followed by a sibling matching
 -- apanote.lua's own note-wrapper shape. Every other float -- non-rotated,
 -- rotated with no note, rotated with an explicit non-generated note -- has
 -- no such trailing RawBlock and is untouched (verified by rendering all
--- four in one document; see the apaTables repo's task-7 report).
+-- four in one document).
 if FORMAT ~= "docx" then
   return
 end

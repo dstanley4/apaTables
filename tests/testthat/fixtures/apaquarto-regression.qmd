@@ -12,9 +12,7 @@ format: apaquarto-pdf
 
 ```{r}
 #| include: false
-pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
-                             "/Users/dstanley/os/RDevelopment/apaTables"),
-                  quiet = TRUE)
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT"), quiet = TRUE)
 blk1 <- lm(sales ~ adverts + airplay, data = album)
 blk2 <- lm(sales ~ adverts + airplay + attract, data = album)
 reg_tbl <- apa.reg.table(blk1, blk2, table.number = 2)

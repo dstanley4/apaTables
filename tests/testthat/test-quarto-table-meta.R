@@ -1,9 +1,8 @@
-# Task 4: apa.quarto.pdf()'s title/note arguments (apa.quarto.table() before
-# Task 8 retired it, D30) and the empty metadata div that carries the
-# generated (or overridden) values to Task 5's Lua filter. Precedence over a
-# chunk's tbl-cap/apa-note is NOT decided here -- the filter resolves that
-# later by populating only what the float still lacks (D22) -- so nothing
-# below constructs a chunk option at all.
+# apa.quarto.pdf()'s title/note arguments and the empty metadata div that
+# carries the generated (or overridden) values to the apatablemeta.lua
+# filter. Precedence over a chunk's tbl-cap/apa-note is NOT decided here --
+# the filter resolves that later by populating only what the float still
+# lacks -- so nothing below constructs a chunk option at all.
 
 test_that("the meta div carries the generated title and note", {
   ct  <- apa.cor.table(attitude)
@@ -22,21 +21,21 @@ test_that("an argument overrides the generated value", {
 })
 
 test_that("the div's raw text survives a pandoc round-trip", {
-  # RENAMED. This test came from the plan as "attribute values are escaped so
-  # the div still parses", but it CANNOT observe that: replace apa_attr_escape()
-  # with the identity and it stays GREEN. Pandoc degrades to a Para on the
-  # unescaped quote, and both greps below still match substrings of the mangled
-  # text. Kept as a narrow smoke check -- the literal content round-trips
-  # through pandoc without a fatal error -- under a name that claims only that.
+  # NARROW BY DESIGN. This CANNOT observe that attribute values are escaped
+  # so the div still parses: replace apa_attr_escape() with the identity and
+  # it stays GREEN. Pandoc degrades to a Para on the unescaped quote, and
+  # both greps below still match substrings of the mangled text. It is a
+  # smoke check -- the literal content round-trips through pandoc without a
+  # fatal error -- under a name that claims only that.
   #
   # Escaping itself is covered by two tests that were watched failing under
   # that same mutation: "apa_attr_escape() escapes backslash before quote" and
   # "apa.quarto.pdf() with title/note args still parses as a Div under
   # pandoc".
   #
-  # A note legitimately contains double quotes and backslashes. The YAML form of
-  # this broke a render during Phase 2 (\* is an invalid YAML escape); a pandoc
-  # div attribute has different rules, which is why it needs its own coverage.
+  # A note legitimately contains double quotes and backslashes. The YAML form
+  # of this can break a render (\* is an invalid YAML escape); a pandoc div
+  # attribute has different rules, which is why it needs its own coverage.
   div <- apa_meta_div(title_md = 'A "quoted" title',
                       note_md  = 'back\\slash and "quotes"')
   parsed <- system2("pandoc", c("-f", "markdown", "-t", "native"),
@@ -77,16 +76,11 @@ test_that("apa_attr_escape() emits NO backslash-escaped quote, of either kind", 
   expect_identical(apa_attr_escape("\\* star"), "\\\\* star")
 
   # ...and because an entity holds neither a backslash nor a quote, the three
-  # passes no longer interact at all. The old version had an ordering hazard
-  # that was invisible except on an input carrying both characters; this
-  # asserts the hazard is gone rather than that the order is right.
-  #
-  # whole-branch-review Important 5: the assertion below used to compare two
-  # hand-written gsub() compositions on the literal `both` string to EACH
-  # OTHER, never calling apa_attr_escape() at all -- so only a change to base
-  # R's gsub() could ever move it. Calling the real function and pinning its
-  # output is what actually exercises the "no ordering hazard" claim; the
-  # neighbouring assertions above (:66-68, :77) already do this correctly.
+  # passes do not interact at all. An ordering hazard would be invisible
+  # except on an input carrying both characters; this asserts the hazard is
+  # absent rather than that the order is right. It calls the real function
+  # and pins its output -- comparing hand-written gsub() compositions to each
+  # other would exercise only base R's gsub(), never apa_attr_escape().
   both <- "\\ and ' and \""
   expect_identical(apa_attr_escape(both), "\\\\ and &#39; and &#34;")
 })
@@ -178,10 +172,10 @@ test_that("apa_meta_div_for() falls back to the spec when args are NULL", {
 
 test_that("apa.quarto.pdf() emits the meta div INSIDE the same asis_output as the table, with a blank line before it", {
   # Hazard: the div must land in the SAME chunk output as the longtable, or
-  # Task 5's filter -- which walks float.content -- never sees it; and a
-  # blank line must separate the raw LaTeX block from the div, or pandoc
-  # swallows the ::: fence as part of the raw LaTeX block instead of parsing
-  # it as a Div (Task 1 measured this at the post-quarto stage).
+  # the apatablemeta.lua filter -- which walks float.content -- never sees
+  # it; and a blank line must separate the raw LaTeX block from the div, or
+  # pandoc swallows the ::: fence as part of the raw LaTeX block instead of
+  # parsing it as a Div (measured at the post-quarto stage).
   op <- options(knitr.in.progress = TRUE)
   old_fmt <- knitr::opts_knit$get("out.format")
   knitr::opts_knit$set(out.format = "latex")
@@ -223,14 +217,11 @@ test_that("apa.quarto.pdf() with title/note args still parses as a Div under pan
   expect_true(any(grepl('"apa-table-meta"', parsed, fixed = TRUE)))
 })
 
-test_that("apa.quarto.html() off the LaTeX path honours title/note (D14 is complete: no flextable fallback remains)", {
-  # RENAMED AND REWRITTEN, not merely renamed: the old behaviour this test
-  # pinned -- title/note silently IGNORED off the LaTeX path, a flextable
-  # returned instead -- was the INTERIM D14 branch apa.quarto.table() carried
-  # only until Phase 1.6a's pandoc emitter existed. Task 8 is what retires
-  # that branch: apa.quarto.html() now dispatches to
-  # apa_quarto_markdown_block(), which DOES honour title/note (Task 7), and
-  # never returns a flextable at all.
+test_that("apa.quarto.html() off the LaTeX path honours title/note, with no flextable fallback", {
+  # apa.quarto.html() dispatches to apa_quarto_markdown_block(), which
+  # honours title/note and never returns a flextable at all. A flextable
+  # fallback off the LaTeX path would silently IGNORE title/note -- this
+  # guards against one returning.
   local_mocked_bindings(apa_latex_target = function() FALSE)
   out <- apa.quarto.html(apa.cor.table(attitude), title = "My Title",
                          note = "My note.")

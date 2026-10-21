@@ -14,39 +14,21 @@ apa_flextable(x)
 A \code{flextable} object that displays the table body.
 }
 \description{
-INTERNAL as of Phase 2 (D8): the public chunk functions are
-\code{\link{apa.quarto.pdf}} / \code{\link{apa.quarto.docx}} /
-\code{\link{apa.quarto.html}}. D14 is complete as of Phase 1.6a (Task 8):
-this builder is now used for exactly the ONE destination D14 always meant
-to leave it -- \code{\link{apa.save}} writing a \code{.docx} or
-\code{.html} file of its own. None of the three Quarto entry points reach
-it any more; they route through the native pandoc grid-table emitter
-(\code{apa_quarto_markdown_block()}) on every non-PDF destination.
-Un-exporting cost nothing only because \code{apa_flextable()} arrived with
-the unreleased 4.0 work; CRAN carries 3.0.1, which has no such function.
+Internal. Its one caller is \code{\link{apa.save}}, when it writes a
+\code{.docx} or \code{.html} file of its own. The Quarto entry points
+(\code{\link{apa.quarto.pdf}}, \code{\link{apa.quarto.docx}},
+\code{\link{apa.quarto.html}}) never reach it: PDF gets native LaTeX and
+every other destination gets a pandoc grid table
+(\code{apa_quarto_markdown_block()}).
 }
 \details{
 \code{apa_flextable()} converts an apaTables table (an
-\code{apa.*.table()} result) into a "flextable" -- a table format, from
-the \pkg{flextable} package, that displays correctly when a document is
-turned into Word, PDF, or HTML. Place the call inside a code chunk of an
-apaquarto document and the table appears with APA styling (horizontal
-rules only, Times New Roman 12 point).
+\code{apa.*.table()} result) into a "flextable", a table object from the
+\pkg{flextable} package, styled for APA: horizontal rules only, Times New
+Roman 12 point. The result holds the table body and column headers; the
+table number, title and note are added by \code{\link{apa.save}}.
 
-The result contains only the table body and column headers. The table
-number, title, and note are added by apaquarto from the \code{tbl-cap}
-and \code{apa-note} settings lines of the chunk -- see the \emph{Quarto
-documents} section of any table function's help page (for example,
-\code{?apa.cor.table}), or run \code{\link{apa.quarto.template}} in the
-R console, which writes the whole chunk for you to copy into your Quarto
-document. The helpers \code{\link{apa_caption}} and
-\code{\link{apa_note_text}} supply the caption and note text.
-
-Nothing here is affected by the shape of any page. The width fitting that
-used to live in this function -- and with it the \code{fit_to_page} and
-\code{page} arguments -- belonged to the Quarto PDF path, which now emits
-native LaTeX from \code{\link{apa.quarto.pdf}} and decides size and
-rotation there (Task 10 removed both arguments). What reaches Word is fitted
-by \code{\link{apa.save}} against the page it is actually writing.
+Nothing here depends on the shape of a page. Fitting a table to the page
+it is written on is \code{\link{apa.save}}'s job.
 }
 \keyword{internal}

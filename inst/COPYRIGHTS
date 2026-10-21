@@ -9,18 +9,15 @@ apaquarto
   DESCRIPTION's Authors@R with the 'ctb' role as a courtesy ('cph' would
   be inaccurate -- a CC0 dedication retains no copyright to hold).
   Local modifications are listed in
-  inst/_extensions/wjschne/apaquarto/PATCHES.md, including to the bundled
-  Word reference document apaquarto.docx (word/styles.xml gains six
-  character/paragraph styles for the Phase 1.6a table emitter, its existing
-  Table style gains a run-properties override setting 10 pt type, four more
-  table styles -- Table9/Table8/Table7/Table6 -- carry the D38 shrink
-  ladder's smaller sizes selected per table by the new apatablesize.lua
-  filter, and (D39) the Table style and its four shrink-ladder clones have
-  their fixed per-cell padding (<w:tblCellMar>) cut from 58 to 15 twips per
-  side -- see PATCHES.md's manual addenda, since apaquarto.docx is binary
-  and outside what dev/sync-apaquarto.R can diff). They are carried in this
-  package only; they have not been offered to the upstream project, and
-  nothing here has been contributed back to it.
+  inst/_extensions/wjschne/apaquarto/PATCHES.md. The bundled Word reference
+  document apaquarto.docx is modified too; it is binary, so its changes do
+  not appear in that diff: its Table style sets 10 pt type, six cloned
+  table styles (Table6 to Table9, Table11, Table12) carry the other sizes
+  that apatablesize.lua selects per table, a paragraph style (ApaTableRule)
+  draws the rule under a column spanner, and the fixed cell padding of every
+  table style is cut from 58 to 15 twips per side. These modifications are
+  carried in this package only; they have not been contributed back to the
+  upstream project.
 
 apa.csl (inst/_extensions/wjschne/apaquarto/apa.csl)
   Copyright (c) Brenton M. Wiernik

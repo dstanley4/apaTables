@@ -17,9 +17,9 @@ library(apaTables)
 ```
 
 Body text before. The chunk below deliberately sets neither `tbl-cap` nor
-`apa-note`. Task 10 note: this is the B2 layer 1 "narrow control" -- a small
+`apa-note`. This is the "narrow control" -- a small
 `apa.cor.table()` that stays portrait and unshrunk, and whose numbered row
-labels ("1. rating", "2. complaints", "3. privileges" -- D33) are the only
+labels ("1. rating", "2. complaints", "3. privileges") are the only
 fixture in the suite that exercises the numPr check a rendered `.docx` can
 answer.
 

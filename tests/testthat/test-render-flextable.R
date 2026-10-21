@@ -147,11 +147,8 @@ test_that("apa_flextable stacks multi-level spanners (decked head)", {
   expect_true(pos("None") < pos("Female"))    # spanners above the body
 })
 
-# Everything from here to the end of the file was deleted in Task 10, with the
-# machinery it tested: the fit_to_page search, the `page` argument and its
-# validation, the landscape warning prose, the floatsintext / apaquarto
-# metadata detectors, and apa_latex_table_width()'s calibration. apa_flextable()
-# now takes one argument and knows nothing about any page -- it writes Word
-# (D14), and what Word needs is fitted by apa.save() against the page it is
-# actually writing (test-apa-save.R). The Quarto PDF path's own width decisions
-# are tested in test-render-latex.R and test-quarto-table.R.
+# No page-fitting tests belong here. apa_flextable() takes one argument and
+# knows nothing about any page -- it writes Word, and what Word needs is
+# fitted by apa.save() against the page it is actually writing
+# (test-apa-save.R). The Quarto PDF path's own width decisions are tested in
+# test-render-latex.R and test-quarto-table.R.

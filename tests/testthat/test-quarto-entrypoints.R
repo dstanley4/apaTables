@@ -1,15 +1,13 @@
-# Task 8: the four format-named entry points, and the retirement of
-# apa.quarto.table() (D30).
+# The format-named entry points, and the retirement of apa.quarto.table().
 #
 # apa.quarto.pdf() / apa.quarto.docx() / apa.quarto.html() are FORGIVING: the
 # render TARGET decides the mechanism (LaTeX to apa_quarto_latex_block(),
 # everything else to apa_quarto_markdown_block()), and the function name only
 # states intent. A name/target mismatch produces a guidance message naming
 # the exact YAML line to change -- never a refusal, never a warning standing
-# in for a fix (D30).
+# in for a fix.
 #
-# apa.quarto.revealjs() is NOT built here -- it arrives with Phase 1.6b (the
-# task-8 brief is explicit; the slides design is not yet approved).
+# apa.quarto.revealjs() is tested in test-quarto-slide.R.
 
 test_that("the three manuscript entry points produce the SAME REAL TABLE", {
   # Outside any knit, apa_latex_target() reads FALSE for all three calls (no
@@ -51,10 +49,10 @@ test_that("the mismatch message names an HTML mismatch too", {
   expect_match(msg, "format: apaquarto-html", fixed = TRUE)
 })
 
-test_that("a rendering document whose target disagrees with the call name warns, naming the fix, AND still renders the table (fix round 1)", {
+test_that("a rendering document whose target disagrees with the call name warns, naming the fix, AND still renders the table", {
   # apa_reset_version_warnings(): the mismatch warning is routed through the
-  # SAME once-per-document registry page-geometry.R/docx-landscape.R use
-  # (fix round 1, finding 2), and apa_render_id() reads a CONSTANT
+  # SAME once-per-document registry page-geometry.R/docx-landscape.R use,
+  # and apa_render_id() reads a CONSTANT
   # "<no-document>" outside a real knit -- so without resetting, a test
   # earlier in this same R session that already warned for this exact
   # (called, actual) pair would silence this one, and this assertion would
@@ -62,21 +60,20 @@ test_that("a rendering document whose target disagrees with the call name warns,
   apa_reset_version_warnings()
   on.exit(apa_reset_version_warnings(), add = TRUE)
   local_mocked_bindings(apa_quarto_actual_format = function() "docx")
-  # Content is asserted on the RETURN VALUE, not just the warning (fix round
-  # 1, finding 3): an implementation that warned and then returned NULL
-  # would have passed the old expect_warning()-only version, which asserted
-  # nothing about the "forgiving, never refuses" half of D30 -- the entire
-  # point of the design. Assigning INSIDE the expect_warning() expression,
-  # not to its own return value: expect_warning() returns the CONDITION
-  # object it caught, not apa.quarto.pdf()'s result.
+  # Content is asserted on the RETURN VALUE, not just the warning: an
+  # implementation that warned and then returned NULL would pass an
+  # expect_warning()-only test, which asserts nothing about the "forgiving,
+  # never refuses" half of the design -- its entire point. Assigning INSIDE the
+  # expect_warning() expression, not to its own return value: expect_warning()
+  # returns the CONDITION object it caught, not apa.quarto.pdf()'s result.
   expect_warning(out <- apa.quarto.pdf(apa.cor.table(attitude[, 1:3])),
                  "format: apaquarto-pdf", fixed = TRUE)
   expect_match(as.character(out), "+===", fixed = TRUE)
 })
 
 test_that("the mismatch warning fires ONCE per (called, actual) pair, not once per table", {
-  # fix round 1, finding 2: measured firing 8 times in an 8-table document
-  # before this fix. A second call with the SAME (called, actual) pair in
+  # Without the once-per-pair registry this fires 8 times in an 8-table
+  # document (measured). A second call with the SAME (called, actual) pair in
   # the same "document" must be silent; a DIFFERENT called name against the
   # same actual render is a different fact and must still be told.
   apa_reset_version_warnings()
@@ -106,7 +103,7 @@ test_that("an UNKNOWN target (not currently rendering) never warns", {
 })
 
 test_that("apa.quarto.pdf() on an ACTUAL LaTeX render composes exactly ONE meta div", {
-  # The landmine this task was built to avoid: apa_quarto_markdown_block()
+  # The landmine: apa_quarto_markdown_block()
   # already composes its own .apa-table-meta div, so a dispatcher that both
   # calls it AND wraps a second div around the result sends TWO divs to
   # apatablemeta.lua, whose walk has no early exit -- the SECOND one wins,
@@ -114,11 +111,11 @@ test_that("apa.quarto.pdf() on an ACTUAL LaTeX render composes exactly ONE meta 
   local_mocked_bindings(apa_latex_target = function() TRUE)
   out <- as.character(apa.quarto.pdf(apa.cor.table(attitude[, 1:3])))
   # apa_md_count_matches(), not a hand-rolled gregexpr()/identical(-1L) check
-  # -- that exact comparison is the bug this phase already found and fixed in
-  # R/render-markdown.R:417-425 (gregexpr()'s no-match sentinel carries
+  # -- that exact comparison is a known trap (see apa_md_count_matches() in
+  # R/render-markdown.R): gregexpr()'s no-match sentinel carries
   # match.length/useBytes attributes, so it is never identical() to a bare
-  # -1L, and the comparison silently fell through to the buggy length()
-  # branch -- reading a ZERO-match div count as 1L and passing).
+  # -1L, and the comparison silently falls through to a length()
+  # branch -- reading a ZERO-match div count as 1L and passing.
   expect_equal(apa_md_count_matches("apa-table-meta", out), 1L)
   expect_true(grepl("\\begin{longtable}", out, fixed = TRUE))
 })
@@ -132,9 +129,9 @@ test_that("apa.quarto.docx() off the LaTeX path composes exactly ONE meta div", 
   expect_true(grepl("+===", out, fixed = TRUE))
 })
 
-test_that("title/note arguments reach the table on the non-LaTeX path (D14 is complete: no flextable fallback remains)", {
-  # inherits() is checked on the UN-COERCED return value (whole-branch-review
-  # Important 5) -- `expect_false(inherits(out, "flextable"))` after
+test_that("title/note arguments reach the table on the non-LaTeX path (no flextable fallback)", {
+  # inherits() is checked on the UN-COERCED return value --
+  # `expect_false(inherits(out, "flextable"))` after
   # `out <- as.character(...)` is unconditionally TRUE regardless of what
   # apa.quarto.html() actually returned, since as.character() strips the
   # flextable class either way. test-quarto-table-meta.R's equivalent
@@ -149,19 +146,18 @@ test_that("title/note arguments reach the table on the non-LaTeX path (D14 is co
   expect_match(txt, "My own note.", fixed = TRUE)
 })
 
-test_that("font.size overrides the ladder on the LaTeX path too (D26: both destinations)", {
+test_that("font.size overrides the ladder on the LaTeX path too", {
   local_mocked_bindings(apa_latex_target = function() TRUE)
   out <- as.character(apa.quarto.pdf(apa.cor.table(attitude[, 1:3]), font.size = 8))
   expect_true(grepl("\\fontsize{8", out, fixed = TRUE))
 })
 
-test_that("font.size overrides the ladder on the markdown path (D26: both destinations)", {
-  # apa_quarto_docx_target() mocked TRUE alongside apa_latex_target(): the
-  # size marker is a docx-only mechanism (fix-round Critical 1 --
-  # apatablesize.lua stands down on any non-docx FORMAT and no HTML CSS was
-  # ever written for it, D37), so this specifically docx-flavoured assertion
-  # must exercise the docx gate rather than fall through the "no real knit
-  # session" default of FALSE.
+test_that("font.size overrides the ladder on the markdown path", {
+  # apa_quarto_docx_target() mocked TRUE alongside apa_latex_target(): the size
+  # marker is a docx-only mechanism (apatablesize.lua stands down on any
+  # non-docx FORMAT and no HTML CSS consumes it), so this specifically
+  # docx-flavoured assertion must exercise the docx gate rather than fall
+  # through the "no real knit session" default of FALSE.
   local_mocked_bindings(apa_latex_target = function() FALSE,
                          apa_quarto_docx_target = function() TRUE)
   out <- as.character(apa.quarto.docx(apa.cor.table(attitude[, 1:3]), font.size = 8))
@@ -176,11 +172,8 @@ test_that("apa.quarto.template() writes the call matching the requested target",
   expect_match(txt_pdf,  "apa.quarto.pdf",  fixed = TRUE)
 })
 
-# UPDATED, Task 8: "revealjs" used to be refused here (D30, before
-# apa.quarto.revealjs() existed, and before Phase 1.9 Task 2 renamed the
-# entry key from "slide" to "revealjs" (D89)). Now that it exists,
-# target = "revealjs" is accepted and writes a chunk calling it -- see
-# test-quarto-slide.R for the TDD test that drove this
+# target = "revealjs" is accepted and writes a chunk calling
+# apa.quarto.revealjs() -- see test-quarto-slide.R
 # ("apa.quarto.template(target = 'revealjs') writes a slide chunk"), which
 # also asserts the absent tbl-cap/label lines this test does not repeat.
 test_that("apa.quarto.template() accepts target = 'revealjs' and writes the slide call", {
@@ -191,9 +184,9 @@ test_that("apa.quarto.template() accepts target = 'revealjs' and writes the slid
 
 test_that("apa.quarto.template() defaults to the pdf form and never names the retired function", {
   capture.output(txt <- apa.quarto.template(apa.cor.table(attitude[, 1:3])))
-  # The object is passed as an ARGUMENT, not piped (D104/D108). Asserted with
+  # The object is passed as an ARGUMENT, not piped. Asserted with
   # the object name in place rather than as "apa.quarto.pdf()" with empty
-  # parentheses -- that older form no longer appears anywhere in the chunk,
+  # parentheses -- that form appears nowhere in the chunk,
   # and a match on the bare function name would also be satisfied by the
   # commented build line.
   expect_match(txt, "apa.quarto.pdf(mytable)", fixed = TRUE)

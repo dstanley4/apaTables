@@ -21,7 +21,7 @@ options(contrasts = c("contr.sum", "contr.poly"))
 
 Four floats, each a different cell of the precedence matrix, reached through
 `apa_quarto_markdown_block()` directly, one layer below the public entry
-point `apa.quarto.docx()` (Task 8, D30) that now dispatches to it -- kept at
+point `apa.quarto.docx()` that dispatches to it -- kept at
 this layer deliberately so a change to the dispatcher (the mismatch message,
 the LaTeX/markdown routing) cannot mask a regression in the precedence
 mechanism itself. THREE of the four deliberately set neither `tbl-cap` nor
@@ -37,8 +37,8 @@ the coverage trap this file exists to avoid.
 apaTables:::apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]))
 ```
 
-`tbl-capmixed`: `tbl-cap` only, no `apa-note` -- the author's own title with
-the GENERATED note. This is the author's primary real-world case: an own
+`tbl-capmixed`: `tbl-cap` only, no `apa-note` -- the document's own title with
+the GENERATED note. This is the primary real-world case: an own
 title paired with an automatically generated note.
 
 ```{r}

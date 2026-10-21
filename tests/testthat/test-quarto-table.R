@@ -1,11 +1,12 @@
-# OLD_FLEXTABLE_FLOOR is 5 pt: the hard floor the deleted flextable fitter
-# (APA_MIN_FONT_SIZE, gone in Task 10) stopped at. It is kept here as a
+# OLD_FLEXTABLE_FLOOR is 5 pt: the hard floor the former flextable fitter
+# (APA_MIN_FONT_SIZE, since removed) stopped at. It is kept here as a
 # LITERAL, not imported, because the assertions below are about walking PAST
 # it -- a reference point in the package's history, not a value the package
 # still holds.
 OLD_FLEXTABLE_FLOOR <- 5
 
-# The layout ladder (D7/D7b) and the public chunk function (D8).
+# The layout ladder (rotate before shrink; never clip) and the public chunk
+# function.
 #
 # WHERE EACH TEST'S WIDTH COMES FROM, AND WHY IT IS NOT THE MODEL UNDER TEST.
 #
@@ -15,17 +16,16 @@ OLD_FLEXTABLE_FLOOR <- 5
 # the model drifted -- this project has shipped that mistake twice. So the
 # widths here come from two sources, neither of which is the model:
 #
-#   1. tests/testthat/fixtures/phase2-measured-widths.rds. Every `actual_in`
+#   1. tests/testthat/fixtures/latex-measured-widths.rds. Every `actual_in`
 #      in that file is a sum of LaTeX's own \LT@entry column widths, read out
-#      of a rendered .aux (Task 1/Task 4; artifacts in
-#      dev/factcheck/phase2-preflight/). The rotate/do-not-rotate assertions
+#      of a rendered .aux. The rotate/do-not-rotate assertions
 #      below state what LaTeX's OWN measurement says should happen -- e.g.
 #      apa.cor.table(attitude) really is 5.2903 in at 10 pt and really does
 #      fit a 6.5 in page -- so a model drift big enough to flip a verdict
 #      fails the test rather than being ratified by it.
 #
 #   2. fake_plan_of_width(): pure \tabcolsep arithmetic, containing NO font
-#      metric at all. Task 5's emitter writes "@{}" on both outer edges and
+#      metric at all. The longtable emitter writes "@{}" on both outer edges and
 #      APA_LATEX_COLGAP_PT (4 pt) between columns, so an n-column table
 #      carries exactly (4n - 4) pt of inter-column space, and \tabcolsep does
 #      not scale with the type size. A table with enough columns is therefore
@@ -35,7 +35,7 @@ OLD_FLEXTABLE_FLOOR <- 5
 
 # A plan guaranteed to be AT LEAST `inches` wide at every font size.
 #
-# The guarantee is LaTeX's, not the width model's: n columns of Task 5's
+# The guarantee is LaTeX's, not the width model's: n columns of the emitted
 # longtable carry (4n - 4) pt of \tabcolsep (4 pt per gap, "@{}" on both outer
 # edges), and that term is font-independent, so it alone puts a floor under
 # the table's width at any size. Cell content only adds to it. This is a lower
@@ -60,14 +60,14 @@ huge_plan <- fake_plan_of_width(9.0)
 # shrink_plan is the other, and much more important, case: 60 columns, whose
 # \tabcolsep term is 3.27 in, so it CAN be made to fit -- but only by going
 # below 6 pt (measured: 4.49 pt, 8.50 in on a 9 in rotated page). This is the
-# branch D7b is about and the branch that had no test at all.
+# shrink-below-6-pt branch of the never-clip rule.
 shrink_plan <- local({
   sp <- apa_spec_start(1L)
   for (j in seq_len(60L)) sp <- apa_col(sp, sprintf("c%d", j), "r", "0")
   apa_display_plan(apa_spec_finish(sp, title = "A Table That Must Shrink"))
 })
 
-measured <- readRDS(test_path("fixtures", "phase2-measured-widths.rds"))
+measured <- readRDS(test_path("fixtures", "latex-measured-widths.rds"))
 plan_of <- function(nm) apa_display_plan(measured[[nm]]$spec)
 
 test_that("the ladder rotates before it shrinks", {
@@ -103,11 +103,9 @@ test_that("the ladder rotates before it shrinks", {
     expect_true(wide$fits, info = nm)
   }
 
-  # NEVER CLIP (D7b), and this is the assertion that used to lie. It read
-  # `expect_lt(huge$size, 6)` commented "never clip", while
-  # apa_size_for_width() and apa_latex_table() both hard-clamped at 5 pt --
-  # so it passed on a table that WAS clipped. Both halves are now stated:
-  # the size goes past 6, past 5 and past 1, AND the table fits.
+  # NEVER CLIP. Asserting only `size < 6` is not enough: it passes on a table
+  # hard-clamped at 5 pt and clipped. Both halves are stated: the size goes
+  # past 6 and past 5, AND the table fits.
   shrunk <- suppressWarnings(apa_layout_decide(shrink_plan))
   expect_lt(shrunk$size, 6)
   expect_lt(shrunk$size, OLD_FLEXTABLE_FLOOR)
@@ -115,29 +113,28 @@ test_that("the ladder rotates before it shrinks", {
   expect_true(shrunk$fits)                       # nothing is cut off
   expect_lte(shrunk$width, 9.0)
 
-  # The old 5 pt clamp is what this table proves is gone: at 5 pt it does NOT
-  # fit the rotated page, so the shipped-Task-9 ladder would have set it at
-  # 5 pt and lost columns off the right edge, silently.
+  # This table proves there is no 5 pt clamp: at 5 pt it does NOT fit the
+  # rotated page, so a clamped ladder would set it at 5 pt and lose columns
+  # off the right edge, silently.
   expect_gt(apa_latex_natural_width(shrink_plan, OLD_FLEXTABLE_FLOOR), 9.0)
 })
 
-test_that("the Word destination is charged for its fixed cell padding (B6, Phase 1.12)", {
-  # Word's <w:tblCellMar> is FIXED per-column padding (15 twips a side, D39)
-  # the character model cannot see, so before Phase 1.12 the ladder shrank a
-  # dense docx table until it JUST fit and the padding pushed it back over --
-  # measured in real Word (dev/factcheck/phase112-padding): the widest
-  # column paid, wrapping its labels ("10. Var10" split across two lines
-  # while "9. Var9" fit). col_overhead_in charges the ladder for it; the
-  # LaTeX destination passes 0 because its own \tabcolsep term is already
-  # in the model.
+test_that("the Word destination is charged for its fixed cell padding", {
+  # Word's <w:tblCellMar> is FIXED per-column padding (15 twips a side) the
+  # character model cannot see. Uncharged, the ladder shrinks a dense docx
+  # table until it JUST fits and the padding pushes it back over -- measured
+  # in real Word: the widest column pays, wrapping its labels ("10. Var10"
+  # split across two lines while "9. Var9" fits). col_overhead_in charges
+  # the ladder for it; the LaTeX destination passes 0 because its own
+  # \tabcolsep term is already in the model.
   plan <- plan_of("cor_attitude")
   pad <- plan$n_col * APA_WORD_CELL_PADDING_IN
 
   # THE FLIP, at the boundary the defect lives on: a page that holds the
   # CONTENT at 10 pt but not content plus padding. Without the overhead the
   # ladder calls it a fit; with it, the same table on the same page rotates
-  # (rotate before shrink, D7) -- exactly the decision the old model got
-  # wrong by "fitting" a table whose padding then overflowed the column.
+  # (rotate before shrink) -- rather than "fitting" a table whose padding
+  # then overflows the column.
   w10 <- apa_layout_decide(plan)$width
   geom_between <- list(width = w10 + pad / 2, height = 11,
                        config = "default", unknown = NULL)
@@ -167,8 +164,8 @@ test_that("the Word destination is charged for its fixed cell padding (B6, Phase
   expect_equal(sameW$rotate, same0$rotate)
 
   # A table the ladder must shrink shrinks FURTHER once the padding is
-  # real: the ladder used to spend exactly this headroom (roadmap 1.12:
-  # "the ladder shrinks until the table *just* fits").
+  # charged: an uncharged ladder spends exactly this headroom, shrinking
+  # until the table *just* fits.
   s0 <- suppressWarnings(apa_layout_decide(shrink_plan))
   sW <- suppressWarnings(apa_layout_decide(
     shrink_plan, col_overhead_in = APA_WORD_CELL_PADDING_IN))
@@ -177,9 +174,9 @@ test_that("the Word destination is charged for its fixed cell padding (B6, Phase
 })
 
 test_that("going below 6 pt warns in ONE sentence naming apa.save", {
-  # The branch that shrinks and FITS. Untested until fix round 1, and
-  # unreachable before it -- the 5 pt clamp meant a table needing less was
-  # clipped rather than set smaller.
+  # The branch that shrinks and FITS. It is reachable only because there is
+  # no 5 pt clamp -- with one, a table needing less is clipped rather than
+  # set smaller.
   expect_warning(apa_layout_decide(shrink_plan), "apa\\.save")
   w <- tryCatch(apa_layout_decide(shrink_plan),
                 warning = function(w) conditionMessage(w))
@@ -194,10 +191,10 @@ test_that("going below 6 pt warns in ONE sentence naming apa.save", {
 })
 
 test_that("a table no font size can fit warns that it WILL be cut off", {
-  # The one honest limit left in D7b, and it is a different warning:
+  # The one honest limit on never-clip, and it is a different warning:
   # \tabcolsep is 4 pt per gap whatever the type size and every column rounds
   # up to 0.01 in, so past about 136 columns nothing fits. Saying "nothing is
-  # ever cut off" here would be the falsehood this round exists to remove.
+  # ever cut off" here would be false.
   d <- suppressWarnings(apa_layout_decide(huge_plan))
   expect_false(d$fits)
   expect_equal(d$size, APA_LATEX_MIN_EMITTABLE_SIZE)
@@ -209,13 +206,12 @@ test_that("a table no font size can fit warns that it WILL be cut off", {
   expect_match(w, "does not shrink with the type", fixed = TRUE)
 })
 
-test_that("an explicit size that misses names the size that WOULD fit (F1)", {
-  # Fable pre-push review 2026-08-09. The explicit-size branch used to raise
-  # apa_ladder_no_fit_message() for ANY miss, claiming "no font size can fit
-  # it" -- FALSE for an ordinary wide table: cor_mtcars fits the rotated page
-  # at 10 pt (the automatic-ladder test above proves so) while size = 12
-  # misses it. The message now names the requested size as the cause and
-  # offers a size that fits.
+test_that("an explicit size that misses names the size that WOULD fit", {
+  # Do not raise apa_ladder_no_fit_message() for ANY explicit-size miss: its
+  # "no font size can fit it" is FALSE for an ordinary wide table --
+  # cor_mtcars fits the rotated page at 10 pt (the automatic-ladder test
+  # above proves so) while size = 12 misses it. The message names the
+  # requested size as the cause and offers a size that fits.
   plan <- plan_of("cor_mtcars")
   w <- tryCatch(apa_layout_decide(plan, size = 12),
                 warning = function(w) conditionMessage(w))
@@ -233,7 +229,7 @@ test_that("an explicit size that misses names the size that WOULD fit (F1)", {
                  class = "apaTables_ladder_size")
 })
 
-test_that("the honest no-fit message still fires where it is TRUE (F1)", {
+test_that("the honest no-fit message still fires where it is TRUE", {
   # huge_plan's \tabcolsep term alone exceeds the rotated page, so here "no
   # font size can fit it" is a fact, and the explicit-size branch must keep
   # saying exactly that rather than offering a size that cannot exist.
@@ -244,10 +240,10 @@ test_that("the honest no-fit message still fires where it is TRUE (F1)", {
   expect_false(grepl("\n", w))
 })
 
-test_that("an invalid font.size dies with a named error, not a bare one (F3)", {
-  # Before this fix apa.quarto.pdf(t, font.size = "abc") died mid-render
-  # with base R's "missing value where TRUE/FALSE needed" -- loud (correct)
-  # but naming neither the argument nor the fix. Validated once at
+test_that("an invalid font.size dies with a named error, not a bare one", {
+  # Unvalidated, apa.quarto.pdf(t, font.size = "abc") dies mid-render with
+  # base R's "missing value where TRUE/FALSE needed" -- loud (correct) but
+  # naming neither the argument nor the fix. Validated once at
   # apa_quarto_render(), the chokepoint every public route passes through.
   expect_error(apa_quarto_font_size_value("abc"), "font.size must be")
   expect_error(apa_quarto_font_size_value(c(10, 12)), "font.size must be")
@@ -313,22 +309,16 @@ test_that("apa_quarto_latex_block() emits ONE complete unstarred longtable", {
   # dispatcher's own LaTeX-vs-markdown routing has its own coverage in
   # test-quarto-entrypoints.R, and this test is about the LONGTABLE shape,
   # which apa_quarto_latex_block() alone is responsible for.
-  # Task 3 fix round 1: tests/testthat/fixtures/phase2-measured-widths.rds
-  # used to carry landscape = TRUE baked into every entry, left over from
-  # before Task 2 made NA apa.cor.table()'s own default (D63) -- inert until
-  # Task 3 wired the argument into apa_quarto_latex_block(), and then enough
-  # to raise the "cannot rotate" warning this test never asked for (this
-  # test is about the LONGTABLE SHAPE, not landscape). The fixture itself was
-  # regenerated with landscape = NA on every entry (confirmed by re-running
-  # test-render-latex.R's width-regression suite unchanged), so no local
-  # workaround is needed here any more.
+  # The fixture's specs carry landscape = NA (apa.cor.table()'s default);
+  # a landscape = TRUE baked into them would raise the "cannot rotate"
+  # warning this test never asks for.
   x <- measured$cor_attitude$spec
   out <- apa_quarto_latex_block(x)
   expect_true(inherits(out, "knit_asis"))
   txt <- as.character(out)
   expect_length(txt, 1L)
 
-  # D9: the emitter writes NO caption, which is what makes it apaquarto's job
+  # The emitter writes NO caption, which is what makes it apaquarto's job
   # to splice one in -- and the spliced caption is what keeps the environment
   # unstarred. Emitting our own \caption kills the render inside Quarto's
   # filter chain; emitting none and letting apaquarto supply it is the only
@@ -339,7 +329,7 @@ test_that("apa_quarto_latex_block() emits ONE complete unstarred longtable", {
   expect_equal(lengths(regmatches(txt, gregexpr("\\end{longtable}", txt,
                                                 fixed = TRUE))), 1L)
   expect_false(grepl("longtable*", txt, fixed = TRUE))
-  # D12: asis_output() is raw-TeX only for a SELF-CONTAINED environment.
+  # asis_output() is raw-TeX only for a SELF-CONTAINED environment.
   # Pandoc re-parses neighbouring lines as markdown (it turned a trailing "%"
   # into "\%"), so nothing may precede \begin{longtable} or follow
   # \end{longtable} on the way out.
@@ -347,36 +337,24 @@ test_that("apa_quarto_latex_block() emits ONE complete unstarred longtable", {
   expect_true(endsWith(txt, "\\end{longtable}"))
 })
 
-test_that("the native LaTeX path registers no ulem dependency (Step 6)", {
-  # apa_restore_emph() USED TO exist because flextable's LaTeX dependencies
-  # load ulem WITHOUT [normalem], redefining \emph as underlining
-  # document-wide. The native path never loads flextable, so it must not
-  # register any such correction either -- that would add a package nothing
-  # else in the document needs. Rasterized proof of the appearance is in the
-  # Task 9 report.
+test_that("the native LaTeX path registers no ulem dependency", {
+  # flextable's LaTeX dependencies load ulem WITHOUT [normalem], redefining
+  # \emph as underlining document-wide. The native path never loads
+  # flextable, so it must not register any such dependency or correction
+  # either -- that would add a package nothing else in the document needs.
+  # This passes a real knit_meta registry through a real function call and
+  # reads it back, on the ONE path (the native LaTeX emitter) that could
+  # plausibly regress.
   withr::local_options(knitr.in.progress = TRUE)
   knitr::knit_meta(clean = TRUE)
   apa_quarto_latex_block(measured$twoway$spec)
   expect_length(knitr::knit_meta(clean = TRUE), 0L)
-
-  # This test used to carry a companion half that called apa_restore_emph()
-  # directly and asserted a "ulem" entry DID appear, proving the check above
-  # could fire. Task 9 (Phase 1.6a) deleted apa_restore_emph() as confirmed
-  # dead -- the render-based measurement is in the Task 9 report, and "apa_
-  # restore_emph() no longer exists" below is the guard that keeps it deleted
-  # -- so there is no longer a companion call to make. The assertion above is
-  # unweakened: it still passes a real knit_meta registry through a real
-  # function call and reads it back, on the ONE path (the native LaTeX
-  # emitter) that could plausibly regress.
 })
 
-test_that("apa.quarto.pdf() off the LaTeX path no longer falls back to a flextable (D14 complete, Task 8)", {
-  # SUPERSEDES "apa.quarto.table() falls back to a flextable off the LaTeX
-  # path". That branch was labelled INTERIM in its own source comment and
-  # survived only until Phase 1.6a's pandoc emitter existed; Task 8 retires
-  # apa.quarto.table() and wires apa.quarto.pdf() to
-  # apa_quarto_markdown_block() off the LaTeX path instead (D24: one emitter
-  # for every non-PDF destination).
+test_that("apa.quarto.pdf() off the LaTeX path does not fall back to a flextable", {
+  # Off the LaTeX path apa.quarto.pdf() goes through
+  # apa_quarto_markdown_block(): one pandoc emitter serves every non-PDF
+  # destination, and no flextable fallback remains.
   local_mocked_bindings(apa_latex_target = function() FALSE)
   out <- apa.quarto.pdf(measured$twoway$spec)
   expect_false(inherits(out, "flextable"))
@@ -384,41 +362,35 @@ test_that("apa.quarto.pdf() off the LaTeX path no longer falls back to a flextab
 })
 
 test_that("apa_flextable() is no longer exported", {
-  # D8: un-exporting is free ONLY now -- apa_flextable() arrived with the 4.0
-  # work, which has never been pushed, so the name has no external users
-  # today and would have them permanently after the next release.
+  # apa_flextable() arrived with the unreleased 4.0 work, so it has no
+  # external users; exporting it would give it users permanently after the
+  # next release.
   expect_false("apa_flextable" %in% getNamespaceExports("apaTables"))
-  # apa.quarto.table() is retired outright too (D30, Task 8) -- see
+  # apa.quarto.table() is retired outright too -- see
   # test-quarto-entrypoints.R for the dedicated coverage of that.
   expect_false("apa.quarto.table" %in% getNamespaceExports("apaTables"))
 })
 
 test_that("apa_restore_emph() no longer exists", {
-  # Task 9 (Phase 1.6a): the ulem/normalem fix for flextable's LaTeX
-  # dependencies was deleted as confirmed dead, not merely un-exported --
-  # apa_flextable() can no longer reach a LaTeX destination at all (D14/D24),
-  # so a guard against underlined "Note." text in one has nothing left to
-  # guard. A comment saying so is not enough on its own (see
-  # tests/testthat/test-apa-save.R's retargeted knit_meta check, which used
-  # to prove this function fired); this asserts the removal directly, so the
-  # function cannot creep back silently.
+  # The ulem/normalem fix for flextable's LaTeX dependencies is deleted, not
+  # merely un-exported: apa_flextable() cannot reach a LaTeX destination at
+  # all, so a guard against underlined "Note." text in one has nothing to
+  # guard. This asserts the removal directly, so the function cannot creep
+  # back silently.
   expect_false(exists("apa_restore_emph", where = asNamespace("apaTables"),
                        inherits = FALSE))
 })
 
 test_that("a chunk that ASKS for a rotated page it cannot have says so", {
-  # The one case worth a warning: the author wrote apa-landscape: true by
-  # hand, and no chunk without a tbl- label can be rotated. The table is
-  # fitted upright and complete either way -- the warning is the net beside
-  # the fix, and it names the fix. The automatic case stays silent, which the
-  # companion below pins.
+  # The one case worth a warning: the document's writer asked for a rotated
+  # page by hand, and no chunk without a tbl- label can be rotated. The
+  # table is fitted upright and complete either way -- the warning is the
+  # net beside the fix, and it names the fix. The automatic case stays
+  # silent, which the companion below pins.
   #
-  # Task 3 WIDENED this warning's wording so it stops naming only the chunk
-  # option: it now fires the same way whether the request came from
-  # apa-landscape: true or from the landscape = TRUE builder argument, so the
-  # text no longer contains the literal string "apa-landscape" -- the
-  # assertion below was rewritten (D66) to match the fix it now names
-  # instead of the source of the request.
+  # The warning fires the same way whether the request came from
+  # apa-landscape: true or from the landscape = TRUE builder argument, so its
+  # text names the fix (a tbl- label), not the literal "apa-landscape".
   withr::local_options(knitr.in.progress = TRUE)
   local_mocked_bindings(
     apa_chunk_landscape = function() TRUE,
@@ -436,17 +408,15 @@ test_that("a chunk that ASKS for a rotated page it cannot have says so", {
 
 test_that("the automatic rotate-then-fall-back path warns about NOTHING", {
   # The companion, and the reason the assertion above is worth making: this
-  # one takes the same branch without the author having asked, and it must be
-  # silent -- master shrank silently and kept every column, and a warning on
+  # one takes the same branch without anyone having asked, and it must be
+  # silent -- the table shrinks and keeps every column, and a warning on
   # every unlabelled wide table would be noise, not information.
   #
-  # apa_chunk_landscape() mocked to NA, not FALSE: under the Phase 1.7
-  # tri-state, FALSE now means the author explicitly FORBADE rotation, and NA
-  # is "no opinion", which is what "automatic" means here. (Fix round 1: this
-  # mock used to read FALSE, which meant "no opinion" under the pre-1.7
-  # two-state contract; after the tri-state landed it silently became a test
-  # of FORBID instead, under an unchanged name, and still passed -- see the
-  # sibling test below for FORBID's own coverage.)
+  # apa_chunk_landscape() mocked to NA, not FALSE: under the tri-state,
+  # FALSE means rotation was explicitly FORBIDDEN, and NA is "no opinion",
+  # which is what "automatic" means here. Mocking FALSE would silently test
+  # FORBID instead and still pass -- see the sibling test below for FORBID's
+  # own coverage.
   withr::local_options(knitr.in.progress = TRUE)
   local_mocked_bindings(
     apa_chunk_landscape = function() NA,
@@ -455,7 +425,7 @@ test_that("the automatic rotate-then-fall-back path warns about NOTHING", {
 })
 
 test_that("an explicit FORBID does not warn either, even where rotation could not have executed anyway", {
-  # A different question from the automatic case just above: here the author
+  # A different question from the automatic case just above: here the writer
   # DID have an opinion (apa-landscape: false) and got exactly what they
   # asked for -- the table shrinks to the upright page instead of rotating --
   # so there is nothing to warn about. The "cannot have it" warning two tests
@@ -464,7 +434,7 @@ test_that("an explicit FORBID does not warn either, even where rotation could no
   # resolved through apa_landscape_request() from apa_chunk_landscape() and
   # the builder argument) and CANNOT-EXECUTE (the render's limitation, here
   # apa_landscape_executable()) are independent facts at the call site
-  # (R/quarto-table.R:812's `landscape = requested` and
+  # (apa_quarto_latex_block()'s `landscape = requested` and
   # `can_execute_rotation = executable`), not one implemented via the other.
   withr::local_options(knitr.in.progress = TRUE)
   local_mocked_bindings(
@@ -473,11 +443,12 @@ test_that("an explicit FORBID does not warn either, even where rotation could no
   expect_no_warning(apa_quarto_latex_block(apa.cor.table(attitude)))
 })
 
-test_that("a rotation that cannot be EXECUTED is not decided (C1)", {
+test_that("a rotation that cannot be EXECUTED is not decided", {
   # The regression this argument exists for. apa_request_landscape() can only
-  # mark a chunk Quarto turns into a float, and its answer used to be thrown
-  # away: the ladder rotated, the request refused, and the table was priced
-  # against the 9 in rotated page and printed on the 6.5 in upright one.
+  # mark a chunk Quarto turns into a float, and its answer must reach the
+  # ladder: thrown away, the ladder rotates, the request is refused, and the
+  # table is priced against the 9 in rotated page and printed on the 6.5 in
+  # upright one.
   plan <- plan_of("cor_mtcars")
 
   rotatable <- apa_layout_decide(plan)
@@ -495,7 +466,7 @@ test_that("a rotation that cannot be EXECUTED is not decided (C1)", {
   expect_true(stuck$fits)
   expect_lte(stuck$width, 6.5)
 
-  # An explicit request cannot override it either: the author asking for a
+  # An explicit request cannot override it either: asking for a
   # rotated page does not create a float for apaquarto to rotate.
   forced <- apa_layout_decide(plan, landscape = TRUE,
                               can_execute_rotation = FALSE)
@@ -568,15 +539,15 @@ test_that("landscape labels do not survive from one render into the next", {
   expect_equal(apa_landscape_env$labels, "tbl-from-b")
 })
 
-# --- Task 3, Step 5: landscape = TRUE is accepted and silently ignored on
-# an HTML render ------------------------------------------------------------
+# --- landscape = TRUE is honoured on Word and silently ignored on an HTML
+# render --------------------------------------------------------------------
 
 test_that("landscape = TRUE on a docx render actually produces the rotation wrapper", {
-  # Fix round 1 (Important 4): the presence partner the absence assertion
-  # just below needs. attitude's correlation table fits the upright page on
-  # its own (measured elsewhere in this suite at 5.29 in against 6.5 in), so
-  # only the landscape = TRUE argument -- not measurement -- can be what
-  # rotates it here; this is the end-to-end proof that Task 3's wiring
+  # The presence partner the absence assertion just below needs.
+  # attitude's correlation table fits the upright page on its own (measured
+  # elsewhere in this suite at 5.29 in against 6.5 in), so only the
+  # landscape = TRUE argument -- not measurement -- can be what rotates it
+  # here; this is the end-to-end proof that the argument's wiring
   # actually produces the user-visible deliverable on Word, not just that
   # apa_layout_decide() receives the right value (test-landscape-tristate.R
   # already covers that in isolation) and not just that automatic
@@ -589,7 +560,7 @@ test_that("landscape = TRUE on a docx render actually produces the rotation wrap
 })
 
 test_that("landscape = TRUE is accepted and silently ignored on an HTML render", {
-  # D32: landscape is a PAGED concept and HTML has no page. The argument is
+  # landscape is a PAGED concept and HTML has no page. The argument is
   # set when the table is BUILT, before any destination is known, so one
   # object can correctly carry landscape = TRUE into a Word render and an
   # HTML one. A warning here would fire on a CORRECT document.

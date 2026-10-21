@@ -1,19 +1,18 @@
-# Phase 1.7 Task 5 (D64): the rotated section's MARGINS, and the branch that
-# declines to rotate at all.
+# The rotated section's MARGINS, and the branch that declines to rotate at
+# all.
 #
-# WHY THIS IS ITS OWN FILE (fix round 1, Minor 5). These four tests started
-# life in test-docx-structure.R, which is guarded FILE-WIDE by
+# WHY THIS IS ITS OWN FILE. test-docx-structure.R is guarded FILE-WIDE by
 # skip_on_cran(), a `quarto` guard and apa_skip_if_library_stale() -- all
 # three correct for that file, every test in which drives a real
 # `quarto render` against the INSTALLED library. None of them applies here:
-# the three margin tests need `pandoc` and nothing else, and the
-# refuse-branch test needs no external tool at all. Left where they were,
-# the single assertion proving D64's mapping vanished on any machine without
-# quarto or with a stale install -- and D64 is release-relevant, so its
-# proof has to be the kind that actually runs on CRAN.
+# the margin tests need `pandoc` and nothing else, and the refuse-branch
+# test needs no external tool at all. Placed there, the single assertion
+# proving the margin mapping would vanish on any machine without quarto or
+# with a stale install -- and the mapping is release-relevant, so its proof
+# has to be the kind that actually runs on CRAN.
 #
-# MEASURED IN REAL MICROSOFT WORD, 2026-08-04 (AppleScript-driven, the route
-# the "measure Word in Word" rule requires): a portrait section with four
+# MEASURED IN REAL MICROSOFT WORD (AppleScript-driven; LibreOffice is not a
+# valid proxy for Word here): a portrait section with four
 # DISTINCT margins, flipped to landscape by Word itself, went from
 #   <w:pgMar w:top="1440" w:right="1440" w:bottom="1080" w:left="2160" .../>
 # to
@@ -21,9 +20,9 @@
 # -- new top <- old right, new right <- old bottom, new bottom <- old left,
 # new left <- old top. `bottom` and `left` were unique values, so that is the
 # ONLY mapping consistent with the result; the clockwise alternative would
-# have put 2160 in `top` and did not. Fix round 1's review re-ran those exact
-# portrait margins through the SHIPPED filter with bare pandoc and got output
-# byte-identical to real Word's.
+# have put 2160 in `top` and did not. Those exact portrait margins, run
+# through the SHIPPED filter with bare pandoc, give output byte-identical to
+# real Word's.
 #
 # THE MAPPING CANNOT BE OBSERVED FROM ANY RENDERED FIXTURE IN THIS SUITE.
 # apaquarto.docx's own margins are symmetric (1440 twips all round), so the
@@ -34,7 +33,7 @@
 # carrying four distinct margins and reads the section properties back out of
 # a real .docx.
 
-test_that("the rotated section's margins are rotated the way Word rotates them (D64)", {
+test_that("the rotated section's margins are rotated the way Word rotates them", {
   # Four DISTINCT values, so no assertion below can pass by coincidence: a
   # mapping that is backwards, unrotated, or partially applied moves at
   # least one of them somewhere this test names.
@@ -63,7 +62,7 @@ test_that("the PORTRAIT closer's margins are NOT rotated -- only the landscape s
   # rotate BOTH closers, silently changing the margins of the portrait pages
   # that precede a rotated table -- everything back to the previous closer,
   # i.e. most of the manuscript. Watched failing: moving the swap into
-  # sectpr_xml() leaves this test red while the D64 test above stays green.
+  # sectpr_xml() leaves this test red while the margin test above stays green.
   secs <- apa_landscape_filter_sections(mt = 1440, mr = 1000,
                                         mb = 800,  ml = 2000)
   port <- Filter(function(s) !grepl('w:orient="landscape"', s, fixed = TRUE), secs)
@@ -80,15 +79,15 @@ test_that("the PORTRAIT closer's margins are NOT rotated -- only the landscape s
 
 test_that("both closers carry the reference document's own <w:cols>, in schema order", {
   # apaquarto.docx's real trailing sectPr ends `<w:pgMar .../><w:cols
-  # w:space="720"/>`; both closers omitted it. Harmless in Word (one column
-  # is the default when the element is absent) but a measured divergence
-  # from what these closers claim to be -- "the document's real section
-  # properties". Real Microsoft Word opened a .18 render with no repair
-  # prompt and `pgSz pgMar cols` in every sectPr (fix round 1, coordinator).
+  # w:space="720"/>`, so both closers carry it too. Omitting it would be
+  # harmless in Word (one column is the default when the element is absent)
+  # but a divergence from what these closers claim to be -- "the document's
+  # real section properties". Real Microsoft Word opens such a render with no
+  # repair prompt and `pgSz pgMar cols` in every sectPr.
   #
   # POSITION IS ASSERTED, NOT ONLY PRESENCE. CT_SectPr is a strict SEQUENCE
   # (... pgSz, pgMar, paperSrc, pgBorders, lnNumType, pgNumType, cols ...),
-  # the same schema-order trap D35/D36 hit with <w:rPr> in the docx styles:
+  # the same schema-order trap as <w:rPr> in the docx styles:
   # an element in the wrong place is not ignored, it can make Word reject
   # the part. A bare presence check cannot see that.
   secs <- apa_landscape_filter_sections(mt = 1440, mr = 1000,
@@ -102,7 +101,7 @@ test_that("both closers carry the reference document's own <w:cols>, in schema o
 })
 
 test_that("with numbered lines on, <w:lnNumType> still precedes <w:cols> -- the ordering that can actually be violated", {
-  # Fix round 1, Minor 3. The test above asserts `pgMar < cols`, which is
+  # The test above asserts `pgMar < cols`, which is
   # true of ANY appending order and so is nearly free -- the pair CT_SectPr's
   # sequence can genuinely be violated on here is lnNumType before cols,
   # because those two are the elements this filter chooses to append.
@@ -125,13 +124,11 @@ test_that("with numbered lines on, <w:lnNumType> still precedes <w:cols> -- the 
 })
 
 test_that("when the reference geometry cannot be read, the table is left UPRIGHT and the user is told WHICH file failed", {
-  # Phase 1.7 Task 5, inherited item 3, widened by fix round 1's Important 2.
   # apa_landscape_wrap()'s refuse branch and apa_warn_no_docx_geometry()
-  # together decide that a user silently gets an unrotated table -- and ran
-  # in NO test at all, while Task 5 makes the branch MORE reachable, not
-  # less: apa_docx_reference_sectpr() now prefers a PROJECT copy, so a
-  # user's own hand-edited (or truncated, or half-written) apaquarto.docx is
-  # newly able to be the file that fails to parse.
+  # together decide that a user gets an unrotated table. The branch is
+  # reachable in practice: apa_docx_reference_sectpr() prefers a PROJECT
+  # copy, so a user's own hand-edited (or truncated, or half-written)
+  # apaquarto.docx can be the file that fails to parse.
   #
   # DRIVEN END TO END WITH A REAL BROKEN PROJECT COPY, no mocking: a file
   # that is not a zip at the exact path a render would resolve. That is the
@@ -147,7 +144,7 @@ test_that("when the reference geometry cannot be read, the table is left UPRIGHT
   writeLines("this is not a zip archive", broken)
 
   old <- setwd(proj)
-  # after = FALSE so the setwd runs BEFORE the unlink (Minor 8): on.exit
+  # after = FALSE so the setwd runs BEFORE the unlink: on.exit
   # APPENDS with add = TRUE, and removing a directory the process is sitting
   # inside is an error on Windows.
   on.exit({ setwd(old); unlink(proj, recursive = TRUE) },
@@ -162,7 +159,7 @@ test_that("when the reference geometry cannot be read, the table is left UPRIGHT
 
   # The table is returned UNCHANGED -- no landscape div, so
   # apatablelandscape.lua has nothing to act on and writes no section with
-  # invented numbers (D31's own charge against Quarto's filter).
+  # invented page geometry (the defect of Quarto's own landscape filter).
   expect_identical(out, body)
   expect_false(grepl(APA_QUARTO_LANDSCAPE_CLASS, out, fixed = TRUE))
 
@@ -173,12 +170,11 @@ test_that("when the reference geometry cannot be read, the table is left UPRIGHT
 })
 
 test_that("the no-geometry warning names the file it actually tried and gives advice that fits it", {
-  # Fix round 1, Important 2. Before the project's copy was preferred there
-  # was exactly one candidate, so "its own bundled apaquarto.docx ...
-  # reinstall apaTables" was true by construction. It is not any more, and
-  # the refuse-branch test above pinned only "kept upright", leaving the
-  # false clause unpinned -- a wrong instruction printed into a rendered
-  # manuscript, the category this project treats as release-relevant.
+  # There are two candidate files (the project's copy, preferred, and the
+  # bundled one), so "its own bundled apaquarto.docx ... reinstall
+  # apaTables" is not true by construction, and the refuse-branch test above
+  # pins only "kept upright". A wrong instruction printed into a rendered
+  # manuscript is release-relevant.
   #
   # Both branches are asserted, each against the advice that does NOT fit
   # it as well as the one that does, so a future edit cannot swap them and
@@ -205,8 +201,8 @@ test_that("the no-geometry warning names the file it actually tried and gives ad
   expect_match(msg2, "reinstall apaTables", fixed = TRUE)
   expect_false(grepl("apa.quarto.setup()", msg2, fixed = TRUE))
 
-  # NO EMBEDDED NEWLINE, in either branch (auto-memory
-  # `knitr-warning-newline-trap`): knitr wraps only single-line warnings, so
+  # NO EMBEDDED NEWLINE, in either branch: knitr wraps only single-line
+  # warnings, so
   # a "\n" here pushes the rest of the sentence off the right edge of a
   # knitted page, where the reader cannot see it and pdftotext still reports
   # it -- invisible to a human AND to a grep-based check.

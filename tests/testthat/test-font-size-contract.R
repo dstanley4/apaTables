@@ -1,4 +1,4 @@
-# D71: apa_quarto_size_rung()'s contract, with the two edges named explicitly
+# apa_quarto_size_rung()'s contract, with the two edges named explicitly
 # because both are counter-intuitive and each is wrong in the opposite
 # direction. NA means "write no marker"; the default Table style is 10 pt.
 
@@ -87,13 +87,13 @@ test_that("the docx markdown block warns on an explicit out-of-range size and st
   )
 })
 
-test_that("the HTML marker is emitted with or without a size, D114", {
+test_that("the HTML marker is emitted with or without a size", {
   wrap <- apaTables:::apa_quarto_html_wrap
 
-  # UNSIZED: the marker still appears, carrying only the class. Phase 1.18's
-  # width rules in apa.css are scoped to the wrapper div this marker produces,
-  # so it must be present on EVERY apaTables table in an HTML render -- not
-  # only a sized one, which is all it was before D114.
+  # UNSIZED: the marker still appears, carrying only the class. The HTML width
+  # rules in apa.css are scoped to the wrapper div this marker produces, so it
+  # must be present on EVERY apaTables table in an HTML render -- not only a
+  # sized one.
   expect_match(wrap("TBL"), "::: {.apa-table-html}", fixed = TRUE)
   expect_false(grepl("apa-table-size-pt", wrap("TBL"), fixed = TRUE))
 
@@ -123,11 +123,10 @@ test_that("the HTML marker is emitted with or without a size, D114", {
 })
 
 test_that("an explicit font.size on a non-docx target emits the exact-size marker", {
-  # Fix round 1: apa_quarto_html_wrap() (then apa_quarto_size_wrap_exact())
-  # was tested in isolation above,
-  # but nothing exercised the JOIN between it and the call site in
-  # apa_quarto_markdown_block() -- the emit-site branch that decides WHETHER
-  # to call it. This is the positive half of that wiring: a non-docx target
+  # apa_quarto_html_wrap() is tested in isolation above; this exercises the
+  # JOIN between it and the call site in apa_quarto_markdown_block() -- the
+  # emit-site branch that decides WHETHER to call it. This is the positive
+  # half of that wiring: a non-docx target
   # (mocked, since there is no live Quarto render in a unit test) plus an
   # explicit font.size must produce the attribute marker in the body.
   local_mocked_bindings(apa_quarto_docx_target = function() FALSE)
@@ -137,32 +136,29 @@ test_that("an explicit font.size on a non-docx target emits the exact-size marke
 })
 
 test_that("a non-docx target with no explicit font.size carries no exact-size marker", {
-  # The negative half of the same wiring: the automatic ladder must never
-  # reach HTML (D37/D43 stand -- nothing shrinks automatically on a web
-  # page). test-render-markdown.R:552/:681 already cover this shape for the
-  # class marker's substring; this is the same assertion, restated here
-  # beside its positive counterpart so the pairing is visible in one place.
+  # The negative half of the same wiring: the automatic ladder must never reach
+  # HTML (nothing shrinks automatically on a web page).
+  # test-render-markdown.R:552/:681 already cover this shape for the class
+  # marker's substring; this is the same assertion, restated here beside its
+  # positive counterpart so the pairing is visible in one place.
   local_mocked_bindings(apa_quarto_docx_target = function() FALSE)
   b <- apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]))
   body <- as.character(b)
   expect_false(grepl("apa-table-size-pt=", body, fixed = TRUE))
 
-  # D114: but the marker DIV itself is now there regardless, carrying only the
-  # class. That is the pairing this test used to be blind to -- before 1.18 an
-  # unsized table emitted nothing at all, so "no exact-size marker" and "no
-  # marker" were the same observation and this assertion could not tell them
-  # apart.
+  # But the marker DIV itself is there regardless, carrying only the class.
+  # Asserting it is what keeps "no exact-size marker" distinct from "no marker
+  # at all".
   expect_true(grepl("::: {.apa-table-html}", body, fixed = TRUE))
 })
 
-test_that("a non-HTML, non-docx target carries no marker at all, D114", {
-  # THE GATE, and 1.18 made it load-bearing. apatablesize.lua is registered for
-  # html and docx only, so nothing consumes this marker on a reveal.js deck or
-  # a typst render -- and an unconsumed empty div is not inert everywhere: it
-  # would print as an empty block in the deck. Before 1.18 the marker was only
-  # emitted for an explicit font.size, so this path was reached rarely; now it
-  # is reached by EVERY table, which is what makes the gate worth its own test.
-  # (Phase 1.11 item 7 is the measurement behind the gate itself.)
+test_that("a non-HTML, non-docx target carries no marker at all", {
+  # THE GATE. apatablesize.lua is registered for html and docx only, so
+  # nothing consumes this marker on a reveal.js deck or a typst render -- and
+  # an unconsumed empty div is not inert everywhere: it would print as an
+  # empty block in the deck. The marker is emitted for unsized tables too, so
+  # EVERY table reaches this path, which is what makes the gate worth its own
+  # test.
   local_mocked_bindings(apa_quarto_docx_target = function() FALSE)
   local_mocked_bindings(apa_quarto_html_target = function() FALSE)
   b <- apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]))
@@ -176,19 +172,19 @@ test_that("a non-HTML, non-docx target carries no marker at all, D114", {
 })
 
 test_that("Word's size-adjustment warning does not fire on a non-docx target", {
-  # Task 2's apa_quarto_warn_word_size() is gated on is_docx at the call
-  # site (`if (is_docx && !is.null(font.size))`), but until now nothing drove
-  # an explicit, out-of-range font.size at a MOCKED non-docx target to prove
-  # that gate actually excludes it -- every existing test either mocked
-  # is_docx TRUE or left font.size NULL. font.size = 16 is chosen because it
+  # apa_quarto_warn_word_size() is gated on is_docx at the call site
+  # (`if (is_docx && !is.null(font.size))`). This drives an explicit,
+  # out-of-range font.size at a MOCKED non-docx target to prove that gate
+  # actually excludes it -- the other tests either mock is_docx TRUE or leave
+  # font.size NULL. font.size = 16 is chosen because it
   # is exactly the value that DOES trigger the warning on a docx target
   # (see the first test in this file), so a false-positive gate would be
   # caught here, not hidden by an in-range value that stays silent for an
   # unrelated reason.
   #
-  # expect_silent(), not expect_no_warning(): confirmed directly (see fix
-  # round 1 report) that this exact call, with is_docx mocked FALSE, raises
-  # neither a warning nor a message anywhere in the call -- the readability
+  # expect_silent(), not expect_no_warning(): this exact call, with is_docx
+  # mocked FALSE, raises neither a warning nor a message anywhere in the call
+  # (confirmed directly) -- the readability
   # warning in apa_quarto_font_size() only fires below 6 pt, and 16 is far
   # above it. expect_silent() therefore asserts the strongest true thing
   # about this path rather than a weaker "the specific Word warning was
@@ -197,24 +193,22 @@ test_that("Word's size-adjustment warning does not fire on a non-docx target", {
   expect_silent(apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]), font.size = 16))
 })
 
-# --- Task 4: the readability floor tells the truth on every destination ---
+# --- the readability floor tells the truth on every destination ---
 #
-# Before this task, the floor warning inside apa_quarto_font_size() fired on
-# every path including HTML, where (pre-Task-3) no size was ever applied --
-# so the warning was FALSE in the reader's rendered manuscript. Task 3 makes
-# HTML apply the size for real, so that warning becomes true. Slides went
-# the other way: apa_slide_font_pt() applied any size exactly and never
-# warned at all, so apa.quarto.revealjs(x, font.size = 2) delivered 2 pt in
-# total silence. This section adds the slide half and confirms the
-# now-shared apa_quarto_warn_below_floor() rule still reads correctly from
-# apa_quarto_font_size()'s own caller.
+# The floor warning inside apa_quarto_font_size() is true on HTML because
+# HTML applies the size exactly. Slides apply any size exactly too
+# (apa_slide_font_pt()), so apa.quarto.revealjs(x, font.size = 2) must warn
+# rather than deliver 2 pt in total silence. This section covers the slide
+# half and confirms the shared apa_quarto_warn_below_floor() rule still reads
+# correctly from apa_quarto_font_size()'s own caller.
 
 test_that("a size below the readable floor warns on slides, which were silent", {
   tb <- apa.cor.table(attitude)
   plan <- apaTables:::apa_display_plan(apaTables:::as_spec(tb))
   expect_warning(apaTables:::apa_slide_font_pt(plan, font.size = 2),
                  "readable")
-  # and the size is still HONOURED exactly -- D26 forbids refusing it
+  # and the size is still HONOURED exactly -- an explicit size is warned
+  # about, never refused
   pt <- suppressWarnings(apaTables:::apa_slide_font_pt(plan, font.size = 2))
   expect_identical(pt, 2)
 })
@@ -233,25 +227,23 @@ test_that("the floor warning is one flowing sentence with no newline", {
   expect_match(msg, "6", fixed = TRUE)
 })
 
-# --- D74: the floor is judged on the size DELIVERED, not the size requested
+# --- the floor is judged on the size DELIVERED, not the size requested
 #
-# Below Task 2's fix, apa_quarto_font_size() ran the readability-floor check
-# on the RAW request, with no destination gate. On Word, font.size = 5 then
-# put two contradictory warnings into the same rendered draft: the floor
-# warning saying the table is unreadable at 5 pt (FALSE -- Word can only
-# ever deliver 6 pt or above, per apa_quarto_delivered_size()) sitting right
-# beside apa_quarto_warn_word_size()'s true "Word sets this at 6, not the 5
-# requested." This is the same shape of defect D41 removed from HTML,
-# rebuilt at the opposite end of the range, inside the very fix meant to
-# remove it.
+# Do not run the readability-floor check on the RAW request. On Word,
+# font.size = 5 would then put two contradictory warnings into the same
+# rendered draft: the floor warning saying the table is unreadable at 5 pt
+# (FALSE -- Word can only ever deliver 6 pt or above, per
+# apa_quarto_delivered_size()) sitting right beside
+# apa_quarto_warn_word_size()'s true "Word sets this at 6, not the 5
+# requested."
 #
 # The pair must be inspected TOGETHER, deliberately without
-# suppressWarnings() (unlike test-render-markdown.R:884, which wraps a
-# font.size = 5L call in suppressWarnings() for an unrelated reason and is
-# why this went unnoticed) -- a test that only checks "a warning fired"
+# suppressWarnings() (unlike test-render-markdown.R, which wraps a
+# font.size = 5L call in suppressWarnings() for an unrelated reason and so
+# cannot see this) -- a test that only checks "a warning fired"
 # cannot tell a true Word-adjustment warning from the false floor warning
 # riding along beside it.
-test_that("on docx, the readability floor is judged on the delivered size, not the requested size (D74)", {
+test_that("on docx, the readability floor is judged on the delivered size, not the requested size", {
   local_mocked_bindings(apa_quarto_docx_target = function() TRUE)
 
   warnings_seen <- character(0)
@@ -274,12 +266,12 @@ test_that("on docx, the readability floor is judged on the delivered size, not t
   expect_length(warnings_seen, 1)
 })
 
-# The other half of D74's own ruling: PDF, HTML and slides deliver the
+# The other half: PDF, HTML and slides deliver the
 # requested size EXACTLY, so for them requested and delivered are the same
 # value and the floor warning must still fire below 6 pt -- unlike Word,
 # there is no adjustment warning to accompany it, because none of those
 # destinations round or snap the size at all.
-test_that("on a non-docx target, the readability floor still uses the requested size (unchanged by D74)", {
+test_that("on a non-docx target, the readability floor still uses the requested size", {
   local_mocked_bindings(apa_quarto_docx_target = function() FALSE)
 
   warnings_seen <- character(0)
@@ -295,16 +287,14 @@ test_that("on a non-docx target, the readability floor still uses the requested 
   expect_length(warnings_seen, 1)
 })
 
-# --- Phase 1.11 item 7: the typst marker leak (a regression Phase 1.8
-# introduced) ---
+# --- the exact-size marker is written for HTML only ---
 #
-# apa_quarto_markdown_block() wrote the exact-size marker div for ANY
-# non-docx target, not just HTML. apatablesize.lua is registered for html and
-# docx only, so a typst render carried an unconsumed
-# `::: {apa-table-size-pt="8"}` block that pandoc's typst writer silently
-# drops -- no rendered document was ever damaged (measured,
-# dev/factcheck/phase111-typst/MEASUREMENT.md). The regression was PHASE
-# 1.8's, not this phase's.
+# apa_quarto_markdown_block() must not write the exact-size marker div for
+# every non-docx target. apatablesize.lua is registered for html and docx
+# only, so a typst render would carry an unconsumed
+# `::: {apa-table-size-pt="8"}` block. Pandoc's typst writer happens to drop
+# it silently (measured: no rendered document is damaged), but nothing
+# should depend on that.
 
 test_that("the exact-size marker is written for HTML and withheld from typst", {
   spec <- apa.cor.table(attitude)
@@ -349,19 +339,17 @@ test_that("apa_quarto_html_target reports three states, not two", {
                                   .package = "apaTables")
   expect_false(html_target())
   # FALSE is wider than "typst, gfm": pdf (via "latex") and the slide
-  # destination (via "revealjs") also withhold the marker -- as does "pptx"
-  # as of Phase 1.9, now classified as nothing rather than as "revealjs"
-  # (R/quarto-table.R's apa_quarto_actual_entry()).
+  # destination (via "revealjs") also withhold the marker -- as does "pptx",
+  # classified as nothing rather than as "revealjs" (R/quarto-table.R's
+  # apa_quarto_actual_entry()).
   testthat::local_mocked_bindings(apa_quarto_actual_format = function() "latex",
                                   .package = "apaTables")
   expect_false(html_target())
   testthat::local_mocked_bindings(apa_quarto_actual_format = function() "revealjs",
                                   .package = "apaTables")
   expect_false(html_target())
-  # M5 (whole-branch review, 2026-08-06): the comment above has claimed
-  # "pptx" withholds the marker since Phase 1.9, but nothing here actually
-  # drove `apa_quarto_actual_format()` to "pptx" until now -- the assertion
-  # was written as prose, not as a check.
+  # "pptx" driven explicitly, so the claim above is a check and not only
+  # prose.
   testthat::local_mocked_bindings(apa_quarto_actual_format = function() "pptx",
                                   .package = "apaTables")
   expect_false(html_target())

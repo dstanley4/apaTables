@@ -1,7 +1,7 @@
 # tests/testthat/test-snapshot-current-output.R
-# Golden record of v3 console output. These guard against regressions when the
-# builders are migrated to the spec in later plans. Do NOT accept snapshot
-# changes without confirming the underlying statistics are unchanged.
+# Golden record of the builders' console output. These guard against
+# regressions in what each builder prints. Do NOT accept snapshot changes
+# without confirming the underlying statistics are unchanged.
 
 test_that("apa.cor.table console output is stable", {
   expect_snapshot(print(apa.cor.table(attitude)))

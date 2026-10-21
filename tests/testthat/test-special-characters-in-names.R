@@ -3,16 +3,15 @@
 # formatter: it should display whatever name the user supplied, unchanged.
 #
 # THIS FILE COVERS the spec, which feeds apa_flextable() -> Word (.docx) and
-# HTML. It used to declare the LaTeX path OUT OF SCOPE, and Phase 2 makes that
-# exclusion wrong: LaTeX is now a first-class destination, reached by
-# apa.quarto.pdf() in every Quarto -> PDF render. The other two halves are
-# covered in the files that own those layers, from the SAME `tricky_names`
-# vector (tests/testthat/helper-special-names.R):
+# HTML. The LaTeX path is NOT out of scope: it is a first-class destination,
+# reached by apa.quarto.pdf() in every Quarto -> PDF render. The other two
+# halves are covered in the files that own those layers, from the SAME
+# `tricky_names` vector (tests/testthat/helper-special-names.R):
 #
 #   test-render-latex.R          a real builder spec through
 #                                apa_display_plan() -> apa_latex_table(), with
 #                                the exact escaped LaTeX asserted per name
-#   test-phase2-acceptance.R     a real Quarto render, both placements, with
+#   test-render-acceptance.R     a real Quarto render, both placements, with
 #                                every name looked for in the PDF's own text
 #
 # The legacy `$latex.*` fields intentionally rewrite some characters

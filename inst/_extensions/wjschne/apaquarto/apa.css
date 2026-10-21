@@ -89,11 +89,11 @@ table {
 
 /* apaTables: a spanner's cmidrule. apa_markdown_table() wraps ONLY the
    spanned header cells of a grid table in a
-   "::: {custom-style=\"ApaTableRule\"}" fenced div (D29) -- pandoc's HTML
+   "::: {custom-style=\"ApaTableRule\"}" fenced div -- pandoc's HTML
    writer turns that into a <div data-custom-style="ApaTableRule"> nested
    inside the <th>, one per spanner, so this rule draws a partial rule under
    exactly the columns each spanner covers. Measured: without this rule the
-   div carries no visible border at all (D37) -- the ordinary table rules
+   div carries no visible border at all -- the ordinary table rules
    above (top of table, bottom of thead, bottom of table, no vertical rules,
    no interior row rules) already come from apaquarto's own .table CSS with
    no per-cell markup, so this is the only piece apaTables' HTML output adds. */
@@ -101,7 +101,7 @@ table {
   border-bottom: 1px solid black;
 }
 
-/* apaTables Phase 1.8 / D73: an explicit font.size on an HTML render is
+/* apaTables: an explicit font.size on an HTML render is
    delivered by wrapping the <table> in a <div class="apa-table-size"
    style="font-size: Npt;"> (apatablesize.lua) rather than attributing the
    <table> node directly -- Quarto's HTML pipeline discards a Table node's
@@ -124,9 +124,9 @@ table {
   font-size: 10pt;
 }
 
-/* apaTables Phase 1.18 / D114: a table wider than the text column was being
+/* apaTables: without these rules a table wider than the text column is
    SQUASHED into it, breaking cells mid-value -- a confidence interval printing
-   as `[22.72,` on one line and `59.53]` on the next. Three things combined, and
+   as `[22.72,` on one line and `59.53]` on the next. Three things combine, and
    no one of them alone is the fault: apaquarto sets `grid: body-width: "7in"`
    (_extension.yml), which Quarto turns into a 6.50in text column that does not
    move with the window; Bootstrap's `.table{width:100%}` stretches every table
@@ -137,7 +137,6 @@ table {
    MEASURED on the shipped example at nine window widths, 500-1600px: 92 pieces
    of broken text at 1440px before these rules, ZERO after, and the page never
    scrolls sideways at any width.
-   dev/factcheck/phase118-htmlwidth/VERIFICATION.md.
 
    SCOPED to `.apa-table-html`, the class apaTables puts on its OWN tables
    (R/quarto-table.R's APA_QUARTO_HTML_CLASS -> apatablesize.lua's wrapper).
@@ -147,8 +146,7 @@ table {
    NOT Quarto's own `column-page-right`, which was measured and does work -- it
    also stretches a table that already FITS from 6.50in to 9.88in, and pinning
    that back needs apaquarto's body-width written down a second time, here,
-   where the two copies would drift. dev/factcheck/phase118-htmlwidth/
-   SPIKE-column-classes.md records the whole comparison. */
+   where the two copies would drift. */
 
 /* 1. Columns size to their own contents, not to the printed page's
       proportions. */
@@ -187,7 +185,7 @@ table {
        A table needing MORE than this scrolls in its own box instead -- the
        same fallback a narrow window gets, reached for the same reason: there
        is no room. The two tables in the shipped example need 1.09in and
-       1.17in. NOT a table measurement and NOT the width model (D113): one
+       1.17in. NOT a table measurement and NOT the width model: one
        page-layout constant, applied to every table alike. */
     max-width: calc(100% + 1.3in);
     overflow-x: auto;

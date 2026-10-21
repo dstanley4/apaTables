@@ -1,18 +1,18 @@
 # apa.quarto.pdf() end to end: the ladder's decision reaching the page.
 #
-# This is the only place several claims made in Tasks 4-8 become assertable at
-# all, because each of them is about what arrives in the PDF rather than what R
-# returned:
+# This is the only place several claims about the LaTeX path become assertable
+# at all, because each of them is about what arrives in the PDF rather than
+# what R returned:
 #
-#   1. D9 -- the environment arrives UNSTARRED with its caption spliced INSIDE
+#   1. The environment arrives UNSTARRED with its caption spliced INSIDE
 #      it. The emitter deliberately writes no \caption, and Quarto rewrites a
 #      captionless raw longtable to longtable*, which is invisible to every
 #      later longtable fixup and silently loses rows (measured: 45 of 60 in one
-#      document, 38 of 60 in another, compiling cleanly both times). Nothing in
-#      Tasks 2-8 could check this from R; the caption is spliced by apaquarto,
-#      after R has finished.
+#      document, 38 of 60 in another, compiling cleanly both times). Nothing
+#      in R can check this; the caption is spliced by apaquarto, after R has
+#      finished.
 #
-#   2. Rotation is AUTOMATIC (D6/D7). The wide table below carries NO
+#   2. Rotation is AUTOMATIC. The wide table below carries NO
 #      `::: {.landscape}` div, NO `#| apa-landscape` option, and NO argument.
 #      R measures it, decides, and the decision reaches apaquarto as the
 #      `apa-landscape` attribute apafloatlatex.lua reads.
@@ -48,7 +48,7 @@ apa_skip_if_library_stale()
 # The two tables are chosen against the MEASURED width model, not by eye.
 # mtcars[, 1:9] lays out at 6.889 in at 10 pt, which is past the 6.5 in upright
 # text block and inside the 9 in rotated one, so the correct answer is "rotate
-# and stay at 10 pt" -- the branch D7 exists for. attitude[, 1:3] lays out at
+# and stay at 10 pt" -- rotate before shrink. attitude[, 1:3] lays out at
 # 2.927 in and must not rotate.
 apa_qtable_qmd <- function(placement) {
   paste0(
@@ -102,9 +102,8 @@ for (placement in c("end", "intext")) {
 
     # The document must not be able to ask for what it is meant to receive.
     # A fixture that hands the code under test the answer certifies nothing --
-    # Task 8 found exactly that, where an `apa-longtable` option satisfied the
-    # first half of a Lua disjunction and the detection under test was never
-    # reached.
+    # e.g. an `apa-longtable` option satisfies the first half of a Lua
+    # disjunction and the detection under test is never reached.
     expect_false(grepl("landscape", qmd, fixed = TRUE))
     expect_false(grepl("apa-landscape", qmd, fixed = TRUE))
     writeLines(qmd, file.path(proj, "doc.qmd"))
@@ -146,7 +145,7 @@ for (placement in c("end", "intext")) {
       expect_false(any(grepl("\\begin{table}", tex, fixed = TRUE)),
                    info = paste(where, "-- a longtable is inside a float"))
 
-      # D9, the assertion this task exists to make possible: EACH caption is
+      # The assertion this file exists to make possible: EACH caption is
       # spliced inside its OWN environment. The emitter writes no caption; if
       # apaquarto stopped splicing one, Quarto would star the environment and
       # rows would go missing with no error anywhere.

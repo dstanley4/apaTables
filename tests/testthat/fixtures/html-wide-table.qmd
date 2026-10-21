@@ -16,17 +16,17 @@ format:
 library(apaTables)
 ```
 
-Body text before. `tbl-wide20` is the same shape of table the whole-branch
-review measured live against `format: apaquarto-html`: wide enough (20
+Body text before. `tbl-wide20` is the same shape of table that was measured
+live against `format: apaquarto-html`: wide enough (20
 variables) that the automatic ladder would rotate-then-shrink it on a docx
-render, so a render on THIS format is what proves the fix -- D37 measured
+render, so a render on THIS format is what proves the fix -- it is measured
 that HTML has no page, so nothing rotates and nothing shrinks, and the
 ladder's own consequences must never reach an HTML render at all. (The
 size-marker class name itself is deliberately not spelled out in this prose,
 so a substring search for it downstream matches only a genuinely emitted
 div, never this sentence.) `tbl-cap` and `apa-note` are both deliberately
-absent, so the title and note reaching the output are the AUTOMATIC ones
-(Task 7), proving the same automatic pipeline docx already has also reaches
+absent, so the title and note reaching the output are the AUTOMATIC ones,
+proving the same automatic pipeline docx already has also reaches
 HTML.
 
 ```{r}

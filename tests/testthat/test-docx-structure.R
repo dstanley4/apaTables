@@ -1,6 +1,6 @@
-# Task 6 (Phase 1.6a): the landscape section-break filter.
+# The landscape section-break filter.
 #
-# D31 measured Quarto's own `.landscape` div for docx broken twice over: its
+# Quarto's own `.landscape` div for docx is broken twice over (measured): its
 # portrait closer is a COMPLETELY EMPTY sectPr, so every page BEFORE a
 # rotated table silently loses the running head and page number (not merely
 # the rotated page itself), and its rotated page size is hardcoded A4
@@ -31,9 +31,7 @@ test_that("a rotated table keeps the running head, and so do the pages before it
   expect_gt(length(secs), 1L)             # there must be more than one to check
 
   # The rotated section is US LETTER landscape (the fixture's own reference
-  # document, apaquarto.docx, is US Letter -- measured in
-  # dev/quarto-landscape-sectpr-issue.md; the patch that carries it is
-  # apaquarto fork commit 125cbe4 on branch apatables-bundle), not Quarto's
+  # document, apaquarto.docx, is US Letter -- measured), not Quarto's
   # hardcoded A4.
   rot <- Filter(function(s) grepl('w:orient="landscape"', s), secs)
   expect_length(rot, 1)
@@ -56,7 +54,7 @@ test_that("the emitted header references match the bundled reference document", 
                c(rId8 = "header1.xml", rId9 = "header2.xml", rId12 = "header3.xml"))
 })
 
-test_that("apatablelandscape.lua's hardcoded rId8/rId9/rId12 are not dangling in a REAL rendered docx (whole-branch-review Important 2)", {
+test_that("apatablelandscape.lua's hardcoded rId8/rId9/rId12 are not dangling in a REAL rendered docx", {
   # apatablelandscape.lua:147-153 hardcodes r:id="rId8"/"rId9"/"rId12" as
   # literal strings on every <w:headerReference> it writes. The test above
   # only checks the SOURCE reference document -- apaquarto.docx as shipped --
@@ -92,14 +90,12 @@ test_that("apatablelandscape.lua's hardcoded rId8/rId9/rId12 are not dangling in
   # happens to look like a relationship id.
   expect_true(all(header_ids %in% names(rels)))
 
-  # PHASE 1.7 TASK 5: the same check for the FOOTERS. apatablelandscape.lua
-  # hardcodes SIX references, not three -- rId10/rId11/rId13 are
-  # <w:footerReference>s sitting in the same REFS table as the headers -- and
-  # until now they were checked against nothing at all. A drifted footer id
-  # is the same defect as a drifted header one (a dangling relationship, and
-  # a missing page number in real Word), and it was invisible: the loop above
-  # matches only `<w:headerReference`, so a footer pointing at a
-  # non-existent part left every assertion in this file green.
+  # The same check for the FOOTERS. apatablelandscape.lua hardcodes SIX
+  # references, not three -- rId10/rId11/rId13 are <w:footerReference>s
+  # sitting in the same REFS table as the headers. A drifted footer id is the
+  # same defect as a drifted header one (a dangling relationship, and a
+  # missing page number in real Word), and the loop above cannot see it: it
+  # matches only `<w:headerReference`.
   all_rels <- apa_docx_hdrftr_rels(d)
   expect_equal(all_rels,
                c(rId8 = "header1.xml", rId9 = "header2.xml",
@@ -114,9 +110,7 @@ test_that("apatablelandscape.lua's hardcoded rId8/rId9/rId12 are not dangling in
   # GREEN, because the document's LAST sectPr is the reference document's
   # own (pandoc copies apaquarto.docx's trailing section verbatim) and it
   # carries all six regardless of what the filter writes -- so the pooled
-  # set was complete even when neither closer the filter wrote was. The
-  # brief's own mutation table predicted that mutation would be caught; it
-  # was not, until this became a per-section assertion.
+  # set was complete even when neither closer the filter wrote was.
   six <- sort(c("rId8", "rId9", "rId10", "rId11", "rId12", "rId13"))
   for (s in secs) {
     ids <- regmatches(s, gregexpr(
@@ -159,17 +153,14 @@ test_that("the landscape section is genuinely rotated in real content, not just 
 })
 
 test_that("a table that is BOTH rotated AND shrunk gets the right style AND the right section breaks", {
-  # Closes the gap D38 (dev/specs/2026-07-31-phase2-decisions.md; the Route A
-  # shrink ladder, carried by apaquarto fork commit 125cbe4 on branch
-  # apatables-bundle) explicitly left open: "rotation's interaction with this
-  # marker is NOT yet built or verified... a table that both rotates AND
-  # shrinks is untested here." apatablesize.lua (custom-style) and
+  # Rotation's interaction with the shrink ladder's size marker.
+  # apatablesize.lua (custom-style) and
   # apatablelandscape.lua (section breaks) both act on the SAME table in
   # this fixture -- a 14-variable correlation table the ladder rotates AND
   # still has to shrink to fit the rotated budget (measured: size 8.822 pt,
-  # rung 8, with Word's fixed cell padding charged -- B6/Phase 1.12; the
-  # uncharged model said 9.181/rung 9, the "just fits, padding pushes it
-  # back over" answer that made this table's labels wrap in real Word).
+  # rung 8, with Word's fixed cell padding charged; a model that ignores the
+  # padding says 9.181/rung 9, the "just fits, padding pushes it back over"
+  # answer that makes this table's labels wrap in real Word).
   # Registration order between the two filters does not matter
   # (they touch disjoint things -- a Table node's custom-style attribute;
   # a Div's own content), but this proves it holds in a REAL render, not
@@ -191,22 +182,19 @@ test_that("a table that is BOTH rotated AND shrunk gets the right style AND the 
 })
 
 test_that("an unlabelled (non-float) wide table can still shrink, not only rotate", {
-  # Fix round 1, Important finding. apatablesize.lua was scoped to
-  # FloatRefTarget only, on the reasoning (correct, but incomplete) that a
-  # `tbl-` labelled chunk's table lives inside one at this stage. Task 6
-  # made rotation reachable for an UNLABELLED chunk too (apatablelandscape.
-  # lua finds its own marker via a Pandoc-level walk, not a FloatRefTarget
-  # handler -- see that file's own banner), so an unlabelled wide table
-  # would rotate but keep the default "Table" style at 10 pt, leaving an
-  # inert apa-table-size-N div in the output: the exact defect class this
-  # phase has repeatedly found the hard way, only now reachable.
-  # apatablesize.lua now uses the same Pandoc-level walk apatablelandscape.
-  # lua does.
+  # Rotation is reachable for an UNLABELLED chunk (apatablelandscape.lua
+  # finds its own marker via a Pandoc-level walk, not a FloatRefTarget
+  # handler -- see that file's own banner), so apatablesize.lua must not be
+  # scoped to FloatRefTarget only: a `tbl-` labelled chunk's table lives
+  # inside one at this stage, but an unlabelled one does not, and it would
+  # rotate yet keep the default "Table" style at 10 pt, leaving an inert
+  # apa-table-size-N div in the output. apatablesize.lua therefore uses the
+  # same Pandoc-level walk apatablelandscape.lua does.
   d <- apa_render_fixture_docx("landscape-unlabelled-shrunk")
   doc <- apa_docx_document_xml(d)
 
-  # Table8, not Table9: the same B6/Phase 1.12 rung change as the labelled
-  # fixture above -- the ladder charges Word's fixed cell padding and takes
+  # Table8, not Table9, for the same reason as the labelled fixture above --
+  # the ladder charges Word's fixed cell padding and takes
   # the next size down.
   expect_true(grepl('<w:tblStyle w:val="Table8"', doc, fixed = TRUE))
   expect_false(grepl("apa-table-size-", doc, fixed = TRUE))
@@ -218,21 +206,17 @@ test_that("an unlabelled (non-float) wide table can still shrink, not only rotat
 })
 
 test_that("three tables in one document each keep their OWN size, not the last marker the filter visited", {
-  # Task 6 fix round 2, CRITICAL. apatablesize.lua's fix-round-1 rescope
-  # (FloatRefTarget -> a document-wide Pandoc-level walk, to reach an
-  # unlabelled table's marker too) kept a SINGLE `size` local shared across
-  # the walk of the WHOLE document: the first pass visited every marker div
-  # in the document, each one overwriting `size`, and the second pass then
-  # applied that ONE final value to EVERY Table node in the document.
-  # REPRODUCED with bare `pandoc --lua-filter=` even (confirming it was
-  # never about Quarto's own pipeline): three tables marked
-  # 9/unmarked/6 all came back `Table6`, the size of whichever marker the
-  # walk happened to visit last. Silent, exit 0, and reachable the moment
-  # any real APA manuscript -- which almost always has more than one table
-  # -- passes through this filter. None of the other landscape-*.qmd
-  # fixtures could see this: every one of them has exactly ONE table.
+  # Do NOT let apatablesize.lua keep a SINGLE `size` local shared across a
+  # document-wide walk: a first pass visiting every marker div, each one
+  # overwriting `size`, followed by a second pass over every Table node,
+  # applies that ONE final value to EVERY table. Three tables marked
+  # 9/unmarked/6 then all come back `Table6`, the size of whichever marker
+  # the walk visited last -- silent, exit 0, reproducible with bare
+  # `pandoc --lua-filter=`, and reached by any real APA manuscript with more
+  # than one table. The other landscape-*.qmd fixtures cannot see it: every
+  # one of them has exactly ONE table.
   #
-  # The fix pairs each marker with the table in its OWN immediate Blocks
+  # The filter pairs each marker with the table in its OWN immediate Blocks
   # list (apa_quarto_size_wrap() always emits the marker directly after its
   # own table's grid markdown, so they are always siblings in the same
   # list, however deeply that list itself is nested) via a `Blocks`-typed
@@ -249,26 +233,21 @@ test_that("three tables in one document each keep their OWN size, not the last m
 })
 
 test_that("numbered-lines survives on the rotated section AND every page before it", {
-  # Fix round 1, Important finding. docxlinenumber.lua turns numbered-lines:
-  # true into line numbering by appending ONE closer of its own, at the very
-  # end of the document, carrying <w:lnNumType> and nothing else -- no page
-  # size, no margins, no header references. A sectPr governs content back to
-  # the PREVIOUS closer, so apatablelandscape.lua's own two closers (the
-  # portrait one before a rotated table and the landscape one around it)
-  # would otherwise close their sections BEFORE docxlinenumber.lua's ever
-  # runs, silently dropping line numbers from the rotated table and
-  # everything before it -- confirmed in the rendered XML (before the fix,
-  # lnNumType was absent from both) and, after a fix-round review caught
-  # that round 1's real-Word claim for the PRE-fix state rested only on the
-  # XML (that render's Word artifact had been overwritten by the post-fix
-  # one before anyone opened it), confirmed properly in round 2 by
-  # deliberately re-rendering the pre-fix state and opening THAT in real
-  # Microsoft Word: no line-number digits on the pages before the rotated
-  # table, a counter starting fresh at "1" on the first page apaquarto's
-  # own unmodified numbering closer governs. apatablelandscape.lua now
-  # reads numbered-lines off the document metadata itself and carries
-  # <w:lnNumType> in both of its own closers; real Word confirms numbering
-  # now runs continuously from page 1 through the rotated table and beyond.
+  # docxlinenumber.lua turns numbered-lines: true into line numbering by
+  # appending ONE closer of its own, at the very end of the document,
+  # carrying <w:lnNumType> and nothing else -- no page size, no margins, no
+  # header references. A sectPr governs content back to the PREVIOUS closer,
+  # so apatablelandscape.lua's own two closers (the portrait one before a
+  # rotated table and the landscape one around it) would otherwise close
+  # their sections BEFORE docxlinenumber.lua's ever runs, silently dropping
+  # line numbers from the rotated table and everything before it. Without
+  # the fix, real Microsoft Word shows no line-number digits on the pages
+  # before the rotated table and a counter starting fresh at "1" on the first
+  # page apaquarto's own numbering closer governs (measured). So
+  # apatablelandscape.lua reads numbered-lines off the document metadata
+  # itself and carries <w:lnNumType> in both of its own closers; real Word
+  # confirms numbering then runs continuously from page 1 through the rotated
+  # table and beyond.
   d <- apa_render_fixture_docx("landscape-numbered-lines")
   doc <- apa_docx_document_xml(d)
   secs <- apa_docx_sections(doc)
@@ -288,9 +267,7 @@ test_that("numbered-lines survives on the rotated section AND every page before 
   # the running head, page number and correct page size present on the
   # pages it governs regardless -- Word visibly treats this "incomplete but
   # not empty" sectPr differently from Quarto's own, fully empty one, by a
-  # mechanism this project does not claim to explain (measured in
-  # dev/quarto-landscape-sectpr-issue.md; the patch that carries it is
-  # apaquarto fork commit 125cbe4 on branch apatables-bundle). No defect is
+  # mechanism this project does not claim to explain (measured). No defect is
   # asserted here against docxlinenumber.lua on the strength of the XML shape
   # alone.
   for (s in before) {
@@ -300,15 +277,14 @@ test_that("numbered-lines survives on the rotated section AND every page before 
 })
 
 test_that("the reference document read is the PROJECT's own copy when it has one, not the installed package's", {
-  # Phase 1.7 Task 5, inherited item 4. A `quarto render` resolves the
-  # apaquarto extension -- reference document and all -- out of the
-  # PROJECT's own _extensions folder, but apa_docx_reference_sectpr() used
-  # to read system.file(), the INSTALLED package's copy. Identical for
-  # every project apa.quarto.new()/apa.quarto.setup() builds, and silently
-  # divergent the moment a user edits their own copy, which is supported.
-  # D64 makes that divergence matter more, not less: the rotated section now
-  # carries the margins round with the page, and a customised reference
-  # document is exactly where an asymmetric margin lives.
+  # A `quarto render` resolves the apaquarto extension -- reference document
+  # and all -- out of the PROJECT's own _extensions folder, so
+  # apa_docx_reference_sectpr() must read that copy, not only system.file(),
+  # the INSTALLED package's copy. The two are identical for every project
+  # apa.quarto.new()/apa.quarto.setup() builds, and silently divergent the
+  # moment a user edits their own copy, which is supported. The rotated
+  # section carries the margins round with the page, and a customised
+  # reference document is exactly where an asymmetric margin lives.
   #
   # The synthetic copy is deliberately NOT US Letter and NOT symmetric --
   # every number differs from the bundled document's, so this cannot pass by
@@ -319,7 +295,7 @@ test_that("the reference document read is the PROJECT's own copy when it has one
   apa_write_synthetic_docx(file.path(ext, "apaquarto.docx"))
 
   old <- setwd(proj)
-  # after = FALSE so the setwd runs BEFORE the unlink (fix round 1, Minor 8):
+  # after = FALSE so the setwd runs BEFORE the unlink:
   # on.exit APPENDS with add = TRUE, and removing a directory the process is
   # sitting inside is an error on Windows.
   on.exit({ setwd(old); unlink(proj, recursive = TRUE) },
@@ -337,22 +313,18 @@ test_that("the reference document read is the PROJECT's own copy when it has one
 })
 
 test_that("with no project copy anywhere above, apa_docx_reference_sectpr() reads the real page straight off the BUNDLED reference document", {
-  # The fallback half of the branch above, FOLDED TOGETHER (fix round 1,
-  # Minor 4) with what used to be a separate "reads the bundled document"
-  # test. That test called apa_docx_reference_sectpr() with no setwd at all,
-  # so once the project's copy became preferred its answer depended on the
-  # DEVELOPER'S FILESYSTEM: whatever _extensions/wjschne/apaquarto/
-  # apaquarto.docx happened to exist at or above tests/testthat/. There is
-  # none today (checked at or above the repo root), which is exactly the
-  # shape of assertion this project keeps convicting -- green for a reason
-  # nobody chose. Run from a scratch directory instead, with no _extensions
-  # folder in it or in any of its parents, so apa_docx_project_reference()
-  # demonstrably finds nothing and system.file() is what answers.
+  # The fallback half of the branch above. Do not call
+  # apa_docx_reference_sectpr() here without a setwd: because the project's
+  # copy is preferred, its answer would then depend on the DEVELOPER'S
+  # FILESYSTEM -- whatever _extensions/wjschne/apaquarto/apaquarto.docx
+  # happened to exist at or above tests/testthat/ -- and a pass would be
+  # green for a reason nobody chose. Run from a scratch directory instead,
+  # with no _extensions folder in it or in any of its parents, so
+  # apa_docx_project_reference() demonstrably finds nothing and system.file()
+  # is what answers.
   #
-  # The values are the US Letter numbers measured in
-  # dev/quarto-landscape-sectpr-issue.md (the patch that carries them is
-  # apaquarto fork commit 125cbe4 on branch apatables-bundle) and the
-  # render-based tests above already establish.
+  # The values are the US Letter numbers (measured) that the render-based
+  # tests above already establish.
   d <- tempfile(); dir.create(d)
   old <- setwd(d)
   on.exit({ setwd(old); unlink(d, recursive = TRUE) },
@@ -407,7 +379,7 @@ test_that("apa_docx_sectpr_from_file() derives the real page from ANY reference 
 })
 
 # ---------------------------------------------------------------------------
-# Task 7, fix round 1: a rotated table's note landed on the WRONG page.
+# A rotated table's note must land on its table's own landscape page.
 #
 # apanote.lua (stock apaquarto, common, post-render) inserts a float's note
 # as a SIBLING immediately after the float's own Div -- one level up from
@@ -416,64 +388,63 @@ test_that("apa_docx_sectpr_from_file() derives the real page from ANY reference 
 # textually AFTER the landscape closer belongs to the section that FOLLOWS
 # it (the manuscript's portrait default), not to the rotated section its
 # table is on. MEASURED in real Microsoft Word (16.111, AppleScript PDF
-# export, pdftotext -layout, per-page split on \f): landscape-shrunk put its
-# table on pages 3-4 (landscape, 792x612 pt) and its note ALONE on page 5
-# (portrait); landscape-numbered-lines put its table on page 3 (landscape)
-# and its note alone on page 4 (portrait) -- an otherwise empty portrait
-# page holding nothing but a note divorced from the table it describes.
+# export, pdftotext -layout, per-page split on \f), without the fix:
+# landscape-shrunk put its table on pages 3-4 (landscape, 792x612 pt) and its
+# note ALONE on page 5 (portrait); landscape-numbered-lines put its table on
+# page 3 (landscape) and its note alone on page 4 (portrait) -- an otherwise
+# empty portrait page holding nothing but a note divorced from the table it
+# describes.
 #
 # A note-existence check alone cannot see this (the note is still IN the
 # document either way) -- these assertions read its POSITION relative to
 # the landscape closer that governs its own table, which is what the defect
-# actually changes. apatablelandscapenote.lua (new, apaTables.16, registered
-# post-render immediately after apatablelandscape.lua and apanote.lua) is
-# the fix: it moves a rotated float's note INSIDE its own landscape section,
-# between the table and the closer.
+# actually changes. apatablelandscapenote.lua (registered post-render
+# immediately after apatablelandscape.lua and apanote.lua) is the fix: it
+# moves a rotated float's note INSIDE its own landscape section, between the
+# table and the closer.
 test_that("a rotated table's note lands inside its OWN landscape section, not stranded after it", {
   # Four floats, one render: a rotated table with a GENERATED note, a
   # rotated table with an EXPLICIT chunk note, a rotated table with NO note
   # at all, and a non-rotated table with a generated note -- the four cases
-  # the fix round 1 review required verified together, in case a fix that
-  # helps one silently breaks another (the project's own "verify by
-  # rendering every case in one document, not by reading the diff" rule,
-  # after apatablesize.lua's own document-global regression on this branch).
+  # verified together, in case a fix that helps one silently breaks another
+  # (verify by rendering every case in one document, not by reading the
+  # diff).
   d <- apa_render_fixture_docx("landscape-note-position")
   doc <- apa_docx_document_xml(d)
 
   # tbl-a, tbl-b and tbl-c rotate; tbl-d does not.
   #
-  # PHASE 1.14 (D98): tbl-a, tbl-b and tbl-c are CONSECUTIVE rotated floats
-  # and now share ONE landscape section, so there is one closer for the whole
-  # run rather than one per table. tbl-d is upright and contributes none.
-  # This number falling from 3 to 1 IS the merge working, and it is the
-  # cheapest proof of it anywhere in the suite -- the fixture built for that
-  # phase has only TWO rotated tables and cannot observe a run splitting.
+  # tbl-a, tbl-b and tbl-c are CONSECUTIVE rotated floats and share ONE
+  # landscape section, so there is one closer for the whole run rather than
+  # one per table. tbl-d is upright and contributes none. A count of 1 rather
+  # than 3 IS the run merging working, and it is the cheapest proof of it
+  # anywhere in the suite -- landscape-caption-run.qmd has only TWO rotated
+  # tables and cannot observe a run splitting.
   land_at <- gregexpr('w:orient="landscape"', doc, fixed = TRUE)[[1]]
   expect_equal(length(land_at), 1L,
               info = "expected 1 landscape closer for the run of three")
 
-  # Position, not presence: `w:pStyle w:val="FigureNote"` is a paragraph
-  # STYLE REFERENCE, never split across `<w:t>` runs the way body TEXT is --
-  # unlike a literal note sentence, which Word routinely breaks mid-phrase at
-  # a formatting boundary. (First version of this assertion searched raw XML
-  # for "N = number of cases" directly and got a false RED: the italic "N"
-  # is its own run, splitting the phrase across two `<w:t>` elements with a
-  # `</w:t><w:r>...<w:t>` in between, so a literal substring search on raw
-  # XML returns -1 even when the text is present and correctly placed. Style
-  # tokens do not have this problem, which is why the position check below
-  # is built on them rather than on note wording.)
+  # Position, not presence: `w:pStyle w:val="FigureNote"` is a paragraph STYLE
+  # REFERENCE, never split across `<w:t>` runs the way body TEXT is -- unlike a
+  # literal note sentence, which Word routinely breaks mid-phrase at a
+  # formatting boundary. (Searching raw XML for "N = number of cases" directly
+  # gives a false RED: the italic "N" is its own run, splitting the phrase
+  # across two `<w:t>` elements with a `</w:t><w:r>...<w:t>` in between, so a
+  # literal substring search on raw XML returns -1 even when the text is
+  # present and correctly placed. Style tokens do not have this problem, which
+  # is why the position check below is built on them rather than on note
+  # wording.)
   note_at <- gregexpr("FigureNote", doc, fixed = TRUE)[[1]]
   span_count <- function(lo, hi) sum(note_at > lo & note_at < hi)
 
   # BOUNDARIES ARE THE FLOATS THEMSELVES, NOT THE SECTION CLOSERS.
   #
-  # Until Phase 1.14 this test attributed each note to its table by the
-  # position of that table's OWN landscape closer. Merging a run left one
-  # closer for three tables, so that scheme collapsed and took four
-  # assertions with it (`land_at[2]` became NA). Each float still opens with
-  # exactly one `FigureTitle` paragraph -- "Table 1", "Table 2" ... -- which
-  # is a property of the float, not of the sectioning, so it survives this
-  # phase and any future change to how sections are drawn.
+  # Do not attribute each note to its table by the position of that table's
+  # OWN landscape closer: a merged run has one closer for three tables, so
+  # `land_at[2]` would be NA. Each float opens with exactly one `FigureTitle`
+  # paragraph -- "Table 1", "Table 2" ... -- which is a property of the
+  # float, not of the sectioning, so it survives any change to how sections
+  # are drawn.
   title_at <- gregexpr('w:pStyle w:val="FigureTitle"', doc, fixed = TRUE)[[1]]
   expect_equal(length(title_at), 4L,
               info = "four floats, so four FigureTitle paragraphs")
@@ -499,8 +470,7 @@ test_that("a rotated table's note lands inside its OWN landscape section, not st
   # section: every ROTATED table's note is INSIDE the landscape section, and
   # the upright table's note is outside it. A note that regressed to a
   # portrait page would cross this line -- which is exactly what
-  # apatablelandscapenote.lua was written to prevent, and what registering
-  # Phase 1.14's filter before it would silently undo.
+  # apatablelandscapenote.lua exists to prevent.
   expect_equal(sum(note_at < land_at[1]), 3L,
               info = "tbl-a's two and tbl-b's one note sit inside the landscape section")
   expect_equal(sum(note_at > land_at[1]), 2L,
@@ -515,18 +485,15 @@ test_that("a rotated table's note lands inside its OWN landscape section, not st
 })
 
 # ---------------------------------------------------------------------------
-# Task 10 (Phase 1.6a): B2 layer 1 -- structural assertions on the written
-# .docx, the phase's own acceptance layer for B0.
+# Structural assertions on the written .docx: does a wide table fit its page?
 #
-# B0: flextable handed Word absolute inches for a page whose width apaTables
-# does not control -- measured 12,398 twips = 8.61 in against a 6.5 in text
-# area (dev/specs/2026-07-31-phase2-decisions.md, D14) -- and Word CLIPS
-# rather than wraps, so a multi-block regression silently lost R2, Delta R2
-# and their CIs, exit 0, no warning.
+# The failure being guarded: a table handed to Word in absolute widths for a
+# page whose width apaTables does not control -- flextable's output measured
+# 12,398 twips = 8.61 in against a 6.5 in text area -- is CLIPPED by Word
+# rather than wrapped, so a multi-block regression silently loses R2,
+# Delta R2 and their CIs, exit 0, no warning.
 #
-# THREE KINDS OF CHECK BELOW, AND THEY DO NOT ALL PROVE THE SAME THING --
-# fix round 1 measured that one of them does not prove what its own banner
-# originally claimed, and this section now says what each one actually is:
+# THREE KINDS OF CHECK BELOW, AND THEY DO NOT ALL PROVE THE SAME THING:
 #
 #   MECHANISM  `<w:tblW w:type="pct">` present or absent. THIS is the one
 #              XML-observable fact that discriminates fix from defect --
@@ -537,63 +504,52 @@ test_that("a rotated table's note lands inside its OWN landscape section, not st
 #              but see "what the geometry comparison actually is" below --
 #              it is NOT a live risk measurement against the current
 #              emitter.
-#   CONTENT    read the rendered text back and assert the columns B0 lost
-#              are actually there.
+#   CONTENT    read the rendered text back and assert the columns a clip
+#              would lose are actually there.
 #
-# B0 IS INVISIBLE TO A CONTENT CHECK, and this was MEASURED rather than
-# assumed. The pre-1.6a flextable-in-Quarto-docx path (`apa.quarto.table()`,
-# `master`@`eaef2fc`) was reproduced in an isolated library against the SAME
-# two-block regression fixture this file uses below: `word/document.xml`
-# held R2 = .629, R2 = .665, Delta R2 = .035 and every coefficient row,
-# unabridged -- because Word's clip is a RENDERING-time visual effect (the
-# part of a too-wide fixed-width table that falls past the page edge is
-# still IN the XML, simply not displayed when Word or a printer draws the
-# page), not a removal of content from the file. No XML-reading check, text
-# or geometry, can see a table that LOOKS fine in the file and only clips
-# once a human opens it in Word -- which is exactly what the design doc
-# means by "B0 is invisible to any XML check."
+# THE CLIP IS INVISIBLE TO A CONTENT CHECK, and this was MEASURED rather than
+# assumed. A flextable-in-Quarto-docx render of the SAME two-block regression
+# fixture this file uses below held R2 = .629, R2 = .665, Delta R2 = .035 and
+# every coefficient row, unabridged, in `word/document.xml` -- because Word's
+# clip is a RENDERING-time visual effect (the part of a too-wide fixed-width
+# table that falls past the page edge is still IN the XML, simply not
+# displayed when Word or a printer draws the page), not a removal of content
+# from the file. No XML-reading check, text or geometry, can see a table that
+# LOOKS fine in the file and only clips once a human opens it in Word.
 #
-# THE DISCRIMINATING ASSERTION, added in fix round 1. The reviewer measured
-# what actually differs between the fixed and broken mechanisms in the file:
-# the pandoc emitter writes `<w:tblW w:type="pct" w:w="4817"/>` -- a
-# PERCENTAGE of the containing text column, which structurally cannot
-# overflow it -- while flextable/officer (both the pre-1.6a Quarto path AND
-# `apa.save()`, unchanged by this phase) write NO `<w:tblW>` element at all,
-# only absolute `dxa` `gridCol` widths. `grep '<w:tblW'` over the flextable
-# reproduction's `document.xml` returns nothing. That absence, not any
-# particular twip count, IS B0's cause, sitting in the file one `grepl`
-# away -- watched failing against the same flextable reproduction (below,
-# and in the Task 10 fix-round-1 report).
+# THE DISCRIMINATING ASSERTION. What actually differs between the two
+# mechanisms in the file (measured): the pandoc emitter writes
+# `<w:tblW w:type="pct" w:w="4817"/>` -- a PERCENTAGE of the containing text
+# column, which structurally cannot overflow it -- while flextable/officer
+# (what `apa.save()` uses) write NO `<w:tblW>` element at all, only absolute
+# `dxa` `gridCol` widths. That absence, not any particular twip count, IS the
+# clip's cause, sitting in the file one `grepl` away -- watched failing
+# against a flextable render.
 #
-# WHAT THE GEOMETRY COMPARISON (tblGrid <= usable) ACTUALLY IS, corrected in
-# fix round 1 after the reviewer measured it does NOT do what the original
-# banner here claimed. Two things were wrong with "a genuine regression net
-# for this shape of the defect": (1) `tblGrid` for a `pct`-typed table is
-# NOT the width Word renders -- it is a set of proportional HINTS, scaled at
-# render time to a percentage of the containing text column, so summing it
-# does not measure what governs the page; and (2) more basically, that sum
-# is bounded by the REFERENCE DOCUMENT's own page width, not by whichever
-# section the table happens to land in -- pushed synthetically to 98.4% and
-# 99.3% width, this reference document's pandoc-written tables cap out
-# around ~7900 twips regardless of content. Both fixtures below (7624 and
-# 7569 twips) sit under that ceiling AND under both a 9360-twip portrait and
-# a 12960-twip landscape usable width, so `sum(tblGrid) <= usable` is true
-# BY CONSTRUCTION for any pandoc-written table this emitter can produce --
-# it cannot go red for the mechanism it is pointed at. The 14373-twip red
-# result reported in the Task 10 report is real and reproduced independently
-# by the reviewer, but it belongs to the flextable path Task 9 removed from
-# the Quarto route; these two assertions do not inherit that red.
+# WHAT THE GEOMETRY COMPARISON (tblGrid <= usable) ACTUALLY IS. It is not a
+# regression net for the clip, for two reasons: (1) `tblGrid` for a
+# `pct`-typed table is NOT the width Word renders -- it is a set of
+# proportional HINTS, scaled at render time to a percentage of the
+# containing text column, so summing it does not measure what governs the
+# page; and (2) more basically, that sum is bounded by the REFERENCE
+# DOCUMENT's own page width, not by whichever section the table happens to
+# land in -- pushed synthetically to 98.4% and 99.3% width, this reference
+# document's pandoc-written tables cap out around ~7900 twips regardless of
+# content. Both fixtures below (7624 and 7569 twips) sit under that ceiling
+# AND under both a 9360-twip portrait and a 12960-twip landscape usable
+# width, so `sum(tblGrid) <= usable` is true BY CONSTRUCTION for any
+# pandoc-written table this emitter can produce -- it cannot go red for the
+# mechanism it is pointed at. (A flextable render of the same table does go
+# red, at 14373 twips, but flextable does not serve the Quarto route.)
 #
 # So: KEPT, not deleted (the rotation and section/grid-COUNT assertions
 # beside them genuinely can fail, and the width comparison is a real,
 # cheap guard that the pandoc/`pct` MECHANISM itself has not been reverted
 # to absolute widths -- if it ever were, `sum(tblGrid)` would stop being
 # bounded by the reference document's ~7900-twip ceiling and could exceed a
-# real section's usable width again, the same shape the flextable
-# reproduction shows), but RENAMED and RE-DESCRIBED rather than left
-# claiming to be a live measurement of a risk it cannot see -- the
-# project's own standing rule for a test that cannot observe its named
-# subject.
+# real section's usable width again, the same shape the flextable render
+# shows), but NAMED as a mechanism guard rather than claiming to be a live
+# measurement of a risk it cannot see.
 
 # One integer XML attribute, found by name rather than position -- see
 # apa_docx_xml_int_attr()'s own comment in helper-apaquarto-extract.R.
@@ -608,7 +564,7 @@ test_that("apa_docx_sections() sees a genuinely self-closing <w:sectPr/>, not on
   # Synthetic, not rendered: no fixture in this suite produces a bare
   # self-closing sectPr any more (apatablelandscape.lua replaced the
   # mechanism that used to), so this proves the HARDENING itself rather than
-  # any live defect. Constructed to fail against the pre-Task-10 pattern:
+  # any live defect. Constructed to fail against an open/close-only pattern:
   # `<w:sectPr\\b.*?</w:sectPr>` alone finds only the second (open/close)
   # block and silently drops the first -- length 1, not 2.
   synth <- paste0(
@@ -621,21 +577,21 @@ test_that("apa_docx_sections() sees a genuinely self-closing <w:sectPr/>, not on
 })
 
 test_that("apa_docx_table_styles() does not let a styleless table's slot pick up the NEXT table's style", {
-  # Phase 1.7 Task 8. Synthetic, not rendered: pandoc stamps a style on
-  # every table it writes, so no fixture in this suite reaches a `<w:tbl>`
-  # with no `<w:tblStyle>` -- this proves the hardening itself, the same way
-  # the self-closing-sectPr test above does. Constructed to fail against the
-  # pre-Task-8 pattern (`<w:tbl>\\s*<w:tblPr>.*?<w:tblStyle w:val="([^"]+)"`,
-  # one lazy scan across the WHOLE document, no stop at the next `<w:tbl>`):
-  # fed this two-table fixture, that pattern's one match STARTS at table
-  # one's own `<w:tbl>` tag (it has nowhere else to start, since table one's
-  # `<w:tblPr>` is what it anchors on) and its lazy `.*?` runs straight
-  # through table one's close and into table two's `<w:tblPr>`, capturing
-  # table two's "Table9" as if it were table one's answer -- a single-element
-  # result, `c("Table9")`, that reads as "table one's style is Table9" to any
-  # caller indexing positionally. The fix processes one `<w:tbl>...</w:tbl>`
-  # block at a time, so a block with no `<w:tblStyle>` reports NA at ITS OWN
-  # position instead of donating its slot to the next table.
+  # Synthetic, not rendered: pandoc stamps a style on every table it writes, so
+  # no fixture in this suite reaches a `<w:tbl>` with no `<w:tblStyle>` -- this
+  # proves the hardening itself, the same way the self-closing-sectPr test
+  # above does. Constructed to fail against a whole-document pattern
+  # (`<w:tbl>\\s*<w:tblPr>.*?<w:tblStyle w:val="([^"]+)"`, one lazy scan across
+  # the WHOLE document, no stop at the next `<w:tbl>`): fed this two-table
+  # fixture, that pattern's one match STARTS at table one's own `<w:tbl>` tag
+  # (it has nowhere else to start, since table one's `<w:tblPr>` is what it
+  # anchors on) and its lazy `.*?` runs straight through table one's close and
+  # into table two's `<w:tblPr>`, capturing table two's "Table9" as if it were
+  # table one's answer -- a single-element result, `c("Table9")`, that reads as
+  # "table one's style is Table9" to any caller indexing positionally.
+  # apa_docx_table_styles() processes one `<w:tbl>...</w:tbl>` block at a time,
+  # so a block with no `<w:tblStyle>` reports NA at ITS OWN position instead of
+  # donating its slot to the next table.
   synth <- paste0(
     '<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/></w:tblPr>',
     '<w:tr><w:tc><w:p>one</w:p></w:tc></w:tr></w:tbl>',
@@ -643,7 +599,7 @@ test_that("apa_docx_table_styles() does not let a styleless table's slot pick up
     '<w:tblW w:w="0" w:type="auto"/></w:tblPr>',
     '<w:tr><w:tc><w:p>two</w:p></w:tc></w:tr></w:tbl>')
   styles <- apa_docx_table_styles(synth)
-  # Confirmed by construction: fed this exact fixture, the pre-fix pattern's
+  # Confirmed by construction: fed this exact fixture, that pattern's
   # ONE match spans from table one's own `<w:tbl>` tag straight through to
   # table two's "Table9" (there is nowhere else for it to start, and its
   # lazy `.*?` has no reason to stop at table one's own `</w:tblPr>`), so
@@ -664,17 +620,16 @@ test_that("apa_docx_table_styles() does not let a styleless table's slot pick up
 test_that("the widest builder output is a percentage-width table, rotated, with its declared grid checked as a mechanism guard (not a live-risk measurement -- see this section's banner)", {
   # apa.reg.table()'s multi-block Fit/Delta Fit columns are the widest shape
   # in the suite -- wide enough that the fitting ladder auto-ROTATES it to
-  # landscape (D25), which is itself asserted here rather than assumed,
+  # landscape, which is itself asserted here rather than assumed,
   # because a check compared against the WRONG section (portrait, left
   # behind before the table) would silently pass for the wrong reason.
   d <- apa_render_fixture_docx("regression-wide")
   doc <- apa_docx_document_xml(d)
 
-  # THE DISCRIMINATING CHECK (fix round 1): `w:type="pct"` is what makes B0
+  # THE DISCRIMINATING CHECK: `w:type="pct"` is what makes Word's clip
   # structurally impossible -- a percentage of the containing text column
-  # cannot overflow it. Watched failing against the pre-1.6a
-  # flextable-in-Quarto-docx reproduction, whose document.xml carries no
-  # `<w:tblW>` element at all (Task 10 fix-round-1 report).
+  # cannot overflow it. Watched failing against a flextable-in-Quarto-docx
+  # render, whose document.xml carries no `<w:tblW>` element at all.
   expect_true(grepl('<w:tblW[^>]*w:type="pct"', doc, perl = TRUE))
 
   secs <- apa_docx_sections(doc)
@@ -702,15 +657,15 @@ test_that("the widest builder output is a percentage-width table, rotated, with 
 })
 
 test_that("the narrow control is a percentage-width table too, unrotated, with its declared grid checked as a mechanism guard (not a live-risk measurement -- see this section's banner)", {
-  # The "both orientations" half of B2 layer 1's own charter: this fixture
-  # is small enough (apa.cor.table(attitude[, 1:3]), measured 5.2903 in,
-  # dev/specs/2026-07-31-phase2-decisions.md) that the ladder leaves it
+  # The "both orientations" half of this section: this fixture is small
+  # enough (apa.cor.table(attitude[, 1:3]), measured 5.2903 in) that the
+  # ladder leaves it
   # portrait and unshrunk -- the plain case beside regression-wide's rotated
   # one.
   d <- apa_render_fixture_docx("narrow")
   doc <- apa_docx_document_xml(d)
 
-  # THE DISCRIMINATING CHECK (fix round 1) -- see the other geometry test's
+  # THE DISCRIMINATING CHECK -- see the other geometry test's
   # own comment.
   expect_true(grepl('<w:tblW[^>]*w:type="pct"', doc, perl = TRUE))
 
@@ -731,29 +686,25 @@ test_that("the narrow control is a percentage-width table too, unrotated, with i
 })
 
 test_that("a numbered row label is text, not an ordered list", {
-  # Task 3's own Step 4b wanted this rendered-.docx check but could not have
-  # it (nothing rendered a grid table into a .docx yet when Task 3 ran); the
-  # plan's ledger says explicitly NOT to write the `firstLine` check it
-  # originally specified -- D33 established that "Compact" has always
-  # carried firstLine="0" in stock apaquarto, so that check guards a defect
-  # that never existed and cannot fail. The real defect (D33) is that pandoc
-  # parses an unescaped "1. rating" as the START of an ordered list, not as
-  # literal text -- apa_md_escape_list_marker() (R/render-markdown.R) is the
-  # fix, and this is what actually distinguishes the two outcomes.
+  # Pandoc parses an unescaped "1. rating" as the START of an ordered list,
+  # not as literal text -- apa_md_escape_list_marker() (R/render-markdown.R)
+  # prevents that, and this is what actually distinguishes the two outcomes.
+  # Do not add a `firstLine` indentation check instead: "Compact" has always
+  # carried firstLine="0" in stock apaquarto, so such a check guards a defect
+  # that never existed and cannot fail.
   #
   # WATCHED FAILING: apa_md_escape_list_marker()'s body temporarily replaced
   # with `lines` (identity, no escaping) in an isolated install and
   # re-rendered against this exact fixture -- the table's own <w:tbl> then
   # DID carry a real <w:numPr>, and the literal "1. rating" text disappeared
-  # (it becomes the list marker itself, per D33, leaving only "rating" as
+  # (it becomes the list marker itself, leaving only "rating" as
   # the run text), so `expect_match(tbl, "1. rating")` went red too, not
   # only `expect_false(numPr)`. Reverting the mutation restores both to
   # green.
   #
-  # Anchored to "1. rating", not the bare "1." fix round 1 originally used
-  # -- the reviewer checked every cell in this fixture and none other
-  # happens to contain a stray "1." substring today, but a bare "1." only
-  # discriminates by luck of the current data, not by construction.
+  # Anchored to "1. rating", not a bare "1." -- no other cell in this fixture
+  # happens to contain a stray "1." substring today, but a bare "1." would
+  # discriminate only by luck of the current data, not by construction.
   skip_on_cran()
   doc <- apa_docx_document_xml(apa_render_fixture_docx("narrow"))
   tbl <- regmatches(doc, regexpr("<w:tbl>.*?</w:tbl>", doc))
@@ -762,19 +713,17 @@ test_that("a numbered row label is text, not an ordered list", {
 })
 
 test_that("a multi-block regression's R2, Delta R2 and their CIs survive into the rendered .docx", {
-  # The content half of B2 layer 1 (see this section's own banner for why it
-  # sits BESIDE the geometry checks above rather than replacing them: it
-  # cannot see B0's own Word-rendering-time clip either, measured by
-  # reproducing the pre-1.6a code -- see the banner). What it CAN catch is
+  # The content half of this section (see its banner for why it sits BESIDE
+  # the geometry checks above rather than replacing them: it cannot see
+  # Word's rendering-time clip either, measured). What it CAN catch is
   # independent and real: a future regression in the emitter itself (a grid
   # table missing a column, a markdown escaping bug that swallows a cell)
   # would show up here as text that is simply gone, with no Word and no
   # rendering involved.
   #
-  # The fixture sets neither `tbl-cap` nor `apa-note` (the coverage gap
-  # CLAUDE.md's "COVERAGE THE PLAN MUST NOT LEAN ON" note names: every
-  # pre-existing apaquarto-*.qmd fixture sets both), so the title and note
-  # here are the AUTOMATIC ones Task 7 built, not typed text.
+  # The fixture sets neither `tbl-cap` nor `apa-note` (every apaquarto-*.qmd
+  # fixture sets both, so they cannot cover the defaults), so the title and
+  # note here are the AUTOMATIC ones, not typed text.
   d <- apa_render_fixture_docx("regression-wide")
   txt <- apa_nbsp_to_space(apa_docx_text(d))
 
@@ -789,20 +738,19 @@ test_that("a multi-block regression's R2, Delta R2 and their CIs survive into th
   expect_true(grepl("\u0394R2 = .035", txt, fixed = TRUE))
   expect_true(grepl("CI[.59,.72]", txt, fixed = TRUE))
   expect_true(grepl("CI[.00, .07]", txt, fixed = TRUE))
-  # The third block's own predictor row -- the coefficient B0 also clipped,
+  # The third block's own predictor row -- a coefficient a clip also loses,
   # alongside the Fit statistics.
   expect_true(grepl("attract", txt, fixed = TRUE))
 })
 
 test_that("apa.save()'s own 0.5 in side margins really do fit the widest builder output in the file it writes", {
-  # apa.save() is the OTHER .docx writer (D14: flextable/officer, unchanged
-  # by this phase, still its whole remaining job) -- named explicitly in
-  # this task's own brief ("the 0.5 in side margins apa.save() sets") beside
-  # the pandoc emitter's own geometry checks above. It needs no quarto, no
-  # Word and no network (officer is already an Imports dependency), so
-  # unlike the rest of this file it does not depend on the file-level
+  # apa.save() is the OTHER .docx writer (flextable/officer), checked here
+  # beside the pandoc emitter's own geometry checks above. It needs no
+  # quarto, no Word and no network (officer is already an Imports
+  # dependency), so unlike the rest of this file it does not depend on the
+  # file-level
   # skip_on_cran()/quarto skips above -- it is placed here anyway, for
-  # topical cohesion with the rest of B2 layer 1, at the (very small) cost
+  # topical cohesion with the rest of this section, at the (very small) cost
   # of also skipping on a machine with no quarto installed even though it
   # does not need one.
   #
@@ -811,7 +759,7 @@ test_that("apa.save()'s own 0.5 in side margins really do fit the widest builder
   # wide table more room to fit into" test already checks (comparing
   # flextable_dim() against apa_usable_width() before anything is written)
   # -- the gap between "the code that decided this should fit" and "the
-  # bytes actually written" is exactly what B2 layer 1 exists to close.
+  # bytes actually written" is exactly what this section exists to close.
   #
   # WATCHED FAILING: apa_doc_section()'s page_mar() temporarily changed from
   # left/right = 0.5 to left/right = 1 (apa_usable_width() left
@@ -824,7 +772,7 @@ test_that("apa.save()'s own 0.5 in side margins really do fit the widest builder
   # with 27 twips (0.02 in) to spare: a genuinely tight, non-vacuous margin.
   blk1 <- lm(sales ~ adverts + airplay, data = album)
   blk2 <- lm(sales ~ adverts + airplay + attract, data = album)
-  # Phase 1.7: the builder default is landscape = NA, not TRUE -- this table
+  # The builder default is landscape = NA, not TRUE -- this table
   # rotates because apa_save_rotate() MEASURES it at 9.98 in against the
   # 7.5 in US Letter portrait budget, not because of any builder default.
   # That is what keeps the margin arithmetic below genuine: measured

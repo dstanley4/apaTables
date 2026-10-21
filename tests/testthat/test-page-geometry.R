@@ -201,9 +201,8 @@ test_that("the unknown-page warning is one flowing line", {
 })
 
 test_that("the layout ladder uses the geometry the document reports", {
-  # The four longtable/landscape warnings that stood here were deleted in
-  # Task 10 with the checks they exercised. What must NOT be lost with them is
-  # this: the page a document actually has has to reach the layout decision.
+  # What must NOT be lost: the page a document actually has has to reach the
+  # layout decision.
   # The same table, two documents -- a manuscript page and a journal column --
   # and the ladder must treat them differently.
   spec <- apa.cor.table(attitude[, 1:4])
@@ -235,12 +234,10 @@ test_that("the layout ladder uses the geometry the document reports", {
 })
 
 test_that("the ladder reports a page it could not identify", {
-  # apa_warn_unknown_geometry() used to be called from apa_flextable()'s LaTeX
-  # branch. Task 10 deleted that branch, and the warning moved to the ladder --
-  # so this pins that it still has a caller. Without the call the fallback to a
-  # standard manuscript page goes silent, and a table laid out for 6.5 in on a
-  # page that is not 6.5 in wide is exactly the clipping Phase 2 exists to
-  # prevent.
+  # apa_warn_unknown_geometry()'s only caller is the ladder, so this pins that
+  # it still has one. Without the call the fallback to a standard manuscript
+  # page goes silent, and a table laid out for 6.5 in on a page that is not
+  # 6.5 in wide is exactly the clipping the ladder exists to prevent.
   apa_reset_version_warnings()
   on.exit(apa_reset_version_warnings(), add = TRUE)
   plan <- apa_display_plan(as_spec(apa.1way.table(iv = dose, dv = libido,
@@ -260,13 +257,13 @@ test_that("the ladder reports a page it could not identify", {
                                       geom_landscape = known))
 })
 
-test_that("journal mode says out loud that it is not supported (B4)", {
+test_that("journal mode says out loud that it is not supported", {
   # THIS WARNING IS NOT A FIX AND IS NOT OFFERED AS ONE -- there is no fix to
   # offer. Measured: documentmode jou with four ordinary tables renders exit 0
   # in ONE page, drops two of the four notes entirely and 5 of 25 variable
   # names, and says nothing. Removing apafloatlatex.lua's journalmode guard
   # ABORTS the render ("longtable not in 1-column mode"), so in jou it is the
-  # grid that has to change, which is a phase of its own. Until then the
+  # grid that has to change, which is a larger piece of work. Until then the
   # honest move is to stop the loss being silent.
   apa_reset_version_warnings()
   on.exit(apa_reset_version_warnings(), add = TRUE)

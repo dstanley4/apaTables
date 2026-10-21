@@ -10,14 +10,12 @@ test_that("apa.save writes a valid .docx (PK zip magic)", {
 
 # WHAT `landscape =` ACTUALLY DOES, asserted rather than described.
 #
-# This test is here because its absence nearly cost the argument its life. The
-# Phase 2 plan and the design document BOTH recorded `landscape =` as a PDF-path
-# argument and scheduled it for removal from six builders -- and nothing in the
-# suite contradicted them, because nothing in the suite mentioned w:orient,
-# apa_doc_section() or apa_usable_width() at all. The argument never fed the PDF
-# path: apa_flextable() has never read x$landscape. It sets the WORD page, and
-# removing it would have turned every wide table's .docx portrait, where Word
-# CLIPS rather than wraps.
+# `landscape =` is easy to mistake for a PDF-path argument and remove: it once
+# nearly was, because nothing in the suite mentioned w:orient,
+# apa_doc_section() or apa_usable_width() at all. It never fed the PDF path
+# (apa_flextable() does not read x$landscape). It sets the WORD page, and
+# removing it would turn every wide table's .docx portrait, where Word CLIPS
+# rather than wraps.
 #
 # So the assertion reads the OOXML the user's file actually contains, not the R
 # code that wrote it: w:pgSz inside the per-table section, at both values, on a
@@ -58,11 +56,10 @@ test_that("landscape = turns the Word page, and portrait leaves it upright", {
      }
 })
 
-# No blank trailing page (Fable review round 2, F6). A section BREAK after
-# the last table left officer's default body-level section -- A4, empty --
-# at the end of the document, and Word rendered it as a blank page, in every
-# apa.save() .docx (measured in real Word's own PDF export). The last
-# table's section properties are now the document's CLOSING section, so the
+# No blank trailing page. A section BREAK after the last table would leave officer's default body-level section -- A4, empty --
+# at the end of the document, which Word renders as a blank page (measured in
+# real Word's own PDF export). The last table's section properties are
+# therefore the document's CLOSING section, so the
 # document ends where the last note ends. These assertions read the OOXML
 # the user's file actually contains: one <w:sectPr> per table, the last one
 # at body level (not inside a paragraph, which is what a break is), and
@@ -126,8 +123,8 @@ test_that("a rotated Word page gives a wide table more room to fit into", {
      # The second thing rotation drives, via apa_usable_width() (R/save.R):
      # the width flextable::fit_to_width() aims at. A table that has to be
      # shrunk on an upright page must be shrunk LESS -- or not at all -- on a
-     # rotated one. (Phase 1.7: which page a table gets is now
-     # apa_save_rotate()'s decision, not a bare read of tb$landscape.)
+     # rotated one. (Which page a table gets is apa_save_rotate()'s
+     # decision, not a bare read of tb$landscape.)
      expect_equal(apa_usable_width(TRUE, "us"), 10)
      expect_equal(apa_usable_width(FALSE, "us"), 7.5)
 
@@ -177,31 +174,16 @@ test_that("apa.save writes multiple tables into one .docx", {
 test_that("apa.save's Word output does not vary with knit context (regression net)", {
      # apa.save() writes a document of its own -- a 10 in landscape Word page
      # -- so nothing about it may depend on what knitr happens to be
-     # rendering. HISTORICALLY (before apa_direct_output() existed), calling
-     # apa.save() from a chunk of a PDF manuscript ran the LaTeX width fitter
-     # over it: a two-block regression table came out at 6 pt instead of
-     # 11 pt, silently, in the file the user submits. That fitter was deleted
-     # in Phase 2 Task 10.
+     # rendering: calling apa.save() from a chunk of a PDF manuscript once
+     # ran the LaTeX width fitter over it, and a two-block regression table
+     # came out at 6 pt instead of 11 pt, silently, in the file the user
+     # submits.
      #
-     # NEITHER HALF OF THIS TEST CAN FAIL BY ANY ROUTE TODAY, and that is
-     # recorded here rather than left for the next reader to discover by
-     # digging: Task 9 fix round 1 MEASURED that apa_direct_output() was
-     # vestigial -- nothing apa_save_docx()/apa_save_html() call read the flag
-     # it set any more, because the two things that used to read it from
-     # inside apa.save()'s own call chain (the LaTeX bracket guard,
-     # apa_restore_emph()) were both deleted as confirmed dead in the same
-     # task. Phase 1.11 re-measured, got zero again, and removed
-     # apa_direct_output() entirely -- apa.save() calls apa_save_docx() /
-     # apa_save_html() directly now. The byte-identical-docx comparison below
-     # is kept as a general regression net -- a real invariant worth
-     # protecting if anything in this call chain ever again branches on knit
-     # context -- not as proof any specific guard is working. Since Phase
-     # 1.11 removed apa_direct_output(), this comparison is also what would
-     # catch apa_latex_target()'s now-unguarded TRUE answer reaching anything
-     # in this chain: the "inside" call below runs with
-     # options(knitr.in.progress = TRUE) and out.format = "latex" set, which
-     # is exactly what apa_latex_target() reads, and its bytes still must
-     # match the "outside" call's.
+     # Nothing in apa.save()'s call chain branches on knit context today, so
+     # this is a regression net, not proof that a specific guard works. The
+     # "inside" call below runs with options(knitr.in.progress = TRUE) and
+     # out.format = "latex" set -- exactly what apa_latex_target() reads --
+     # and its bytes must still match the "outside" call's.
      blk1 <- lm(sales ~ adverts + airplay, data = album)
      blk2 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data = album)
      t3 <- apa.reg.table(blk1, blk2)
@@ -243,19 +225,9 @@ test_that("apa.save's Word output does not vary with knit context (regression ne
      # the registry is emptied, apa.save() runs inside the knit, and it must
      # still be empty afterwards.
      #
-     # THIS USED TO BE A ulem-SPECIFIC CHECK, proven able to fail by mutating
-     # apa_direct_output()'s body to force(expr): apa_restore_emph() (called
-     # from apa_flextable(), guarded by apa_direct_output_active()) would then
-     # register a "ulem" latex_dependency here. Task 9 (Phase 1.6a) deleted
-     # apa_restore_emph() as confirmed dead -- see test-quarto-table.R's
-     # "apa_restore_emph() no longer exists" test -- so that specific
-     # mutation can no longer make this fail; nothing left in
-     # apa_flextable()'s call chain ever calls knit_meta_add() at all.
-     # apa_direct_output() and apa_direct_output_active() named above no
-     # longer exist either -- Phase 1.11 removed them as vestigial, so the
-     # mutation this paragraph describes is no longer even expressible. The
-     # general check is kept as a regression net for anything that might add
-     # one in future, but it is no longer proof of a specific guard working.
+     # Nothing in apa_flextable()'s call chain calls knit_meta_add() today,
+     # so this too is a regression net for anything that might add a
+     # dependency in future, not proof of a specific guard.
      knitr::knit_meta(clean = TRUE)
      apa.save(filename = inside, t3)
      meta <- knitr::knit_meta(clean = TRUE)

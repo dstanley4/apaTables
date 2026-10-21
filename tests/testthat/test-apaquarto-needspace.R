@@ -1,8 +1,8 @@
 # A SHORT table must not straddle a page break -- and nothing must be left
 # behind in the prose when it cannot help.
 #
-# Task 6 stopped wrapping a longtable in a float, which is what lets a tall
-# table page-break with every row intact. The cost is that a SHORT table
+# A longtable is not wrapped in a float, which is what lets a tall table
+# page-break with every row intact. The cost is that a SHORT table
 # becomes breakable too, where a float would have moved it whole. That is not a
 # theory: the very document below, rendered against the bundle as it stood
 # before this behaviour changed (5.0.18+apaTables.2), with floats in the text,
@@ -26,14 +26,12 @@
 # a fix for the short table that breaks the tall one is not a fix.
 #
 # IT IS THE STARRED, EAGER FORM, AND THE LOWER-CASE \needspace IS A MEASURED
-# DEFECT (Phase 1.16, D106). \needspace only makes a break in front of the
-# table CHEAP and leaves the decision to TeX's page builder; by the time that
+# DEFECT. \needspace only makes a break in front of the table CHEAP and
+# leaves the decision to TeX's page builder; by the time that
 # runs, longtable has installed its own output routine, which repeats the
-# table's header on the new page above the caption, attached to nothing. It was
-# in the shipped example document on page 3 and went unnoticed through every
-# phase. \Needspace* does the comparison itself and breaks before
-# \begin{longtable} is read. Full account and the 26-document measurement:
-# dev/factcheck/phase116-strandedhead/VERIFICATION.md.
+# table's header on the new page above the caption, attached to nothing
+# (measured across 26 documents, including the shipped example). \Needspace*
+# does the comparison itself and breaks before \begin{longtable} is read.
 #
 # NOTE WHAT THIS FILE CAN AND CANNOT SEE. The straddle assertions below read
 # which PAGE each row landed on, so they DO see the short-table property. They
@@ -46,8 +44,9 @@
 # The second half is the harder one to get right. The reservation is emitted
 # ONLY where floats stay in the text. In the default placement apa7's endfloat
 # re-emits the deferred environment alone and drops whatever preceded it, so
-# the instruction never reaches the table; what it does reach is the author's
-# prose, where a bare reservation can force a page break no table justifies.
+# the instruction never reaches the table; what it does reach is the
+# manuscript's prose, where a bare reservation can force a page break no
+# table justifies.
 # Measured on a probe document with a table chunk mid-paragraph: with the
 # guard in place the text before and after the chunk both sat on page 3 and the
 # document was 4 pages; with the guard removed the text after the chunk was
@@ -191,7 +190,7 @@ apa_ns_render <- function(placement) {
 # document regardless of placement. Counting bare "needspace" would make the
 # default-placement assertion unfailable, and it is also now CASE-BLIND in a
 # way that matters: `\Needspace*` and `\needspace` differ by one letter and
-# mean different mechanisms (D106).
+# mean different mechanisms.
 #
 # OCCURRENCES, not matching lines. Two reservations on one line is not a
 # far-fetched shape -- pandoc is free to run adjacent raw blocks together --
@@ -270,21 +269,19 @@ test_that("a short longtable is kept whole where floats stay in the text", {
   expect_equal(apa_ns_count(r$tex), length(APA_NS_OFFSETS) + 2L)
 })
 
-# PHASE 1.16 / D106. The one-letter difference between `\Needspace*` and
-# `\needspace` is the difference between a break decided BEFORE the longtable
-# begins and one decided after, inside longtable's own output routine -- and
-# the latter stamps a repeated header on the new page, above the caption,
+# The one-letter difference between `\Needspace*` and `\needspace` is the
+# difference between a break decided BEFORE the longtable begins and one
+# decided after, inside longtable's own output routine -- and the latter
+# stamps a repeated header on the new page, above the caption,
 # attached to nothing.
 #
 # THIS ASSERTION EXISTS BECAUSE NOTHING ELSE IN THE SUITE CAN SEE THAT DEFECT.
 # The straddle checks above read which page each row landed on; a stranded
 # header changes neither the set of rows nor the page they sit on, so those
-# assertions stayed green throughout the defect's entire life -- it shipped in
-# the example document, on page 3, through every phase from 2 onwards. The page
-# evidence is a render that was rasterised and looked at
-# (dev/factcheck/phase116-strandedhead/VERIFICATION.md); what this test can
-# honestly hold is the COMMAND, and a revert to the lower-case form is exactly
-# how the defect would come back.
+# assertions stay green with the defect present. The page evidence is a
+# render that was rasterised and looked at; what this test can honestly
+# hold is the COMMAND, and a revert to the lower-case form is exactly how
+# the defect would come back.
 test_that("the reservation is the EAGER form, not the page-builder one", {
   r <- apa_ns_render("intext")
   skip_if_not(file.exists(r$tex), "render produced no .tex to read")
@@ -315,10 +312,10 @@ test_that("no reservation is emitted where floats are collected at the end", {
   # `if true then` in the project's copy of apafloatlatex.lua, the body count
   # went from 0 to 5 while the .ttt stayed at 0.
   #
-  # BOTH COMMANDS, and this is not belt-and-braces. Phase 1.16 made the helper
-  # name a SPECIFIC command; before it, one count covered "the reservation"
-  # whatever form it took. Checking only `\Needspace*` here would be satisfied
-  # by six lower-case `\needspace` sitting in the author's prose -- precisely
+  # BOTH COMMANDS, and this is not belt-and-braces. The helper counts a
+  # SPECIFIC command, not "the reservation" whatever form it takes.
+  # Checking only `\Needspace*` here would be satisfied by six lower-case
+  # `\needspace` sitting in the manuscript's prose -- precisely
   # the defect this test exists to prevent, passing green.
   for (cmd in c("\\Needspace*{", "\\needspace{")) {
     expect_equal(apa_ns_count(r$tex, cmd), 0L, info = cmd)

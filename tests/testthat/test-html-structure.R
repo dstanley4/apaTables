@@ -1,16 +1,12 @@
-# Whole-branch-review Important 1 (2026-08-03): apa.quarto.html() had no
-# rendered fixture anywhere in the suite -- every HTML assertion up to this
-# point was a unit test with apa_latex_target() mocked, never a real `quarto
-# render` to `apaquarto-html`. That gap is what hid Critical 1: the docx-only
-# shrink ladder's consequences (an inert `apa-table-size-N` marker div, and a
-# warning claiming a floor HTML never applies) were reaching real HTML output
-# with no test anywhere positioned to see it.
+# apa.quarto.html() through a REAL `quarto render` to `apaquarto-html`. A
+# unit test with apa_latex_target() mocked cannot see the docx-only shrink
+# ladder's consequences (an inert `apa-table-size-N` marker div, and a
+# warning claiming a floor HTML never applies) reaching real HTML output.
 #
 # Mirrors the discipline test-docx-structure.R already uses: a real `quarto
 # render`, read the OUTPUT back, never the source .qmd. `expect_false(grepl(
-# "apa-table-size-", html))` only became a REAL assertion once Critical 1's
-# fix landed in R/quarto-table.R -- it was checked against the pre-fix code
-# first and failed there (see the fix report for that evidence).
+# "apa-table-size-", html))` is a REAL assertion: it was checked against code
+# that leaked the marker and failed there.
 
 skip_on_cran()
 skip_if_not(nzchar(Sys.which("quarto")), "quarto not installed")
@@ -20,11 +16,10 @@ skip_if_not(nzchar(Sys.which("quarto")), "quarto not installed")
 # rendered against a stale library certifies the library, not the branch.
 apa_skip_if_library_stale()
 
-test_that("a wide table on a real HTML render carries no docx-only shrink-ladder marker or warning, D37", {
-  # tbl-wide20 (fixtures/html-wide-table.qmd) is the same shape of table the
-  # whole-branch review measured live against format: apaquarto-html: 20
-  # variables, wide enough that the automatic ladder would rotate-then-
-  # shrink it on a docx render. HTML has no page (D37), so nothing rotates
+test_that("a wide table on a real HTML render carries no docx-only shrink-ladder marker or warning", {
+  # tbl-wide20 (fixtures/html-wide-table.qmd) is 20 variables, wide enough
+  # that the automatic ladder would rotate-then-shrink it on a docx render.
+  # HTML has no page, so nothing rotates
   # and nothing shrinks -- neither the marker div nor its warning text
   # belongs in this output at all.
   html <- apa_html_text(apa_render_fixture_html("html-wide-table"))
@@ -61,16 +56,16 @@ test_that("a wide table on a real HTML render carries no docx-only shrink-ladder
 })
 
 # --------------------------------------------------------------------------
-# Phase 1.18 / D114 -- the wrapper the table-width rules are scoped to.
+# The wrapper the HTML table-width rules in apa.css are scoped to.
 #
 # These are STRUCTURE assertions: the wrapper exists, there is one of it, it is
 # the table's parent, and it does not reach a table the reader wrote. They say
 # NOTHING about whether the table actually stopped wrapping -- an unwrapped
-# table and a squashed one are IDENTICAL HTML, which is the blindness D46
-# recorded for slides. The geometry lives in test-html-width.R, in a browser.
+# table and a squashed one are IDENTICAL HTML (the same blindness applies to
+# slides). The geometry lives in test-html-width.R, in a browser.
 # --------------------------------------------------------------------------
 
-test_that("an HTML render wraps the table in exactly one apa-table-html div, D114", {
+test_that("an HTML render wraps the table in exactly one apa-table-html div", {
   html <- apa_html_text(apa_render_fixture_html("html-wide-table"))
 
   # the MARKER is consumed -- R emits `::: {.apa-table-html}` as an empty div
@@ -85,21 +80,21 @@ test_that("an HTML render wraps the table in exactly one apa-table-html div, D11
 
   # and the wrapper is the table's PARENT with nothing in between: apaquarto's
   # APA rules are child selectors on the <table> (`.table > thead`, and
-  # `.table > :not(caption) > * > *`), and Phase 1.18's own rules are too
+  # `.table > :not(caption) > * > *`), and the width rules are too
   # (`.apa-table-html > table.table`), so anything inserted between the wrapper
   # and the table silently unstyles the table.
   expect_match(html, '<div class="apa-table-html">\\s*<table')
 })
 
-test_that("an explicit font.size still lands on ONE div carrying both classes, D73 + D114", {
+test_that("an explicit font.size still lands on ONE div carrying both classes", {
   # fixtures/font-size-html.qmd renders a sized table AND a default one, so
   # this exercises both arms of the filter's branch in a single document.
   html <- apa_html_text(apa_render_fixture_html("font-size-html"))
 
   # BOTH classes on the SAME div. Nesting them instead would leave
   # `.apa-table-size > table` unmatched and hand the table Bootstrap's .small
-  # -- 0.875 of the size asked for, silently. That is D73's measurement, and
-  # it is the defect this assertion exists to catch.
+  # -- 0.875 of the size asked for, silently (measured). That is the defect
+  # this assertion exists to catch.
   expect_match(html, 'class="apa-table-html apa-table-size"')
   expect_match(html, 'style="font-size: 8.5pt;"', fixed = FALSE)
 
@@ -111,7 +106,7 @@ test_that("an explicit font.size still lands on ONE div carrying both classes, D
   expect_match(html, '<div class="apa-table-html">\\s*<table')
 })
 
-test_that("a table the reader built themselves is not wrapped, D114", {
+test_that("a table the reader built themselves is not wrapped", {
   # fixtures/html-kable-beside.qmd: one apa.quarto.html() table and one
   # knitr::kable() table. The width rules are scoped to the wrapper, so this
   # assertion IS the scoping: rule 1 overrides column proportions, and a table

@@ -19,7 +19,7 @@ library(apaTables)
 ## Results
 
 A rotated table, then an UPRIGHT one, then a rotated one. Floats keep document
-order when they are moved to the end, so this is the arrangement Phase 1.14's
+order when they are moved to the end, so this is the arrangement the bundle's
 adjacency check exists for: the two rotated tables are NOT consecutive, and
 merging them would put the upright table inside the landscape section, where it
 would print rotated.

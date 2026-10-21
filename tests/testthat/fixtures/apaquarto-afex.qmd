@@ -14,9 +14,7 @@ format: apaquarto-pdf
 #| include: false
 #| message: false
 #| warning: false
-pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT",
-                             "/Users/dstanley/os/RDevelopment/apaTables"),
-                  quiet = TRUE)
+pkgload::load_all(Sys.getenv("APATABLES_PKG_ROOT"), quiet = TRUE)
 goggles_results <- afex::aov_ez(id = "participant", dv = "attractiveness",
                                 data = goggles, between = c("gender", "alcohol"))
 afex_tbl <- apa.afex.table(afex.output = goggles_results)

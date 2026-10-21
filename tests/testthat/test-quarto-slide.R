@@ -1,10 +1,9 @@
-test_that("apa_quarto_revealjs_target() names revealjs and nothing else (pptx removed, Phase 1.9)", {
+test_that("apa_quarto_revealjs_target() names revealjs and nothing else (not pptx)", {
   local_mocked_bindings(apa_quarto_actual_format = function() "revealjs")
   expect_identical(apa_quarto_revealjs_target(), "revealjs")
 
-  # D88/D90: pptx is no longer a slide destination at all -- it USED to
-  # return "pptx" here; now it must read exactly like every other
-  # not-a-slide token below.
+  # pptx is not a slide destination at all: it must read exactly like every
+  # other not-a-slide token below.
   for (tok in c("pptx", "latex", "beamer", "docx", "html", "html4", "html5")) {
     local_mocked_bindings(apa_quarto_actual_format = function() tok)
     expect_identical(apa_quarto_revealjs_target(), NA_character_,
@@ -16,16 +15,15 @@ test_that("apa_quarto_revealjs_target() names revealjs and nothing else (pptx re
   expect_identical(apa_quarto_revealjs_target(), NA_character_)
 })
 
-test_that("apa_quarto_actual_entry() maps revealjs to 'revealjs'; pptx is classified as nothing (Phase 1.9)", {
+test_that("apa_quarto_actual_entry() maps revealjs to 'revealjs'; pptx is classified as nothing", {
   expect_identical(apa_quarto_actual_entry("revealjs"), "revealjs")
   # unchanged for the three that already worked
   expect_identical(apa_quarto_actual_entry("latex"), "pdf")
   expect_identical(apa_quarto_actual_entry("docx"), "docx")
   expect_identical(apa_quarto_actual_entry("html5"), "html")
   expect_identical(apa_quarto_actual_entry("gfm"), NA_character_)
-  # D88/D90: was the "slide" entry before Phase 1.9 Task 2 renamed the key
-  # to "revealjs" (D89). PowerPoint left the Quarto slide family entirely
-  # and is deliberately NOT given a "pptx" entry of its own either --
+  # PowerPoint is not part of the Quarto slide family, and is deliberately
+  # NOT given a "pptx" entry of its own either --
   # apa_quarto_dispatch() checks `actual == "pptx"` directly
   # (R/quarto-table.R) to raise its own not-yet-supported message, so this
   # NA is what tells the generic mismatch gate there is nothing for it to
@@ -37,22 +35,20 @@ test_that("the mismatch message names a real YAML line for slides", {
   msg <- apa_quarto_target_message(called = "revealjs", actual = "docx")
   expect_match(msg, "renders to `apaquarto-docx`", fixed = TRUE)
   expect_match(msg, "format: revealjs", fixed = TRUE)
-  # M4 (whole-branch review, 2026-08-06): APA_QUARTO_ENTRY_PROSE[["revealjs"]]
-  # is "reveal.js slides" (D91 Ruling 1), not "slides" -- the word now
-  # matches the format string on the same line ("set `format: revealjs`").
-  # No test asserted the PROSE itself before this: the two checks above pass
-  # just as happily if this reverts to "slides", so they could not have
-  # caught that regression.
+  # APA_QUARTO_ENTRY_PROSE[["revealjs"]] is "reveal.js slides", not
+  # "slides" -- the word matches the format string on the same line ("set
+  # `format: revealjs`"). The two checks above pass just as happily if this
+  # reverts to "slides", so the PROSE is pinned separately.
   expect_match(msg, "To produce reveal.js slides", fixed = TRUE)
   # and the reverse direction
   msg2 <- apa_quarto_target_message(called = "docx", actual = "revealjs")
   expect_match(msg2, "renders to `revealjs`", fixed = TRUE)
 })
 
-test_that("apa_quarto_target_message() gives PowerPoint its own not-yet-supported sentence, regardless of `called` (D90)", {
-  # Phase 1.9 replaces the generic mismatch wording for pptx (which used to
-  # read "This document renders to `pptx`. To produce X, set ...") with a
-  # dedicated sentence: PowerPoint is not served through Quarto yet, at all,
+test_that("apa_quarto_target_message() gives PowerPoint its own not-yet-supported sentence, regardless of `called`", {
+  # For pptx, the generic mismatch wording ("This document renders to
+  # `pptx`. To produce X, set ...") is replaced by a dedicated sentence:
+  # PowerPoint is not served through Quarto yet, at all,
   # so naming what YAML line would make `called` agree with the render is
   # not the useful fact any more -- what to do instead is.
   msg <- apa_quarto_target_message(called = "pdf", actual = "pptx")
@@ -65,33 +61,30 @@ test_that("apa_quarto_target_message() gives PowerPoint its own not-yet-supporte
   msg2 <- apa_quarto_target_message(called = "revealjs", actual = "pptx")
   expect_match(msg2, "not yet supported", fixed = TRUE)
 
-  # The companion case, carried forward from before this phase: an ACTUAL
-  # revealjs render must still be named `revealjs` by the ordinary path.
+  # The companion case: an ACTUAL revealjs render must still be named
+  # `revealjs` by the ordinary path.
   msg3 <- apa_quarto_target_message(called = "pdf", actual = "revealjs")
   expect_match(msg3, "renders to `revealjs`", fixed = TRUE)
 })
 
-test_that("a pptx render is told PowerPoint is not yet supported, and still renders (D90)", {
-  # D90: render, THEN warn. Not a refusal -- that breaks a render the user
-  # may not have chosen -- and not silence, which was the defect: pptx used
-  # to map to the "slide" entry, so the call name and the target AGREED and
-  # the existing guidance in apa_quarto_dispatch() never fired.
+test_that("a pptx render is told PowerPoint is not yet supported, and still renders", {
+  # Render, THEN warn. Not a refusal -- that breaks a render the user may
+  # not have chosen -- and not silence: if pptx were mapped to the slide
+  # entry, the call name and the target would AGREE and the ordinary
+  # mismatch guidance in apa_quarto_dispatch() would never fire.
   #
   # expect_warning(), NOT tryCatch(..., warning = ). tryCatch()'s handler
   # UNWINDS THE CALL STACK at the point the warning fires, so
-  # apa_quarto_dispatch()'s subsequent apa_quarto_render() call would never
-  # run and its return value would never be inspected -- a version that
-  # warned and then returned early, skipping the render entirely, would
-  # still satisfy a tryCatch()-based check, leaving the "still renders" half
-  # of this test's own name (the entire point of D90) unverified. This is
-  # documented as a known trap in test-quarto-entrypoints.R's "fix round 1,
-  # finding 3" comment, and this is at least the sixteenth instance of it in
-  # this project. expect_warning() captures the condition WITHOUT unwinding
-  # the stack, so the call completes normally: `out` holds the real return
-  # value, and the condition it returns still carries the message, so both
-  # halves of the claim can be checked in one call. Do not "simplify" this
-  # back to tryCatch() -- that is exactly the regression this comment exists
-  # to block.
+  # apa_quarto_dispatch()'s subsequent apa_quarto_render() call would never run
+  # and its return value would never be inspected -- a version that warned and
+  # then returned early, skipping the render entirely, would still satisfy a
+  # tryCatch()-based check, leaving the "still renders" half of this test's own
+  # name (the entire point) unverified. This is a recurring trap in this suite.
+  # expect_warning() captures the condition WITHOUT unwinding the stack, so the
+  # call completes normally: `out` holds the real return value, and the
+  # condition it returns still carries the message, so both halves of the claim
+  # can be checked in one call. Do not "simplify" this back to tryCatch() --
+  # that is exactly the regression this comment exists to block.
   apa_reset_version_warnings()
   on.exit(apa_reset_version_warnings(), add = TRUE)
   spec <- apa.cor.table(attitude[, 1:3])
@@ -101,26 +94,25 @@ test_that("a pptx render is told PowerPoint is not yet supported, and still rend
                       "not yet supported", fixed = TRUE)
   msg <- conditionMessage(w)
   expect_match(msg, "revealjs", fixed = TRUE)
-  # never the permanent-sounding word: Phase 1.13 is scheduled (D89)
+  # never the permanent-sounding word: PowerPoint support is planned
   expect_false(grepl("\\bunsupported\\b", msg))
   # THE HALF A tryCatch()-based check could not see: the table was actually
   # produced, not skipped after the warning fired.
   expect_match(as.character(out), "+===", fixed = TRUE)
 })
 
-test_that("knit_print.apa_table warns on a pptx render too, not only apa_quarto_dispatch() (C1, whole-branch review)", {
-  # C1: apa_quarto_render() (R/quarto-table.R) has TWO callers.
+test_that("knit_print.apa_table warns on a pptx render too, not only apa_quarto_dispatch()", {
+  # apa_quarto_render() (R/quarto-table.R) has TWO callers.
   # apa_quarto_dispatch() -- exercised by the test above -- is used by
-  # apa.quarto.pdf()/docx()/html()/revealjs() and already warned on pptx.
-  # apa_quarto_knit_print() (R/quarto.R) is the SECOND caller: both
-  # knit_print.apa_table() and knit_print.apa_table_spec() call it directly
-  # for the ordinary case of a bare table left as a chunk's last line, with
-  # no function name typed at all, and it used to skip the warning
-  # entirely -- MEASURED before this fix: a bare `apa.cor.table(attitude)`
-  # as a chunk's last line in a `format: pptx` deck emitted a full table
-  # and NO warning, on this documented, exported path. The fix moved the
-  # pptx check into apa_quarto_render() itself so both routes see it; this
-  # test drives the SECOND route, which no earlier test in this file did.
+  # apa.quarto.pdf()/docx()/html()/revealjs(). apa_quarto_knit_print()
+  # (R/quarto.R) is the SECOND caller: both knit_print.apa_table() and
+  # knit_print.apa_table_spec() call it directly for the ordinary case of a
+  # bare table left as a chunk's last line, with no function name typed at
+  # all. The pptx check therefore lives in apa_quarto_render() itself, so
+  # both routes see it -- do not move it back into apa_quarto_dispatch(),
+  # where a bare `apa.cor.table(attitude)` in a `format: pptx` deck would
+  # emit a full table and NO warning (measured). This test drives the
+  # SECOND route.
   #
   # expect_warning(), not tryCatch() -- see the comment on the test above
   # for why tryCatch()'s stack-unwinding would hide whether the table was
@@ -174,15 +166,12 @@ test_that("a pptx render carries the not-yet-supported sentence in the BODY, onc
   expect_match(body2, "+===", fixed = TRUE)
 })
 
-test_that("apa_quarto_dispatch() no longer special-cases pptx itself (C1 refactor guard)", {
-  # C1 moved the pptx check out of apa_quarto_dispatch() and into
-  # apa_quarto_render(). This does not change apa_quarto_dispatch()'s own
-  # OBSERVABLE behaviour (the test above and the two before it still see
-  # the warning, because apa_quarto_dispatch() calls apa_quarto_render()),
-  # but it does mean apa_quarto_dispatch() must still warn on a pptx render
-  # even though its own `identical(actual, "pptx")` clause is gone -- this
-  # pins that the warning survives the refactor via the shared call, not
-  # via a second copy of the check.
+test_that("apa_quarto_dispatch() does not special-case pptx itself", {
+  # The pptx check lives in apa_quarto_render(), not in
+  # apa_quarto_dispatch(). apa_quarto_dispatch() must still warn on a pptx
+  # render, with no `identical(actual, "pptx")` clause of its own -- this
+  # pins that the warning arrives via the shared apa_quarto_render() call,
+  # not via a second copy of the check.
   apa_reset_version_warnings()
   on.exit(apa_reset_version_warnings(), add = TRUE)
   spec <- apa.cor.table(attitude[, 1:3])
@@ -209,8 +198,7 @@ test_that("TRUE emits the generated title and note; FALSE and NULL emit nothing"
   # and it arrives in two parts (sp$notes has length 2) -- the star sentence
   # is the SECOND. Asserting on it specifically is what proves both parts
   # survive the join; a bare expect_match(f$note, "*") would pass on the
-  # first part alone, which is the silent loss D27 accepts note = TRUE as
-  # the remedy for.
+  # first part alone -- a silent loss of the star sentence.
   expect_match(f$note, "standard deviation", fixed = TRUE)   # part 1
   expect_match(f$note, "indicates", fixed = TRUE)            # part 2
 
@@ -258,10 +246,10 @@ test_that("a generated note is ONE markdown paragraph, not a list", {
   expect_false(grepl("\n", f$note, fixed = TRUE))
 })
 
-# --- Task 3: the fitting model (D47) ----------------------------------------
+# --- the fitting model ------------------------------------------------------
 
-# The author's frame of reference (D47): the two tables a conference talk
-# actually uses. apa.reg.table()'s own help page uses these same models.
+# The frame of reference: the two tables a conference talk actually uses.
+# apa.reg.table()'s own help page uses these same models.
 reg_plans <- function() {
   blk1  <- lm(sales ~ adverts + airplay, data = album)
   blk1b <- lm(sales ~ adverts, data = album)
@@ -283,8 +271,8 @@ test_that("rows and extra lines are counted SEPARATELY", {
 })
 
 test_that("the blocks regression table is WIDER by one column", {
-  # The author flagged this specifically, and it is what makes the blocks
-  # table width-bound at a smaller size than the single-block one.
+  # This is what makes the blocks table width-bound at a smaller size than
+  # the single-block one.
   p <- reg_plans()
   expect_identical(p$single$n_col, 9L)
   expect_identical(p$blocks$n_col, 10L)
@@ -292,16 +280,15 @@ test_that("the blocks regression table is WIDER by one column", {
 })
 
 test_that("BOTH regression tables are WIDTH-bound, at the measured sizes", {
-  # THE REGRESSION TEST FOR D47's DEFECT. The height constraint alone
+  # THE REGRESSION TEST FOR THE WRAP CAP. The height constraint alone
   # returns 48.7px for the single-block table, whose wrap cap is 23.2px --
   # a slide overflowing by more than double, silently. If someone deletes
   # the wrap cap, these two numbers are what catches it.
-  # Tolerance tightened to 0.001 (fix round 1): the model reproduces these
-  # to four decimal places, so the original 0.02 was far looser than the
-  # arithmetic needs -- loose enough that it let a genuine defect (the
+  # Tolerance 0.001: the model reproduces these to four decimal places. A
+  # looser 0.02 is loose enough to let a genuine defect (the
   # APA_SLIDE_ROW_FACTOR / APA_SLIDE_LINE_FACTOR transposition caught by
-  # mutation testing, see below) slip through undetected on a neighbouring
-  # test by coincidence.
+  # mutation testing, see below) slip through on a neighbouring test by
+  # coincidence.
   p <- reg_plans()
   expect_equal(apa_slide_font_pt(p$single), 17.41, tolerance = 0.001)
   expect_equal(apa_slide_font_pt(p$blocks), 14.60, tolerance = 0.001)
@@ -312,20 +299,19 @@ test_that("a tall narrow table is HEIGHT-bound -- both constraints can bind", {
   # for a 7-variable correlation matrix the HEIGHT constraint is the smaller
   # one (18.1px against a 21.6px cap), so this size comes from the other
   # branch entirely.
-  # Tolerance tightened to 0.001 (fix round 1) -- see the comment on the
-  # regression-table test above.
+  # Tolerance 0.001 -- see the comment on the regression-table test above.
   cor7 <- apa_display_plan(as_spec(apa.cor.table(attitude)))
   expect_equal(apa_slide_font_pt(cor7), 13.56, tolerance = 0.001)
 })
 
 test_that("the row and line factors are not interchangeable", {
-  # Fix round 1, from mutation testing: swapping APA_SLIDE_ROW_FACTOR (1.60)
-  # and APA_SLIDE_LINE_FACTOR (1.45) is NOT caught by any test above. Every
+  # From mutation testing: swapping APA_SLIDE_ROW_FACTOR (1.60) and
+  # APA_SLIDE_LINE_FACTOR (1.45) is NOT caught by any test above. Every
   # other reference table is either width-bound (so k never reaches the
   # returned value) or has rows == extra, which makes k swap-invariant --
   # cor3 (attitude[, 1:3]) is rows = 4, extra = 4 and so cannot possibly
   # detect it, and cor7's rows = 8/extra = 12 gives a swap error just under
-  # the old tolerance = 0.02 by coincidence, not by design.
+  # a tolerance of 0.02 by coincidence, not by design.
   #
   # apa.cor.table(mtcars) has a STARK rows-vs-extra asymmetry (12 vs 20),
   # which is what makes the two constants distinguishable at all: under the
@@ -350,8 +336,8 @@ test_that("the per-column padding term is real: a FEW-column table is not oversi
     iv1 = gender, iv2 = alcohol, dv = attractiveness,
     data = goggles, show.marginal.means = TRUE)))
 
-  # Tolerance tightened to 0.001 (fix round 1) -- see the comment on the
-  # regression-table test above; this table reproduces just as tightly
+  # Tolerance 0.001 -- see the comment on the regression-table test above;
+  # this table reproduces just as tightly
   # (computed 25.4289 against the pinned 25.43).
   expect_equal(apa_slide_font_pt(p), 25.43, tolerance = 0.001)
   # ... and specifically NOT the 41pt a character-only model allows, which
@@ -360,7 +346,7 @@ test_that("the per-column padding term is real: a FEW-column table is not oversi
 })
 
 test_that("the width input is RENDERED text, not the grid's source width", {
-  # D50. apa_md_widths() answers how wide the grid SOURCE cell must be and
+  # apa_md_widths() answers how wide the grid SOURCE cell must be and
   # scales every column by max(markup/rendered) to guarantee it -- a factor
   # that varies per table. The ANOVA table is the extreme case: 142 source
   # characters for 42 drawn ones, because `*eta*^2^~p~` is 9 characters of
@@ -380,14 +366,14 @@ test_that("the width input is RENDERED text, not the grid's source width", {
   expect_identical(apa_slide_char_width(spanned), 48L)
 })
 
-test_that("the wrap cap is not blind to spanner labels (I3, whole-branch review)", {
-  # Before this fix, apa_slide_char_width() read only
+test_that("the wrap cap is not blind to spanner labels", {
+  # apa_slide_char_width() must read every header row, not only
   # `plan$header[[length(plan$header)]]` (the last header row) plus data
-  # rows -- every spanner label, which sits in a NON-final header row, was
-  # invisible to it entirely. MEASURED: two structurally identical two-way
+  # rows -- every spanner label sits in a NON-final header row. MEASURED:
+  # reading only the last header row, two structurally identical two-way
   # tables differing ONLY in the length of their group labels ("A"/"B"/"C"
-  # versus these) both returned char_width 48 and font_pt 25.43 before this
-  # fix, despite one having ~45 more characters to draw.
+  # versus these) both return char_width 48 and font_pt 25.43, despite one
+  # having ~45 more characters to draw.
   options(contrasts = c("contr.sum", "contr.poly"))
   short <- goggles
   levels(short$alcohol) <- c("A", "B", "C")
@@ -402,8 +388,7 @@ test_that("the wrap cap is not blind to spanner labels (I3, whole-branch review)
     iv1 = gender, iv2 = alcohol, dv = attractiveness,
     data = long, show.marginal.means = TRUE)))
 
-  # char_width: 48 vs 83, computed live -- NOT the same value the old code
-  # returned for both.
+  # char_width: 48 vs 83, computed live -- NOT the same value for both.
   expect_gt(apa_slide_char_width(p_long), apa_slide_char_width(p_short))
   # And the wrap cap is what apa_slide_font_pt() reads it through, so the
   # long-label table must come out with a STRICTLY smaller automatic size:
@@ -411,15 +396,15 @@ test_that("the wrap cap is not blind to spanner labels (I3, whole-branch review)
   expect_lt(apa_slide_font_pt(p_long), apa_slide_font_pt(p_short))
 
   # The pinned regression sizes for tables WITHOUT spanners must not have
-  # moved -- if this fix were wrong it would change every table's width, not
-  # only the spanner ones.
+  # moved -- a wrong spanner measurement would change every table's width,
+  # not only the spanner ones.
   p <- reg_plans()
   expect_equal(apa_slide_font_pt(p$single), 17.41, tolerance = 0.001)
   expect_equal(apa_slide_font_pt(p$blocks), 14.60, tolerance = 0.001)
 })
 
 test_that("an explicit font.size is honoured EXACTLY and bypasses both constraints", {
-  # D43/D44: font.size is appearance, at the exact size the destination
+  # font.size is appearance, at the exact size the destination
   # allows. CSS is exact, so a fractional size survives intact -- Word's
   # five-rung snapping must NOT be imitated here. 30pt is far above every
   # cap above, which is the point: an explicit request is not second-guessed.
@@ -442,18 +427,15 @@ test_that("the automatic size never exceeds the deck's own body text", {
   expect_identical(apa_slide_font_pt(tiny), APA_SLIDE_BODY_PT)
 })
 
-# --- Task 4: the size wrapper and the APA furniture CSS (D48) --------------
+# --- the size wrapper and the APA furniture CSS ----------------------------
 
 test_that("the wrapper opens and closes, with blank lines around the body", {
   out <- apa_slide_size_wrap("TABLE-BODY", 9.6)
   lines <- strsplit(out, "\n", fixed = TRUE)[[1]]
 
   # The class is part of the opener, not an add-on: without it the CSS
-  # below (scoped to .apa-slide-table) matches nothing (D48). The brief's
-  # draft test hardcoded the opener without the class; corrected here to
-  # match both the reference prototype (dev/slides-prototype/build.R
-  # size_wrap()) and the "carries the class" test a few lines below, which
-  # would otherwise contradict this one.
+  # below (scoped to .apa-slide-table) matches nothing. The opener asserted
+  # here must agree with the "carries the class" test a few lines below.
   expect_identical(lines[1],
                     '::: {.apa-slide-table style="font-size: 9.6pt;"}')
   expect_identical(lines[2], "")
@@ -475,7 +457,7 @@ test_that("the body is separated from the closing fence by a blank line", {
 })
 
 test_that("an exact fractional size survives into the CSS", {
-  # D44: exact size where the destination allows. 8.5pt must not become 8.
+  # Exact size where the destination allows. 8.5pt must not become 8.
   expect_match(apa_slide_size_wrap("B", 8.5), "font-size: 8.5pt;", fixed = TRUE)
   # and a whole number must not gain a spurious decimal
   expect_match(apa_slide_size_wrap("B", 12), "font-size: 12pt;", fixed = TRUE)
@@ -489,7 +471,7 @@ test_that("an exact fractional size survives into the CSS", {
 
 test_that("the wrapper carries the class the CSS is scoped to", {
   # Without this class the style block below matches nothing -- the two are
-  # one mechanism (D48).
+  # one mechanism.
   expect_match(apa_slide_size_wrap("B", 12), ".apa-slide-table", fixed = TRUE)
 })
 
@@ -498,7 +480,7 @@ test_that("the CSS supplies APA's three rules and suppresses the rest", {
 
   # Delivered as a RAW HTML block: measured, this reaches revealjs and is
   # silently DROPPED by the pptx writer, so no format branch is needed and a
-  # <style> can never print as text on a PowerPoint slide (D48).
+  # <style> can never print as text on a PowerPoint slide.
   expect_match(css, "```{=html}", fixed = TRUE)
   expect_match(css, "<style>", fixed = TRUE)
   expect_match(css, "</style>", fixed = TRUE)
@@ -522,17 +504,17 @@ test_that("the CSS supplies APA's three rules and suppresses the rest", {
   expect_match(css, "border-bottom: 1px solid", fixed = TRUE)
   expect_match(css, "border-bottom: none", fixed = TRUE)
 
-  # The author's two observations (D48).
+  # Cells sit on the bottom of their row, and figures are tabular.
   expect_match(css, "vertical-align: bottom", fixed = TRUE)
   expect_match(css, "tabular-nums", fixed = TRUE)
 
   # The spanner cmidrule. Measured on a deck: these divs ARE emitted and
   # draw NOTHING (computed border 0px none) until this selector exists --
-  # exactly the state D37 found on HTML before the same fix. This is why
+  # exactly the state HTML is in without the same selector. This is why
   # rules = TRUE is kept on the slide path.
   expect_match(css, "[data-custom-style=\"ApaTableRule\"]", fixed = TRUE)
 
-  # D50: the col override, not just the table one. Pandoc turns a grid
+  # The col override, not just the table one. Pandoc turns a grid
   # table's column widths into a <colgroup> of PERCENTAGES that force the
   # table to fill its container (measured: the ANOVA table's natural 784
   # slide units drawn at 1229). `width: auto` on the TABLE alone does
@@ -543,18 +525,13 @@ test_that("the CSS supplies APA's three rules and suppresses the rest", {
   expect_match(css, "col { width: auto", fixed = TRUE)
 })
 
-# Phase 1.9 (D88/D90) removed apa_slide_flatten_spanners() along with the
-# rest of the pptx machinery -- PowerPoint left the Quarto path entirely, so
-# there is no destination left for these three tests to exercise. This is
-# coverage of a REMOVED feature, not coverage lost: the logic itself is
-# recorded verbatim in dev/plans/2026-07-31-roadmap.md under Phase 1.13,
-# which will need it again (and its own tests) whoever writes a PowerPoint
-# file next. The three tests that stood here were "flattening removes every
-# span but keeps every label", "a flattened label sits over the MIDDLE of
-# its group, not the first column", and "a plan with no spanners is
-# returned unchanged".
+# apa_slide_flatten_spanners() (R/quarto-slide.R) is not exercised here:
+# pptx is not a slide destination, and the flattening is applied on the
+# markdown path to a pptx render only (R/quarto-table.R). Its end-to-end
+# coverage is test-slide-render.R ("pptx gets a real table with spanner
+# labels over the right columns").
 
-# --- Task 6: apa.quarto.revealjs() -- assemble the block -------------------
+# --- apa.quarto.revealjs() -- assemble the block ---------------------------
 
 test_that("a slide block is title, wrapped table, note -- and NO meta div", {
   x <- apa.cor.table(attitude[, 1:3])
@@ -596,10 +573,9 @@ test_that("the default slide carries neither title nor note", {
 })
 
 test_that("the assembled block contains a properly closed raw-HTML block", {
-  # Carried forward from Task 4's review: the existing tests pinned only the
-  # OPENING ```{=html} fence, never the closing ```. A bare unfenced <style>
-  # is invalid pandoc and would print as visible text on a slide, so the
-  # close must be asserted too.
+  # Pinning only the OPENING ```{=html} fence is not enough. A bare
+  # unfenced <style> is invalid pandoc and would print as visible text on a
+  # slide, so the close must be asserted too.
   out <- as.character(apa_quarto_revealjs_block(apa.cor.table(attitude[, 1:3])))
   open_at  <- regexpr("```{=html}", out, fixed = TRUE)
   expect_gt(open_at, 0L)
@@ -608,31 +584,22 @@ test_that("the assembled block contains a properly closed raw-HTML block", {
   expect_gt(close_at, 0L)
 })
 
-# Phase 1.9 (D88/D90) removed two more tests here: "D54 regression guard:
-# pptx gets no wrapper and no CSS block; revealjs gets both" and "spanners
-# are flattened for pptx and KEPT for revealjs". Both mocked
-# apa_quarto_revealjs_target() to "pptx" to force apa_quarto_revealjs_block()'s
-# is_pptx branch -- a branch that no longer exists, because
-# apa_quarto_revealjs_target() itself can no longer answer "pptx" at all
-# (APA_REVEALJS_FORMATS is revealjs-only now). This is coverage of a REMOVED
-# code path, not coverage lost: nothing in apa_quarto_revealjs_block()
-# branches on the destination any more, so there is nothing left for a
-# "pptx vs revealjs" comparison to discriminate.
+# There is no "pptx vs revealjs" test of apa_quarto_revealjs_block(): it
+# does not branch on the destination, and apa_quarto_revealjs_target()
+# cannot answer "pptx" at all (APA_REVEALJS_FORMATS is revealjs-only).
 
 test_that("apa.quarto.revealjs() has the four-argument signature apa_quarto_dispatch() expects", {
-  # Renamed from "... is a thin wrapper over apa_quarto_dispatch()" (I5,
-  # whole-branch review, 2026-08-04): this only ever checked the FORMALS, not
-  # that the body actually calls apa_quarto_dispatch(). Measured: replacing
-  # the whole body of apa.quarto.revealjs() with a direct apa_quarto_render()
-  # call -- dropping the guidance message entirely -- left the suite at
-  # FAIL 0. The test below this one closes that gap; this one keeps the
-  # narrower, still-real fact its old name overclaimed.
+  # This checks only the FORMALS, not that the body actually calls
+  # apa_quarto_dispatch(). Measured: replacing the whole body of
+  # apa.quarto.revealjs() with a direct apa_quarto_render() call --
+  # dropping the guidance message entirely -- passes this test. The test
+  # below this one closes that gap.
   expect_true(is.function(apa.quarto.revealjs))
   expect_identical(names(formals(apa.quarto.revealjs)),
                    c("x", "title", "note", "font.size"))
 })
 
-test_that("apa.quarto.revealjs() really is a thin wrapper over apa_quarto_dispatch(): a name/target mismatch warns, names the fix, and the table still renders (I5)", {
+test_that("apa.quarto.revealjs() really is a thin wrapper over apa_quarto_dispatch(): a name/target mismatch warns, names the fix, and the table still renders", {
   # Modelled on test-quarto-entrypoints.R's identical proof for
   # apa.quarto.pdf() (":54-75" there): mock the render target away from what
   # was called, so apa_quarto_dispatch() -- not apa_quarto_render() called
@@ -647,7 +614,7 @@ test_that("apa.quarto.revealjs() really is a thin wrapper over apa_quarto_dispat
   expect_warning(
     out <- apa.quarto.revealjs(apa.cor.table(attitude[, 1:3])),
     "format: revealjs", fixed = TRUE)
-  # And the "forgiving, never refuses" half of D30: the table itself is
+  # And the "forgiving, never refuses" half: the table itself is
   # still produced, on the markdown path this mismatch actually renders.
   expect_match(as.character(out), "+===", fixed = TRUE)
 })
@@ -659,7 +626,7 @@ test_that("apa_quarto_render() routes a slide target to apa_quarto_revealjs_bloc
   expect_false(grepl("apa-table-meta", out, fixed = TRUE))
 })
 
-# --- Task 8: apa.quarto.template(target = "revealjs") ----------------------
+# --- apa.quarto.template(target = "revealjs") ------------------------------
 
 test_that("apa.quarto.template(target = 'revealjs') writes a slide chunk", {
   out <- capture.output(apa.quarto.template(apa.cor.table(attitude),

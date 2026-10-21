@@ -50,7 +50,7 @@ apa_title_case <- function(x) {
   paste(words, collapse = " ")
 }
 
-#' A variable name as title text (D21)
+#' A variable name as title text
 #' @keywords internal
 apa_name_to_title <- function(x) {
   x <- gsub("[._]+", " ", x)                    # explicit separators

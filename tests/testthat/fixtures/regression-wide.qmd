@@ -17,11 +17,11 @@ library(apaTables)
 ```
 
 Body text before. The chunk below deliberately sets neither `tbl-cap` nor
-`apa-note` (Task 10 note: this is the fixture that stands in for B0's own
-regression -- a multi-block `apa.reg.table()`, the widest builder output in
+`apa-note`. This is the fixture for the clipped-column regression -- a
+multi-block `apa.reg.table()`, the widest builder output in
 the suite, whose R-squared / Delta-R-squared columns and their confidence
 intervals were the ones flextable's fixed-inch table silently clipped from a
-rendered `.docx` with no warning and exit 0).
+rendered `.docx` with no warning and exit 0.
 
 ```{r}
 #| label: tbl-widereg

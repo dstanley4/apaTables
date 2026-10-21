@@ -393,12 +393,12 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=1, show.conf.int
      colnames(output_matrix_console) <- c(c("Variable","M","SD"),as.character(1:number_columns))
 
 
-     # D19: this title is GENERATED from the iv and dv, exactly as the one-way
-     # table's is. The console, LaTeX and spec paths below all say the same
-     # thing; before this they said three different things. The phrase "with
-     # Confidence Intervals" is gone from all three -- the note already states
-     # that square brackets hold the 95% CI, and the phrase could not be kept
-     # conditional without reintroducing the divergence.
+     # This title is GENERATED from the iv and dv, exactly as the one-way
+     # table's is. The console, LaTeX and spec paths below must all say the
+     # same thing. There is deliberately no "with Confidence Intervals" phrase
+     # in any of them -- the note already states that square brackets hold the
+     # 95% CI, and the phrase could not be kept conditional without the three
+     # paths diverging.
      dvalue_title_names <- sprintf("for %s by %s",
                                    apa_name_to_title(dv_name),
                                    apa_name_to_title(iv_name))
@@ -461,7 +461,7 @@ apa.d.table <- function(iv, dv, data, filename=NA, table.number=1, show.conf.int
 }
 
 
-# d-value table title as richtext, GENERATED from the iv and dv (D19). The "d"
+# d-value table title as richtext, GENERATED from the iv and dv. The "d"
 # is a statistic symbol: it stays lowercase and italic, and must be its own run
 # -- once the italic flag is lost at the spec level no emitter can recover it.
 # "Values" capitalizes because APA capitalizes the second part of a hyphenated

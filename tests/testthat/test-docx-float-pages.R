@@ -1,16 +1,16 @@
-# Phase 1.10: where apafloatstoend.lua puts its page breaks (D93).
+# Where apafloatstoend.lua puts its page breaks.
 #
-# THE DEFECT THESE TESTS WERE BUILT AGAINST, now fixed. The filter used to walk
-# the document backwards and insert each float's page break BEFORE prepending
-# the float, so the block it appended was
+# THE DEFECT THESE TESTS GUARD AGAINST. A filter that walks the document
+# backwards and inserts each float's page break BEFORE prepending the float
+# appends the block
 #
 #     [Table 1] [break] [Table 2] [break] ... [Table n] [break]
 #
-# -- the break TRAILED each float instead of LEADING it. Two defects followed
-# from that one placement: the last break had nothing after it (the blank page
-# the author found by reading a rendered PDF), and nothing pushed the FIRST
-# float onto a page of its own, so Table 1 printed under the reference list.
-# The break now leads each float and the block is
+# -- the break TRAILS each float instead of LEADING it. Two defects follow
+# from that one placement: the last break has nothing after it (a blank page
+# at the end of the manuscript), and nothing pushes the FIRST float onto a
+# page of its own, so Table 1 prints under the reference list. The break
+# leads each float and the block is
 #
 #     [break] [Table 1] [break] [Table 2] ... [break] [Table n]
 #
@@ -22,8 +22,8 @@
 # splits on the page-break paragraphs THIS FILTER emits. A Word section break
 # also starts a page, and rotated (landscape) floats are wrapped in one by
 # apatablelandscape.lua -- so a blank page produced that way is invisible here.
-# The rotated case is evidenced only by a rendered document that was looked at:
-# dev/factcheck/phase110-blankpage/VERIFICATION.md.
+# The rotated case is evidenced only by rendered documents that were exported
+# from Word and looked at.
 
 skip_on_cran()
 skip_if_not(nzchar(Sys.which("quarto")), "quarto not installed")
@@ -33,14 +33,14 @@ skip_if_not(nzchar(Sys.which("quarto")), "quarto not installed")
 # rendered against a stale library certifies the library, not the branch.
 apa_skip_if_library_stale()
 
-test_that("the last float leaves no blank page behind (D93 defect 1)", {
+test_that("the last float leaves no blank page behind", {
   segs <- apa_docx_page_segments(
     apa_docx_document_xml(apa_render_fixture_docx("float-pages-two-tables")))
   expect_gt(length(segs), 1L)
   expect_true(all(nzchar(segs)))
 })
 
-test_that("the first table starts a page of its own (D93 defect 2)", {
+test_that("the first table starts a page of its own", {
   segs <- apa_docx_page_segments(
     apa_docx_document_xml(apa_render_fixture_docx("float-pages-two-tables")))
 
@@ -80,15 +80,13 @@ test_that("floatsintext keeps the floats in the body and adds no float breaks", 
   expect_true(all(nzchar(segs)))
 })
 
-# The appendix path was ALREADY CORRECT before the fix, for a reason that
-# corroborated it: the floats were inserted AFTER the break the filter puts
-# before the appendix heading, so that path accidentally gave Table 1 the
-# leading break every float should have had. These three guards were written
-# against the OLD filter and passed then; they exist so the fix could not
-# quietly break the case that already worked, and they still pass now.
-#
-# The fix keeps them passing by stepping the insertion point back past that
-# appendix break, so it is not doubled. `all(nzchar(segs))` is what observes
+# The appendix path. The filter puts a break before the appendix heading, and
+# the floats are inserted next to it, so a naive leading break per float would
+# DOUBLE that break. The filter steps the insertion point back past the
+# appendix break so it is not doubled. These guards pass against both the
+# trailing-break and the leading-break filter; they exist so the leading-break
+# placement cannot quietly break the appendix case. `all(nzchar(segs))` is what
+# observes
 # the doubling: a doubled break opens a blank page in the MIDDLE of the
 # document, which an assertion looking only at the last segment cannot see.
 

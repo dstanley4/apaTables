@@ -1,9 +1,8 @@
--- Phase 1.14. A rotated table's CAPTION belonged to the portrait section while
--- its table belonged to the landscape one, so the caption printed alone on a
--- portrait page and the table on the page after it. And between two rotated
--- tables the document returned to portrait for no reason, which opened a BLANK
--- page. Both seen in real Microsoft Word, not inferred: the apaTables repo's
--- dev/factcheck/phase114-caption/VERIFICATION.md.
+-- Without this filter a rotated table's CAPTION belongs to the portrait
+-- section while its table belongs to the landscape one, so the caption prints
+-- alone on a portrait page and the table on the page after it. And between
+-- two rotated tables the document returns to portrait for no reason, which
+-- opens a BLANK page. Both seen in real Microsoft Word, not inferred.
 --
 -- A `sectPr` embedded in a paragraph governs everything back to the PREVIOUS
 -- such paragraph. apatablelandscape.lua writes the portrait closer immediately
@@ -12,7 +11,7 @@
 -- with no change to what either closer says.
 --
 -- WHY NOT IN apatablelandscape.lua: that filter runs at post-quarto, and
--- MEASURED there (c1-one-rotated-dump-postquarto.txt) the caption is not a
+-- MEASURED there the caption is not a
 -- caption yet -- an unclassed Div holding bare text, four levels away from the
 -- closers, with no FigureTitle and no Caption class. It is only flat, classed
 -- and adjacent at post-render.
@@ -22,22 +21,17 @@
 -- merge_runs() below removes from every float in a run but the last -- so
 -- running first stops it recognising those floats.
 --
--- AN EARLIER VERSION OF THIS COMMENT CALLED THAT ORDER LOAD-BEARING and said
--- reversing it strands notes on a portrait page. THAT IS FALSE. It was caught
--- by mutating the registration order and finding the whole suite still green.
--- Rendered both ways, the two documents differ in exactly one respect: the
--- position of a zero-width <w:bookmarkEnd/> relative to a note paragraph.
--- Nothing a reader can see.
---
--- The reason is worth keeping, because it is not obvious. A note the note
--- filter fails to relocate stays a SIBLING immediately after its float -- and
--- merging is precisely what DELETED the closer that used to separate them, so
--- the note is already inside the landscape section. Removing a boundary
--- cannot strand anything past it.
+-- THAT ORDER IS NOT LOAD-BEARING FOR WHAT A READER SEES, though it looks it:
+-- reversing it does NOT strand notes on a portrait page. Rendered both ways,
+-- the two documents differ in exactly one respect: the position of a
+-- zero-width <w:bookmarkEnd/> relative to a note paragraph. The reason is not
+-- obvious. A note the note filter fails to relocate stays a SIBLING
+-- immediately after its float -- and merging is precisely what DELETES the
+-- closer that used to separate them, so the note is already inside the
+-- landscape section. Removing a boundary cannot strand anything past it.
 --
 -- The order is kept: it is the one verified end to end, and a future change
--- that stops removing closers would revive the dependency. A real
--- interaction, not a critical one.
+-- that stops removing closers would revive the dependency.
 if FORMAT ~= "docx" then
   return
 end
@@ -162,11 +156,11 @@ end
 -- SEEN IN REAL WORD and PRE-EXISTING: page 9 of a three-rotated-tables
 -- manuscript, page 5 of one with an upright table between two rotated ones.
 -- Identical in the CONTROL renders, so this filter did not cause it; the same
--- family as the blank page D98 folded in, at the other boundary.
+-- family as the blank page between two rotated tables, at the other boundary.
 --
 -- NOT the same as the break BEFORE a rotated float, which is harmless: there
 -- the break lands at the END of a section and Word collapses it against the
--- section break's own page (measured, VERIFICATION.md 4.1). Position decides
+-- section break's own page (measured). Position decides
 -- it, so do not "simplify" the two cases together.
 --
 -- A break BETWEEN two floats of the same run is kept: merging removed the
