@@ -12,6 +12,43 @@ apa_latex_target <- function() {
   requireNamespace("knitr", quietly = TRUE) && knitr::is_latex_output()
 }
 
+# Loading flextable, with one known failure turned into instructions.
+#
+# flextable needs gdtools, and some Mac builds of gdtools (Posit Package
+# Manager's, for one) link the XQuartz X11 libraries. On a Mac without
+# XQuartz, loading flextable then fails with a dyn.load() error naming
+# /opt/X11/lib/libXrender.1.dylib -- accurate, but no help to someone who
+# just wanted a table. CRAN's own Mac binaries do not have this dependency,
+# so whether a user hits it depends on where their packages come from.
+#
+# Only that failure is translated: the error must name an X11 library on the
+# Mac library path. Any other failure is re-raised unchanged, because a
+# friendly message for the wrong problem is worse than the raw error.
+# The loader is its own function so tests can stand in for a broken install.
+apa_load_flextable <- function() {
+  if (!isNamespaceLoaded("flextable")) loadNamespace("flextable")
+  invisible(TRUE)
+}
+
+apa_require_flextable <- function() {
+  tryCatch(apa_load_flextable(), error = function(e) {
+    msg <- conditionMessage(e)
+    if (grepl("/opt/X11/", msg, fixed = TRUE) ||
+        grepl("libX[[:alnum:]]+[.0-9]*[.]dylib", msg)) {
+      stop("apaTables could not load the flextable package, which it uses ",
+           "to measure and save tables, because your Mac is missing ",
+           "XQuartz, a free component some R packages need. Install it from ",
+           "https://www.xquartz.org, then log out of your Mac, log back in, ",
+           "and restart R. To keep working right now instead, run ",
+           "install.packages(\"gdtools\", repos = ",
+           "\"https://cloud.r-project.org\"); a later package update may ",
+           "undo that, which installing XQuartz prevents.", call. = FALSE)
+    }
+    stop(e)
+  })
+  invisible(TRUE)
+}
+
 # Re-lay the table out at a given font size.
 #
 # autofit(add_w = 0) recomputes every column width from the text as it is set
@@ -42,6 +79,7 @@ apa_ft_at_size <- function(ft, size) {
 # that could quietly drift from it. apa_flextable(x, ...) below calls this
 # helper.
 apa_flextable_from_plan <- function(plan) {
+  apa_require_flextable()
   n_col <- plan$n_col
   keys <- paste0("c", seq_len(n_col))
 
@@ -154,6 +192,7 @@ apa_flextable_from_plan <- function(plan) {
 #' @return A \code{flextable} object that displays the table body.
 #' @keywords internal
 apa_flextable <- function(x) {
+  apa_require_flextable()
   # No LaTeX emphasis fix (ulem/normalem) is applied here: apa_flextable() is
   # reachable only from apa.save() and from direct unit-test calls, and never
   # reaches a LaTeX destination. See the comment above apa_latex_target().

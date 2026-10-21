@@ -147,6 +147,12 @@ below describes what changed for someone upgrading from that version. Versions
   `apa.d.table()`. `flextable` and `officer` are new imports, used by
   `apa.save()` to write the Word and HTML files.
 
+* On a Mac without XQuartz, some builds of `gdtools` (a package `flextable`
+  needs) cannot load -- Posit Package Manager's can fail this way; CRAN's do
+  not. `apa.save()` and the Quarto entry points now stop with a message that
+  says how to fix it (install XQuartz, or reinstall `gdtools` from CRAN)
+  instead of a low-level library-loading error.
+
 ## Bug fixes
 
 * `apa.aov.table()` labelled the confidence-interval column with the

@@ -138,3 +138,39 @@ instead, which covers the same repeated-measures and mixed designs.
 Every code block in a Quarto document runs in a fresh R session that knows
 nothing about your console. Add `library(apaTables)` to a block near the top of
 the document.
+
+## "On my Mac, apaTables says XQuartz is missing."
+
+You may see this message:
+
+```
+apaTables could not load the flextable package, which it uses to measure
+and save tables, because your Mac is missing XQuartz, ...
+```
+
+or, from an older version or another package, an error that ends with
+something like
+`Library not loaded: /opt/X11/lib/libXrender.1.dylib`.
+
+Some R packages that apaTables relies on are built, on some Macs, to use
+XQuartz, a free add-on that gives a Mac the X11 graphics libraries that parts
+of R have long expected. Whether you need it depends on where your R packages
+come from: packages installed from CRAN, which is what R, RStudio and Positron
+use unless they have been set up otherwise, do not need it. Packages from Posit
+Package Manager, which some universities and some setups use, can.
+
+**The fix that lasts:** install XQuartz from
+[xquartz.org](https://www.xquartz.org), then log out of your Mac, log back in,
+and restart R (or RStudio, or Positron). Nothing else needs to change, and the
+problem will not come back.
+
+**To keep working right now**, run this in the R console:
+
+```r
+install.packages("gdtools", repos = "https://cloud.r-project.org")
+```
+
+Then restart R. This replaces the one package that needs XQuartz with CRAN's
+version, which does not. It works at once, but if your R is set up to install
+from Posit Package Manager, a later package update may bring the problem back
+-- installing XQuartz is what stops that.

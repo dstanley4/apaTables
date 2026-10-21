@@ -200,6 +200,7 @@ apa_save_rotate <- function(width, landscape, paper) {
 }
 
 apa_save_docx <- function(filename, tables, paper = "us") {
+  apa_require_flextable()
      number_fp <- officer::fp_text(bold = TRUE,   font.family = "Times New Roman", font.size = 12)
      title_fp  <- officer::fp_text(italic = TRUE, font.family = "Times New Roman", font.size = 12)
      note_fp   <- officer::fp_text(italic = TRUE, font.family = "Times New Roman", font.size = 12)
@@ -287,6 +288,7 @@ rt_run_to_ftext <- function(r) {
 # apa_document_numbers(), so the same objects saved to .docx and to .html carry
 # the same numbers.
 apa_save_html <- function(filename, tables) {
+  apa_require_flextable()
      numbers <- apa_document_numbers(tables)
      args <- lapply(seq_along(tables),
                     function(i) apa_html_flextable(tables[[i]], numbers[i]))

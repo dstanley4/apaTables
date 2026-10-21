@@ -37,7 +37,10 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
+          # macOS takes CRAN's binaries: Posit Package Manager's Mac build of
+          # gdtools links the XQuartz libraries, which the runner lacks.
+          # CRAN's is what R, RStudio and Positron install by default.
+          use-public-rspm: ${{ matrix.config.os != 'macos-latest' }}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
