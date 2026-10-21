@@ -114,7 +114,7 @@ fits.</p>
 
 <dt id="arg-content-">content_12<a class="anchor" aria-label="anchor" href="#arg-content-"></a></dt>
 <dd><p>optional per-column content vector already measured by
-`apa_latex_content_at_12()`. Supplying it is what lets Task 9's ladder
+`apa_latex_content_at_12()`. Supplying it is what lets the ladder
 make its whole decision from ONE font measurement: that measurement runs
 flextable's `autofit()` and costs about 0.66 s on a 14-column table, and
 the ladder needs the same vector for the width at 10 pt, for the solve,
@@ -128,17 +128,16 @@ and for the achieved-fit re-check. It must be the vector measured from
   `[APA_LATEX_MIN_EMITTABLE_SIZE, APA_LATEX_MAX_FONT_SIZE]`.</p>
     </div>
     <div class="section level2">
-    <h2 id="there-is-no-legibility-floor-d-b-">There is no legibility floor (D7b)<a class="anchor" aria-label="anchor" href="#there-is-no-legibility-floor-d-b-"></a></h2>
+    <h2 id="there-is-no-legibility-floor">There is no legibility floor<a class="anchor" aria-label="anchor" href="#there-is-no-legibility-floor"></a></h2>
 
 
-<p>This function used to stop at the flextable fitter's 5 pt floor, which meant a
-table needing less was returned at 5 pt and CLIPPED. D7b makes 6 pt a
-warning threshold and never a hard stop, so the walk now continues below
-5 pt – and below 1 pt – to whatever size actually fits, bottoming out
-only at `APA_LATEX_MIN_EMITTABLE_SIZE` (**0.1 pt**, the smallest size a
+<p>A 5 pt floor here would return a table needing less at 5 pt, CLIPPED.
+6 pt is a warning threshold and never a hard stop, so the walk continues
+below 5 pt – and below 1 pt – to whatever size actually fits, bottoming
+out only at `APA_LATEX_MIN_EMITTABLE_SIZE` (**0.1 pt**, the smallest size a
 rendered table was measured to be set at rather than substituted; see that
-constant, and do NOT restore the 0.5 pt figure an earlier draft of this
-sentence carried – 0.5 pt was assumed and the measurement disproved it).</p>
+constant, and do NOT use a 0.5 pt figure – 0.5 pt was assumed and the
+measurement disproved it).</p>
     </div>
     <div class="section level2">
     <h2 id="the-invariant-and-the-one-case-that-genuinely-cannot-fit">The invariant, and the one case that genuinely cannot fit<a class="anchor" aria-label="anchor" href="#the-invariant-and-the-one-case-that-genuinely-cannot-fit"></a></h2>
@@ -153,8 +152,8 @@ column's content is rounded UP to the next 0.01 in, so an `n`-column table
 is never narrower than `0.01*n + (4n - 4)/72.27 + APA_LATEX_WIDTH_MARGIN_IN`.
 When `target` is below that, this function returns
 `APA_LATEX_MIN_EMITTABLE_SIZE` and the predicted width exceeds `target`.
-A caller that needs to know whether the fit actually succeeded – Task 9's
-ladder, deciding whether to warn – must check
+A caller that needs to know whether the fit actually succeeded – the
+rotate-then-shrink ladder, deciding whether to warn – must check
 `apa_latex_natural_width(plan, result) &lt;= target` itself; this function's
 return value alone does not carry that information.</p>
     </div>

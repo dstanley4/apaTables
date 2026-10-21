@@ -1,10 +1,13 @@
-# The guidance message for a name/target mismatch (D30)
+# The guidance message for a name/target mismatch
 
-The table renders correctly either way (the TARGET decides the
-mechanism, never the call name); the message states the one useful fact:
-which YAML line would make the call name and the render agree. Exported
-as an internal helper (not part of the public API) so it can be tested
-and reused without duplicating the format tables above.
+Used when a chunk calls an entry point that does not match the render
+target, e.g.
+[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+in a document rendering to Word. The table renders correctly either way,
+because the render target decides the mechanism and the function name
+does not; the message states the one useful fact, which YAML line would
+make the two agree. A separate internal function so the tests can check
+the wording directly.
 
 ## Usage
 

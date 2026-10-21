@@ -69,7 +69,7 @@ environment, with no caption, no label, no note and no surrounding float.</p>
     <p>a length-1 character string: one <code>longtable</code> environment.</p>
     </div>
     <div class="section level2">
-    <h2 id="why-there-is-no-caption-d-measured-">Why there is no caption (D9, measured)<a class="anchor" aria-label="anchor" href="#why-there-is-no-caption-d-measured-"></a></h2>
+    <h2 id="why-there-is-no-caption-measured-">Why there is no caption (measured)<a class="anchor" aria-label="anchor" href="#why-there-is-no-caption-measured-"></a></h2>
 
 
 <p>Quarto's <code>main.lua</code> rewrites any raw-LaTeX <code>longtable</code> that
@@ -93,7 +93,7 @@ and note around it.</p>
 
 <p><code>\begin{longtable}</code> with the column spec carrying the size and the
 inter-column spacing (never a <code>\setlength</code> in front of the
-environment – see <code>apa_latex_colspec()</code> and D10), then the strut fix,
+environment – see <code>apa_latex_colspec()</code>), then the strut fix,
 then <code>\toprule</code> / header rows / <code>\midrule</code> twice, for
 <code>\endfirsthead</code> and <code>\endhead</code>. <code>\endfoot</code> draws NOTHING –
 no rule may appear at a page break in the middle of a table – but it is not

@@ -38,12 +38,12 @@ apa_size_for_width(plan, target, content_12 = NULL)
 - content_12:
 
   optional per-column content vector already measured by
-  \`apa_latex_content_at_12()\`. Supplying it is what lets Task 9's
-  ladder make its whole decision from ONE font measurement: that
-  measurement runs flextable's \`autofit()\` and costs about 0.66 s on a
-  14-column table, and the ladder needs the same vector for the width at
-  10 pt, for the solve, and for the achieved-fit re-check. It must be
-  the vector measured from \`plan\` – it is not a way to price one table
+  \`apa_latex_content_at_12()\`. Supplying it is what lets the ladder
+  make its whole decision from ONE font measurement: that measurement
+  runs flextable's \`autofit()\` and costs about 0.66 s on a 14-column
+  table, and the ladder needs the same vector for the width at 10 pt,
+  for the solve, and for the achieved-fit re-check. It must be the
+  vector measured from \`plan\` – it is not a way to price one table
   against another's columns.
 
 ## Value
@@ -51,17 +51,15 @@ apa_size_for_width(plan, target, content_12 = NULL)
 numeric point size, in \`\[APA_LATEX_MIN_EMITTABLE_SIZE,
 APA_LATEX_MAX_FONT_SIZE\]\`.
 
-## There is no legibility floor (D7b)
+## There is no legibility floor
 
-This function used to stop at the flextable fitter's 5 pt floor, which
-meant a table needing less was returned at 5 pt and CLIPPED. D7b makes 6
-pt a warning threshold and never a hard stop, so the walk now continues
+A 5 pt floor here would return a table needing less at 5 pt, CLIPPED. 6
+pt is a warning threshold and never a hard stop, so the walk continues
 below 5 pt – and below 1 pt – to whatever size actually fits, bottoming
 out only at \`APA_LATEX_MIN_EMITTABLE_SIZE\` (\*\*0.1 pt\*\*, the
 smallest size a rendered table was measured to be set at rather than
-substituted; see that constant, and do NOT restore the 0.5 pt figure an
-earlier draft of this sentence carried – 0.5 pt was assumed and the
-measurement disproved it).
+substituted; see that constant, and do NOT use a 0.5 pt figure – 0.5 pt
+was assumed and the measurement disproved it).
 
 ## The invariant, and the one case that genuinely cannot fit
 
@@ -75,6 +73,7 @@ every column's content is rounded UP to the next 0.01 in, so an
 APA_LATEX_WIDTH_MARGIN_IN\`. When \`target\` is below that, this
 function returns \`APA_LATEX_MIN_EMITTABLE_SIZE\` and the predicted
 width exceeds \`target\`. A caller that needs to know whether the fit
-actually succeeded – Task 9's ladder, deciding whether to warn – must
-check \`apa_latex_natural_width(plan, result) \<= target\` itself; this
-function's return value alone does not carry that information.
+actually succeeded – the rotate-then-shrink ladder, deciding whether to
+warn – must check \`apa_latex_natural_width(plan, result) \<= target\`
+itself; this function's return value alone does not carry that
+information.

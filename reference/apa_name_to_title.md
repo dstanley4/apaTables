@@ -1,6 +1,6 @@
-# A variable name as title text (D21)
+# A variable name as title text
 
-A variable name as title text (D21)
+A variable name as title text
 
 ## Usage
 

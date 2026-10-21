@@ -13,7 +13,7 @@ automatic rotated page for a table too wide to stand upright.
 "Rendering" the document turns it into the finished Word, PDF, or HTML
 file; this method supplies the table's contribution to that finished
 file. There is no function name here for a name/target mismatch message
-to name (D30's guidance is a property of the three named entry points,
+to name (that guidance is a property of the three named entry points,
 not of this automatic path), so none is ever printed for a bare table.
 
 ## Usage

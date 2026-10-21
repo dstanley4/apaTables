@@ -6,11 +6,11 @@ to the caller. The plan is consumed by
 [`apa_latex_table()`](https://dstanley4.github.io/apaTables/reference/apa_latex_table.md)
 (Quarto PDF, the native LaTeX emitter) and by
 [`apa_flextable()`](https://dstanley4.github.io/apaTables/reference/apa_flextable.md)
-(which now writes only Word and HTML, per D14), and will also be
-consumed by a pandoc-markdown emitter – so it carries only structure:
-column count and alignment codes, header rows (with spans and rule
-ranges expressed as column indices, never as `\cmidrule` or any other
-markup), and body rows. Richtext runs (see
+(which now writes only Word and HTML), and will also be consumed by a
+pandoc-markdown emitter – so it carries only structure: column count and
+alignment codes, header rows (with spans and rule ranges expressed as
+column indices, never as `\cmidrule` or any other markup), and body
+rows. Richtext runs (see
 [`rt_run`](https://dstanley4.github.io/apaTables/reference/rt_run.md))
 pass through unconverted so no emitter loses italics, superscripts, or
 symbols; each destination-specific backend
