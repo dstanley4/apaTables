@@ -178,10 +178,12 @@ released.
   with [`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html)
   output for repeated-measures and mixed designs instead. `ez` is no
   longer listed in Suggests.
+
 - **Breaking:** `apa.reg.boot.table()` has been removed. Bootstrapped
   regression tables are not part of this release; use
   [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
   for the standard regression table.
+
 - Dependencies have changed. `boot`, `tibble` and `MBESS` are no longer
   imported – `boot` and `tibble` are unused, and `MBESS` is now
   suggested rather than required, so it is needed only for the
@@ -190,6 +192,14 @@ released.
   `flextable` and `officer` are new imports, used by
   [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
   to write the Word and HTML files.
+
+- On a Mac without XQuartz, some builds of `gdtools` (a package
+  `flextable` needs) cannot load – Posit Package Manager’s can fail this
+  way; CRAN’s do not.
+  [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+  and the Quarto entry points now stop with a message that says how to
+  fix it (install XQuartz, or reinstall `gdtools` from CRAN) instead of
+  a low-level library-loading error.
 
 ### Bug fixes
 
