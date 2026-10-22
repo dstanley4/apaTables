@@ -3,7 +3,7 @@
 GENERATED from apaTables' patch branch of apaquarto -- do not edit by hand.
 
 Upstream base: `main` @ 9a2f392
-Bundle branch: `apatables-bundle` @ d1e4f81
+Bundle branch: `apatables-bundle` @ 342f81e
 
 NOT YET OFFERED UPSTREAM. Every patch below is local to apaTables: none
 has been pushed anywhere and no pull request has been opened. This bundle
@@ -20,10 +20,10 @@ files** -- both silently revert the extension to stock while printing
 ```
  _extensions/apaquarto/_extension.yml               |  70 +-
  _extensions/apaquarto/apa.css                      |  96 +++
- _extensions/apaquarto/apafloatlatex.lua            | 529 ++++++++++++++-
+ _extensions/apaquarto/apafloatlatex.lua            | 751 ++++++++++++++++++++-
  _extensions/apaquarto/apafloatstoend.lua           |  32 +-
  _extensions/apaquarto/apalandscapelatex.lua        |  98 +++
- _extensions/apaquarto/apalongtablenote.lua         | 721 +++++++++++++++++++++
+ _extensions/apaquarto/apalongtablenote.lua         | 729 ++++++++++++++++++++
  _extensions/apaquarto/apaquarto.docx               | Bin 33069 -> 30253 bytes
  _extensions/apaquarto/apatablelandscape.lua        | 240 +++++++
  _extensions/apaquarto/apatablelandscapecaption.lua | 190 ++++++
@@ -37,21 +37,21 @@ files** -- both silently revert the extension to stock while printing
  _extensions/apaquarto/utilsapa.lua                 |  23 +
  tests/landscape-floats.qmd                         |  52 ++
  tests/longtable-counter.qmd                        |  58 ++
- 19 files changed, 2785 insertions(+), 25 deletions(-)
+ 19 files changed, 3015 insertions(+), 25 deletions(-)
 ```
 
 ## Full diff
 
 ```diff
 diff --git a/_extensions/apaquarto/_extension.yml b/_extensions/apaquarto/_extension.yml
-index 0f58672..850a6ab 100644
+index 0f58672..2f8bb5a 100644
 --- a/_extensions/apaquarto/_extension.yml
 +++ b/_extensions/apaquarto/_extension.yml
 @@ -1,6 +1,6 @@
  title: My Document in APA Style, Seventh Edition
  author: W. Joel Schneider
 -version: 5.0.18
-+version: 5.0.18+apaTables.33
++version: 5.0.18+apaTables.34
  quarto-required: ">=1.4.549"
  contributes:
    formats:
@@ -273,7 +273,7 @@ index 1e4caf8..e625718 100644
 +  }
 +}
 diff --git a/_extensions/apaquarto/apafloatlatex.lua b/_extensions/apaquarto/apafloatlatex.lua
-index 820933f..670384e 100644
+index 820933f..f33f35a 100644
 --- a/_extensions/apaquarto/apafloatlatex.lua
 +++ b/_extensions/apaquarto/apafloatlatex.lua
 @@ -30,12 +30,19 @@ end
@@ -296,7 +296,7 @@ index 820933f..670384e 100644
    -- Find word for "note"
    if not meta.language["figure-table-note"] then
      if param("callout-note-title") then
-@@ -60,6 +67,327 @@ end
+@@ -60,6 +67,546 @@ end
  --  return result
  --end
  
@@ -358,6 +358,202 @@ index 820933f..670384e 100644
 +  end
 +  scan(blocks)
 +  return tables == 1 and other == 0
++end
++
++-- A raw LaTeX tabular (knitr::kable(format = "latex"), kableExtra) as the
++-- float's only content becomes the longtable kable itself writes with
++-- longtable = TRUE: the same environment, rules and rows, so it takes the
++-- longtable path below like every other table. Left as a tabular it would
++-- sit in a float, which drifts away from its place in the text in
++-- documentmode: doc, and whose manuscript-mode spacing is tuned for
++-- double-spaced content: the title is struck through by the top rule and
++-- the note prints over the last row. Only the outermost tabular is renamed;
++-- a tabular nested in a cell (a hand-written multi-line cell) stays as it
++-- is. \centering goes because an APA table is set flush left, and a
++-- position argument such as [t] goes because longtable reads that slot as
++-- alignment. kableExtra's font_size (a \begingroup\fontsize{s}{b}\selectfont
++-- ... \endgroup wrapper) is moved inside the table the way apaTables sets
++-- its own sizes: a group in front of the longtable would shrink the caption
++-- and is dropped when tables are collected at the end of the document, so
++-- the size goes in front of every column and the row strut is rebuilt at
++-- that size (see the R function apa_latex_strut_fix()).
++-- Put ">{size}" in front of every column of a tabular's column spec
++-- (spec includes its outer braces). Returns nil for a spec it cannot read.
++local sizedcolspec = function(spec, size)
++  local s = spec:sub(2, -2)
++  local out, i, prefixed = {}, 1, false
++  local function group(at)
++    local g = s:match("^%b{}", at)
++    return g
++  end
++  while i <= #s do
++    local ch = s:sub(i, i)
++    if ch:match("%s") or ch == "|" then
++      out[#out + 1] = ch
++      i = i + 1
++    elseif ch == "@" or ch == "!" or ch == "<" then
++      local g = group(i + 1)
++      if not g then return nil end
++      out[#out + 1] = ch .. g
++      i = i + 1 + #g
++    elseif ch == ">" then
++      local g = group(i + 1)
++      if not g then return nil end
++      if not prefixed then out[#out + 1] = ">{" .. size .. "}" end
++      prefixed = true
++      out[#out + 1] = ch .. g
++      i = i + 1 + #g
++    elseif ch:match("[lcr]") then
++      if not prefixed then out[#out + 1] = ">{" .. size .. "}" end
++      out[#out + 1] = ch
++      prefixed = false
++      i = i + 1
++    elseif ch:match("[pmb]") then
++      local g = group(i + 1)
++      if not g then return nil end
++      if not prefixed then out[#out + 1] = ">{" .. size .. "}" end
++      out[#out + 1] = ch .. g
++      prefixed = false
++      i = i + 1 + #g
++    else
++      return nil
++    end
++  end
++  return "{" .. table.concat(out) .. "}"
++end
++
++-- The number of columns in a tabular's column spec, or nil if unread.
++local speccolumns = function(spec)
++  local s = spec:sub(2, -2):gsub("[@!<>]%b{}", "")
++  if s:find("%*") then return nil end
++  local n, i = 0, 1
++  while i <= #s do
++    local ch = s:sub(i, i)
++    if ch:match("[lcr]") then
++      n = n + 1
++      i = i + 1
++    elseif ch:match("[pmb]") then
++      local g = s:match("^%b{}", i + 1)
++      if not g then return nil end
++      n = n + 1
++      i = i + 1 + #g
++    elseif ch:match("[%s|]") then
++      i = i + 1
++    else
++      return nil
++    end
++  end
++  return n > 0 and n or nil
++end
++
++local rawtabular_to_longtable = function(text)
++  local body = text:match("^%s*(.-)%s*$")
++  body = body:gsub("^\\centering%s*", "")
++  local size, inbody = body:match(
++    "^\\begingroup%s*(\\fontsize%b{}%b{}\\selectfont)%s*(.-)%s*\\endgroup%s*{?}?$")
++  if size then
++    body = inbody
++  end
++  local spec, inner = body:match("^\\begin{tabular}%[[^%]]*%]%s*(%b{})(.*)\\end{tabular}$")
++  if not spec then
++    spec, inner = body:match("^\\begin{tabular}%s*(%b{})(.*)\\end{tabular}$")
++  end
++  if not spec then
++    return nil
++  end
++  local strut = ""
++  if size then
++    spec = sizedcolspec(spec, size)
++    if not spec then
++      return nil
++    end
++    strut = "\\noalign{\\makeatletter" .. size ..
++        "\\global\\setbox\\@arstrutbox\\hbox{\\vrule height\\arraystretch" ..
++        "\\ht\\strutbox depth\\arraystretch\\dp\\strutbox width\\z@}" ..
++        "\\makeatother}\n"
++  end
++  -- The outer tabular must enclose everything: two tabulars side by side
++  -- also start and end with these words, and would become one broken table.
++  local depth = 0
++  for word in inner:gmatch("\\(%a+){tabular}") do
++    depth = depth + (word == "begin" and 1 or (word == "end" and -1 or 0))
++    if depth < 0 then
++      return nil
++    end
++  end
++  if depth ~= 0 then
++    return nil
++  end
++  -- The header: from the start to the rule under the last header row
++  -- (booktabs' \midrule; for a plain kable table, the first \hline after
++  -- a row). Repeated as the head of every continuation page, as Pandoc
++  -- does for a markdown table; a table whose header cannot be found is
++  -- left without one and still breaks across pages. (A plain kable table
++  -- printed without column names looks the same as one with them, so its
++  -- first row is repeated.)
++  local lines = {}
++  for line in (inner .. "\n"):gmatch("(.-)\n") do
++    lines[#lines + 1] = line
++  end
++  local seenrow, headend = false, nil
++  for i, line in ipairs(lines) do
++    local trimmed = line:match("^%s*(.-)%s*$")
++    if trimmed == "\\midrule" or (seenrow and trimmed == "\\hline") then
++      headend = i
++      break
++    end
++    if trimmed:find("\\\\%s*$") then
++      seenrow = true
++    end
++  end
++  if headend and seenrow and headend < #lines then
++    local head = table.concat(lines, "\n", 1, headend)
++    local rest = table.concat(lines, "\n", headend + 1)
++    inner = head .. "\n\\endfirsthead\n" .. head:gsub("^%s*\n", "") ..
++        "\n\\endhead\n" .. rest
++  end
++  -- A plain table's closing \hline. Longtable's \hline offers a page break
++  -- between the rule and its own copy, so near a page foot the note went to
++  -- the next page alone under a second rule. Drawn instead as one rule the
++  -- way longtable draws each copy (across the table's columns, not the full
++  -- line), with no break on either side, and the template's closing rule
++  -- stood down for it.
++  local stem = inner:match("^(.-)\\hline%s*$")
++  local ncol = speccolumns(spec)
++  if stem and ncol then
++    inner = stem .. "\\noalign{\\penalty10000}\\multispan{" .. ncol ..
++        "}\\unskip\\leaders\\hrule height\\arrayrulewidth\\hfill\\cr\n" ..
++        "\\noalign{\\penalty10000}\n" ..
++        "\\noalign{\\csname apatablesownbottomrule\\endcsname{}}\n"
++  end
++  return "\\begin{longtable}" .. spec .. "\n" .. strut ..
++      inner:gsub("^%s*\n", "") .. "\\end{longtable}"
++end
++
++local liftrawtabular = function(float)
++  local raws, others = 0, 0
++  float.content:walk {
++    RawBlock = function(rb)
++      if rb.format == "tex" or rb.format == "latex" then
++        raws = raws + 1
++      end
++    end,
++    Table = function(t) others = others + 1 end,
++    Image = function(i) others = others + 1 end,
++  }
++  if raws ~= 1 or others ~= 0 then
++    return
++  end
++  float.content = float.content:walk {
++    RawBlock = function(rb)
++      if rb.format == "tex" or rb.format == "latex" then
++        local lt = rawtabular_to_longtable(rb.text)
++        if lt then
++          return pandoc.RawBlock(rb.format, lt)
++        end
++      end
++    end
++  }
 +end
 +
 +local haslongtable = function(float)
@@ -521,6 +717,29 @@ index 820933f..670384e 100644
 +    for _ in body:gmatch("\\addlinespace%f[^%a%[]") do
 +      rowpts = rowpts + 6
 +    end
++    -- Rules between rows: a plain table's \hline under every row, and the
++    -- \cmidrule under a spanning header (kableExtra's add_header_above),
++    -- which carries booktabs' space above and below it. Measured: without
++    -- these a six-row plain table, and a table with a spanning header,
++    -- straddled a page break at a few positions.
++    -- The header repeated for continuation pages is not on the first page.
++    local once = tex
++    local ra = tex:find("\\endfirsthead", 1, true)
++    local _, rb = tex:find("\\endhead", 1, true)
++    if ra and rb and rb > ra then
++      once = tex:sub(1, ra - 1) .. tex:sub(rb + 1)
++    end
++    for _ in once:gmatch("\\hline") do
++      rowpts = rowpts + 1
++    end
++    for _ in once:gmatch("\\multispan") do
++      rowpts = rowpts + 1
++    end
++    for line in once:gmatch("[^\n]+") do
++      if line:find("\\cmidrule") then
++        rowpts = rowpts + 6
++      end
++    end
 +    if skip then
 +      -- Rows set at their own size (apaTables' \fontsize{10}{12}) are
 +      -- counted in points, not in lines of the body: a document set at
@@ -624,7 +843,7 @@ index 820933f..670384e 100644
  local processfloat = function(float)
    if float.attributes["disable-apaquarto-processing"] then
      if not (float.attributes["disable-apaquarto-processing"] == "false") then
-@@ -82,15 +410,125 @@ local processfloat = function(float)
+@@ -82,15 +629,128 @@ local processfloat = function(float)
          -- credit to @michaelzehetleitne https://github.com/wjschne/apaquarto/issues/71
          -- Long-table mode: skip float wrapper so longtable can page-break
      --quarto.log.output(float.attributes)
@@ -642,6 +861,9 @@ index 820933f..670384e 100644
 +    -- needs no float to grip, so the guard is gone. It had to go in the same
 +    -- change: left behind, it would have sealed a rotated longtable inside
 +    -- \begin{table} and lost rows in silence.
++    if not journalmode then
++      liftrawtabular(float)
++    end
 +    if (float.attributes["apa-longtable"] == "true" or haslongtable(float))
 +        and not journalmode then
        local blocks = pandoc.Blocks({})
@@ -752,7 +974,7 @@ index 820933f..670384e 100644
        if float.attributes["apa-note"] then
          local bn = ""
          if manuscriptmode then
-@@ -99,10 +537,28 @@ local processfloat = function(float)
+@@ -99,10 +759,28 @@ local processfloat = function(float)
              bn = "\\vspace{" .. float.attributes["beforenotespace"] .. "}\n"
            end
          end
@@ -784,7 +1006,7 @@ index 820933f..670384e 100644
      end
      -- Default table environment
      local latextableenv = "table"
-@@ -189,13 +645,21 @@ local processfloat = function(float)
+@@ -189,13 +867,21 @@ local processfloat = function(float)
        })
      end
  
@@ -807,7 +1029,7 @@ index 820933f..670384e 100644
      local latexenv = "figure"
      -- Get apa-note from image, if possible
      float.content:walk {
-@@ -218,12 +682,12 @@ local processfloat = function(float)
+@@ -218,12 +904,12 @@ local processfloat = function(float)
        end
      }
  
@@ -822,7 +1044,7 @@ index 820933f..670384e 100644
        if hasnote then
          -- Add note
          if float.attributes["apa-note"] then
-@@ -259,13 +723,58 @@ local processfloat = function(float)
+@@ -259,13 +945,58 @@ local processfloat = function(float)
          pandoc.RawBlock("latex", "\\end{" .. latexenv .. "}")
        })
  
@@ -1076,10 +1298,10 @@ index 0000000..2e012cf
 +}
 diff --git a/_extensions/apaquarto/apalongtablenote.lua b/_extensions/apaquarto/apalongtablenote.lua
 new file mode 100644
-index 0000000..7b67fce
+index 0000000..d316a91
 --- /dev/null
 +++ b/_extensions/apaquarto/apalongtablenote.lua
-@@ -0,0 +1,721 @@
+@@ -0,0 +1,729 @@
 +-- Attach a long table's apa-note to the table itself.
 +--
 +-- apafloatlatex.lua marks the note of an apa-longtable and leaves it in the
@@ -1496,11 +1718,13 @@ index 0000000..7b67fce
 +-- apafloatlatex.lua lifted out of its float (it marks the Div) draws its own
 +-- \bottomrule too, so it is armed the way apaTables' own tables are: a last
 +-- row before \end{longtable}. Only when there is exactly one longtable, it
-+-- has a \bottomrule, and nothing armed it already.
++-- has a \bottomrule (or, a plain kable table, ends with an \hline), and
++-- nothing armed it already.
 +local liftmarker = "apa-lifted-longtable"
 +
 +local function armraw(blocks)
 +  local n, armed, hasrule = 0, false, false
++  local texts = {}
 +  pandoc.Blocks(blocks):walk {
 +    RawBlock = function(rb)
 +      if rb.format ~= "latex" then return nil end
@@ -1508,9 +1732,15 @@ index 0000000..7b67fce
 +      n = n + c
 +      if rb.text:find("apatablesownbottomrule", 1, true) then armed = true end
 +      if rb.text:find("\\bottomrule", 1, true) then hasrule = true end
++      texts[#texts + 1] = rb.text
 +      return nil
 +    end
 +  }
++  -- A plain (non-booktabs) kable table closes with its own \hline. The
++  -- table can arrive split across raw blocks, so they are read together.
++  if table.concat(texts, "\n"):find("\\hline%s*\\end{longtable}") then
++    hasrule = true
++  end
 +  if n ~= 1 or armed or not hasrule then return blocks end
 +  local done = false
 +  return pandoc.Blocks(blocks):walk {

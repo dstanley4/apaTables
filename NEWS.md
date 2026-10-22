@@ -40,6 +40,18 @@ below describes what changed for someone upgrading from that version. Versions
   caption ends with two), and a table's note is kept on a page with at least
   one of its rows unless the note itself is longer than about a quarter of a
   page.
+* In an apaquarto PDF, a table written as raw LaTeX, by
+  `knitr::kable(format = "latex")` or kableExtra, in a chunk with a
+  `tbl-cap`, prints like any other table: its title sits above the top rule
+  and its note below the bottom rule, it stays where it was written in the
+  text, and a long one continues onto the next page with every row, its
+  column headings repeated and its note at the end. (Two cases still print
+  as before: kableExtra's `latex_options = "scale_down"`, and a caption given
+  to `kable(caption = ...)` itself rather than with `tbl-cap`.) With the
+  stock extension
+  the title is struck through by the top rule, "Note." prints over the last
+  row, in `documentmode: doc` the table drifts away from where it was
+  written, and a long one is cut off at the foot of the page with its note.
 * Tables drop directly into apaquarto documents. Build the table on one line
   and pass it to the entry point named for the document's own destination on
   the next: `apa.quarto.pdf()`, `apa.quarto.docx()`, `apa.quarto.html()` or

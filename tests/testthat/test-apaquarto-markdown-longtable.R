@@ -839,3 +839,258 @@ test_that("rows are single-spaced and notes keep the manuscript's spacing", {
   expect_equal(apa_rule_count(pdf, apa_page_of(pages, "mda"), "mdb",
                               "Note."), 1L)
 })
+
+# A table written as raw LaTeX by knitr::kable(format = "latex") reaches the
+# filter as a tabular in a float, not a longtable. In manuscript mode the
+# float's fixed spacing struck the title through with the top rule and
+# printed "Note." over the last row; in documentmode: doc the float drifted
+# after the text that follows it (and, beside an in-text markdown table, out
+# of numeric order); a tall one was cut off at the page foot with its note.
+# It now takes the longtable path. Three tables are written the way
+# kableExtra's output reaches the filter once Quarto has removed its table
+# wrapper -- \centering and a [t] position argument; kable_styling(font_size)
+# with its \begingroup\fontsize...\selectfont group; add_header_above()'s
+# spanning header row with its \cmidrule -- so kableExtra itself is not
+# needed. Mutations, run by hand (2026-10-22): the extension before this fix
+# (5.0.18+apaTables.33) fails the title, note and order checks below, and the
+# tall table loses rows t43 to t59 and its note.
+apa_raw_kable_chunk <- function(id, title, note, rows, plain = FALSE,
+                                kx = FALSE, fs = FALSE, spanner = FALSE) {
+  d <- paste0("data.frame(Name = c(",
+              paste0("\"", rows, "\"", collapse = ", "),
+              "), Value = seq_len(", length(rows), "))")
+  call <- paste0("x <- knitr::kable(", d, ", format = \"latex\"",
+                 if (plain) "" else ", booktabs = TRUE", ")\n")
+  # kableExtra wraps its output in a table environment, which Quarto takes
+  # off; without that wrapper Pandoc splits the pieces around the tabular
+  # into separate blocks, so the wrapper is written here too.
+  if (kx) {
+    call <- paste0(call, "x[1] <- paste0(\"\\\\begin{table}\\n\\\\centering\\n\", ",
+                   "sub(\"\\\\begin{tabular}\", \"\\\\begin{tabular}[t]\", x[1], ",
+                   "fixed = TRUE), \"\\n\\\\end{table}\")\n")
+  }
+  if (fs) {
+    call <- paste0(call, "x[1] <- paste0(\"\\\\begin{table}\\n\\\\centering",
+                   "\\\\begingroup\\\\fontsize{8}{10}\\\\selectfont\\n\", x[1], ",
+                   "\"\\n\\\\endgroup{}\\n\\\\end{table}\")\n")
+  }
+  if (spanner) {
+    call <- paste0(call, "x[1] <- sub(\"\\\\toprule\\n\", paste0(",
+                   "\"\\\\toprule\\n\\\\multicolumn{1}{c}{} & ",
+                   "\\\\multicolumn{1}{c}{Group}\\\\\\\\\\n\", ",
+                   "\"\\\\cmidrule(l{3pt}r{3pt}){2-2}\\n\"), x[1], ",
+                   "fixed = TRUE)\n")
+  }
+  paste0("```{r}\n#| label: ", id, "\n#| tbl-cap: \"", title, "\"\n",
+         "#| apa-note: \"", note, " this is the note.\"\n#| echo: false\n",
+         call, "x\n```\n\n")
+}
+
+apa_raw_kable_qmd <- function(mode, floatsintext) {
+  paste0(
+    apa_header_qmd("Raw kable", mode, floatsintext),
+    "PARAONE body text.\n\n",
+    apa_raw_kable_chunk("tbl-rawbt", "RBTITLE booktabs", "RBNOTE",
+                        c(paste0("RB", LETTERS[1:5]), "RBLAST")),
+    "PARATWO body text.\n\n",
+    "| Name | Value |\n|---|---:|\n| MDA | 1 |\n| MDLAST | 2 |\n\n",
+    ": MDTITLE markdown {#tbl-md apa-note=\"MDNOTE this is the note.\"}\n\n",
+    "PARAMD body text.\n\n",
+    apa_raw_kable_chunk("tbl-rawpl", "PLTITLE plain", "PLNOTE",
+                        c(paste0("PL", LETTERS[1:5]), "PLLAST"), plain = TRUE),
+    "PARATHREE body text.\n\n",
+    apa_raw_kable_chunk("tbl-rawkx", "KXTITLE centred", "KXNOTE",
+                        c(paste0("KX", LETTERS[1:5]), "KXLAST"), kx = TRUE),
+    "PARAFOUR body text.\n\n",
+    apa_raw_kable_chunk("tbl-rawfs", "FSTITLE small", "FSNOTE",
+                        c(paste0("FS", LETTERS[1:5]), "FSLAST"), fs = TRUE),
+    "PARAFIVE body text.\n\n",
+    apa_raw_kable_chunk("tbl-rawsp", "SPTITLE spanner", "SPNOTE",
+                        c(paste0("SP", LETTERS[1:5]), "SPLAST"),
+                        spanner = TRUE),
+    "PARASIX XREF: @tbl-rawbt, @tbl-md, @tbl-rawpl, @tbl-rawkx, @tbl-rawfs, ",
+    "@tbl-rawsp\n")
+}
+
+# The thickness, in points, of the rule (or rules) under `last_word`: the
+# dark runs crossing the strip down to `stop_word`, at 600 dpi. Two rules
+# set directly on top of each other read as ONE run, so apa_rule_count()
+# cannot see them; their thickness can. Watched both ways before it was
+# trusted (2026-10-22, man mode): a booktabs table measured 0.96 pt, and
+# 1.32 pt with its rule doubled; a plain table 0.36 pt and 0.84 pt. (The
+# small-type table read 0.84 pt doubled, inside its limit: its doubling is
+# seen through the other tables, which are armed by the same code.)
+apa_rule_thickness <- function(pdf, page, last_word, stop_word, dpi = 600) {
+  w <- apa_pdf_words(pdf, page)
+  lw <- w[w$word == last_word, ]
+  if (!nrow(lw)) return(NA_real_)
+  lw <- lw[nrow(lw), ]
+  sw <- w[w$word == stop_word & w$ymin > lw$ymax, ]
+  y1 <- if (nrow(sw)) min(sw$ymin) else lw$ymax + 30
+  img <- apa_pdf_gray(pdf, page, dpi)
+  k <- dpi / 72
+  cols <- seq(ceiling(lw$xmin * k) + 1, floor(lw$xmax * k))
+  rows <- seq(ceiling(lw$ymax * k) + 1, floor(y1 * k))
+  dark <- vapply(rows, function(r) all(img[r, cols] < 160), logical(1))
+  sum(dark) / k
+}
+
+for (layout in list(c("man", "TRUE"), c("man", "FALSE"), c("stu", "TRUE"),
+                    c("doc", "TRUE"))) {
+  mode <- layout[1]
+  fit <- as.logical(layout[2])
+  test_that(paste0("a raw LaTeX kable table keeps its title, rows, note and ",
+                   "place (documentmode: ", mode, ", floatsintext: ", fit,
+                   ")"), {
+    proj <- file.path(tempdir(), paste0("raw-kable-", mode, "-", fit))
+    log <- apa_render_pdf(proj, apa_raw_kable_qmd(mode, fit))
+    pdf <- file.path(proj, "doc.pdf")
+    expect_true(file.exists(pdf), info = paste(log, collapse = "\n"))
+    skip_if_not(file.exists(pdf), "render produced no output to read")
+
+    pages <- apa_pdf_pages(pdf)
+    expect_equal(apa_pdf_caption_numbers(pages), 1:6)
+    expect_equal(apa_xref_numbers(pages), 1:6)
+    for (case in list(c("RBTITLE", "RBLAST", "RBNOTE", "1.1"),
+                      c("PLTITLE", "PLLAST", "PLNOTE", "0.6"),
+                      c("KXTITLE", "KXLAST", "KXNOTE", "1.1"),
+                      c("FSTITLE", "FSLAST", "FSNOTE", "1.1"),
+                      c("SPTITLE", "SPLAST", "SPNOTE", "1.1"))) {
+      page <- apa_page_of(pages, case[1])
+      expect_false(is.na(page), info = case[1])
+      if (is.na(page)) next
+      expect_identical(apa_page_of(pages, case[3]), page, info = case[3])
+      w <- apa_pdf_words(pdf, page)
+      title <- w[w$word == case[1], ][1, ]
+      head <- w[w$word %in% c("Name", "Group") & w$ymin > title$ymin, ]
+      last <- w[w$word == case[2], ][1, ]
+      note <- w[w$word == case[3], ][1, ]
+      # The title clear of the header row below it. Measured: 3.2 to 16.9 pt
+      # (a plain table in documentmode: doc is the tightest); the old spacing
+      # pulled the header up into the title, -3.0 and -6.9 pt in man mode.
+      expect_gt(min(head$ymin) - title$ymax, 1, label = case[1])
+      # The note under the last row, not over it (old man mode: -7.4 and
+      # -10.0 pt; now 6.1 to 8.8 pt).
+      expect_gt(note$ymin, last$ymax, label = case[3])
+      # One closing rule, read off the page: one run, and one rule thick.
+      expect_equal(apa_rule_count(pdf, page, case[2], "Note."), 1L,
+                   info = case[2])
+      expect_lte(apa_rule_thickness(pdf, page, case[2], "Note."),
+                 as.numeric(case[4]), label = case[2])
+    }
+    # kableExtra's font_size reaches the rows: the small table's type is
+    # smaller than the full-size table's.
+    pg <- apa_page_of(pages, "FSLAST")
+    w <- apa_pdf_words(pdf, pg)
+    fsh <- w[w$word == "FSLAST", ][1, ]
+    pg2 <- apa_page_of(pages, "RBLAST")
+    w2 <- apa_pdf_words(pdf, pg2)
+    rbh <- w2[w2$word == "RBLAST", ][1, ]
+    expect_lt(fsh$ymax - fsh$ymin, 0.8 * (rbh$ymax - rbh$ymin))
+    if (fit) {
+      # In the text where it was written, in order.
+      text <- paste(pages, collapse = "\n")
+      at <- vapply(c("PARAONE", "RBLAST", "PARATWO", "MDLAST", "PARAMD",
+                     "PLLAST", "PARATHREE", "KXLAST", "PARAFOUR", "FSLAST",
+                     "PARAFIVE", "SPLAST", "PARASIX"),
+                   function(m) regexpr(m, text, fixed = TRUE)[[1]], numeric(1))
+      expect_false(is.unsorted(at), info = paste(names(at), collapse = " "))
+    }
+  })
+}
+
+for (plain in c(FALSE, TRUE)) {
+test_that(paste0("a tall raw LaTeX kable table breaks across pages with ",
+                 "every row (", if (plain) "plain" else "booktabs", ")"), {
+  rows <- paste0("t", 0:59)
+  qmd <- paste0(apa_header_qmd("Tall raw kable", "man", TRUE),
+                "PARAONE body text.\n\n",
+                apa_raw_kable_chunk("tbl-tall", "TALLTITLE", "TALLNOTE", rows,
+                                    plain = plain),
+                "ENDMARK after. XREF: @tbl-tall\n")
+  proj <- file.path(tempdir(), paste0("raw-kable-tall-", plain))
+  log <- apa_render_pdf(proj, qmd)
+  pdf <- file.path(proj, "doc.pdf")
+  expect_true(file.exists(pdf), info = paste(log, collapse = "\n"))
+  skip_if_not(file.exists(pdf), "render produced no output to read")
+
+  pages <- apa_pdf_pages(pdf)
+  words <- unlist(strsplit(pages, "\\s+"))
+  got <- words[grepl("^t[0-9]+$", words)]
+  expect_setequal(got, rows)
+  expect_equal(anyDuplicated(got), 0L)
+  expect_equal(apa_pdf_caption_numbers(pages), 1L)
+  last_page <- apa_last_page_of(pages, "t59")
+  expect_identical(apa_page_of(pages, "TALLNOTE"), last_page)
+  expect_equal(sum(lengths(regmatches(pages, gregexpr("TALLNOTE", pages)))),
+               1L)
+  if (!is.na(last_page)) {
+    w <- apa_pdf_words(pdf, last_page)
+    expect_gt(w$ymin[w$word == "TALLNOTE"][1], w$ymax[w$word == "t59"][1])
+    expect_equal(apa_rule_count(pdf, last_page, "t59", "Note."), 1L)
+  }
+  # The column header above the rows on every page the table reaches.
+  expect_gt(length(unique(vapply(rows, function(r) apa_page_of(pages, r),
+                                 integer(1)))), 1L)
+  for (i in seq_along(pages)) {
+    w <- apa_pdf_words(pdf, i)
+    r <- w[grepl("^t[0-9]+$", w$word), ]
+    if (nrow(r))
+      expect_true(any(w$word == "Name" & w$ymax <= min(r$ymin)),
+                  info = paste("page", i, "header missing"))
+  }
+})
+}
+
+test_that("a short raw LaTeX kable table is moved whole at every position on the page", {
+  # A six-row raw table must never split across a page break. Two ways it
+  # did, each through a window a few points wide. A plain table's closing
+  # \hline offered longtable's preferred break, so the note went to the
+  # next page alone under a second rule (measured with the first version of
+  # this fix: offsets 421-425 pt in man, 443-450 pt in doc, in the layout
+  # below). And the height estimate left out a spanning header's \cmidrule:
+  # in documentmode: doc five rows stayed and the sixth went over with the
+  # repeated header (5.925 and 5.95 in). Each window is swept here; all
+  # three failed before the fix and pass now.
+  plain_qmd <- function(mode, offsets) {
+    b <- vapply(seq_along(offsets), function(i) sprintf(paste0(
+      "\\clearpage\n\nSection S%02d start line.\n\n\\vspace{%gpt}\n\n",
+      "Lead S%02d sentence before table.\n\n```{r}\n#| label: tbl-s%02d\n",
+      "#| tbl-cap: \"Sweep Caption K%02d\"\n",
+      "#| apa-note: \"Endnote marker K%02d.\"\n#| echo: false\n",
+      "knitr::kable(head(mtcars[, 1:5], 6), format = \"latex\")\n```\n\n",
+      "After S%02d text.\n\n"), i, offsets[i], i, i, i, i, i), character(1))
+    paste0(apa_header_qmd("Sweep", mode = mode, floatsintext = TRUE),
+           paste(b, collapse = ""))
+  }
+  spanner_qmd <- function(offsets) {
+    b <- vapply(seq_along(offsets), function(i) {
+      id <- sprintf("K%02d", i)
+      apa_section(offsets[i], id, apa_raw_kable_chunk(
+        paste0("tbl-", tolower(id)), paste("Sweep Caption", id),
+        paste("Endnote marker", id), c(paste0(id, "r", 1:5), paste0(id, "z")),
+        spanner = TRUE))
+    }, character(1))
+    paste0(apa_header_qmd("Sweep", mode = "doc", floatsintext = TRUE),
+           paste(b, collapse = ""))
+  }
+  cases <- list(
+    list(name = "plain-man", n = 10, qmd = plain_qmd("man", seq(414, 432, 2))),
+    list(name = "plain-doc", n = 8, qmd = plain_qmd("doc", seq(440, 454, 2))),
+    list(name = "spanner-doc", n = 7,
+         qmd = spanner_qmd(seq(5.85, 6.0, by = 0.025))))
+  for (cs in cases) {
+    proj <- file.path(tempdir(), paste0("raw-kable-sweep-", cs$name))
+    log <- apa_render_pdf(proj, cs$qmd)
+    pdf <- file.path(proj, "doc.pdf")
+    expect_true(file.exists(pdf), info = paste(log, collapse = "\n"))
+    if (!file.exists(pdf)) next
+    pages <- apa_pdf_pages(pdf)
+    for (i in seq_len(cs$n)) {
+      cp <- apa_page_of(pages, sprintf("Caption K%02d", i))
+      expect_false(is.na(cp), info = paste(cs$name, i))
+      expect_identical(apa_page_of(pages, sprintf("marker K%02d", i)), cp,
+                       info = paste(cs$name, "table", i, "split"))
+    }
+  }
+})

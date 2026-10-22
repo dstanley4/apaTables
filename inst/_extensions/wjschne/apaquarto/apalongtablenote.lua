@@ -414,11 +414,13 @@ end
 -- apafloatlatex.lua lifted out of its float (it marks the Div) draws its own
 -- \bottomrule too, so it is armed the way apaTables' own tables are: a last
 -- row before \end{longtable}. Only when there is exactly one longtable, it
--- has a \bottomrule, and nothing armed it already.
+-- has a \bottomrule (or, a plain kable table, ends with an \hline), and
+-- nothing armed it already.
 local liftmarker = "apa-lifted-longtable"
 
 local function armraw(blocks)
   local n, armed, hasrule = 0, false, false
+  local texts = {}
   pandoc.Blocks(blocks):walk {
     RawBlock = function(rb)
       if rb.format ~= "latex" then return nil end
@@ -426,9 +428,15 @@ local function armraw(blocks)
       n = n + c
       if rb.text:find("apatablesownbottomrule", 1, true) then armed = true end
       if rb.text:find("\\bottomrule", 1, true) then hasrule = true end
+      texts[#texts + 1] = rb.text
       return nil
     end
   }
+  -- A plain (non-booktabs) kable table closes with its own \hline. The
+  -- table can arrive split across raw blocks, so they are read together.
+  if table.concat(texts, "\n"):find("\\hline%s*\\end{longtable}") then
+    hasrule = true
+  end
   if n ~= 1 or armed or not hasrule then return blocks end
   local done = false
   return pandoc.Blocks(blocks):walk {
