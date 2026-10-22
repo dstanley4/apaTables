@@ -97,8 +97,14 @@ below.
 Confidence intervals for partial eta-squared are calculated with the
 noncentral approach described by Smithson (2001) and Fidler and Thompson
 (2001). For Type III sums of squares to match programs such as SPSS,
-factor contrasts must sum to zero; the examples set
-`options(contrasts = c("contr.sum", "contr.poly"))` for this reason.
+factor contrasts must sum to zero. `apa.aov.table()` sees to this
+itself: when `type = 3` and a factor uses R's default treatment
+contrasts, it refits the model with sum-to-zero contrasts, from the data
+stored in the model object, before computing the table, so the table is
+the same whether or not you set them. The examples still set
+`options(contrasts = c("contr.sum", "contr.poly"))`, which keeps the
+coefficients of your own [`lm()`](https://rdrr.io/r/stats/lm.html) model
+consistent with the table.
 
 ## Word files (apa.save)
 
@@ -187,14 +193,14 @@ In the document, the table lives inside a code chunk like this one.
 [`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 displays the table body with its title and note included automatically,
 so this chunk is complete – there is no title or note line to write, and
-the wording stays correct when the analysis changes. Two lines of the
-chunk are easy to leave out and both matter. The first is
-[`library(apaTables)`](https://github.com/dstanley4/apaTables): without
-it the document cannot find `apa.aov.table()` and the render stops. The
-second is the `options(contrasts = ...)` line: without it the Type III
-sums of squares are computed from R's default treatment contrasts, and
-the table comes out with different – wrong – F values and p-values, with
-no warning anywhere. Set the contrasts before fitting the model:
+the wording stays correct when the analysis changes. The
+[`library(apaTables)`](https://github.com/dstanley4/apaTables) line is
+easy to leave out and it matters: without it the document cannot find
+`apa.aov.table()` and the render stops. The `options(contrasts = ...)`
+line sets sum-to-zero contrasts before the model is fitted.
+`apa.aov.table()` uses those contrasts for a Type III table whether or
+not the line is there, so the table is right either way; the line keeps
+your own model's coefficients in the same coding as the table:
 
     ```{r}
     #| label: tbl-anova
@@ -303,7 +309,7 @@ op <- options()   # save the current settings, restored at the end
 
 # 1-way ANOVA of libido by dose
 # (viagra data from Field et al. (2012), Discovering Statistics Using R)
-# Contrasts must sum to zero for correct Type III sums of squares:
+# Sum-to-zero contrasts, the coding the Type III table uses:
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(libido ~ dose, data = viagra)
 table1 <- apa.aov.table(lm_output, table.number = 4)
@@ -317,7 +323,7 @@ table1
 #> 
 #>    Predictor     SS df     MS     F     p partial_eta2 CI_90_partial_eta2
 #>  (Intercept) 180.27  1 180.27 91.66 <.001                                
-#>         dose  20.13  2  10.06  5.12  .025          .46         [.04, .62]
+#>         dose  20.13  2  10.07  5.12  .025          .46         [.04, .62]
 #>        Error  23.60 12   1.97                                            
 #> 
 #> Note. SS = Sum of squares. df = degrees of freedom. MS = mean square. CI indicates the confidence interval for partial eta-squared. 
@@ -363,7 +369,7 @@ apa.quarto.template(table1)
 
 # Or write your own chunk; apa.quarto.pdf() displays the table body:
 apa.quarto.pdf(table1)
-#> [1] "+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Predictor                    |*SS*             |*df*    |*MS*             |*F*           |*p*           |*η*^2^~p~  |90% CI                          |\n+:============================+================:+=======:+================:+=============:+=============:+==========:+===============================:+\n|dose                         |20.13            |2       |10.06            |5.12          |.025          |.46        |[.04, .62]                      |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Error                        |23.60            |12      |1.97             |              |              |           |                                |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='ANOVA Results for Libido' apa-note='[&#34;*SS* = Sum of squares. *df* = degrees of freedom. *MS* = mean square. CI indicates the confidence interval for *η*^2^~p~.&#34;]'}\n:::\n"
+#> [1] "+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Predictor                    |*SS*             |*df*    |*MS*             |*F*           |*p*           |*η*^2^~p~  |90% CI                          |\n+:============================+================:+=======:+================:+=============:+=============:+==========:+===============================:+\n|dose                         |20.13            |2       |10.07            |5.12          |.025          |.46        |[.04, .62]                      |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Error                        |23.60            |12      |1.97             |              |              |           |                                |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='ANOVA Results for Libido' apa-note='[&#34;*SS* = Sum of squares. *df* = degrees of freedom. *MS* = mean square. CI indicates the confidence interval for *η*^2^~p~.&#34;]'}\n:::\n"
 #> attr(,"class")
 #> [1] "knit_asis"
 #> attr(,"knit_cacheable")

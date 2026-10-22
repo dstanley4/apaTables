@@ -90,10 +90,19 @@ once before rendering.
 
 ## “The numbers in my two-way ANOVA look wrong.”
 
-**This is the one to check first, because nothing about the output looks
-wrong.** A two-way ANOVA needs contrasts that sum to zero, or the sums
-of squares are not the ones you meant to report and no warning is given.
-Set them before the analysis:
+**If
+[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+disagrees with output you produced yourself, check the contrasts.** A
+Type III two-way ANOVA needs contrasts that sum to zero. Under R’s
+default contrasts, each factor’s row is the effect at one level of the
+other factor, not its main effect, and nothing in the output says so.
+
+[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+takes care of this itself: for a Type III table it uses sum-to-zero
+contrasts whether or not you set them, so its F values match programs
+such as SPSS. Your own analysis, for example with
+[`car::Anova()`](https://rdrr.io/pkg/car/man/Anova.html), does not. Set
+the contrasts before fitting the model so both use the same coding:
 
 ``` r
 
@@ -102,7 +111,7 @@ options(contrasts = c("contr.sum", "contr.poly"))
 
 The examples on the
 [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
-help page set this line before every model for exactly this reason.
+help page set this line before every model.
 
 ## “My colleague’s table has different columns from mine.”
 

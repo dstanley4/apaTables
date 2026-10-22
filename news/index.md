@@ -220,6 +220,43 @@ released.
 ### Bug fixes
 
 - [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  now gives correct Type III main effects whatever contrasts the model
+  was fitted with. Under R’s default treatment contrasts, a factor’s row
+  in a model with an interaction was the effect at one level of the
+  other factor rather than its main effect, and nothing said so (for the
+  `goggles` example, alcohol printed as F = 0.61, p = .546 instead of F
+  = 20.07, p \< .001). For `type = 3`,
+  [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  now refits the model with sum-to-zero contrasts, as SPSS does, so the
+  table is the same whether or not you set
+  `options(contrasts = c("contr.sum", "contr.poly"))`. The refit uses
+  the data stored in the model object, so the table always describes the
+  model you fitted, even if the data in your workspace has changed
+  since. The (Intercept) row printed at the console now tests the grand
+  mean in every case.
+- `apa.aov.table(type = 2)` left the confidence interval for the first
+  effect blank.
+- [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  rounded the sums of squares and F to two decimals before computing the
+  mean squares, partial eta-squared and its confidence interval. For a
+  dependent variable on a very small scale (such as seconds divided
+  by 1000) every sum of squares rounded to zero and partial eta-squared
+  printed as `NaN`. On a proportion scale partial eta-squared could be
+  .01 off with nothing to show it, and on any scale a mean square or a
+  confidence-interval limit could be .01 off. Everything is now computed
+  at full precision and rounded only when printed.
+- [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  accepted blocks that share no predictor, and printed a negative change
+  in R-squared with a `[NaN, NaN]` interval under a hierarchical title.
+  Each block must now contain every term of the block before it,
+  interactions included, plus at least one more; a step written as a new
+  parameterisation, such as `wt` followed by `poly(wt, 2)`, is still
+  accepted. Blocks must also be fitted to the same cases in the same
+  order, with the same weights and offset. Blocks fitted to different
+  rows (usually because a later predictor has missing values) now stop
+  with a message that shows how to fit every block to the same rows,
+  instead of an error from inside base R.
+- [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
   labelled the confidence-interval column with the `conf.level` you
   supplied even when that value was out of range. Only `.90` and `.95`
   are supported and anything else is treated as `.90`, so

@@ -150,14 +150,20 @@ recipient to do; send the file on its own and they need to run
 <div class="section level2">
 <h2 id="the-numbers-in-my-two-way-anova-look-wrong-">“The numbers in my two-way ANOVA look wrong.”<a class="anchor" aria-label="anchor" href="#the-numbers-in-my-two-way-anova-look-wrong-"></a>
 </h2>
-<p><strong>This is the one to check first, because nothing about the
-output looks wrong.</strong> A two-way ANOVA needs contrasts that sum to
-zero, or the sums of squares are not the ones you meant to report and no
-warning is given. Set them before the analysis:</p>
+<p><strong>If <code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code> disagrees with output you
+produced yourself, check the contrasts.</strong> A Type III two-way
+ANOVA needs contrasts that sum to zero. Under R’s default contrasts,
+each factor’s row is the effect at one level of the other factor, not
+its main effect, and nothing in the output says so.</p>
+<p><code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code> takes care of this itself: for a Type
+III table it uses sum-to-zero contrasts whether or not you set them, so
+its F values match programs such as SPSS. Your own analysis, for example
+with <code><a href="https://rdrr.io/pkg/car/man/Anova.html" class="external-link">car::Anova()</a></code>, does not. Set the contrasts before
+fitting the model so both use the same coding:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contr.sum"</span>, <span class="st">"contr.poly"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The examples on the <code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code> help page set this
-line before every model for exactly this reason.</p>
+line before every model.</p>
 </div>
 <div class="section level2">
 <h2 id="my-colleagues-table-has-different-columns-from-mine-">“My colleague’s table has different columns from mine.”<a class="anchor" aria-label="anchor" href="#my-colleagues-table-has-different-columns-from-mine-"></a>

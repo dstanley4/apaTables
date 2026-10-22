@@ -148,9 +148,14 @@ documents</em> section below.</p>
 <p>Confidence intervals for partial eta-squared are calculated with the
 noncentral approach described by Smithson (2001) and Fidler and Thompson
 (2001). For Type III sums of squares to match programs such as SPSS,
-factor contrasts must sum to zero; the examples set
-<code>options(contrasts = c("contr.sum", "contr.poly"))</code> for this
-reason.</p>
+factor contrasts must sum to zero. <code>apa.aov.table()</code> sees to this
+itself: when <code>type = 3</code> and a factor uses R's default treatment
+contrasts, it refits the model with sum-to-zero contrasts, from the
+data stored in the model object, before computing the table, so the
+table is the same whether or not you set them. The examples still set
+<code>options(contrasts = c("contr.sum", "contr.poly"))</code>, which keeps
+the coefficients of your own <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> model consistent with the
+table.</p>
     </div>
     <div class="section level2">
     <h2 id="word-files-apa-save-">Word files (apa.save)<a class="anchor" aria-label="anchor" href="#word-files-apa-save-"></a></h2>
@@ -229,13 +234,14 @@ states intent. This page's examples use <code><a href="apa.quarto.pdf.html">apa.
 <code><a href="apa.quarto.pdf.html">apa.quarto.pdf</a></code> displays the table body with its title and
 note included automatically, so this chunk is complete – there is no
 title or note line to write, and the wording stays correct when the
-analysis changes. Two lines of the chunk are easy to leave out and both matter. The first
-is <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code>: without it the document cannot find
-<code>apa.aov.table()</code> and the render stops. The second is the
-<code>options(contrasts = ...)</code> line: without it the Type III sums of
-squares are computed from R's default treatment contrasts, and the table
-comes out with different – wrong – F values and p-values, with no
-warning anywhere. Set the contrasts before fitting the model:</p>
+analysis changes. The <code><a href="https://github.com/dstanley4/apaTables" class="external-link">library(apaTables)</a></code> line is easy to leave
+out and it matters: without it the document cannot find
+<code>apa.aov.table()</code> and the render stops. The
+<code>options(contrasts = ...)</code> line sets sum-to-zero contrasts before
+the model is fitted. <code>apa.aov.table()</code> uses those contrasts for a
+Type III table whether or not the line is there, so the table is right
+either way; the line keeps your own model's coefficients in the same
+coding as the table:</p>
 <div class="sourceCode"><pre><code>```{r}
 #| label: tbl-anova
 #| message: false
@@ -324,7 +330,7 @@ a Word or HTML file; <code><a href="apa.quarto.template.html">apa.quarto.templat
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 1-way ANOVA of libido by dose</span></span></span>
 <span class="r-in"><span><span class="co"># (viagra data from Field et al. (2012), Discovering Statistics Using R)</span></span></span>
-<span class="r-in"><span><span class="co"># Contrasts must sum to zero for correct Type III sums of squares:</span></span></span>
+<span class="r-in"><span><span class="co"># Sum-to-zero contrasts, the coding the Type III table uses:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contr.sum"</span>, <span class="st">"contr.poly"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">lm_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">libido</span> <span class="op">~</span> <span class="va">dose</span>, data <span class="op">=</span> <span class="va">viagra</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu">apa.aov.table</span><span class="op">(</span><span class="va">lm_output</span>, table.number <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
@@ -338,7 +344,7 @@ a Word or HTML file; <code><a href="apa.quarto.template.html">apa.quarto.templat
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Predictor     SS df     MS     F     p partial_eta2 CI_90_partial_eta2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  (Intercept) 180.27  1 180.27 91.66 &lt;.001                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         dose  20.13  2  10.06  5.12  .025          .46         [.04, .62]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         dose  20.13  2  10.07  5.12  .025          .46         [.04, .62]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Error  23.60 12   1.97                                            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Note. SS = Sum of squares. df = degrees of freedom. MS = mean square. CI indicates the confidence interval for partial eta-squared. </span>
@@ -384,7 +390,7 @@ a Word or HTML file; <code><a href="apa.quarto.template.html">apa.quarto.templat
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Or write your own chunk; apa.quarto.pdf() displays the table body:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Predictor                    |*SS*             |*df*    |*MS*             |*F*           |*p*           |*η*^2^~p~  |90% CI                          |\n+:============================+================:+=======:+================:+=============:+=============:+==========:+===============================:+\n|dose                         |20.13            |2       |10.06            |5.12          |.025          |.46        |[.04, .62]                      |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Error                        |23.60            |12      |1.97             |              |              |           |                                |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='ANOVA Results for Libido' apa-note='[&amp;#34;*SS* = Sum of squares. *df* = degrees of freedom. *MS* = mean square. CI indicates the confidence interval for *η*^2^~p~.&amp;#34;]'}\n:::\n"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Predictor                    |*SS*             |*df*    |*MS*             |*F*           |*p*           |*η*^2^~p~  |90% CI                          |\n+:============================+================:+=======:+================:+=============:+=============:+==========:+===============================:+\n|dose                         |20.13            |2       |10.07            |5.12          |.025          |.46        |[.04, .62]                      |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Error                        |23.60            |12      |1.97             |              |              |           |                                |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='ANOVA Results for Libido' apa-note='[&amp;#34;*SS* = Sum of squares. *df* = degrees of freedom. *MS* = mean square. CI indicates the confidence interval for *η*^2^~p~.&amp;#34;]'}\n:::\n"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "knit_asis"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"knit_cacheable")</span>
