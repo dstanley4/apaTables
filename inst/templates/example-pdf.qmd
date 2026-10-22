@@ -251,8 +251,8 @@ apa.quarto.pdf(my_table,
 # ANOVA table
 
 `apa.aov.table()` produces an ANOVA F-table from an `lm()` model. The
-`contrasts` option is set before fitting the model so the sums of squares
-match common software.
+`contrasts` option is set before fitting the model so the model uses the
+same sum-to-zero coding as the table, which matches common software.
 
 ```{r}
 #| label: tbl-anova

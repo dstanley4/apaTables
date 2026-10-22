@@ -322,24 +322,46 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
      }
 
 
-     is_same_predictors <- c()
-     first_result <- regression_results_list[[1]]
-     first_model  <- first_result$model
-     last_model_number_predictors <- dim(first_model)[2]
-     last_predictors <- colnames(first_result$model)[2:last_model_number_predictors]
-     n <- dim(first_result$model)[1]
-     n_size <- dim(first_result$model)[1]
+     n <- dim(regression_results_list[[1]]$model)[1]
+     n_size <- n
+     if (L > 1) {
+          # Delta R2 compares blocks fitted to the same cases, in the same
+          # order, with the same weights and offset.
+          same_vector <- function(a, b) {
+               (is.null(a) && is.null(b)) ||
+                    (!is.null(a) && !is.null(b) && length(a) == length(b) &&
+                     isTRUE(all.equal(unname(a), unname(b))))
+          }
+          frames <- lapply(regression_results_list, stats::model.frame)
+          for (i in 2:L) {
+               if (!same_vector(stats::model.response(frames[[i]]), stats::model.response(frames[[1]]))) {
+                    stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must be fitted to the same cases, in the same order.\nThese blocks were fitted to different rows of data -- usually because a predictor added in a later block has missing values -- or to the same rows in a different order (for example, after merge() or sorting).\n\nFit every block to one data frame, with the incomplete rows removed once:\ncomplete <- na.omit(my_data[, c(\"y\", \"a\", \"b\", \"c\")])\nblock1 <- lm(y ~ a + b, data = complete)\nblock2 <- lm(y ~ a + b + c, data = complete)", call. = FALSE)
+               }
+               if (!same_vector(stats::model.weights(frames[[i]]), stats::model.weights(frames[[1]])) ||
+                   !same_vector(stats::model.offset(frames[[i]]), stats::model.offset(frames[[1]]))) {
+                    stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must use the same weights and the same offset.", call. = FALSE)
+               }
+          }
 
-     for (i in 1:L) {
-          cur_result <- regression_results_list[[i]]
-          cur_model  <- cur_result$model
-          cur_model_number_predictors <- dim(cur_model)[2]
-          cur_predictors <- colnames(cur_model)[2:cur_model_number_predictors]
-          is_same_predictors[i] <- all(intersect(last_predictors,cur_predictors) == last_predictors)
-          last_predictors <- cur_predictors
-     }
-     if (any(is_same_predictors==FALSE)) {
-          stop("apa.reg.table error:\nEach regression objects (i.e., block) must contain all of the predictors from the preceeding regression object (i.e., block).\n\nFor example:\nblock1 <- lm(y ~ a + b)\nblock2 <- lm(y ~ a + b + c)\n\nThe second block contains all of the predictors from the first block plus additional predictors.\n\nTherefore the command below will work:\napa.reg.table(block1, block2)", call. = FALSE)
+          # Each block must be able to reproduce every column of the block
+          # before it and add at least one more. Comparing the model matrices
+          # rather than the formulas accepts a step written as a new
+          # parameterisation (wt, then poly(wt, 2)) and refuses blocks that
+          # share nothing. (An earlier check compared intersect() with the
+          # previous block, which is vacuously TRUE for disjoint blocks, and
+          # printed a negative Delta R2 with a CI of [NaN, NaN].)
+          for (i in 2:L) {
+               x_last <- stats::model.matrix(regression_results_list[[i - 1]])
+               x_cur  <- stats::model.matrix(regression_results_list[[i]])
+               qr_cur <- qr(x_cur)
+               leftover <- qr.resid(qr_cur, x_last)
+               col_size <- pmax(sqrt(colSums(x_last^2)), 1e-12)
+               spans_last <- all(sqrt(colSums(leftover^2)) / col_size < 1e-7)
+               adds_more <- qr_cur$rank > qr(x_last)$rank
+               if (!(spans_last && adds_more)) {
+                    stop("apa.reg.table error:\nEach regression object (i.e., block) must contain every term of the preceding block, including any interaction, plus at least one more.\n\nFor example:\nblock1 <- lm(y ~ a + b)\nblock2 <- lm(y ~ a + b + c)\n\nThe second block contains all of the predictors from the first block plus additional predictors.\n\nTherefore the command below will work:\napa.reg.table(block1, block2)", call. = FALSE)
+               }
+          }
      }
 
 

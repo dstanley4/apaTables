@@ -10,6 +10,61 @@ aov_spec_note <- function() {
     rt_run("p", script = "sub"), rt_run(".")))
 }
 
+# Return the model refitted so that every factor's contrasts sum to zero,
+# which Type III tests need for a factor's row to be its main effect. A model
+# whose factors already sum to zero (contr.sum, contr.helmert, contr.poly)
+# comes back unchanged. The refit uses only what the model object stores --
+# its model frame, weights and offset -- never the workspace, so it is the
+# model the user fitted whatever has happened to their data since. Its
+# fitted values must equal the original's (the same model in a different
+# coding); a model stored without its frame (lm(..., model = FALSE)) cannot
+# be refitted, and the user is told how to set the contrasts instead.
+aov_sum_contrasts <- function(lm_output) {
+  ctr <- lm_output$contrasts
+  if (length(ctr) == 0) return(lm_output)
+
+  sums_to_zero <- function(name) {
+    spec <- ctr[[name]]
+    lev  <- lm_output$xlevels[[name]]
+    cm <- tryCatch({
+      if (is.character(spec)) do.call(spec, list(lev)) else spec
+    }, error = function(e) NULL)
+    is.matrix(cm) && is.numeric(cm) && all(abs(colSums(cm)) < 1e-8)
+  }
+  needs_sum <- !vapply(names(ctr), sums_to_zero, logical(1))
+  if (!any(needs_sum)) return(lm_output)
+
+  new_ctr <- ctr
+  for (name in names(ctr)[needs_sum]) new_ctr[[name]] <- "contr.sum"
+
+  cannot_refit <- function() {
+    stop("apa.aov.table() needs sum-to-zero contrasts for a Type III table and could not refit this model to use them; ",
+         "add options(contrasts = c(\"contr.sum\", \"contr.poly\")) before the lm() line, fit the model again, ",
+         "and run apa.aov.table() again.", call. = FALSE)
+  }
+  mf <- lm_output$model
+  if (is.null(mf)) cannot_refit()
+
+  # The same steps lm() itself takes after building its model frame.
+  x <- stats::model.matrix(stats::terms(lm_output), mf, contrasts.arg = new_ctr)
+  y <- stats::model.response(mf, "numeric")
+  w <- stats::model.weights(mf)
+  offset <- stats::model.offset(mf)
+  fit <- if (is.null(w)) {
+    stats::lm.fit(x, y, offset = offset)
+  } else {
+    stats::lm.wfit(x, y, w, offset = offset)
+  }
+  refit <- lm_output
+  refit[names(fit)] <- fit
+  refit$contrasts <- attr(x, "contrasts")
+
+  same_model <- length(refit$fitted.values) == length(lm_output$fitted.values) &&
+    isTRUE(all.equal(unname(refit$fitted.values), unname(lm_output$fitted.values)))
+  if (!same_model) cannot_refit()
+  refit
+}
+
 # Build an apa_table_spec from the aov builder's latex.body. Suppress the
 # (Intercept) row; keep Error. CI column label tracks conf.level.
 aov_build_spec <- function(latex_body, conf_level, table_title, table_number, landscape) {
@@ -88,9 +143,14 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' Confidence intervals for partial eta-squared are calculated with the
 #' noncentral approach described by Smithson (2001) and Fidler and Thompson
 #' (2001). For Type III sums of squares to match programs such as SPSS,
-#' factor contrasts must sum to zero; the examples set
-#' \code{options(contrasts = c("contr.sum", "contr.poly"))} for this
-#' reason.
+#' factor contrasts must sum to zero. \code{apa.aov.table()} sees to this
+#' itself: when \code{type = 3} and a factor uses R's default treatment
+#' contrasts, it refits the model with sum-to-zero contrasts, from the
+#' data stored in the model object, before computing the table, so the
+#' table is the same whether or not you set them. The examples still set
+#' \code{options(contrasts = c("contr.sum", "contr.poly"))}, which keeps
+#' the coefficients of your own \code{lm()} model consistent with the
+#' table.
 #'
 #' @return A table object (class \code{apa_table}). Typing its name at the
 #'   console displays the table. Pass it to \code{\link{apa.save}} to create
@@ -175,13 +235,14 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' \code{\link{apa.quarto.pdf}} displays the table body with its title and
 #' note included automatically, so this chunk is complete -- there is no
 #' title or note line to write, and the wording stays correct when the
-#' analysis changes. Two lines of the chunk are easy to leave out and both matter. The first
-#' is \code{library(apaTables)}: without it the document cannot find
-#' \code{apa.aov.table()} and the render stops. The second is the
-#' \code{options(contrasts = ...)} line: without it the Type III sums of
-#' squares are computed from R's default treatment contrasts, and the table
-#' comes out with different -- wrong -- F values and p-values, with no
-#' warning anywhere. Set the contrasts before fitting the model:
+#' analysis changes. The \code{library(apaTables)} line is easy to leave
+#' out and it matters: without it the document cannot find
+#' \code{apa.aov.table()} and the render stops. The
+#' \code{options(contrasts = ...)} line sets sum-to-zero contrasts before
+#' the model is fitted. \code{apa.aov.table()} uses those contrasts for a
+#' Type III table whether or not the line is there, so the table is right
+#' either way; the line keeps your own model's coefficients in the same
+#' coding as the table:
 #'
 #' \preformatted{```{r}
 #' #| label: tbl-anova
@@ -260,7 +321,7 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #'
 #' # 1-way ANOVA of libido by dose
 #' # (viagra data from Field et al. (2012), Discovering Statistics Using R)
-#' # Contrasts must sum to zero for correct Type III sums of squares:
+#' # Sum-to-zero contrasts, the coding the Type III table uses:
 #' options(contrasts = c("contr.sum", "contr.poly"))
 #' lm_output <- lm(libido ~ dose, data = viagra)
 #' table1 <- apa.aov.table(lm_output, table.number = 4)
@@ -311,18 +372,24 @@ apa.aov.table<-function(lm_output,filename=NA,table.number=1, conf.level=.90,typ
           make_file_flag <- TRUE
      }
 
-     # Add a check using model df to see if variable was factor in lm
-     # If not, abort
-
      dv_name <- names(lm_output$model)[1]
+
+     # Type III tests of a factor in an interaction are only main effects
+     # when the factor's contrasts sum to zero; under R's default treatment
+     # contrasts they are simple effects at the reference level. Type II
+     # sums of squares do not depend on the coding, so only Type III refits.
+     if (identical(as.character(type), "3") || identical(as.character(type), "III")) {
+          lm_output <- aov_sum_contrasts(lm_output)
+     }
+
      table_values <- car::Anova(lm_output,type=type)
      table_values <- broom::tidy(table_values)
      names(table_values) <- c("Predictor","SS", "df","Fvalue","pvalue")
 
+     # Everything below is computed at full precision; rounding happens only
+     # when the cells are formatted. Rounding SS first turned every SS of a
+     # small-scale DV into 0, and partial eta-squared into 0/0.
      table_out <- table_values
-     table_out$SS     <- round(table_out$SS,2)
-     table_out$Fvalue <- round(table_out$Fvalue,2)
-     table_out$pvalue <- round(table_out$pvalue,3)
 
      num_rows <- dim(table_out)[1]
      start_row <- 1
@@ -370,7 +437,7 @@ apa.aov.table<-function(lm_output,filename=NA,table.number=1, conf.level=.90,typ
      partial_eta_sq_UL <- strip.leading.zero(sprintf("%1.2f",UL_partial_eta_sq))
 
      partial_eta_sq_CI <- rep("", num_rows)
-     for (i in 2:(num_rows-1)) {
+     for (i in start_row:(num_rows-1)) {
           partial_eta_sq_CI[i] <- sprintf("[%s, %s]",partial_eta_sq_LL[i],partial_eta_sq_UL[i])
      }
 

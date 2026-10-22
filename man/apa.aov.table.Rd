@@ -81,9 +81,14 @@ documents} section below.
 Confidence intervals for partial eta-squared are calculated with the
 noncentral approach described by Smithson (2001) and Fidler and Thompson
 (2001). For Type III sums of squares to match programs such as SPSS,
-factor contrasts must sum to zero; the examples set
-\code{options(contrasts = c("contr.sum", "contr.poly"))} for this
-reason.
+factor contrasts must sum to zero. \code{apa.aov.table()} sees to this
+itself: when \code{type = 3} and a factor uses R's default treatment
+contrasts, it refits the model with sum-to-zero contrasts, from the
+data stored in the model object, before computing the table, so the
+table is the same whether or not you set them. The examples still set
+\code{options(contrasts = c("contr.sum", "contr.poly"))}, which keeps
+the coefficients of your own \code{lm()} model consistent with the
+table.
 }
 \section{Word files (apa.save)}{
 
@@ -165,13 +170,14 @@ In the document, the table lives inside a code chunk like this one.
 \code{\link{apa.quarto.pdf}} displays the table body with its title and
 note included automatically, so this chunk is complete -- there is no
 title or note line to write, and the wording stays correct when the
-analysis changes. Two lines of the chunk are easy to leave out and both matter. The first
-is \code{library(apaTables)}: without it the document cannot find
-\code{apa.aov.table()} and the render stops. The second is the
-\code{options(contrasts = ...)} line: without it the Type III sums of
-squares are computed from R's default treatment contrasts, and the table
-comes out with different -- wrong -- F values and p-values, with no
-warning anywhere. Set the contrasts before fitting the model:
+analysis changes. The \code{library(apaTables)} line is easy to leave
+out and it matters: without it the document cannot find
+\code{apa.aov.table()} and the render stops. The
+\code{options(contrasts = ...)} line sets sum-to-zero contrasts before
+the model is fitted. \code{apa.aov.table()} uses those contrasts for a
+Type III table whether or not the line is there, so the table is right
+either way; the line keeps your own model's coefficients in the same
+coding as the table:
 
 \preformatted{```{r}
 #| label: tbl-anova
@@ -239,7 +245,7 @@ op <- options()   # save the current settings, restored at the end
 
 # 1-way ANOVA of libido by dose
 # (viagra data from Field et al. (2012), Discovering Statistics Using R)
-# Contrasts must sum to zero for correct Type III sums of squares:
+# Sum-to-zero contrasts, the coding the Type III table uses:
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(libido ~ dose, data = viagra)
 table1 <- apa.aov.table(lm_output, table.number = 4)

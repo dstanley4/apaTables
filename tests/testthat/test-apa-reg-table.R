@@ -105,3 +105,71 @@ test_that("apa.reg.table has LaTeX components", {
      expect_false(is.null(r1$latex.table.title))
      expect_true(is.na(r1$landscape))
 })
+
+test_that("blocks that share no predictor are refused", {
+     # The old check compared intersect() with the previous block, which is
+     # vacuously TRUE for disjoint blocks, and printed Delta R2 = -.150 with
+     # a CI of [NaN, NaN] under a hierarchical title.
+     expect_error(apa.reg.table(lm(mpg ~ wt, data = mtcars),
+                                lm(mpg ~ hp, data = mtcars)),
+                  "must contain every term of the preceding block")
+})
+
+test_that("a block that adds no predictor is refused", {
+     expect_error(apa.reg.table(lm(mpg ~ wt, data = mtcars),
+                                lm(mpg ~ wt, data = mtcars)),
+                  "plus at least one more")
+})
+
+test_that("a block that drops an interaction is refused", {
+     expect_error(apa.reg.table(lm(mpg ~ wt * hp, data = mtcars),
+                                lm(mpg ~ wt + hp + qsec, data = mtcars)),
+                  "including any interaction")
+})
+
+test_that("a later block that adds predictors but drops one is refused", {
+     # Block 2 has more columns than block 1, so only the nesting check (does
+     # block 2 contain everything block 1 had?) can refuse it.
+     expect_error(apa.reg.table(lm(mpg ~ wt + hp, data = mtcars),
+                                lm(mpg ~ wt + qsec + drat, data = mtcars)),
+                  "must contain every term of the preceding block")
+})
+
+test_that("a step written as a new parameterisation is accepted", {
+     # poly(wt, 2) spans wt, so this is a valid hierarchical step, and its
+     # Delta R2 is the same as for wt then wt + I(wt^2).
+     t_poly <- apa.reg.table(lm(mpg ~ wt, data = mtcars),
+                             lm(mpg ~ poly(wt, 2), data = mtcars))
+     t_raw <- apa.reg.table(lm(mpg ~ wt, data = mtcars),
+                            lm(mpg ~ wt + I(wt^2), data = mtcars))
+     delta <- function(t) t$table_body$Delta_Fit[grepl("Delta", t$table_body$Delta_Fit)]
+     expect_identical(delta(t_poly), delta(t_raw))
+})
+
+test_that("blocks with different weights or offsets are refused", {
+     expect_error(apa.reg.table(lm(mpg ~ wt, data = mtcars, weights = cyl),
+                                lm(mpg ~ wt + qsec, data = mtcars)),
+                  "same weights and the same offset")
+     expect_error(apa.reg.table(lm(mpg ~ wt + offset(hp / 20), data = mtcars),
+                                lm(mpg ~ wt + qsec, data = mtcars)),
+                  "same weights and the same offset")
+})
+
+test_that("blocks fitted to different cases are refused with a named message", {
+     incomplete <- mtcars
+     incomplete$hp[1:5] <- NA
+     expect_error(apa.reg.table(lm(mpg ~ wt, data = incomplete),
+                                lm(mpg ~ wt + hp, data = incomplete)),
+                  "must be fitted to the same cases")
+     # The same cases in a different order cannot be compared row by row.
+     shuffled <- mtcars[rev(seq_len(nrow(mtcars))), ]
+     expect_error(apa.reg.table(lm(mpg ~ wt, data = mtcars),
+                                lm(mpg ~ wt + hp, data = shuffled)),
+                  "in a different order")
+})
+
+test_that("an interaction written in either order counts as the same term", {
+     t1 <- apa.reg.table(lm(mpg ~ wt * hp, data = mtcars),
+                         lm(mpg ~ hp * wt + cyl, data = mtcars))
+     expect_s3_class(t1, "apa_table")
+})

@@ -137,10 +137,10 @@
       ANOVA Results for Libido
        
       
-         Predictor    SS df    MS     F    p partial_eta2 CI_90_partial_eta2
-       (Intercept) 24.20  1 24.20 12.31 .004                                
-              dose 20.13  2 10.06  5.12 .025          .46         [.04, .62]
-             Error 23.60 12  1.97                                           
+         Predictor     SS df     MS     F     p partial_eta2 CI_90_partial_eta2
+       (Intercept) 180.27  1 180.27 91.66 <.001                                
+              dose  20.13  2  10.07  5.12  .025          .46         [.04, .62]
+             Error  23.60 12   1.97                                            
       
       Note. SS = Sum of squares. df = degrees of freedom. MS = mean square. CI indicates the confidence interval for partial eta-squared. 
       
