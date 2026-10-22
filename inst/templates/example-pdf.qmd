@@ -138,9 +138,10 @@ apa.quarto.pdf(my_table)
 
 The correlation table earlier in this document has seven variables and is
 narrow enough for an ordinary upright page. (Being too TALL is not a problem
-that needs solving: a table simply continues onto the next page with its
-column headings repeated, which is what the earlier one does here if it starts
-part-way down a page.) This one has nine variables and is too WIDE, which is a
+that needs solving: a table that does not fit in the space left on a page
+moves to the next page whole, and a table taller than a page continues onto
+the next one with its column headings repeated.) This one has nine variables
+and is too WIDE, which is a
 different matter entirely: no amount of continuing onto another page makes a
 table narrower. So the table is on the next page, and that page is rotated.
 The table is about 7.0 inches wide,

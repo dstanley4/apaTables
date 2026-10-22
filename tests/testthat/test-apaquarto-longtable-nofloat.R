@@ -162,7 +162,11 @@ for (placement in c("end", "intext")) {
       # 3. The note is inside the table's own last foot, not a sibling
       #    paragraph left behind wherever the chunk was written.
       inote <- grep("LTNOTEa", tex, fixed = TRUE)
+      # In the document body only: the bundled template patches the last
+      # foot itself, so the preamble names it too.
+      body <- grep("\\begin{document}", tex, fixed = TRUE)
       ifoot <- grep("\\endlastfoot", tex, fixed = TRUE)
+      ifoot <- ifoot[ifoot > if (length(body)) body[1] else 0L]
       expect_length(inote, 1L)
       expect_length(ifoot, 1L)
       expect_true(length(inote) == 1L && length(ifoot) == 1L &&

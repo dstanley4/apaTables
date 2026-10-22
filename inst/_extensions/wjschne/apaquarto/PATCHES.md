@@ -3,7 +3,7 @@
 GENERATED from apaTables' patch branch of apaquarto -- do not edit by hand.
 
 Upstream base: `main` @ 9a2f392
-Bundle branch: `apatables-bundle` @ 6992a0f
+Bundle branch: `apatables-bundle` @ d1e4f81
 
 NOT YET OFFERED UPSTREAM. Every patch below is local to apaTables: none
 has been pushed anywhere and no pull request has been opened. This bundle
@@ -18,40 +18,40 @@ files** -- both silently revert the extension to stock while printing
 ## Summary
 
 ```
- _extensions/apaquarto/_extension.yml               |  70 +++++-
- _extensions/apaquarto/apa.css                      |  96 +++++++
- _extensions/apaquarto/apafloatlatex.lua            | 236 ++++++++++++++++-
- _extensions/apaquarto/apafloatstoend.lua           |  32 ++-
- _extensions/apaquarto/apalandscapelatex.lua        |  98 ++++++++
- _extensions/apaquarto/apalongtablenote.lua         | 278 +++++++++++++++++++++
+ _extensions/apaquarto/_extension.yml               |  70 +-
+ _extensions/apaquarto/apa.css                      |  96 +++
+ _extensions/apaquarto/apafloatlatex.lua            | 529 ++++++++++++++-
+ _extensions/apaquarto/apafloatstoend.lua           |  32 +-
+ _extensions/apaquarto/apalandscapelatex.lua        |  98 +++
+ _extensions/apaquarto/apalongtablenote.lua         | 721 +++++++++++++++++++++
  _extensions/apaquarto/apaquarto.docx               | Bin 33069 -> 30253 bytes
- _extensions/apaquarto/apatablelandscape.lua        | 240 ++++++++++++++++++
- _extensions/apaquarto/apatablelandscapecaption.lua | 190 ++++++++++++++
- _extensions/apaquarto/apatablelandscapenote.lua    |  80 ++++++
- _extensions/apaquarto/apatablemeta-decide.lua      |  16 ++
- _extensions/apaquarto/apatablemeta.lua             |  63 +++++
- _extensions/apaquarto/apatablesize.lua             | 248 ++++++++++++++++++
- _extensions/apaquarto/apatablespanner.lua          |  60 +++++
- _extensions/apaquarto/apatemplate.tex              |  99 +++++++-
+ _extensions/apaquarto/apatablelandscape.lua        | 240 +++++++
+ _extensions/apaquarto/apatablelandscapecaption.lua | 190 ++++++
+ _extensions/apaquarto/apatablelandscapenote.lua    |  80 +++
+ _extensions/apaquarto/apatablemeta-decide.lua      |  16 +
+ _extensions/apaquarto/apatablemeta.lua             |  63 ++
+ _extensions/apaquarto/apatablesize.lua             | 248 +++++++
+ _extensions/apaquarto/apatablespanner.lua          |  60 ++
+ _extensions/apaquarto/apatemplate.tex              | 230 ++++++-
  _extensions/apaquarto/doc-class.tex                |   4 +
- _extensions/apaquarto/utilsapa.lua                 |  23 ++
- tests/landscape-floats.qmd                         |  52 ++++
- tests/longtable-counter.qmd                        |  58 +++++
- 19 files changed, 1919 insertions(+), 24 deletions(-)
+ _extensions/apaquarto/utilsapa.lua                 |  23 +
+ tests/landscape-floats.qmd                         |  52 ++
+ tests/longtable-counter.qmd                        |  58 ++
+ 19 files changed, 2785 insertions(+), 25 deletions(-)
 ```
 
 ## Full diff
 
 ```diff
 diff --git a/_extensions/apaquarto/_extension.yml b/_extensions/apaquarto/_extension.yml
-index 0f58672..49b58ee 100644
+index 0f58672..850a6ab 100644
 --- a/_extensions/apaquarto/_extension.yml
 +++ b/_extensions/apaquarto/_extension.yml
 @@ -1,6 +1,6 @@
  title: My Document in APA Style, Seventh Edition
  author: W. Joel Schneider
 -version: 5.0.18
-+version: 5.0.18+apaTables.27
++version: 5.0.18+apaTables.33
  quarto-required: ">=1.4.549"
  contributes:
    formats:
@@ -273,13 +273,14 @@ index 1e4caf8..e625718 100644
 +  }
 +}
 diff --git a/_extensions/apaquarto/apafloatlatex.lua b/_extensions/apaquarto/apafloatlatex.lua
-index 820933f..4221c6e 100644
+index 820933f..670384e 100644
 --- a/_extensions/apaquarto/apafloatlatex.lua
 +++ b/_extensions/apaquarto/apafloatlatex.lua
-@@ -30,12 +30,17 @@ end
+@@ -30,12 +30,19 @@ end
  -- Is the .pdf in journal mode?
  local journalmode = false
  local manuscriptmode = true
++local docmode = false
 +-- Are floats collected at the end? Computed by utilsapa.delayedfloats, the
 +-- same function apalandscapelatex.lua calls, so the two filters cannot
 +-- disagree about which placement is active.
@@ -290,11 +291,12 @@ index 820933f..4221c6e 100644
    local documentmode = pandoc.utils.stringify(meta["documentmode"])
    journalmode = documentmode == "jou"
    manuscriptmode = documentmode == "man"
++  docmode = documentmode == "doc"
 +  delayedfloats = utilsapa.delayedfloats(meta)
    -- Find word for "note"
    if not meta.language["figure-table-note"] then
      if param("callout-note-title") then
-@@ -60,6 +65,86 @@ end
+@@ -60,6 +67,327 @@ end
  --  return result
  --end
  
@@ -319,8 +321,48 @@ index 820933f..4221c6e 100644
 +-- or third-party starred longtable ever does arrive, sealing it in a float
 +-- loses rows invisibly, whereas letting it through loses only the caption
 +-- Quarto declined to splice -- a visible defect rather than a silent one.
++--
++-- A MARKDOWN TABLE IS A LONGTABLE TOO. It is still a pandoc Table here and
++-- becomes LaTeX only in the writer, which always writes a table as a
++-- longtable. Since Pandoc 3.8 (Quarto 1.9) a captioned one arrives wrapped in
++-- \begin{table}, and the loss is the one described above: a 90-row table
++-- stopped at the foot of its first page after 44 to 48 rows, depending on the
++-- document mode, in both placements. Lifted out, the writer puts the caption inside
++-- the longtable (the shape apaTables' own tables have), so numbering and
++-- cross-references are unchanged. apalongtablenote.lua then makes its own
++-- closing rule stand in for the template's and carries its note inside it.
++--
++-- ONLY A FLOAT WHOSE WHOLE CONTENT IS ONE TABLE. Lifted, a float with two
++-- tables (or a panel of subtables) prints each table with the float's
++-- caption and its own number, so the cross-reference points at the second
++-- and every later table is numbered one too high -- silently; and a float
++-- holding a paragraph as well as its table loses the paragraph to the body
++-- text when tables go to the end, since only the table environment travels.
++-- Such floats are left to the float path, as before.
++local function onlytable(blocks)
++  local tables, other = 0, 0
++  local function scan(bs)
++    for _, b in ipairs(bs) do
++      if b.t == "Table" then
++        tables = tables + 1
++      elseif b.t == "Div" then
++        scan(b.content)
++      elseif b.t == "RawBlock" then
++        if b.text:match("%S") then other = other + 1 end
++      elseif (b.t == "Plain" or b.t == "Para") then
++        if #b.content > 0 then other = other + 1 end
++      else
++        other = other + 1
++      end
++    end
++  end
++  scan(blocks)
++  return tables == 1 and other == 0
++end
++
 +local haslongtable = function(float)
 +  local found = false
++  local ntables = 0
 +  local node = float.__quarto_custom_node or float.content
 +  if node == nil then
 +    return false
@@ -334,9 +376,210 @@ index 820933f..4221c6e 100644
 +        end
 +      end
 +      return nil
++    end,
++    Table = function(t)
++      ntables = ntables + 1
++      return nil
 +    end
 +  }
-+  return found
++  if found then return true end
++  if ntables ~= 1 then return false end
++  local content = float.content
++  if content and content.t ~= nil and content.t ~= "Blocks" then
++    content = pandoc.Blocks({ content })
++  end
++  if content and not onlytable(content) then return false end
++  return true
++end
++
++-- How tall a table will be -- single-spaced lines of body text, plus points
++-- for rows set at their own size -- so that the in-text reservation (below)
++-- can be the table's own height rather than a fixed amount. Calibrated on
++-- measured tables (caption top to note bottom, 2026-10-21): the number,
++-- title, gap and three rules take 3.4 lines plus the header rows; a markdown
++-- table's row is a body line, and a row of a raw table that sets its own
++-- size (apaTables' \fontsize{10}{12}) is counted at that size in points; a
++-- stacked apaTables cell -- estimate, interval, p -- counts each stacked
++-- line; a note line keeps the manuscript's
++-- spacing, 1.65 lines outside documentmode: doc, about 95 characters to a
++-- full-width line, each note entry starting a new line; and a running foot
++-- (apaTables' 48 pt spacer) counts when it is taller than the note. On the
++-- calibration sweeps it errs high by one to two lines, on purpose: too high
++-- moves a table that would just have fitted, too low lets a short table
++-- straddle a page break.
++local function rawrows(segment)
++  local n = 0
++  for line in segment:gmatch("[^\n]+") do
++    if line:find("\\\\%*?%s*$") and not line:find("tabularnewline", 1, true) then
++      local deepest = 0
++      for inner in line:gmatch("\\begin{tabular}(.-)\\end{tabular}") do
++        local _, c = inner:gsub("\\\\", "")
++        if c > deepest then deepest = c end
++      end
++      n = n + 1 + deepest
++    end
++  end
++  return n
++end
++
++local function tablelines(float)
++  local lines = 3.4
++  local title = pandoc.utils.stringify(float.caption_long or "")
++  lines = lines + math.floor(#title / 90)
++  local node = float.__quarto_custom_node or float.content
++  local raw = {}
++  local rows = 0
++  local rowpts = 0
++  local footpts = 0
++  if node then
++    node:walk {
++      RawBlock = function(rb)
++        if rb.format == "tex" or rb.format == "latex" then
++          raw[#raw + 1] = rb.text
++        end
++      end,
++      Table = function(t)
++        -- A cell's lines: each paragraph, list item and line break starts
++        -- a line, and a paragraph wraps only in a column given a relative
++        -- width.
++        local function blocklines(blocks, cap)
++          local n = 0
++          for _, b in ipairs(blocks) do
++            if b.t == "Para" or b.t == "Plain" then
++              local breaks = 0
++              for _, inl in ipairs(b.content) do
++                if inl.t == "LineBreak" then breaks = breaks + 1 end
++              end
++              local chars = #pandoc.utils.stringify(b)
++              n = n + math.max(1, math.ceil(chars / cap)) + breaks
++            elseif b.t == "BulletList" or b.t == "OrderedList" then
++              for _, item in ipairs(b.content) do
++                n = n + math.max(1, blocklines(item, cap))
++              end
++            elseif b.t == "LineBlock" then
++              n = n + #b.content
++            elseif b.t == "Div" then
++              n = n + blocklines(b.content, cap)
++            else
++              n = n + 1
++            end
++          end
++          return n
++        end
++        local function rowlines(r)
++          local most = 1
++          for ci, c in ipairs(r.cells) do
++            local spec = t.colspecs[ci]
++            local w = spec and spec[2]
++            local cap = math.huge
++            -- A column holds its share of the line less its padding (about
++            -- three characters), and words wrap short of the edge (about
++            -- 85% of it is filled): measured, a 70-character cell in a
++            -- fifth-of-the-line column printed in 4 lines, not 3.
++            if type(w) == "number" and w > 0 then
++              cap = math.max(1, (w * 95 - 3) * 0.85)
++            end
++            local n = blocklines(c.contents, cap)
++            if n > most then most = n end
++          end
++          return most
++        end
++        for _, r in ipairs(t.head.rows) do rows = rows + rowlines(r) end
++        for _, b in ipairs(t.bodies) do
++          for _, r in ipairs(b.head) do rows = rows + rowlines(r) end
++          for _, r in ipairs(b.body) do rows = rows + rowlines(r) end
++        end
++        for _, r in ipairs(t.foot.rows) do rows = rows + rowlines(r) end
++      end
++    }
++  end
++  if rows == 0 and #raw > 0 then
++    local tex = table.concat(raw, "\n")
++    local headend = tex:find("\\endfirsthead", 1, true)
++        or tex:find("\\endhead", 1, true)
++    local bodystart = nil
++    for _, anchor in ipairs({ "\\endlastfoot", "\\endfoot", "\\endhead",
++                              "\\endfirsthead" }) do
++      local from = 1
++      while true do
++        local _, e = tex:find(anchor, from, true)
++        if not e then break end
++        if not bodystart or e > bodystart then bodystart = e end
++        from = e + 1
++      end
++    end
++    local n = 0
++    if headend then n = n + rawrows(tex:sub(1, headend)) end
++    n = n + rawrows(tex:sub((bodystart or 0) + 1))
++    local skip = tonumber(tex:match("\\fontsize{[%d.]+}{([%d.]+)}"))
++    -- Space added between rows (apaTables puts \addlinespace before each
++    -- group label), counted at a 12 pt em, rounded high.
++    local body = tex:sub((bodystart or 0) + 1)
++    for amount in body:gmatch("\\addlinespace%[([%d.]+)em%]") do
++      rowpts = rowpts + tonumber(amount) * 12
++    end
++    for _ in body:gmatch("\\addlinespace%f[^%a%[]") do
++      rowpts = rowpts + 6
++    end
++    if skip then
++      -- Rows set at their own size (apaTables' \fontsize{10}{12}) are
++      -- counted in points, not in lines of the body: a document set at
++      -- 10 pt has 12 pt body lines, and a row counted as a fraction of a
++      -- 14.5 pt line came out a sixth short there.
++      rowpts = rowpts + n * skip
++    else
++      rows = n
++    end
++    -- The running foot. Until its last row a longtable keeps room for its
++    -- \endfoot on the page; apaTables' is a 48 pt spacer, taller than the
++    -- note that replaces it on the last page, so a table needs that much
++    -- more room to fit than it shows (measured: a 6-row table straddled at
++    -- an offset where its visible height fitted).
++    local fa, fb = tex:find("\\endhead", 1, true)
++    local fe = tex:find("\\endfoot", 1, true)
++    if fb and fe and fe > fb then
++      local foot = 0
++      for h in tex:sub(fb + 1, fe):gmatch("\\rule{[^}]*}{([%d.]+)pt}") do
++        foot = foot + tonumber(h)
++      end
++      footpts = math.max(foot, rawrows(tex:sub(fb + 1, fe)) * (skip or 14.5))
++    end
++  end
++  lines = lines + rows
++  local lastfoot = 0
++  local note = float.attributes["apa-note"]
++  if note and note ~= "" then
++    local notelines = 0
++    for entry in (note .. '","'):gmatch('(.-)","') do
++      notelines = notelines + math.max(1, math.ceil(#entry / 95))
++    end
++    lastfoot = 0.5 + notelines * (docmode and 1 or 1.65)
++  end
++  -- The last foot is the note or the running foot, whichever is taller.
++  local pts = rowpts
++  if footpts > lastfoot * 14.5 then
++    pts = pts + footpts
++  else
++    lines = lines + lastfoot
++  end
++  -- Rounded up: a table that straddles a page break is the defect this
++  -- exists to prevent, and one moved a line early is only white space.
++  -- (Rounding to the nearest line let a short apaTables table straddle.)
++  local n = math.ceil(lines)
++  -- The space longtable leaves above itself (\LTpre, 12 pt) is not in the
++  -- calibration, which runs from caption to note. A manuscript's note
++  -- allowance (1.65 lines a line) covers it; documentmode: doc counts its
++  -- note at one line a line, so there it is added (measured: a correlation
++  -- table straddled with its visible height 3 pt inside the reservation).
++  local pre = docmode and "+\\LTpre" or ""
++  if pts > 0 then
++    return "\\dimexpr " .. n .. "\\apatablesline+" .. math.ceil(pts) ..
++        "pt" .. pre .. "\\relax"
++  end
++  if docmode then
++    return "\\dimexpr " .. n .. "\\apatablesline" .. pre .. "\\relax"
++  end
++  return n .. "\\apatablesline"
 +end
 +
 +-- Wrap a rotated float in a LITERAL \begin{landscape} block.
@@ -381,7 +624,7 @@ index 820933f..4221c6e 100644
  local processfloat = function(float)
    if float.attributes["disable-apaquarto-processing"] then
      if not (float.attributes["disable-apaquarto-processing"] == "false") then
-@@ -82,15 +167,125 @@ local processfloat = function(float)
+@@ -82,15 +410,125 @@ local processfloat = function(float)
          -- credit to @michaelzehetleitne https://github.com/wjschne/apaquarto/issues/71
          -- Long-table mode: skip float wrapper so longtable can page-break
      --quarto.log.output(float.attributes)
@@ -453,27 +696,26 @@ index 820933f..4221c6e 100644
 +      -- FEWER than \needspace, which was pushing tall tables off pages they had
 +      -- half a column left on.
 +      --
-+      -- WHY 12, AND WHAT IT HAS TO COVER. The reserve must span the WHOLE
-+      -- table -- caption, header, rows, and \endlastfoot, which carries the
-+      -- bottom rule and the note. Sizing it for the rows alone is a real and
-+      -- measured defect, not a theoretical one: at 8\baselineskip a 7-row
-+      -- table at an offset of 5.6 in kept all 7 rows on one page and pushed
-+      -- its note, alone under a repeated continuation header, onto the next.
-+      -- Rows intact and note adrift is still a broken table, and it looks
-+      -- deliberate.
++      -- WHAT IT HAS TO COVER. The reserve must span the WHOLE table --
++      -- caption, header, rows, and \endlastfoot, which carries the bottom rule
++      -- and the note. Sizing it for the rows alone is a real and measured
++      -- defect, not a theoretical one: a 7-row table kept all 7 rows on one
++      -- page and pushed its note, alone under a repeated continuation header,
++      -- onto the next. Rows intact and note adrift is still a broken table,
++      -- and it looks deliberate.
 +      --
-+      -- 12 comes from a sweep, not from arithmetic. Against a no-reservation
-+      -- control, a 7-row table with a realistic two-entry note at offsets from
-+      -- 3.6 in to 7.6 in: 8 left 6 of 11 cases defective; 11 and 12 fixed all
-+      -- 6; 13 wasted 2 pages and 14 wasted 3. So 12 is the largest value that
-+      -- is still free, and it is taken rather than 11 because the sweep's note
-+      -- is two lines and a longer one wants the extra line of margin. A wider
-+      -- table with a three-line note can still outgrow it -- and then it
-+      -- splits, exactly as it does today, with every row present.
-+      --
-+      -- 12 IS RE-CONFIRMED UNDER \Needspace* and was not simply carried over:
-+      -- 12, 18 and 24 all give short tables 0 straddles, and 18 and 24 cost 4
-+      -- and 6 extra pages for it. 12 is still the cheapest value that works.
++      -- HOW MUCH. It used to be a fixed 12\baselineskip, swept when table
++      -- rows were double-spaced (a 7-row table with a two-entry note needed
++      -- 11; 13 and 14 wasted pages). Table rows are single-spaced now, so the
++      -- fixed amount was about twice what a short table needs, and a one-row
++      -- table moved to the next page with half a page to spare. The reserve is
++      -- now the table's own estimated height (tablelines, above), in
++      -- single-spaced lines (\apatablesline, set by the template). The
++      -- template compares it with the page: a table that fits on a page moves
++      -- to the next one whole rather than starting low and breaking (as a
++      -- captioned markdown table, once a float, always did), and one taller
++      -- than the page asks only for room to start and breaks across pages,
++      -- as a tall table should, with every row present.
 +      --
 +      -- NOT in the default placement, for three separate reasons, any one of
 +      -- which is sufficient. endfloat re-emits the deferred environment alone
@@ -484,7 +726,8 @@ index 820933f..4221c6e 100644
 +      -- bare reservation sitting in the author's prose, where it can force a
 +      -- page break in the text that no table justifies.
 +      if not delayedfloats then
-+        blocks:insert(pandoc.RawBlock("latex", "\\Needspace*{12\\baselineskip}"))
++        blocks:insert(pandoc.RawBlock("latex", "\\Needspace*{" ..
++          tablelines(float) .. "}"))
 +      end
        -- Use Quarto's native longtable output (caption + label included)
        if float.__quarto_custom_node then
@@ -509,7 +752,7 @@ index 820933f..4221c6e 100644
        if float.attributes["apa-note"] then
          local bn = ""
          if manuscriptmode then
-@@ -99,10 +294,24 @@ local processfloat = function(float)
+@@ -99,10 +537,28 @@ local processfloat = function(float)
              bn = "\\vspace{" .. float.attributes["beforenotespace"] .. "}\n"
            end
          end
@@ -533,11 +776,15 @@ index 820933f..4221c6e 100644
 +        blocks:insert(notedivs)
        end
 -      return pandoc.Div(blocks)
-+      return pandoc.Div(landscapewrap(blocks, float, journalmode))
++      local lifted = pandoc.Div(landscapewrap(blocks, float, journalmode))
++      -- Marked for apalongtablenote.lua, which arms the closing rule of a
++      -- table Quarto has already written as raw LaTeX (a kable table).
++      lifted.classes:insert("apa-lifted-longtable")
++      return lifted
      end
      -- Default table environment
      local latextableenv = "table"
-@@ -189,13 +398,21 @@ local processfloat = function(float)
+@@ -189,13 +645,21 @@ local processfloat = function(float)
        })
      end
  
@@ -560,7 +807,7 @@ index 820933f..4221c6e 100644
      local latexenv = "figure"
      -- Get apa-note from image, if possible
      float.content:walk {
-@@ -218,12 +435,12 @@ local processfloat = function(float)
+@@ -218,12 +682,12 @@ local processfloat = function(float)
        end
      }
  
@@ -575,7 +822,7 @@ index 820933f..4221c6e 100644
        if hasnote then
          -- Add note
          if float.attributes["apa-note"] then
-@@ -259,7 +476,8 @@ local processfloat = function(float)
+@@ -259,13 +723,58 @@ local processfloat = function(float)
          pandoc.RawBlock("latex", "\\end{" .. latexenv .. "}")
        })
  
@@ -585,6 +832,57 @@ index 820933f..4221c6e 100644
      end
    end
  end
+ 
+ 
++-- A table placed in the text straight after a heading: its reservation is
++-- moved in front of the heading and made three lines larger, so that when
++-- the table has to go to the next page the heading goes with it. Left
++-- between them, the reservation broke the page after the heading, which was
++-- left alone at the foot of the page above its table.
++local function stripreserve(b)
++  if b.t ~= "Div" then return nil end
++  local first = b.content[1]
++  if not first then return nil end
++  if first.t == "RawBlock" and first.text:find("^\\Needspace%*{") then
++    local rest = pandoc.Blocks({})
++    for i = 2, #b.content do rest:insert(b.content[i]) end
++    b.content = rest
++    return b, first
++  end
++  local inner, rb = stripreserve(first)
++  if rb then
++    local content = b.content
++    content[1] = inner
++    b.content = content
++    return b, rb
++  end
++  return nil
++end
++
++local function movereserve(blocks)
++  local k = 1
++  while k < #blocks do
++    if blocks[k].t == "Header" then
++      local nb, rb = stripreserve(blocks[k + 1])
++      if rb then
++        local arg = rb.text:match("^\\Needspace%*{(.*)}%s*$")
++        blocks[k + 1] = nb
++        blocks:insert(k, pandoc.RawBlock("latex", "\\Needspace*{\\dimexpr " ..
++          arg .. "+3\\apatablesline\\relax}"))
++        k = k + 1
++      end
++    end
++    k = k + 1
++  end
++  return blocks
++end
++
+ return {
+   { Meta = getmode },
+-  { FloatRefTarget = processfloat }
++  { FloatRefTarget = processfloat },
++  { Blocks = movereserve }
+ }
 diff --git a/_extensions/apaquarto/apafloatstoend.lua b/_extensions/apaquarto/apafloatstoend.lua
 index 0f835de..4531a10 100644
 --- a/_extensions/apaquarto/apafloatstoend.lua
@@ -778,10 +1076,10 @@ index 0000000..2e012cf
 +}
 diff --git a/_extensions/apaquarto/apalongtablenote.lua b/_extensions/apaquarto/apalongtablenote.lua
 new file mode 100644
-index 0000000..300367e
+index 0000000..7b67fce
 --- /dev/null
 +++ b/_extensions/apaquarto/apalongtablenote.lua
-@@ -0,0 +1,278 @@
+@@ -0,0 +1,721 @@
 +-- Attach a long table's apa-note to the table itself.
 +--
 +-- apafloatlatex.lua marks the note of an apa-longtable and leaves it in the
@@ -959,12 +1257,27 @@ index 0000000..300367e
 +    -- \dimen0 is scratch and the assignment is confined to a group.
 +    box = "\\begingroup\\dimen0=" .. width ..
 +        "\\ifdim\\dimen0<0.5\\linewidth\\dimen0=0.5\\linewidth\\fi" ..
-+        "\\parbox[t]{\\dimen0}{%\n" .. notetex .. "%\n}\\endgroup"
++        "\\parbox[t]{\\dimen0}{\\csname apatablesnotespacing\\endcsname%\n" ..
++        notetex .. "%\n}\\endgroup"
 +  else
-+    box = "\\parbox[t]{\\linewidth}{%\n" .. notetex .. "%\n}"
++    box = "\\parbox[t]{\\linewidth}{\\csname apatablesnotespacing\\endcsname%\n" ..
++        notetex .. "%\n}"
 +  end
-+  return "\\multicolumn{" .. ncol .. "}{@{}" .. cellalign .. "@{}}{" ..
-+      "\\makebox[0pt][l]{" .. shift .. box .. "}}\\\\\n"
++  -- The row opens with booktabs' own gap below a rule. Without it the
++  -- note's first line sits flush under \bottomrule, and once the table rows
++  -- were single-spaced the rule ran through the tops of the note's capitals
++  -- (measured at 200 dpi; already so in documentmode: doc). The note itself
++  -- takes back the manuscript's line spacing, which the template saved when
++  -- the table single-spaced its rows -- a table note is double-spaced like
++  -- the text around it, as in Word. \csname keeps both harmless under a
++  -- template without them.
++  -- It ends with a zero kern so the last foot has no depth: the note is a
++  -- top-aligned box, so its lines after the first would otherwise be DEPTH,
++  -- which neither longtable's own end-of-table check nor the template's
++  -- running-foot reserve measures.
++  return "\\noalign{\\vskip\\belowrulesep}" ..
++      "\\multicolumn{" .. ncol .. "}{@{}" .. cellalign .. "@{}}{" ..
++      "\\makebox[0pt][l]{" .. shift .. box .. "}}\\\\\n\\noalign{\\kern0pt}\n"
 +end
 +
 +-- Find the marked note among a div's children. Returns its index and the div.
@@ -979,9 +1292,413 @@ index 0000000..300367e
 +  return nil
 +end
 +
++-- A note is written out as LaTeX here, after citeproc, so anything in it
++-- that makes the LaTeX writer add something to the preamble is lost: the
++-- writer decides what to set up from what IT writes, and it never writes
++-- this note. Highlighted code needs its macros, a language span needs babel
++-- -- either would leave an undefined command and no PDF. Such a note is left
++-- where the writer will see it, beside its table.
++local function needswriter(blocks)
++  local found = false
++  pandoc.Blocks(blocks):walk {
++    Code = function(c)
++      if #c.classes > 0 then found = true end
++    end,
++    CodeBlock = function(c) found = true end,
++    Span = function(sp)
++      if sp.attributes.lang then found = true end
++    end,
++    Div = function(d)
++      if d.attributes.lang then found = true end
++    end
++  }
++  return found
++end
++
++-- Highlighted code is written as \VERB|...|, a verbatim command, which
++-- cannot sit inside a macro's argument -- so a note holding it cannot be
++-- stored for the template either, and stays beside its table.
++local function hascode(blocks)
++  local found = false
++  pandoc.Blocks(blocks):walk {
++    Code = function(c)
++      if #c.classes > 0 then found = true end
++    end,
++    CodeBlock = function(c) found = true end
++  }
++  return found
++end
++
++-- Code in a table note is set plainly, without syntax highlighting: colour
++-- has no place in an APA table, and highlighted code is written as \VERB,
++-- which cannot be stored in a macro, so the note could not travel with its
++-- table.
++local function plaincode(blocks)
++  return pandoc.Blocks(blocks):walk {
++    Code = function(c)
++      if #c.classes > 0 then return pandoc.Code(c.text) end
++      return nil
++    end
++  }
++end
++
++-- The note as one run of inlines, paragraphs joined by \par -- so that it
++-- can sit in a table cell as a single line of source and the writer still
++-- writes every inline in it (italics, a language span, a citation).
++-- Returns nil for a note holding anything but paragraphs.
++local function noteinlines(blocks)
++  local out = pandoc.Inlines({})
++  local ok = true
++  local function add(bs)
++    for _, b in ipairs(bs) do
++      if b.t == "Div" then
++        add(b.content)
++      elseif b.t == "Para" or b.t == "Plain" then
++        if #out > 0 then out:insert(pandoc.RawInline("latex", "\\par ")) end
++        out:extend(b.content)
++      else
++        ok = false
++      end
++    end
++  end
++  add(blocks)
++  if not ok then return nil end
++  return out
++end
++
++local function prependraw(blocks, tex)
++  local raw = pandoc.RawInline("latex", tex)
++  local first = blocks[1]
++  if first and (first.t == "Plain" or first.t == "Para") then
++    first.content:insert(1, raw)
++    blocks[1] = first
++  else
++    blocks:insert(1, pandoc.Plain({ raw }))
++  end
++  return blocks
++end
++
++-- Put raw LaTeX at the start of a pandoc Table's first cell: the first
++-- header cell when there is a header row, otherwise the first body cell.
++-- Returns the table, or nil when it has no cell at all.
++--
++-- The Table stays a Table: the writer still writes it, and still sees every
++-- cell, so whatever a cell needs in the preamble is still set up. (Writing
++-- the table out here instead, with pandoc.write, was tried and broke exactly
++-- that: highlighted code or a language span in a cell left an undefined
++-- command and no PDF.)
++local function tablefirstcell(t, tex, headonly)
++  local head = t.head
++  if #head.rows > 0 then
++    local rows = head.rows
++    local row = rows[1]
++    local cells = row.cells
++    if #cells > 0 then
++      local cell = cells[1]
++      cell.contents = prependraw(cell.contents, tex)
++      cells[1] = cell
++      row.cells = cells
++      rows[1] = row
++      head.rows = rows
++      t.head = head
++      return t
++    end
++  end
++  if headonly then return nil end
++  local bodies = t.bodies
++  for bi, body in ipairs(bodies) do
++    local rows = body.body
++    if #rows > 0 and #rows[1].cells > 0 then
++      local row = rows[1]
++      local cells = row.cells
++      local cell = cells[1]
++      cell.contents = prependraw(cell.contents, tex)
++      cells[1] = cell
++      row.cells = cells
++      rows[1] = row
++      body.body = rows
++      bodies[bi] = body
++      t.bodies = bodies
++      return t
++    end
++  end
++  return nil
++end
++
++-- A pandoc Table's closing rule.
++--
++-- The writer's longtable draws its own \bottomrule in \endlastfoot, and the
++-- template appends an \hline at every \end{longtable} unless the table armed
++-- \apatablesownbottomrule -- so an unarmed markdown table outside a float
++-- printed TWO rules (every uncaptioned one always did; every captioned one
++-- would, now that apafloatlatex.lua lifts it out of its float). The marker
++-- goes in the first cell: the flag is global and is consumed only at this
++-- table's own \end{longtable}, so where inside the table it is set does not
++-- matter.
++--
++-- NOT inside a float. A table still inside \begin{table} (journal mode puts
++-- markdown tables in ThreePartTable) or a hand-written \begin{figure} cannot
++-- break, its \endlastfoot never reaches the page, and the \hline is its only
++-- closing rule; arming it would leave it with none. Floats are tracked per
++-- table, in document order, by counting the float environments the raw
++-- blocks before it open and close -- a self-contained raw float elsewhere in
++-- the same list changes nothing.
++-- The trailing {} ends the control-sequence name: without it the cell's
++-- own text runs on into it (\endcsnameA is one undefined command).
++local armtex = "\\csname apatablesownbottomrule\\endcsname{}"
++local floatenvs = {
++  table = true, figure = true, ThreePartTable = true, twocolumntable = true,
++  sidewaystable = true, sidewaysfigure = true, wraptable = true,
++  wrapfigure = true
++}
++
++local function floatdelta(tex)
++  local d = 0
++  for env in tex:gmatch("\\begin{(%a+)%*?}") do
++    if floatenvs[env] then d = d + 1 end
++  end
++  for env in tex:gmatch("\\end{(%a+)%*?}") do
++    if floatenvs[env] then d = d - 1 end
++  end
++  return d
++end
++
++local armlist
++armlist = function(blocks, depth)
++  for k, b in ipairs(blocks) do
++    if b.t == "RawBlock" and (b.format == "latex" or b.format == "tex") then
++      depth = depth + floatdelta(b.text)
++    elseif b.t == "Table" then
++      if depth <= 0 then
++        local t = tablefirstcell(b, armtex, false)
++        if t then blocks[k] = t end
++      end
++    elseif b.t == "Figure" then
++      b.content = armlist(b.content, depth + 1)
++      blocks[k] = b
++    elseif b.t == "Div" or b.t == "BlockQuote" then
++      b.content = armlist(b.content, depth)
++      blocks[k] = b
++    elseif b.t == "BulletList" or b.t == "OrderedList" then
++      local items = b.content
++      for ii, item in ipairs(items) do
++        items[ii] = armlist(item, depth)
++      end
++      b.content = items
++      blocks[k] = b
++    end
++  end
++  return blocks
++end
++
++-- A longtable that Quarto has already written out as raw LaTeX -- a
++-- knitr::kable() table in a captioned chunk is one -- and that
++-- apafloatlatex.lua lifted out of its float (it marks the Div) draws its own
++-- \bottomrule too, so it is armed the way apaTables' own tables are: a last
++-- row before \end{longtable}. Only when there is exactly one longtable, it
++-- has a \bottomrule, and nothing armed it already.
++local liftmarker = "apa-lifted-longtable"
++
++local function armraw(blocks)
++  local n, armed, hasrule = 0, false, false
++  pandoc.Blocks(blocks):walk {
++    RawBlock = function(rb)
++      if rb.format ~= "latex" then return nil end
++      local _, c = rb.text:gsub("\\begin{longtable}", "")
++      n = n + c
++      if rb.text:find("apatablesownbottomrule", 1, true) then armed = true end
++      if rb.text:find("\\bottomrule", 1, true) then hasrule = true end
++      return nil
++    end
++  }
++  if n ~= 1 or armed or not hasrule then return blocks end
++  local done = false
++  return pandoc.Blocks(blocks):walk {
++    RawBlock = function(rb)
++      if done or rb.format ~= "latex" then return nil end
++      local last, from = nil, 1
++      while true do
++        local a = rb.text:find("\\end{longtable}", from, true)
++        if not a then break end
++        last, from = a, a + 1
++      end
++      if not last then return nil end
++      done = true
++      return pandoc.RawBlock("latex", rb.text:sub(1, last - 1) ..
++        "\\noalign{" .. armtex .. "}\n" .. rb.text:sub(last))
++    end
++  }
++end
++
++-- A markdown table's note, carried inside the table.
++--
++-- Under endfloat (tables at the end) only the table environment travels, so
++-- a note left beside it stays behind in the body text. The note cannot be
++-- spliced into a pandoc Table's \endlastfoot as it is into a raw longtable:
++-- the writer writes that. Instead the note is defined, numbered, in a block
++-- of its own just before the table (the writer writes it, so italics, a
++-- citation or a language span are set up as anywhere else; it prints
++-- nothing), and the table carries only a marker naming that number --
++-- \apatablesnoteid{n}, in its first header cell, or in its caption when it
++-- has no header row. The template's marker hands the note to \endlastfoot,
++-- which prints it as the table's last foot row. Nothing fragile is ever put
++-- in a caption (whose argument cannot hold a paragraph break and is copied
++-- into the list of tables) or in a header cell (which the writer repeats,
++-- with footnotes stripped, for continuation pages).
++local noteseq = 0
++
++local function pendingnote(blocks, note)
++  local ntables = 0
++  pandoc.Blocks(blocks):walk {
++    Table = function(t) ntables = ntables + 1 end
++  }
++  if ntables ~= 1 then return nil end
++  local inl = noteinlines(note.content)
++  if not inl then return nil end
++  local id = tostring(noteseq + 1)
++  local marker = pandoc.RawInline("latex", "\\apatablesnoteid{" .. id .. "}")
++  local done = false
++  local out = pandoc.Blocks(blocks):walk {
++    Table = function(t)
++      if done then return nil end
++      local head = t.head
++      if #head.rows > 0 and #head.rows[1].cells > 0 then
++        local r = tablefirstcell(t, "\\apatablesnoteid{" .. id .. "}", true)
++        if r then done = true end
++        return r
++      end
++      local cap = t.caption
++      local long = cap.long
++      local last = long[#long]
++      if not last or (last.t ~= "Plain" and last.t ~= "Para") then
++        return nil
++      end
++      last.content:insert(marker)
++      long[#long] = last
++      cap.long = long
++      t.caption = cap
++      done = true
++      return t
++    end
++  }
++  if not done then return nil end
++  noteseq = noteseq + 1
++  local def = pandoc.Inlines({ pandoc.RawInline("latex",
++    "\\expandafter\\long\\expandafter\\gdef\\csname apatablesnote@" .. id ..
++    "\\endcsname{") })
++  def:extend(inl)
++  def:insert(pandoc.RawInline("latex", "}"))
++  out:insert(1, pandoc.Plain(def))
++  return out
++end
++
++-- A lifted raw longtable whose head carries its caption but has no
++-- \endfirsthead (Quarto writes a kable table that way) prints its number and
++-- title again at the top of every continuation page. Give it a first head:
++-- the rows before \endhead become the first page's head (caption included)
++-- and are repeated, without the caption, as the continuation head -- the
++-- shape the writer gives a markdown table and apaTables gives its own.
++local function splitfirsthead(blocks)
++  local hasfirst, hashead = false, false
++  pandoc.Blocks(blocks):walk {
++    RawBlock = function(rb)
++      if rb.format ~= "latex" then return nil end
++      if rb.text:find("\\endfirsthead", 1, true) then hasfirst = true end
++      if rb.text:find("\\endhead", 1, true) then hashead = true end
++      return nil
++    end
++  }
++  if hasfirst or not hashead then return blocks end
++  local done = false
++  return pandoc.Blocks(blocks):walk {
++    RawBlock = function(rb)
++      if done or rb.format ~= "latex" then return nil end
++      local a, b = rb.text:find("\\endhead", 1, true)
++      if not a then return nil end
++      local head = rb.text:sub(1, a - 1)
++      local again = head
++      local c = head:find("\\caption", 1, true)
++      if c then
++        local _, e = head:find("\\tabularnewline", c, true)
++        if not e then return nil end
++        again = head:sub(e + 1)
++      end
++      again = again:gsub("^%s*\\tabularnewline", ""):gsub("^%s+", "")
++      if again:find("\\begin{longtable", 1, true) then return nil end
++      done = true
++      return pandoc.RawBlock("latex", head .. "\\endfirsthead\n" .. again ..
++        rb.text:sub(a))
++    end
++  }
++end
++
++-- Store a note from the caption block of a raw longtable that Quarto wrote
++-- (a kable table): the caption is written by the writer, inside the table's
++-- first head, so the writer sees the note (a language span sets up babel)
++-- and the template's \endlastfoot prints it. Only when the table has a last
++-- foot to print it in; otherwise the stored note would reach the next table.
++-- Returns the blocks, or nil.
++local function captionnote(blocks, note, texts)
++  local haslast = false
++  for _, t in ipairs(texts) do
++    if t:find("\\endlastfoot", 1, true) then haslast = true end
++  end
++  if not haslast then return nil end
++  local inl = noteinlines(note.content)
++  if not inl then return nil end
++  local def = pandoc.Inlines({
++    pandoc.RawInline("latex", "\\long\\gdef\\apatablespendingnote{") })
++  def:extend(inl)
++  def:insert(pandoc.RawInline("latex", "}"))
++  local done = false
++  -- The caption block: Quarto writes it as a paragraph whose \caption is a
++  -- raw inline, inside a span. The stored note goes at its end, so it sits
++  -- in the caption's own cell of the first head and prints nothing there.
++  local function iscaption(b)
++    if b.t ~= "Plain" and b.t ~= "Para" then return false end
++    local hit = false
++    b:walk {
++      RawInline = function(x)
++        if x.text:find("^%s*\\caption") then hit = true end
++      end
++    }
++    return hit
++  end
++  local function visit(bs)
++    for k, b in ipairs(bs) do
++      if done then return end
++      if iscaption(b) then
++        b.content:extend(def)
++        bs[k] = b
++        done = true
++        return
++      elseif b.t == "Div" then
++        visit(b.content)
++      end
++    end
++  end
++  local out = pandoc.Blocks(blocks)
++  visit(out)
++  if done then return out end
++  return nil
++end
++
 +local function processdiv(div)
++  local lifted = false
++  for k = #div.classes, 1, -1 do
++    if div.classes[k] == liftmarker then
++      div.classes:remove(k)
++      lifted = true
++    end
++  end
 +  local i, note = findnote(div.content)
-+  if not i then return nil end
++  if not i then
++    if lifted then
++      div.content = splitfirsthead(armraw(div.content))
++      return div
++    end
++    return nil
++  end
 +  -- Whatever happens below, the marker and the carried spacing are internal
 +  -- and must not reach the writer.
 +  local sibling = note.attributes[siblingattr] or ""
@@ -995,6 +1712,7 @@ index 0000000..300367e
 +  for j, b in ipairs(div.content) do
 +    if j ~= i then rest:insert(b) end
 +  end
++  if lifted then rest = splitfirsthead(armraw(rest)) end
 +
 +  -- First pass: read the table. The preamble and the head/foot declarations
 +  -- are in different raw blocks, so both are collected before anything is
@@ -1014,6 +1732,9 @@ index 0000000..300367e
 +      return nil
 +    end
 +  }
++  note.content = plaincode(note.content)
++  local safe = not needswriter(note.content)
++  local storable = not hascode(note.content)
 +  -- Exactly one longtable, or nothing is touched. The column count is read
 +  -- from the FIRST longtable but the anchor is chosen across every raw block,
 +  -- so with two longtables in one float the first table's column count can be
@@ -1025,7 +1746,7 @@ index 0000000..300367e
 +  -- it takes hand-written raw LaTeX with two longtable environments inside
 +  -- one apa-longtable float.
 +  local injected = false
-+  if ntables == 1 and spectext then
++  if safe and ntables == 1 and spectext then
 +    local ncol, width, align = apalongtablespec(spectext)
 +    local kind = apalongtablekind(texts)
 +    if ncol and kind then
@@ -1042,15 +1763,31 @@ index 0000000..300367e
 +        end
 +      }
 +    end
++  elseif storable and ntables == 0 then
++    local out = pendingnote(rest, note)
++    if out then
++      rest = out
++      injected = true
++    end
++  end
++
++  if not injected and not safe and storable and ntables == 1 then
++    local out = captionnote(rest, note, texts)
++    if out then
++      rest = out
++      injected = true
++    end
 +  end
 +
 +  if injected then
 +    div.content = rest
 +    return div
 +  end
-+  -- Fallback: the table did not arrive as raw LaTeX (a markdown pipe table
-+  -- becomes a pandoc AST Table), or its preamble was one this code will not
-+  -- guess at. Leave the note where upstream put it, with upstream's spacing.
++  -- Fallback: the table's preamble was one this code will not guess at, the
++  -- float held something other than one table, or the note needs the writer.
++  -- Leave the note where upstream put it, with upstream's spacing.
++  div.content = rest
++  div.content:insert(i, note)
 +  if sibling ~= "" then
 +    div.content:insert(i, pandoc.RawBlock("latex", sibling))
 +  end
@@ -1058,7 +1795,11 @@ index 0000000..300367e
 +end
 +
 +return {
-+  { Div = processdiv }
++  { Div = processdiv },
++  { Pandoc = function(doc)
++      doc.blocks = armlist(doc.blocks, 0)
++      return doc
++    end }
 +}
 diff --git a/_extensions/apaquarto/apaquarto.docx b/_extensions/apaquarto/apaquarto.docx
 index 45c2659..b885f93 100644
@@ -2003,7 +2744,7 @@ index 0000000..74814d5
 +
 +return { { Table = centre_head_spanners } }
 diff --git a/_extensions/apaquarto/apatemplate.tex b/_extensions/apaquarto/apatemplate.tex
-index 8627834..eab5d77 100644
+index 8627834..75b4271 100644
 --- a/_extensions/apaquarto/apatemplate.tex
 +++ b/_extensions/apaquarto/apatemplate.tex
 @@ -40,6 +40,20 @@ $endif$
@@ -2107,7 +2848,7 @@ index 8627834..eab5d77 100644
  $endif$
  $endif$
  $endif$
-@@ -207,18 +271,35 @@ $endfor$
+@@ -207,18 +271,166 @@ $endfor$
  \usepackage{etoolbox}
  
  \makeatletter
@@ -2146,6 +2887,137 @@ index 8627834..eab5d77 100644
 +   \global\LTpatch@captionfalse}
    {}{}
 -\newif\ifLTpatch@caption
++\makeatother
++
++% Table rows are single-spaced, as in Word; a table kept out of a float so
++% that it can break across pages would otherwise take the manuscript's double
++% spacing. \linespread{1} with \selectfont keeps whatever type size the table
++% has set and drops only the stretch. The manuscript's stretch is saved
++% first: a table's note keeps it (apalongtablenote.lua opens every note with
++% \apatablesnotespacing), because a note is spaced like the text, as in Word.
++%
++% Whether the table starts inside a box is recorded at the same moment. A
++% table in a callout, a margin note, a minipage or a float cannot break
++% across pages, and longtable never places its last foot (bottom rule and
++% note) there: its end-of-table output routine does not run inside a box.
++% So a boxed table that draws its own closing rule (it armed the flag below)
++% has its last foot set by hand under its last row, with no break allowed
++% between them (a callout can break across pages); one that does not keeps
++% the automatic \hline, its only closing rule.
++\makeatletter
++\newif\ifapatablesinbox
++\newif\ifapatables@armed
++\newif\ifapatables@intable
++\let\apatablesdocstretch\baselinestretch
++\def\apatablesnotespacing{\linespread{\apatablesdocstretch}\selectfont}
++\def\apatables@begintable{%
++  \global\apatables@armedfalse\global\apatables@intabletrue
++  \ifinner\global\apatablesinboxtrue\else\global\apatablesinboxfalse\fi
++  \let\apatablesdocstretch\baselinestretch\linespread{1}\selectfont}
++\AtBeginEnvironment{longtable}{\apatables@begintable}
++\AtBeginEnvironment{longtable*}{\apatables@begintable}
++\def\apatablesownbottomrule{%
++  \global\apatablesownruletrue\global\apatables@armedtrue}
++% The last foot is added inside the table's own alignment, as its final
++% item, when the table ends (before longtable's closing code, which is in a
++% syntax that cannot be patched and which drops the last foot with its group).
++\def\apatables@boxlastfoot{%
++  \ifapatablesinbox\ifapatables@armed\ifvoid\LT@lastfoot\else
++    \noalign{\nobreak\copy\LT@lastfoot}%
++  \fi\fi\fi}
++\pretocmd{\endlongtable}{\apatables@boxlastfoot}{}
++  {\typeout{apaquarto: could not patch the end of a table (boxed last foot)}}
++
++% One single-spaced line of body text: the unit in which apafloatlatex.lua
++% sizes the space it reserves in front of a table placed in the text. (Do not
++% write that reservation command or any table environment name in a comment
++% here: the comment reaches the rendered .tex, and tests count those strings.)
++\newlength{\apatablesline}
++\setlength{\apatablesline}{\f@baselineskip}
++
++% A markdown table's note. The writer writes a markdown table, so its note
++% cannot be spliced into the table's last foot the way a raw table's is;
++% apalongtablenote.lua stores it in \apatablespendingnote from inside the
++% table's first header cell, and here the last foot prints it as a full-width
++% row under the bottom rule and forgets it. Header rows are typeset before the
++% last foot is read, and under endfloat the whole table travels together, so
++% the note reaches only its own table (in a box, the last foot is set by
++% hand, as above).
++%
++% The row ends with a zero kern so that the last foot has no depth: the note
++% is a top-aligned box, so every line after its first would otherwise count
++% as DEPTH, which neither longtable's own end-of-table check nor the running
++% foot below measures -- and a table whose rows filled the page then broke
++% before its last row, which reached the next page without a column header.
++% apalongtablenote.lua defines each note, numbered, just before its table
++% (\apatablesnote@<n>) and puts \apatablesnoteid{<n>} in the table's first
++% header cell or caption. It does nothing outside a table, so the copy of a
++% caption in a list of tables or a cross-reference title is inert.
++\DeclareRobustCommand\apatablesnoteid[1]{%
++  \ifapatables@intable\ifcsname apatablesnote@#1\endcsname
++    \expandafter\global\expandafter\let\expandafter\apatablespendingnote
++      \csname apatablesnote@#1\endcsname
++  \fi\fi}
++\apptocmd{\endlongtable}{\global\apatables@intablefalse}{}
++  {\typeout{apaquarto: could not patch the end of a table (note marker)}}
++\let\apatables@endlastfoot\endlastfoot
++\def\endlastfoot{%
++  \ifdefined\apatablespendingnote\expandafter\apatables@pendingnoterow\fi
++  \apatables@endlastfoot}
++\def\apatables@pendingnoterow{%
++  \noalign{\vskip\belowrulesep}%
++  \multicolumn{\LT@cols}{@{}l@{}}{\makebox[0pt][l]{\parbox[t]{\linewidth}{%
++    \apatablesnotespacing\apatablespendingnote}}}\\
++  \noalign{\kern\z@\global\let\apatablespendingnote\@undefined}}
++
++% Room for the last foot on every page. At the end of a table whose last
++% foot (bottom rule and note) is taller than its running foot, longtable
++% ships the final rows and sets the last foot on a page of its own, under a
++% repeated header with no rows -- the note orphaned. So the running foot is
++% made as tall as the last foot whenever it is shorter: empty for a table
++% that declares none, padded for one that does (apaTables' own 48 pt spacer
++% is shorter than a two- or three-line double-spaced note). Set when the
++% table's body starts, after every head and foot is known. The cost is the
++% same blank space at the foot of each continuation page, so the padding is
++% capped at a quarter of the page: a table with a very long note otherwise
++% spread over many near-empty pages (measured on an apaTables table of 45
++% rows with a 2,000-character note: 3 pages became 8). Only a note taller
++% than that can still be set apart from its rows.
++\newbox\apatables@footbox
++\def\apatables@footroom{%
++  \ifvoid\LT@lastfoot\else
++    \dimen@\ht\LT@lastfoot
++    \ifdim\dimen@>.25\textheight\dimen@.25\textheight\fi
++    \ifdim\ht\LT@foot<\dimen@
++      \setbox\apatables@footbox\box\LT@foot
++      \setbox\LT@foot\vbox to\dimen@{%
++        \ifvoid\apatables@footbox\else\unvbox\apatables@footbox\fi\vss}%
++    \fi
++  \fi}
++\pretocmd{\LT@start}{\apatables@footroom}{}
++  {\typeout{apaquarto: could not patch the start of a table (footroom)}}
++
++% The space reserved in front of a table placed in the text. A table no
++% taller than the page is moved to the next page whole when it does not fit.
++% The estimate errs a little high, so one estimated at up to two lines over
++% the page may still fit on a fresh page: it asks for a page less a line,
++% which moves it to the top of the next one (measured with two-line notes:
++% 37 rows, estimated 46 lines, fit a fresh page; 38 rows, 47 lines, did not). A table taller than
++% that cannot fit anywhere, so it asks only for room to start (its caption,
++% header and a few rows) and breaks across pages where it stands, rather
++% than leaving most of a page empty and breaking anyway. And the page it leaves is ended like \newpage, with its white
++% space at the foot: the starred form ends it with a bare \break, and under
++% the manuscript's \flushbottom TeX then spread that page's text down to the
++% foot, with gaps between the paragraphs.
++\patchcmd{\@sneedsp@}{\advance\dimen@\@tempskipb}
++  {\dimen@ii\textheight\advance\dimen@ii2\apatablesline
++   \ifdim\dimen@>\dimen@ii\dimen@8\apatablesline
++   \else\ifdim\dimen@>\textheight
++     \dimen@\textheight\advance\dimen@-\apatablesline\fi\fi
++   \advance\dimen@\@tempskipb}{}
++  {\typeout{apaquarto: could not patch the reservation (page cap)}}
++\patchcmd{\@sneedsp@}{\break}{\ifdim\dimen@ii>\z@\vfil\fi\break}{}
++  {\typeout{apaquarto: could not patch the reservation (ragged page)}}
  \makeatother
  
  \begin{document}

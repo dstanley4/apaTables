@@ -1,6 +1,15 @@
 # A SHORT table must not straddle a page break -- and nothing must be left
 # behind in the prose when it cannot help.
 #
+# THE OFFSETS WERE RE-MEASURED when table rows became single-spaced
+# (2026-10-21): the old ones (6.0-7.2 in) were chosen for double-spaced
+# tables, and once tables were shorter most of them no longer reached the
+# page foot, so their assertions could not fail. Measured with
+# the reservation removed, a 6-row table straddles at 6.4, 6.6, 6.8 and 7.0 in
+# and fits whole at 6.0 and 6.2; with it, those four move to the next page
+# whole and the two that fitted stay put. The history below describes the
+# double-spaced era and is kept for its reasoning.
+#
 # A longtable is not wrapped in a float, which is what lets a tall table
 # page-break with every row intact. The cost is that a SHORT table
 # becomes breakable too, where a float would have moved it whole. That is not a
@@ -79,28 +88,40 @@ apa_ns_marker <- function(prefix, i) {
 
 # The four offsets, in inches, at which the unpatched bundle was measured to
 # split this table, each with its own marker prefix. Six rows each.
-APA_NS_OFFSETS <- c(SA = 6.0, SB = 6.4, SC = 6.8, SD = 7.2)
-APA_NS_TALL <- 40L
+APA_NS_OFFSETS <- c(SA = 6.4, SB = 6.6, SC = 6.8, SD = 7.0)
+# The tall table must be too tall for one page, or "it still splits" cannot
+# fail. 40 rows did that while tables were double-spaced; single-spaced, 40
+# rows fit on one page, so 80.
+APA_NS_TALL <- 80L
 
 # The ORPHANED-NOTE case, and it is a separate case because the first version
 # of this file could not see it: with only 6-row tables the note assertion
-# never had the chance to fail. At SEVEN rows and an offset of 5.6 in, a hint
-# sized for the rows alone leaves the rows whole and pushes \endlastfoot -- the
-# bottom rule and the note -- onto the next page, on its own under a repeated
-# "Marker | Value" continuation header. Measured against the bundle at
-# 8\baselineskip: rows whole on page 4, note alone on page 5. A table whose
-# note has floated away is still a broken table, and it looks deliberate.
+# never had the chance to fail. A reservation sized for the rows alone leaves
+# the rows whole and pushes \endlastfoot -- the bottom rule and the note --
+# onto the next page, on its own under a repeated "Marker | Value"
+# continuation header. A table whose note has floated away is still a broken
+# table, and it looks deliberate.
 #
-# Its note has TWO entries, which is what apaTables actually emits (cor and reg
-# tables carry a stars sentence as a second entry), so the case exercises the
-# height the hint has to cover rather than a best case.
-APA_NS_ORPHAN <- list(prefix = "SE", rows = 7L, offset = 5.6)
+# Its note has FOUR entries. The reservation is sized from the table's
+# estimated height, and for an apaTables table the running foot (a 48 pt
+# spacer) is counted too; a two-entry note is shorter than that foot, so
+# leaving the note out of the estimate changed nothing and the case could not
+# fail. Measured (2026-10-21), 7 rows, four-entry note: with no reservation
+# the table breaks at offsets between 5.6 and 7.0 in; with the note left out
+# of the estimate it breaks at 5.6, 5.8 and 6.0 in (its last row carried to
+# the next page with the note); with the reservation as shipped it is whole
+# everywhere. 5.8 in is in all three.
+APA_NS_ORPHAN <- list(prefix = "SE", rows = 7L, offset = 5.8)
 
 apa_ns_note <- function(prefix) {
   if (identical(prefix, APA_NS_ORPHAN$prefix))
     return(paste0("[\"", prefix, "NOTEa is the first note entry, long enough ",
                   "to occupy a full line of the table width.\", \"", prefix,
-                  "NOTEb is the second note entry, as a starred-significance ",
+                  "NOTEc is a third entry, as a reproduced table would carry ",
+                  "an adapted-from attribution line.\", \"", prefix,
+                  "NOTEd is a fourth entry, for an abbreviation the table ",
+                  "uses and the text does not define.\", \"", prefix,
+                  "NOTEb is the last note entry, as a starred-significance ",
                   "sentence would be.\"]"))
   paste0("[\"", prefix, "NOTEa is the note sentence.\"]")
 }

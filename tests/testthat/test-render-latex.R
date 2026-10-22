@@ -562,6 +562,64 @@ test_that("the table declines apaquarto's automatic closing \\hline", {
   expect_true(any(grepl("\\ifapatablesownrule", tpl, fixed = TRUE)))
 })
 
+test_that("a row with an empty first cell is never separated from the row above", {
+  # A regression model's R-squared, its interval and the blank row closing
+  # the block continue the row above them. Carried to the next page they
+  # printed under a repeated header with the note and no predictor (measured
+  # at 39-42 predictors), so the row before each of them ends with \\* (no
+  # page break after it).
+  fit <- lm(rating ~ complaints + privileges, data = attitude)
+  tex <- apa_latex_table(apa_display_plan(as_spec(apa.reg.table(fit))), 10)
+  lines <- strsplit(tex, "\n", fixed = TRUE)[[1]]
+  rows <- lines[grepl("\\\\\\\\\\*?$", lines) &
+                  seq_along(lines) > grep("\\endlastfoot", lines, fixed = TRUE)]
+  continues <- grepl("^[[:space:]]*&", rows)
+  expect_true(any(continues))
+  for (i in seq_len(length(rows) - 1L)) {
+    expect_identical(endsWith(rows[i], "\\\\*"), continues[i + 1L],
+                     info = rows[i])
+  }
+  # The last row is an ordinary row end.
+  expect_false(endsWith(rows[length(rows)], "\\\\*"))
+  # Predictor rows (first cell filled, next row filled) may still break.
+  expect_false(endsWith(rows[1L], "\\\\*"))
+  # A table with no continuation rows is left alone.
+  cor_tex <- apa_latex_table(apa_display_plan(as_spec(apa.cor.table(attitude))),
+                             10)
+  expect_false(grepl("\\\\*", cor_tex, fixed = TRUE))
+})
+
+test_that("the bundled template's comments do not name what tests count", {
+  # Template comments reach every rendered .tex, where tests count the table
+  # environment and the in-text reservation command; a comment naming one
+  # has broken those counts three times. warn = FALSE: the template ships
+  # without a trailing newline.
+  tpl <- readLines(system.file("_extensions", "wjschne", "apaquarto",
+                               "apatemplate.tex", package = "apaTables"),
+                   warn = FALSE)
+  # The comment part of every line: from the first % not escaped as \\%.
+  comments <- regmatches(tpl, regexpr("(^|[^\\\\])%.*$", tpl))
+  expect_gt(length(comments), 10L)
+  for (s in c("\\begin{longtable", "\\end{longtable", "\\Needspace*{",
+              "\\needspace{", "\\begin{table}", "\\begin{landscape}",
+              "\\end{landscape}"))
+    expect_false(any(grepl(s, comments, fixed = TRUE)), info = s)
+})
+
+test_that("a row-group label is never left at the foot of a page", {
+  # A label ('Model 2') ends with \\* so it cannot be separated from the
+  # first row of its group.
+  fit1 <- lm(rating ~ complaints, data = attitude)
+  fit2 <- lm(rating ~ complaints + privileges, data = attitude)
+  tex <- apa_latex_table(apa_display_plan(as_spec(apa.reg.table(fit1, fit2))),
+                         10)
+  lines <- strsplit(tex, "\n", fixed = TRUE)[[1]]
+  labels <- lines[grepl("\\textbf{", lines, fixed = TRUE) &
+                    grepl("^\\\\multicolumn", lines)]
+  expect_gte(length(labels), 2L)
+  expect_true(all(endsWith(labels, "\\\\*")))
+})
+
 test_that("a cell beginning with [ is guarded", {
   # \\ reads a following [ as its optional argument: "Illegal unit of measure"
   spec <- as_spec(apa.cor.table(attitude))   # CI cells start with [

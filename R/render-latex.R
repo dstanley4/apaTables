@@ -877,9 +877,11 @@ apa_latex_table <- function(plan, size = 10) {
       # left + bold in apa_flextable_from_plan()), so Word and PDF agree.
       # \addlinespace above it is the kableExtra reference's own separation
       # between groups.
+      # Ended with \\* (no page break after it): a label left at the foot of a
+      # page with its first row on the next heads nothing.
       spec <- apa_latex_mc_spec(1L, n_col, "l", n_col, size)
       c("\\addlinespace[0.3em]",
-        sprintf("\\multicolumn{%d}{%s}{\\textbf{%s}} \\\\", n_col, spec,
+        sprintf("\\multicolumn{%d}{%s}{\\textbf{%s}} \\\\*", n_col, spec,
                 apa_latex_cell(p$label, "l")))
     } else {
       cells <- vapply(seq_len(n_col), function(j) {
@@ -888,6 +890,18 @@ apa_latex_table <- function(plan, size = 10) {
       paste0(paste(cells, collapse = " & "), " \\\\")
     }
   }), use.names = FALSE)
+
+  # A row whose first cell is empty continues the row above it -- a
+  # regression model's R-squared, its interval and the blank row that closes
+  # the block -- so the table must not break between them. Measured on
+  # apa.reg.table() at 39-42 predictors: longtable carried the blank row, or
+  # the interval and the blank row, to the next page, where they printed
+  # under a repeated header with the note and no predictor at all. \\*
+  # forbids a page break after a row; nothing on the page changes.
+  continues <- grepl("^[[:space:]]*&", body)
+  ends_row <- grepl("\\\\\\\\$", body)
+  glue <- which(ends_row[-length(body)] & continues[-1L])
+  body[glue] <- sub("\\\\\\\\$", "\\\\\\\\*", body[glue])
 
   paste(c(
     sprintf("\\begin{longtable}{%s}", apa_latex_colspec(plan$align, size)),

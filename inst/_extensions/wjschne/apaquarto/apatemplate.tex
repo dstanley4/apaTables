@@ -302,6 +302,137 @@ $endfor$
   {}{}
 \makeatother
 
+% Table rows are single-spaced, as in Word; a table kept out of a float so
+% that it can break across pages would otherwise take the manuscript's double
+% spacing. \linespread{1} with \selectfont keeps whatever type size the table
+% has set and drops only the stretch. The manuscript's stretch is saved
+% first: a table's note keeps it (apalongtablenote.lua opens every note with
+% \apatablesnotespacing), because a note is spaced like the text, as in Word.
+%
+% Whether the table starts inside a box is recorded at the same moment. A
+% table in a callout, a margin note, a minipage or a float cannot break
+% across pages, and longtable never places its last foot (bottom rule and
+% note) there: its end-of-table output routine does not run inside a box.
+% So a boxed table that draws its own closing rule (it armed the flag below)
+% has its last foot set by hand under its last row, with no break allowed
+% between them (a callout can break across pages); one that does not keeps
+% the automatic \hline, its only closing rule.
+\makeatletter
+\newif\ifapatablesinbox
+\newif\ifapatables@armed
+\newif\ifapatables@intable
+\let\apatablesdocstretch\baselinestretch
+\def\apatablesnotespacing{\linespread{\apatablesdocstretch}\selectfont}
+\def\apatables@begintable{%
+  \global\apatables@armedfalse\global\apatables@intabletrue
+  \ifinner\global\apatablesinboxtrue\else\global\apatablesinboxfalse\fi
+  \let\apatablesdocstretch\baselinestretch\linespread{1}\selectfont}
+\AtBeginEnvironment{longtable}{\apatables@begintable}
+\AtBeginEnvironment{longtable*}{\apatables@begintable}
+\def\apatablesownbottomrule{%
+  \global\apatablesownruletrue\global\apatables@armedtrue}
+% The last foot is added inside the table's own alignment, as its final
+% item, when the table ends (before longtable's closing code, which is in a
+% syntax that cannot be patched and which drops the last foot with its group).
+\def\apatables@boxlastfoot{%
+  \ifapatablesinbox\ifapatables@armed\ifvoid\LT@lastfoot\else
+    \noalign{\nobreak\copy\LT@lastfoot}%
+  \fi\fi\fi}
+\pretocmd{\endlongtable}{\apatables@boxlastfoot}{}
+  {\typeout{apaquarto: could not patch the end of a table (boxed last foot)}}
+
+% One single-spaced line of body text: the unit in which apafloatlatex.lua
+% sizes the space it reserves in front of a table placed in the text. (Do not
+% write that reservation command or any table environment name in a comment
+% here: the comment reaches the rendered .tex, and tests count those strings.)
+\newlength{\apatablesline}
+\setlength{\apatablesline}{\f@baselineskip}
+
+% A markdown table's note. The writer writes a markdown table, so its note
+% cannot be spliced into the table's last foot the way a raw table's is;
+% apalongtablenote.lua stores it in \apatablespendingnote from inside the
+% table's first header cell, and here the last foot prints it as a full-width
+% row under the bottom rule and forgets it. Header rows are typeset before the
+% last foot is read, and under endfloat the whole table travels together, so
+% the note reaches only its own table (in a box, the last foot is set by
+% hand, as above).
+%
+% The row ends with a zero kern so that the last foot has no depth: the note
+% is a top-aligned box, so every line after its first would otherwise count
+% as DEPTH, which neither longtable's own end-of-table check nor the running
+% foot below measures -- and a table whose rows filled the page then broke
+% before its last row, which reached the next page without a column header.
+% apalongtablenote.lua defines each note, numbered, just before its table
+% (\apatablesnote@<n>) and puts \apatablesnoteid{<n>} in the table's first
+% header cell or caption. It does nothing outside a table, so the copy of a
+% caption in a list of tables or a cross-reference title is inert.
+\DeclareRobustCommand\apatablesnoteid[1]{%
+  \ifapatables@intable\ifcsname apatablesnote@#1\endcsname
+    \expandafter\global\expandafter\let\expandafter\apatablespendingnote
+      \csname apatablesnote@#1\endcsname
+  \fi\fi}
+\apptocmd{\endlongtable}{\global\apatables@intablefalse}{}
+  {\typeout{apaquarto: could not patch the end of a table (note marker)}}
+\let\apatables@endlastfoot\endlastfoot
+\def\endlastfoot{%
+  \ifdefined\apatablespendingnote\expandafter\apatables@pendingnoterow\fi
+  \apatables@endlastfoot}
+\def\apatables@pendingnoterow{%
+  \noalign{\vskip\belowrulesep}%
+  \multicolumn{\LT@cols}{@{}l@{}}{\makebox[0pt][l]{\parbox[t]{\linewidth}{%
+    \apatablesnotespacing\apatablespendingnote}}}\\
+  \noalign{\kern\z@\global\let\apatablespendingnote\@undefined}}
+
+% Room for the last foot on every page. At the end of a table whose last
+% foot (bottom rule and note) is taller than its running foot, longtable
+% ships the final rows and sets the last foot on a page of its own, under a
+% repeated header with no rows -- the note orphaned. So the running foot is
+% made as tall as the last foot whenever it is shorter: empty for a table
+% that declares none, padded for one that does (apaTables' own 48 pt spacer
+% is shorter than a two- or three-line double-spaced note). Set when the
+% table's body starts, after every head and foot is known. The cost is the
+% same blank space at the foot of each continuation page, so the padding is
+% capped at a quarter of the page: a table with a very long note otherwise
+% spread over many near-empty pages (measured on an apaTables table of 45
+% rows with a 2,000-character note: 3 pages became 8). Only a note taller
+% than that can still be set apart from its rows.
+\newbox\apatables@footbox
+\def\apatables@footroom{%
+  \ifvoid\LT@lastfoot\else
+    \dimen@\ht\LT@lastfoot
+    \ifdim\dimen@>.25\textheight\dimen@.25\textheight\fi
+    \ifdim\ht\LT@foot<\dimen@
+      \setbox\apatables@footbox\box\LT@foot
+      \setbox\LT@foot\vbox to\dimen@{%
+        \ifvoid\apatables@footbox\else\unvbox\apatables@footbox\fi\vss}%
+    \fi
+  \fi}
+\pretocmd{\LT@start}{\apatables@footroom}{}
+  {\typeout{apaquarto: could not patch the start of a table (footroom)}}
+
+% The space reserved in front of a table placed in the text. A table no
+% taller than the page is moved to the next page whole when it does not fit.
+% The estimate errs a little high, so one estimated at up to two lines over
+% the page may still fit on a fresh page: it asks for a page less a line,
+% which moves it to the top of the next one (measured with two-line notes:
+% 37 rows, estimated 46 lines, fit a fresh page; 38 rows, 47 lines, did not). A table taller than
+% that cannot fit anywhere, so it asks only for room to start (its caption,
+% header and a few rows) and breaks across pages where it stands, rather
+% than leaving most of a page empty and breaking anyway. And the page it leaves is ended like \newpage, with its white
+% space at the foot: the starred form ends it with a bare \break, and under
+% the manuscript's \flushbottom TeX then spread that page's text down to the
+% foot, with gaps between the paragraphs.
+\patchcmd{\@sneedsp@}{\advance\dimen@\@tempskipb}
+  {\dimen@ii\textheight\advance\dimen@ii2\apatablesline
+   \ifdim\dimen@>\dimen@ii\dimen@8\apatablesline
+   \else\ifdim\dimen@>\textheight
+     \dimen@\textheight\advance\dimen@-\apatablesline\fi\fi
+   \advance\dimen@\@tempskipb}{}
+  {\typeout{apaquarto: could not patch the reservation (page cap)}}
+\patchcmd{\@sneedsp@}{\break}{\ifdim\dimen@ii>\z@\vfil\fi\break}{}
+  {\typeout{apaquarto: could not patch the reservation (ragged page)}}
+\makeatother
+
 \begin{document}
 
 $if(suppress-title-page)$

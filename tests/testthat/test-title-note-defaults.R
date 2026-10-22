@@ -278,9 +278,22 @@ tnd_detex <- function(x) {
 tnd_caption_pairs <- function(pages) {
   lines <- unlist(strsplit(apa_nbsp_to_space(paste(pages, collapse = "\n")), "\n"))
   i <- grep("^\\s*Table\\s+[0-9]+\\s*$", lines)
+  # The title is the next line of text at the caption's own left margin. Not
+  # simply the next line: on a rotated page the running head is printed
+  # sideways at the page edge, and pdftotext -layout interleaves its lines
+  # with a single-spaced caption ("Table 6", blank lines, "DEFAULTS", then
+  # the title). A missing title still fails -- the next line at that margin
+  # is then the table's header row.
+  indent <- function(x) nchar(x) - nchar(sub("^\\s+", "", x))
+  title <- vapply(i, function(k) {
+    rest <- seq.int(k + 1L, length.out = max(0L, length(lines) - k))
+    hit <- rest[nzchar(trimws(lines[rest])) &
+                  indent(lines[rest]) == indent(lines[k])]
+    if (length(hit)) trimws(lines[hit[1]]) else ""
+  }, character(1))
   data.frame(
     number = as.integer(sub("^\\s*Table\\s+([0-9]+)\\s*$", "\\1", lines[i])),
-    title  = trimws(lines[pmin(i + 1L, length(lines))]),
+    title  = title,
     stringsAsFactors = FALSE)
 }
 
