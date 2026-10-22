@@ -179,6 +179,14 @@ but there is no setting that makes it safe – render with
 <code>documentmode: man</code> instead, which is the mode a manuscript
 is submitted in, or save the table as a Word file with
 <code><a href="../reference/apa.save.html">apa.save()</a></code>.</p>
+<p>In the other modes (<code>man</code>, <code>stu</code> and
+<code>doc</code>) a long table – one of apaTables’ or one written in
+markdown – continues onto the next page with every row, and its note
+prints under its last row. If rows are missing there, the project’s copy
+of apaquarto has probably been replaced by the standard one (running
+<code>quarto add</code> or <code>quarto update extension</code> does
+that). Run <code><a href="../reference/apa.quarto.setup.html">apa.quarto.setup()</a></code> in the project to put
+apaTables’ tested copy back, then render again.</p>
 </div>
 <div class="section level2">
 <h2 id="r-says-it-cannot-find-apa-ezanova-table-">“R says it cannot find <code>apa.ezANOVA.table()</code>.”<a class="anchor" aria-label="anchor" href="#r-says-it-cannot-find-apa-ezanova-table-"></a>

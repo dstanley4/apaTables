@@ -126,6 +126,15 @@ instead, which is the mode a manuscript is submitted in, or save the
 table as a Word file with
 [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md).
 
+In the other modes (`man`, `stu` and `doc`) a long table – one of
+apaTables’ or one written in markdown – continues onto the next page
+with every row, and its note prints under its last row. If rows are
+missing there, the project’s copy of apaquarto has probably been
+replaced by the standard one (running `quarto add` or
+`quarto update extension` does that). Run
+[`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
+in the project to put apaTables’ tested copy back, then render again.
+
 ## “R says it cannot find `apa.ezANOVA.table()`.”
 
 It was removed in version 4.0.0, because the `ez` package it depended on

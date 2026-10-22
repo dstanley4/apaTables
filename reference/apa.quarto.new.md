@@ -126,8 +126,8 @@ to install or repair the extension in a project you already have,
 # Start a new manuscript in a temporary folder
 proj <- file.path(tempdir(), "apaTables-quarto-new-example")
 apa.quarto.new(proj)
-#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.27) at _extensions/wjschne/apaquarto.
-#> apaTables created /tmp/RtmprCVrfP/apaTables-quarto-new-example/apaTables-quarto-new-example.qmd; open it and click Render, or run quarto render in this folder.
+#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.33) at _extensions/wjschne/apaquarto.
+#> apaTables created /tmp/Rtmp3tPOuA/apaTables-quarto-new-example/apaTables-quarto-new-example.qmd; open it and click Render, or run quarto render in this folder.
 
 # (delete the demo folder)
 unlink(proj, recursive = TRUE)

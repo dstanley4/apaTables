@@ -31,7 +31,23 @@ released.
   is captioned “Table 1” and every reference to one reads “Table 1”; in
   a document that mixes markdown tables with apaTables tables, the
   apaTables table after each markdown table repeats its number instead.
-  The bundled extension (5.0.18+apaTables.27) carries the fix.
+  The bundled extension carries the fix.
+- In an apaquarto PDF, a long table written in markdown, or made by
+  [`knitr::kable()`](https://rdrr.io/pkg/knitr/man/kable.html) in a
+  chunk with a `tbl-cap`, continues onto the next page with every row,
+  prints its caption once, and keeps its note with it when tables are
+  collected at the end of the manuscript. With the stock extension under
+  Quarto 1.9 such a table stops at the foot of its first page and every
+  later row is lost, with no error or warning. (Journal mode,
+  `documentmode: jou`, still cannot break a table across pages.)
+- In an apaquarto PDF the rows of apaTables’ tables, markdown tables and
+  [`knitr::kable()`](https://rdrr.io/pkg/knitr/man/kable.html) tables
+  are single-spaced, as in Word, and a table’s note keeps the
+  manuscript’s spacing, as in Word. Each such table closes with a single
+  bottom rule (with the stock extension a markdown table without a
+  caption ends with two), and a table’s note is kept on a page with at
+  least one of its rows unless the note itself is longer than about a
+  quarter of a page.
 - Tables drop directly into apaquarto documents. Build the table on one
   line and pass it to the entry point named for the document’s own
   destination on the next:
