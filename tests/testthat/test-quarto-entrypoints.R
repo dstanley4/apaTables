@@ -189,6 +189,6 @@ test_that("apa.quarto.template() defaults to the pdf form and never names the re
   # parentheses -- that form appears nowhere in the chunk,
   # and a match on the bare function name would also be satisfied by the
   # commented build line.
-  expect_match(txt, "apa.quarto.pdf(mytable)", fixed = TRUE)
+  expect_match(txt, "apa.quarto.pdf(x = mytable)", fixed = TRUE)
   expect_false(grepl("apa.quarto.table", txt, fixed = TRUE))
 })

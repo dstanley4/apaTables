@@ -1,6 +1,6 @@
 title: My Document in APA Style, Seventh Edition
 author: W. Joel Schneider
-version: 5.0.18+apaTables.34
+version: 5.0.18+apaTables.36
 quarto-required: ">=1.4.549"
 contributes:
   formats:
@@ -218,7 +218,7 @@ contributes:
         # Add custom styles to docx
         - at: post-quarto
           path: docxstyler.lua
-        # Select the table-size ladder style (Table6-Table9, Table11, Table12)
+        # Select apaTables' table-size style (Table6-Table12; Table10 is the default)
         - at: post-quarto
           path: apatablesize.lua
         # A column spanner is CENTRED over the columns it covers -- the

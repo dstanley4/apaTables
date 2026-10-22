@@ -95,10 +95,10 @@ repair itself automatically.
 # Install the apaquarto extension into a temporary project folder
 proj <- file.path(tempdir(), "apaTables-quarto-setup-example")
 dir.create(proj, showWarnings = FALSE)
-apa.quarto.setup(proj)
+apa.quarto.setup(path = proj)
 
 # Running it again on the same, already-correct folder does nothing
-apa.quarto.setup(proj)
+apa.quarto.setup(path = proj)
 
 # (delete the demo folder)
 unlink(proj, recursive = TRUE)

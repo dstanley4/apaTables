@@ -34,14 +34,13 @@ file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
 to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
 no number: none is then shown at the console or written to the Word file.
 When \code{\link{apa.save}} writes several tables to one file, a table
-left at the default is numbered by its position in that file, while a
-number given here is kept. In a Quarto document that uses the apaquarto
+left at the default takes the next number after the last numbered table before it
+(starting at 1), and a number given here is kept. In a Quarto document that uses the apaquarto
 extension this value is ignored: apaquarto numbers the tables itself, in
 the order they appear in the document.}
 
 \item{show.conf.interval}{Deprecated and ignored; confidence intervals
-are always displayed when the \pkg{MBESS} package is installed. This
-argument will be removed in a later version.}
+are always displayed. This argument will be removed in a later version.}
 
 \item{landscape}{Whether this table is placed on a rotated (landscape)
 page. The default, \code{NA}, means apaTables decides by measuring the
@@ -72,7 +71,7 @@ manuscript:
 }
 \details{
 \preformatted{table1 <- apa.d.table(iv = dose, dv = libido, data = viagra)
-apa.save("Table1.docx", table1)}
+apa.save(filename = "Table1.docx", table1)}
 
 The file appears in your working directory -- the folder R is currently
 pointing at. See the \emph{Word files (apa.save)} section below. The
@@ -87,9 +86,7 @@ the mean difference divided by the pooled within-groups standard
 deviation, with no small-sample correction applied; a d-value is
 not calculated when unequal variances prevent pooling. Each confidence
 interval is the exact noncentral t interval computed by
-\code{MBESS::ci.smd()}; the \pkg{MBESS} package is therefore required
-for the intervals, and when \pkg{MBESS} is not installed the table is
-created without them.
+\code{MBESS::ci.smd()}.
 }
 \section{Word files (apa.save)}{
 
@@ -97,13 +94,13 @@ created without them.
 open, copy from, or send -- the most common way to use an apaTables
 table:
 
-\preformatted{apa.save("Table1.docx", table1)}
+\preformatted{apa.save(filename = "Table1.docx", table1)}
 
 The file appears in your working directory -- the folder R is currently
 pointing at. Several tables can go into one file, each on its own page,
 numbered Table 1, Table 2, and so on in the order you list them:
 
-\preformatted{apa.save("AllTables.docx", table1, table2)}
+\preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
 
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to
@@ -120,7 +117,7 @@ that combine text and R code. The apaquarto extension makes a Quarto
 document follow APA style: place this table in such a document and it
 appears as a fully formatted APA table -- number, title, and note
 included -- in Word, PDF, or HTML. The extension must be installed beside the document, and one command does
-it. \code{\link{apa.quarto.new}("my-paper")} creates a new manuscript
+it. \code{\link{apa.quarto.new}(path = "my-paper")} creates a new manuscript
 folder with the extension already installed; for a folder you already
 have, \code{\link{apa.quarto.setup}()} installs the extension there
 instead.
@@ -181,7 +178,7 @@ chunk: without it the document cannot find
 #| warning: true
 library(apaTables)
 table1 <- apa.d.table(iv = dose, dv = libido, data = viagra)
-apa.quarto.pdf(table1)
+apa.quarto.pdf(x = table1)
 ```}
 
 That \code{#| label: tbl-dvalues} line is not optional: without a label
@@ -205,7 +202,7 @@ sits on a page of its own, always at full size.
 
 To see this table (and every apaTables table type) in a complete
 working document, type
-\code{apa.quarto.example("apaTables-examples.qmd")} in the R console.
+\code{apa.quarto.example(filename = "apaTables-examples.qmd")} in the R console.
 Two ready-to-render example documents appear in your working directory,
 with the apaquarto extension installed beside them -- one per
 destination:
@@ -243,16 +240,16 @@ table1
 # Word documents ----------------------------------------
 # Save the table as a .docx file (here, in a temporary
 # folder; for real use give an ordinary name, such as
-# apa.save("Table1.docx", table1), and the file appears in your
+# apa.save(filename = "Table1.docx", table1), and the file appears in your
 # working directory)
-apa.save(file.path(tempdir(), "table1.docx"), table1)
+apa.save(filename = file.path(tempdir(), "table1.docx"), table1)
 
 # Quarto documents ----------------------------------------
 # Print a ready-to-paste apaquarto code chunk:
-apa.quarto.template(table1)
+apa.quarto.template(x = table1)
 
 # Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(table1)
+apa.quarto.pdf(x = table1)
 
 # Clean up
 unlink(file.path(tempdir(), "table1.docx"))
@@ -266,7 +263,7 @@ ready-to-render example document with one apaTables table per page -- the
 fastest way to see every table type working in an apaquarto document. In
 the R console, type:
 
-\preformatted{apa.quarto.example("apaTables-examples.qmd")}
+\preformatted{apa.quarto.example(filename = "apaTables-examples.qmd")}
 
 \strong{Prefer a written guide?} A step-by-step guide to placing these
 tables in Quarto documents comes installed with the package. To open it,

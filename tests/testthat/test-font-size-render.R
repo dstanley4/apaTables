@@ -137,7 +137,7 @@ test_that("the new Word rungs are selected on a real docx render", {
   # fixture order: tbl-eleven (11), tbl-twelve (12), tbl-over (16 -> 12)
   expect_identical(styles, c("Table11", "Table12", "Table12"))
 
-  # no style outside the clone set is ever named -- Word drops an unknown
+  # no style outside Table6-Table12 is ever named -- Word drops an unknown
   # table style entirely, taking the APA rules and cell margins with it
-  expect_false(any(grepl("Table(10|16)$", styles)))
+  expect_true(all(styles %in% paste0("Table", 6:12)))
 })

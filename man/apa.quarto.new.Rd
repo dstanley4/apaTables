@@ -21,7 +21,7 @@ Invisibly, a list with \code{path}, \code{document} and
 \description{
 One command gives you a working APA manuscript:
 
-\preformatted{apa.quarto.new("my-paper")}
+\preformatted{apa.quarto.new(path = "my-paper")}
 
 This creates a \code{my-paper} folder holding \code{my-paper.qmd} -- a
 Quarto document with a working APA header and one worked table -- and,
@@ -55,7 +55,7 @@ title, and \emph{Note.} line automatically, in Word, PDF, or HTML. In
 the R console, type:
 
 \preformatted{library(apaTables)
-apa.quarto.new("my-paper")}
+apa.quarto.new(path = "my-paper")}
 
 This creates a folder called \code{my-paper} containing \code{my-
 paper.qmd}. The document's YAML header (the settings block between
@@ -102,7 +102,7 @@ folder absent, Quarto fails before any R code runs.
 \examples{
 # Start a new manuscript in a temporary folder
 proj <- file.path(tempdir(), "apaTables-quarto-new-example")
-apa.quarto.new(proj)
+apa.quarto.new(path = proj)
 
 # (delete the demo folder)
 unlink(proj, recursive = TRUE)

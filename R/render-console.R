@@ -9,7 +9,7 @@
 #' @return `x` invisibly.
 #' @keywords internal
 #' @examples
-#' spec <- apa.cor.table(attitude)$spec
+#' spec <- apa.cor.table(data = attitude)$spec
 #' print(spec)
 #' @export
 print.apa_table_spec <- function(x, ...) {

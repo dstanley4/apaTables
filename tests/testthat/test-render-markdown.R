@@ -273,7 +273,7 @@ test_that("a font size wraps every cell in the matching character style", {
 
 test_that("no per-cell markup at the default size", {
   # The default emission puts nothing on ordinary cells -- 10 pt comes from
-  # the reference document's Table style, not a per-cell span, and the last
+  # the Table10 style its size marker names, not a per-cell span, and the last
   # header row's rule comes from that same style, not a rule div. Do not
   # default rules to TRUE: that wraps every cell of the last header row in
   # "::: {custom-style=\"ApaTableRule\"}", which also contains
@@ -413,9 +413,13 @@ test_that("the bundled reference document defines every style the emitter names"
   }
 })
 
-test_that("the Table style carries the 10 pt run properties", {
-  # 10 pt is a property of the reference document's Table TABLE style
-  # (a <w:rPr> there applies to every run in the table), not per-cell markup.
+test_that("Table10 carries the 10 pt run properties and the plain Table style is stock", {
+  # 10 pt is a property of apaTables' Table10 TABLE style (a <w:rPr> there
+  # applies to every run in the table), not per-cell markup. The plain
+  # "Table" style -- the one pandoc gives a user's own markdown table -- is
+  # stock apaquarto's: no size of its own (the 12 pt document default) and
+  # 58-twip cell margins. apaTables' 15-twip margins on it ran a markdown
+  # table's columns together in Word ("3.10 0.82" read as "3.100.82").
   ref <- system.file("_extensions/wjschne/apaquarto/apaquarto.docx",
                      package = "apaTables")
   skip_if(ref == "")
@@ -423,8 +427,16 @@ test_that("the Table style carries the 10 pt run properties", {
   utils::unzip(ref, files = "word/styles.xml", exdir = tmp)
   s <- paste(readLines(file.path(tmp, "word", "styles.xml"), warn = FALSE),
              collapse = "")
+  t10 <- regmatches(s, regexpr('<w:style w:type="table"[^>]*w:styleId="Table10">.*?</w:style>', s))
+  expect_length(t10, 1)
+  expect_match(t10, '<w:sz w:val="20"/>', fixed = TRUE)
   tbl <- regmatches(s, regexpr('<w:style w:type="table"[^>]*w:styleId="Table">.*?</w:style>', s))
-  expect_match(tbl, '<w:sz w:val="20"/>', fixed = TRUE)
+  expect_length(tbl, 1)
+  expect_false(grepl("<w:sz ", tbl, fixed = TRUE))
+  for (side in c("top", "left", "bottom", "right")) {
+    expect_true(grepl(paste0('<w:', side, ' w:w="58" w:type="dxa"/>'), tbl,
+                      fixed = TRUE), info = side)
+  }
 })
 
 # ---- HTML -- measure what apaquarto already styles -------------------------
@@ -553,7 +565,7 @@ test_that("with no explicit font.size, the ladder's own decision is used", {
   expect_equal(apa_quarto_font_size(plan), APA_QUARTO_DEFAULT_SIZE)
 })
 
-test_that("a table that fits at 10 pt gets no size markup and no style override at all", {
+test_that("outside a Word render, a table that fits at 10 pt gets no size marker and no style override", {
   block <- apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]))
   body <- as.character(block)
   expect_false(grepl("custom-style=", body, fixed = TRUE))
@@ -637,15 +649,17 @@ test_that("apa_quarto_markdown_block() rotates a table wide enough to want it, o
   # at 10 pt (measured: apa_layout_decide(plan, can_execute_rotation =
   # FALSE) shrinks it to ~7.65 pt instead) but DOES fit the wider rotated
   # budget at the full 10 pt (rotate before shrink) -- so on a docx
-  # render the public function must rotate it, at the default size, with no
-  # shrink marker at all. The companion test just below proves the OTHER
+  # render the public function must rotate it, at the default size: the
+  # 10 pt marker every Word table carries, and no shrink marker. The
+  # companion test just below proves the OTHER
   # half: an HTML render (apa_quarto_docx_target() mocked FALSE) must NOT
   # rotate this same table.
   local_mocked_bindings(apa_quarto_docx_target = function() TRUE)
   block <- apa_quarto_markdown_block(apa.cor.table(mtcars))
   body <- as.character(block)
   expect_true(grepl("apa-table-landscape", body, fixed = TRUE))
-  expect_false(grepl("apa-table-size-", body, fixed = TRUE))
+  expect_true(grepl("::: {.apa-table-size-10}", body, fixed = TRUE))
+  expect_false(grepl("apa-table-size-[0-9]", sub("apa-table-size-10", "", body, fixed = TRUE)))
 })
 
 test_that("apa_quarto_markdown_block() does NOT rotate, and does NOT mark a shrink, on a non-docx render", {
@@ -676,8 +690,8 @@ test_that("the automatic ladder's own continuous size is snapped to a real style
   # under can_execute_rotation = FALSE: 7.645047), and the filter's marker
   # pattern is digit-only ("^apa%-table%-size%-(%d+)$") -- so an unsnapped
   # marker would be literally "apa-table-size-7.645047", which the filter's
-  # Div handler never matches, and the table would silently stay at the
-  # DEFAULT 10 pt with no warning anywhere. Assert the FLOORED integer rung
+  # Div handler never matches, and the table would silently fall to the
+  # plain "Table" style (12 pt) with no warning anywhere. Assert the FLOORED integer rung
   # directly (7, not 8 -- rounding up could put a column back over the edge
   # the ladder shrank it to clear). This half is deliberately the
   # LOWER-LEVEL function with can_execute_rotation = FALSE forced, which is
@@ -694,8 +708,8 @@ test_that("the automatic ladder's own continuous size is snapped to a real style
   # The public path, driven by a continuous ladder size rather than an
   # explicit, already-integer font.size. A 14-variable correlation table
   # (mtcars cannot stand in here: can_execute_rotation is TRUE inside
-  # apa_quarto_markdown_block() on a docx render, so mtcars rotates to the
-  # full 10 pt with no marker at all -- see the rotation test above) rotates
+  # apa_quarto_markdown_block() on a docx render, so mtcars rotates at the
+  # full 10 pt with no shrink -- see the rotation test above) rotates
   # AND still needs shrinking below the rotated budget, measured at size
   # 9.181, which floors to rung 9. This is the rotated-AND-shrunk
   # combination, so both markers are asserted together.
@@ -861,10 +875,11 @@ test_that("apa_quarto_markdown_block() does not burn the once-per-render unknown
   expect_match(conditionMessage(w), "geometry", fixed = TRUE)
 })
 
-test_that("an explicit font.size across the whole 6-12 range reaches the docx as a real style or no marker, never an invented one", {
-  # Table11/Table12 are cloned in the reference document, so 11 and 12 are
-  # REAL rungs and MUST each produce their own marker -- collapsing either to
-  # NO marker (as an out-of-range request would) is a defect.
+test_that("an explicit font.size across the whole 6-12 range reaches the docx as a real style, never an invented one", {
+  # Table10/Table11/Table12 are styles in the reference document, so 10, 11
+  # and 12 are REAL rungs and MUST each produce their own marker --
+  # collapsing any to NO marker would leave the table on the plain "Table"
+  # style.
   #
   # font.size = 16L is a request ABOVE the ceiling. It must still land on
   # the top real rung, apa-table-size-12, and never invent
@@ -879,6 +894,16 @@ test_that("an explicit font.size across the whole 6-12 range reaches the docx as
   body5 <- as.character(b5)
   expect_true(grepl("apa-table-size-6", body5, fixed = TRUE))
   expect_false(grepl("apa-table-size-5", body5, fixed = TRUE))
+
+  # 10 is the default, and an explicit 10 (or anything that floors to it)
+  # still names its style rather than leaving the table unmarked. 10.5 is
+  # not a size Word has, so it also says it used 10.
+  b10 <- apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]), font.size = 10L)
+  expect_true(grepl("::: {.apa-table-size-10}", as.character(b10), fixed = TRUE))
+  expect_warning(
+    b105 <- apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]), font.size = 10.5),
+    "sets the table at 10 points rather than the 10.5 points requested", fixed = TRUE)
+  expect_true(grepl("::: {.apa-table-size-10}", as.character(b105), fixed = TRUE))
 
   b11 <- apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]), font.size = 11L)
   body11 <- as.character(b11)
@@ -933,9 +958,9 @@ test_that("apatablesize.lua's Div handler gates a matched size on valid_sizes me
   expect_true(grepl("if n and valid_sizes[n] then", code, fixed = TRUE))
 })
 
-test_that("the bundled reference document defines the six cloned table styles at the right sizes", {
-  # Table11 (22 half-points = 11 pt) and Table12 (24 half-points = 12 pt)
-  # sit alongside the Table9/8/7/6 shrink ladder.
+test_that("the bundled reference document defines the seven size styles at the right sizes", {
+  # Table10 is the default; Table11 (22 half-points = 11 pt) and Table12
+  # (24 half-points = 12 pt) sit alongside the Table9/8/7/6 shrink ladder.
   ref <- system.file("_extensions/wjschne/apaquarto/apaquarto.docx",
                      package = "apaTables")
   skip_if(ref == "")
@@ -943,7 +968,7 @@ test_that("the bundled reference document defines the six cloned table styles at
   utils::unzip(ref, files = "word/styles.xml", exdir = tmp)
   s <- paste(readLines(file.path(tmp, "word", "styles.xml"), warn = FALSE),
             collapse = "")
-  expected_sz <- c("9" = "18", "8" = "16", "7" = "14", "6" = "12",
+  expected_sz <- c("10" = "20", "9" = "18", "8" = "16", "7" = "14", "6" = "12",
                    "11" = "22", "12" = "24")
   for (n in names(expected_sz)) {
     id <- paste0("Table", n)
@@ -960,7 +985,7 @@ test_that("the bundled reference document defines the six cloned table styles at
   }
 })
 
-test_that("the Table style and its shrink-ladder clones cut fixed cell padding to 15 twips", {
+test_that("apaTables' size styles cut fixed cell padding to 15 twips", {
   # A Word table cell's <w:tblCellMar> is FIXED padding, the same twips
   # whatever the column's width, and the width model never subtracts it. On
   # apa.cor.table(mtcars) (14 columns, auto-shrunk to Table7) the narrow N
@@ -968,8 +993,8 @@ test_that("the Table style and its shrink-ladder clones cut fixed cell padding t
   # real Word broke numbers mid-digit. Measured in real Word: 58 breaks
   # nearly every narrow cell, 29 still breaks the widest values, 15 is
   # clean, 0 is clean. This asserts the accepted value, 15, on every table
-  # style that carries its own <w:tblCellMar> declaration -- Table plus
-  # every cloned size style, each of which declares the margin independently
+  # style apaTables names -- Table10 and every other size style, each of
+  # which declares the margin independently
   # rather than inheriting it (measured). The clones above the default
   # (Table11/Table12) are watched too: the WRONG number here breaks real
   # Word invisibly to every other check, so a future clone built off the
@@ -981,7 +1006,7 @@ test_that("the Table style and its shrink-ladder clones cut fixed cell padding t
   utils::unzip(ref, files = "word/styles.xml", exdir = tmp)
   s <- paste(readLines(file.path(tmp, "word", "styles.xml"), warn = FALSE),
             collapse = "")
-  for (id in c("Table", "Table9", "Table8", "Table7", "Table6",
+  for (id in c("Table10", "Table9", "Table8", "Table7", "Table6",
               "Table11", "Table12")) {
     pat <- paste0('<w:style w:type="table"[^>]*w:styleId="', id, '">.*?</w:style>')
     m <- regmatches(s, regexpr(pat, s))

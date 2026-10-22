@@ -13,7 +13,7 @@
 #'
 #' \preformatted{blk1 <- lm(sales ~ adverts + airplay, data = album)
 #' table1 <- apa.reg.table(blk1)
-#' apa.save("Table1.docx", table1)}
+#' apa.save(filename = "Table1.docx", table1)}
 #'
 #' The file appears in your working directory -- the folder R is currently
 #' pointing at. See the \emph{Word files (apa.save)} section below. The
@@ -32,8 +32,8 @@
 #'   to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
 #'   no number: none is then shown at the console or written to the Word file.
 #'   When \code{\link{apa.save}} writes several tables to one file, a table
-#'   left at the default is numbered by its position in that file, while a
-#'   number given here is kept. In a Quarto document that uses the apaquarto
+#'   left at the default takes the next number after the last numbered table before it
+#'   (starting at 1), and a number given here is kept. In a Quarto document that uses the apaquarto
 #'   extension this value is ignored: apaquarto numbers the tables itself, in
 #'   the order they appear in the document.
 #' @param prop.var.conf.level Confidence level (\code{.90} or \code{.95},
@@ -77,13 +77,13 @@
 #' open, copy from, or send -- the most common way to use an apaTables
 #' table:
 #'
-#' \preformatted{apa.save("Table1.docx", table1)}
+#' \preformatted{apa.save(filename = "Table1.docx", table1)}
 #'
 #' The file appears in your working directory -- the folder R is currently
 #' pointing at. Several tables can go into one file, each on its own page,
 #' numbered Table 1, Table 2, and so on in the order you list them:
 #'
-#' \preformatted{apa.save("AllTables.docx", table1, table2)}
+#' \preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
 #'
 #' The title above each table and the note below it are written by
 #' apaTables from the table itself; on this route there is no way to
@@ -98,7 +98,7 @@
 #' document follow APA style: place this table in such a document and it
 #' appears as a fully formatted APA table -- number, title, and note
 #' included -- in Word, PDF, or HTML. The extension must be installed beside the document, and one command does
-#' it. \code{\link{apa.quarto.new}("my-paper")} creates a new manuscript
+#' it. \code{\link{apa.quarto.new}(path = "my-paper")} creates a new manuscript
 #' folder with the extension already installed; for a folder you already
 #' have, \code{\link{apa.quarto.setup}()} installs the extension there
 #' instead.
@@ -160,7 +160,7 @@
 #' library(apaTables)
 #' blk1 <- lm(sales ~ adverts + airplay, data = album)
 #' table1 <- apa.reg.table(blk1)
-#' apa.quarto.pdf(table1)
+#' apa.quarto.pdf(x = table1)
 #' ```}
 #'
 #' That \code{#| label: tbl-regression} line is not optional: without a
@@ -184,7 +184,7 @@
 #'
 #' To see this table (and every apaTables table type) in a complete
 #' working document, type
-#' \code{apa.quarto.example("apaTables-examples.qmd")} in the R console.
+#' \code{apa.quarto.example(filename = "apaTables-examples.qmd")} in the R console.
 #' Two ready-to-render example documents appear in your working directory,
 #' with the apaquarto extension installed beside them -- one per
 #' destination:
@@ -203,7 +203,7 @@
 #' fastest way to see every table type working in an apaquarto document. In
 #' the R console, type:
 #'
-#' \preformatted{apa.quarto.example("apaTables-examples.qmd")}
+#' \preformatted{apa.quarto.example(filename = "apaTables-examples.qmd")}
 #'
 #' \strong{Prefer a written guide?} A step-by-step guide to placing these
 #' tables in Quarto documents comes installed with the package. To open it,
@@ -239,16 +239,16 @@
 #' # Word documents ----------------------------------------
 #' # Save the table as a .docx file (here, in a temporary
 #' # folder; for real use give an ordinary name, such as
-#' # apa.save("Table1.docx", table1), and the file appears in your
+#' # apa.save(filename = "Table1.docx", table1), and the file appears in your
 #' # working directory)
-#' apa.save(file.path(tempdir(), "table1.docx"), table1)
+#' apa.save(filename = file.path(tempdir(), "table1.docx"), table1)
 #'
 #' # Quarto documents ----------------------------------------
 #' # Print a ready-to-paste apaquarto code chunk:
-#' apa.quarto.template(table1)
+#' apa.quarto.template(x = table1)
 #'
 #' # Or write your own chunk; apa.quarto.pdf() displays the table body:
-#' apa.quarto.pdf(table1)
+#' apa.quarto.pdf(x = table1)
 #'
 #' # Clean up
 #' unlink(file.path(tempdir(), "table1.docx"))
@@ -279,7 +279,7 @@
 #' table5 <- apa.reg.table(blk1, table.number = 5)
 #'
 #' # apa.save() can write several tables into one Word document
-#' apa.save(file.path(tempdir(), "regression_tables.docx"),
+#' apa.save(filename = file.path(tempdir(), "regression_tables.docx"),
 #'          table1, table2, table3, table4, table5)
 #'
 #' # Clean up
@@ -569,27 +569,21 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
 
      prop_var_conf_level_str <- sprintf("%g", round(prop_var_conf_level*100))
 
-     if (requireNamespace("MBESS", quietly = TRUE)) {
-          # Defensive: MBESS::conf.limits.nct() runs options(warn = -1) in its
-          # own scope and never restores it, which silences every warning for
-          # the rest of the session (or the rest of a Quarto render). As of
-          # MBESS 5.0.0 ci.R2() routes through conf.limits.ncf(), which does
-          # not reach nct() and leaves the option alone -- but DESCRIPTION
-          # pins no MBESS version and that internal routing is not part of
-          # MBESS's documented interface, so guard here too. Restore the
-          # caller's setting when this function exits, including on error, and
-          # again right after the call so later warnings here still show.
-          old_warn_option <- getOption("warn")
-          on.exit(options(warn = old_warn_option), add = TRUE)
-          R2CI <- MBESS::ci.R2(R2=R2,df.1=df1,df.2=df2,Random.Predictors = is_random_predictors, conf.level = prop_var_conf_level)
-          options(warn = old_warn_option)
-          R2LL <- R2CI$Lower.Conf.Limit.R2
-          R2UL <- R2CI$Upper.Conf.Limit.R2
-     } else {
-          R2LL <- NA
-          R2UL <- NA
-          message("MBESS package needs to be installed to calculate R2 confidence intervals.")
-     }
+     # Defensive: MBESS::conf.limits.nct() runs options(warn = -1) in its
+     # own scope and never restores it, which silences every warning for
+     # the rest of the session (or the rest of a Quarto render). As of
+     # MBESS 5.0.0 ci.R2() routes through conf.limits.ncf(), which does
+     # not reach nct() and leaves the option alone -- but DESCRIPTION
+     # pins no MBESS version and that internal routing is not part of
+     # MBESS's documented interface, so guard here too. Restore the
+     # caller's setting when this function exits, including on error, and
+     # again right after the call so later warnings here still show.
+     old_warn_option <- getOption("warn")
+     on.exit(options(warn = old_warn_option), add = TRUE)
+     R2CI <- MBESS::ci.R2(R2=R2,df.1=df1,df.2=df2,Random.Predictors = is_random_predictors, conf.level = prop_var_conf_level)
+     options(warn = old_warn_option)
+     R2LL <- R2CI$Lower.Conf.Limit.R2
+     R2UL <- R2CI$Upper.Conf.Limit.R2
 
 
 

@@ -52,12 +52,10 @@ test_that("the shipped reference document carries exactly the clone styles the l
   styles <- apa_shipped_table_styles()
   skip_if(length(styles) == 0, "apaquarto.docx not in the installed package")
 
-  # "Table" itself is the unmodified default and already carries 10 pt,
-  # which is why there is no Table10 and must never be one.
+  # "Table" itself is stock apaquarto's, for the user's own markdown tables;
+  # apaTables names one of Table6-Table12 for every table it writes.
   expect_true("Table" %in% styles)
-  expect_false("Table10" %in% styles)
-  expect_setequal(setdiff(styles, "Table"),
-                  c("Table6", "Table7", "Table8", "Table9", "Table11", "Table12"))
+  expect_setequal(setdiff(styles, "Table"), paste0("Table", 6:12))
 })
 
 test_that("the Lua filter's valid_sizes matches the clone styles in the binary", {
@@ -67,10 +65,8 @@ test_that("the Lua filter's valid_sizes matches the clone styles in the binary",
   expect_setequal(apa_lua_valid_sizes(), from_binary)
 })
 
-# The clone-style sizes the shipped binary actually carries, as integers.
-# "Table" itself is the unmodified default (10 pt) and names no rung --
-# apa_quarto_size_rung() returns NA for 10, meaning "write NO marker and let
-# the reference document's own size stand", so it is correctly absent here.
+# The size styles the shipped binary actually carries, as integers. "Table"
+# itself is stock apaquarto's and names no rung, so it is absent here.
 apa_binary_rungs <- function() {
   styles <- apa_shipped_table_styles()
   n <- sub("^Table", "", styles)
@@ -82,8 +78,8 @@ test_that("every size R can reach is a style the shipped binary actually has", {
   skip_if(length(rungs) == 0, "apaquarto.docx not in the installed package")
 
   rung <- apaTables:::apa_quarto_size_rung
-  reachable <- sort(unique(stats::na.omit(
-    vapply(seq(1, 40, by = 0.25), function(s) rung(s), integer(1)))))
+  reachable <- sort(unique(
+    vapply(seq(1, 40, by = 0.25), function(s) rung(s), integer(1))))
 
   # setequal, both directions: a rung R can name that the binary lacks makes
   # Word drop the style assignment ENTIRELY -- losing the APA rules and cell
@@ -91,13 +87,13 @@ test_that("every size R can reach is a style the shipped binary actually has", {
   # the binary R can never name is dead weight in a shipped file.
   expect_setequal(as.integer(reachable), rungs)
 
-  # `reachable` is the same sweep test-font-size-contract.R:39 pins to a
-  # literal (c(6L, 7L, 8L, 9L, 11L, 12L)), so the assertion above -- checking
-  # `reachable` against the binary's own rungs -- certifies that literal
-  # transitively; no second copy of the set needs writing down here. The
-  # binary's own side is already pinned by name in this file's first test
-  # ("the shipped reference document carries exactly the clone styles the
-  # ladder names", around :59, `expect_setequal(setdiff(styles, "Table"),
-  # c("Table6", ...))`). A redundant `expect_setequal(rungs, c(6L, ...))`
+  # `reachable` is the same sweep test-font-size-contract.R's "never names a
+  # style the reference document lacks" test pins to a literal (6:12), so the
+  # assertion above -- checking `reachable` against the binary's own rungs --
+  # certifies that literal transitively; no second copy of the set needs
+  # writing down here. The binary's own side is already pinned by name in
+  # this file's first test ("the shipped reference document carries exactly
+  # the clone styles the ladder names", `expect_setequal(setdiff(styles,
+  # "Table"), paste0("Table", 6:12))`). A redundant `expect_setequal(rungs, 6:12)`
   # here could only fail in a world where that one already had.
 })

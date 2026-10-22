@@ -21,11 +21,11 @@ APA-style extension). Returns \code{""} if the table has no title. Does
 not include "Table N".
 }
 \examples{
-my_table <- apa.cor.table(attitude)
-apa_caption(my_table)
+my_table <- apa.cor.table(data = attitude)
+apa_caption(x = my_table)
 }
 \seealso{
-\code{\link{apa.quarto.new}("my-paper")} starts an APA manuscript with the
+\code{\link{apa.quarto.new}(path = "my-paper")} starts an APA manuscript with the
 apaquarto extension already installed; \code{\link{apa.quarto.setup}()}
 installs the extension into a project you already have. A step-by-step
 guide to placing apaTables tables in Quarto documents also comes

@@ -23,7 +23,7 @@ test. Rotation is reachable for an unlabelled chunk
 (`apatablelandscape.lua` finds its own marker div via a Pandoc-level walk,
 not a `FloatRefTarget` handler), and so is a defect the shrink-ladder
 filter once had: scoped to `FloatRefTarget` only, an unlabelled wide table
-would rotate but silently keep the default 10 pt table style, leaving its own marker
+would rotate but silently keep the plain table style, leaving its own marker
 div stranded, unread, in the rendered document. That filter now uses the
 same Pandoc-level walk this one does. (This paragraph deliberately avoids
 spelling out the marker's own class name as a literal string, since the

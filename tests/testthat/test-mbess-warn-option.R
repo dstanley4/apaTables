@@ -36,7 +36,6 @@ run_in_fresh_r <- function(body) {
 
 test_that("a warning raised after apa.d.table is still delivered (fresh R)", {
      skip_on_cran()
-     skip_if_not_installed("MBESS")
      skip_if_not_installed("pkgload")
      skip_if(!file.exists(file.path(R.home("bin"), "Rscript")), "no Rscript")
 
@@ -54,7 +53,6 @@ test_that("a warning raised after apa.d.table is still delivered (fresh R)", {
 })
 
 test_that("apa.d.table leaves getOption('warn') unchanged", {
-     skip_if_not_installed("MBESS")
      old_warn <- getOption("warn")
      on.exit(options(warn = old_warn), add = TRUE)
 
@@ -77,7 +75,6 @@ test_that("apa.d.table leaves getOption('warn') unchanged", {
 # conf.limits.ncf() through conf.limits.nct(), or a careless removal of the
 # guard alongside such a change.
 test_that("apa.reg.table leaves getOption('warn') unchanged", {
-     skip_if_not_installed("MBESS")
      old_warn <- getOption("warn")
      on.exit(options(warn = old_warn), add = TRUE)
 
@@ -89,7 +86,6 @@ test_that("apa.reg.table leaves getOption('warn') unchanged", {
 })
 
 test_that("get.ci.partial.eta.squared leaves getOption('warn') unchanged", {
-     skip_if_not_installed("MBESS")
      old_warn <- getOption("warn")
      on.exit(options(warn = old_warn), add = TRUE)
 

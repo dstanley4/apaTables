@@ -1,17 +1,22 @@
 -- apaTables' Word table-size ladder. apa_quarto_markdown_block()
--- (R/quarto-table.R) emits a table at its DEFAULT 10 pt with zero per-cell
--- markup -- the reference document's "Table" table style already carries
--- 10 pt -- and for any other size appends an empty sibling marker
--- div immediately after the grid table's own markdown:
+-- (R/quarto-table.R) emits every table it sends to Word with zero per-cell
+-- markup and an empty sibling marker div immediately after the grid
+-- table's own markdown, at every size including the 10 pt default:
 --
---   ::: {.apa-table-size-9}
+--   ::: {.apa-table-size-10}
 --   :::
 --
 -- naming the target point size. This filter finds that marker inside the
--- same float, reads the size, selects the matching cloned table style
--- (Table6-Table9, Table11, Table12, each a clone of "Table" differing only in
--- <w:sz>/<w:szCs>) as the Table AST node's custom-style, and removes the
--- marker div so it leaves no trace in the rendered document.
+-- same float, reads the size, selects the matching table style
+-- (Table6-Table12, apaTables' own styles: the APA rules, 15-twip cell
+-- margins, differing only in <w:sz>/<w:szCs>) as the Table AST node's
+-- custom-style, and removes the marker div so it leaves no trace in the
+-- rendered document. The reference document's plain "Table" style is left
+-- as stock apaquarto has it (document-default 12 pt, 58-twip margins), so a
+-- markdown table the user writes -- which pandoc gives "Table" -- keeps
+-- the spacing it has without apaTables. apaTables' tight 15-twip margins on
+-- "Table" ran a markdown table's columns together ("3.10 0.82" read as
+-- "3.100.82").
 --
 -- MUST be a Lua filter operating on the AST, not the markdown-level
 -- `: {custom-style="TableN"}` caption-attribute syntax: that syntax works
@@ -26,7 +31,7 @@
 -- chunk's label (apatablelandscape.lua finds its own marker the same way,
 -- for the same reason -- see that file's banner). A FloatRefTarget-only
 -- handler here silently does nothing for an unlabelled table: a wide one
--- would rotate but keep the "Table" style at 10 pt, leaving an inert
+-- would rotate but keep the plain "Table" style, leaving an inert
 -- `apa-table-size-N` div in the rendered docx. MEASURED: a `Pandoc`-level
 -- walk recurses into a `FloatRefTarget`'s content automatically, so ONE
 -- handler covers both the labelled and unlabelled cases.
@@ -68,8 +73,8 @@ local sizeattr = "apa-table-size-pt"
 -- place all three meet.
 local htmlclass = "apa-table-html"
 
--- The only sizes with a cloned table style in the reference document are
--- Table6-Table9, Table11 and Table12. R's apa_quarto_size_rung() already
+-- The only sizes with a table style of apaTables' own in the reference
+-- document are Table6-Table12. R's apa_quarto_size_rung() already
 -- refuses to write a marker naming anything else, but this filter is a
 -- bundled, independently loadable artifact -- another caller, a future R
 -- change, or a hand-authored `::: {.apa-table-size-5}` in someone's own
@@ -79,15 +84,14 @@ local htmlclass = "apa-table-html"
 -- an unknown table style is to drop the style assignment ENTIRELY -- losing
 -- the APA rules and cell margins along with the requested size. So the
 -- check is repeated here, independently.
--- The range is 6-12, and there is deliberately NO "10". The reference
--- document's unmodified "Table" style already carries 10 pt, so a
--- table wanting 10 pt gets it by carrying NO marker at all; a "Table10"
--- style does not exist and must not be named. R's apa_quarto_size_rung()
--- enforces the same rule, and tests/testthat/test-word-size-styles.R
--- asserts this list and the styles actually in apaquarto.docx agree.
+-- The range is 6-12, 10 included: the default size is named like every
+-- other, because the plain "Table" style is no longer apaTables' (see the
+-- banner). R's apa_quarto_size_rung() enforces the same range, and
+-- tests/testthat/test-word-size-styles.R asserts this list and the styles
+-- actually in apaquarto.docx agree.
 local valid_sizes = {
   ["6"] = true, ["7"] = true, ["8"] = true, ["9"] = true,
-  ["11"] = true, ["12"] = true,
+  ["10"] = true, ["11"] = true, ["12"] = true,
 }
 
 -- ONE marker div per TABLE, scoped to the Blocks LIST that table and its
@@ -96,7 +100,7 @@ local valid_sizes = {
 -- it to EVERY Table node) is a LAST-MARKER-WINS bug: three tables marked
 -- 9/unmarked/6 all came out `Table6` -- reproduced even with bare
 -- `pandoc --lua-filter=`, so it is not about Quarto's pipeline. A table
--- that should stay at the 10 pt default would be resized because some
+-- that should stay at its own size would be resized because some
 -- OTHER table needed it, and a plain user-authored table with nothing to
 -- do with apaTables could be silently restyled.
 --
@@ -131,7 +135,7 @@ local function process_blocks(blocks)
         -- guessed at: the marker div is left exactly as it is (an empty
         -- div with an unrecognised class is inert in the rendered docx,
         -- the same as before this filter existed at all), and the table
-        -- simply keeps its default "Table" style.
+        -- keeps the plain "Table" style pandoc gave it.
         if n and valid_sizes[n] then size = n end
       end
       -- HTML's exact size, carried as an attribute because a class cannot

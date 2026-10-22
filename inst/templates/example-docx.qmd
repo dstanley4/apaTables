@@ -128,8 +128,8 @@ write `@tbl-correlation` in a sentence and have Quarto fill in the number.
 #| label: tbl-correlation
 #| message: false
 #| warning: true
-my_table <- apa.cor.table(attitude)
-apa.quarto.docx(my_table)
+my_table <- apa.cor.table(data = attitude)
+apa.quarto.docx(x = my_table)
 ```
 
 {{< pagebreak >}}
@@ -172,8 +172,8 @@ If you ever need to overrule the measurement, every builder takes a
 #| label: tbl-correlation-wide
 #| message: false
 #| warning: true
-my_table <- apa.cor.table(dating_wide)
-apa.quarto.docx(my_table)
+my_table <- apa.cor.table(data = dating_wide)
+apa.quarto.docx(x = my_table)
 ```
 
 {{< pagebreak >}}
@@ -190,7 +190,7 @@ generated automatically, so the chunk needs nothing beyond the label.
 #| warning: true
 blk1 <- lm(sales ~ adverts + airplay, data = album)
 my_table <- apa.reg.table(blk1)
-apa.quarto.docx(my_table)
+apa.quarto.docx(x = my_table)
 ```
 
 {{< pagebreak >}}
@@ -212,7 +212,7 @@ The table for this section is on the next page, and that page is rotated. The ta
 blkA <- lm(sales ~ adverts + airplay, data = album)
 blkB <- lm(sales ~ adverts + airplay + I(adverts * airplay), data = album)
 my_table <- apa.reg.table(blkA, blkB)
-apa.quarto.docx(my_table)
+apa.quarto.docx(x = my_table)
 ```
 
 {{< pagebreak >}}
@@ -240,7 +240,7 @@ document leaves them alone.
 #| message: false
 #| warning: true
 my_table <- apa.d.table(iv = dose, dv = libido, data = viagra)
-apa.quarto.docx(my_table,
+apa.quarto.docx(x = my_table,
     title = "Means, Standard Deviations, and My Own d-Value Title",
     note  = "*M* = mean. *SD* = standard deviation. My own note describing the *d*-values and confidence intervals.")
 ```
@@ -259,8 +259,8 @@ same sum-to-zero coding as the table, which matches common software.
 #| warning: true
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(libido ~ dose, data = viagra)
-my_table <- apa.aov.table(lm_output)
-apa.quarto.docx(my_table)
+my_table <- apa.aov.table(lm_output = lm_output)
+apa.quarto.docx(x = my_table)
 ```
 
 {{< pagebreak >}}
@@ -275,7 +275,7 @@ design.
 #| message: false
 #| warning: true
 my_table <- apa.1way.table(iv = dose, dv = libido, data = viagra)
-apa.quarto.docx(my_table)
+apa.quarto.docx(x = my_table)
 ```
 
 {{< pagebreak >}}
@@ -291,7 +291,7 @@ design.
 #| warning: true
 my_table <- apa.2way.table(iv1 = gender, iv2 = alcohol,
                            dv = attractiveness, data = goggles)
-apa.quarto.docx(my_table)
+apa.quarto.docx(x = my_table)
 ```
 
 {{< pagebreak >}}
@@ -318,6 +318,6 @@ drink_long$imagery <- as.factor(drink_long$imagery)
 drink_results <- afex::aov_ez(id = "participant", dv = "attitude",
                               data = drink_long,
                               within = c("drink", "imagery"))
-my_table <- apa.afex.table(drink_results)
-apa.quarto.docx(my_table)
+my_table <- apa.afex.table(afex.output = drink_results)
+apa.quarto.docx(x = my_table)
 ```

@@ -1,0 +1,38 @@
+---
+title: "Markdown Subtable Panel"
+shorttitle: "Subtable Panel"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx:
+    floatsintext: true
+---
+
+See @tbl-pair and @tbl-after.
+
+::: {#tbl-pair layout-ncol=2}
+
+| A | B |
+|---|---|
+| 1 | 2 |
+
+: First {#tbl-pair-a}
+
+| A | B |
+|---|---|
+| 3 | 4 |
+
+: Second {#tbl-pair-b}
+
+Pair
+:::
+
+| C | D |
+|---|---|
+| 5 | 6 |
+
+: After {#tbl-after}

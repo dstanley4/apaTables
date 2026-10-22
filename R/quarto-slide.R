@@ -600,7 +600,7 @@ apa_slide_flatten_spanners <- function(plan) {
 #' number.
 #'
 #' \strong{Title and note are opt-in, not automatic.}
-#' \code{apa.quarto.revealjs(x)} on its own puts the table alone on the
+#' \code{apa.quarto.revealjs(x = x)} on its own puts the table alone on the
 #' slide, nothing else. Pass \code{title = TRUE} and/or \code{note = TRUE}
 #' to add the title and note apaTables generated for the table -- the same
 #' arguments work here as on \code{apa.quarto.pdf()} and its siblings. This
@@ -611,8 +611,8 @@ apa_slide_flatten_spanners <- function(plan) {
 #' default, a correlation table on a slide shows the stars with their
 #' meaning nowhere on the slide -- \code{note = TRUE} is the remedy:
 #'
-#' \preformatted{my_table <- apa.cor.table(attitude)
-#' apa.quarto.revealjs(my_table, note = TRUE)}
+#' \preformatted{my_table <- apa.cor.table(data = attitude)
+#' apa.quarto.revealjs(x = my_table, note = TRUE)}
 #'
 #' \strong{An explicit \code{font.size} is honoured exactly}, the same value
 #' you typed, though a size below 6 points -- where an APA table stops being

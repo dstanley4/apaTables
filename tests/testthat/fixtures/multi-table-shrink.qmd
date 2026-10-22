@@ -17,7 +17,7 @@ library(apaTables)
 ```
 
 Text before. Three tables follow: the first is marked to shrink to 9 pt,
-the second carries NO size marker at all (default, 10 pt), and the third
+the second carries NO size marker at all (the plain "Table" style), and the third
 is marked to shrink to 6 pt -- two DIFFERENT rungs and one unmarked, so a
 filter that shares one size across the whole document (a real defect
 apatablesize.lua once had, after a document-wide rescope) would

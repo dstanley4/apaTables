@@ -6,7 +6,7 @@
 #' your working directory, with everything they need already installed
 #' beside them:
 #'
-#' \preformatted{apa.quarto.example("apaTables-examples.qmd")}
+#' \preformatted{apa.quarto.example(filename = "apaTables-examples.qmd")}
 #'
 #' Two files appear:
 #'
@@ -43,7 +43,7 @@
 #'
 #' @param filename Path used as the stem for both files. A \code{.qmd}
 #'   extension, if present, is stripped before deriving the two output names:
-#'   \code{apa.quarto.example("apaTables-examples.qmd")} writes
+#'   \code{apa.quarto.example(filename = "apaTables-examples.qmd")} writes
 #'   \code{apaTables-examples-pdf.qmd} and
 #'   \code{apaTables-examples-docx.qmd}. A bare name (the
 #'   default) is written in the current working directory (the folder R is
@@ -60,7 +60,7 @@
 #'   effects: it also writes (or repairs) an \code{_extensions/wjschne/apaquarto}
 #'   folder beside them, as described under \code{filename}.
 #' @seealso
-#' \code{\link{apa.quarto.new}("my-paper")} starts an APA manuscript with the
+#' \code{\link{apa.quarto.new}(path = "my-paper")} starts an APA manuscript with the
 #' apaquarto extension already installed; \code{\link{apa.quarto.setup}()}
 #' installs the extension into a project you already have. A step-by-step
 #' guide to placing apaTables tables in Quarto documents also comes

@@ -83,6 +83,23 @@ $else$
 $endif$
 
 \linenumbers
+% The class gets the longtable option, which lineno passes on to edtable:
+% with line numbers on, edtable numbers each row of a longtable on the page
+% and leaves a macro (\@ET@sw@cr) undefined until a row's first cell has
+% run. A caption line (longtable sets it as a \multicolumn) or a first
+% cell that is a \multicolumn skips that, and the document stops with
+% "Undefined control sequence". With numbering off inside the table,
+% edtable defines the macro at once. The \longtable command is patched,
+% not the environment names, because longtable* (Quarto's name for an
+% uncaptioned longtable) and xltabular (kableExtra's full_width) both call
+% it directly. A run-in heading waiting for the table, or a paragraph
+% running straight into it, is set first so that it keeps its number.
+\usepackage{etoolbox}
+\makeatletter
+\pretocmd{\longtable}{\if@noskipsec\mbox{}\fi\par\nolinenumbers}{}{%
+  \AtBeginEnvironment{longtable}{\par\nolinenumbers}%
+  \AtBeginEnvironment{longtable*}{\par\nolinenumbers}}
+\makeatother
 $endif$
 
 $if(linestretch)$

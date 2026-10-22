@@ -36,8 +36,8 @@ file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
 to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
 no number: none is then shown at the console or written to the Word file.
 When \code{\link{apa.save}} writes several tables to one file, a table
-left at the default is numbered by its position in that file, while a
-number given here is kept. In a Quarto document that uses the apaquarto
+left at the default takes the next number after the last numbered table before it
+(starting at 1), and a number given here is kept. In a Quarto document that uses the apaquarto
 extension this value is ignored: apaquarto numbers the tables itself, in
 the order they appear in the document.}
 
@@ -73,8 +73,8 @@ manuscript:
 \preformatted{goggles_results <- afex::aov_ez(id = "participant",
      dv = "attractiveness", data = goggles,
      between = c("gender", "alcohol"))
-table1 <- apa.afex.table(goggles_results)
-apa.save("Table1.docx", table1)}
+table1 <- apa.afex.table(afex.output = goggles_results)
+apa.save(filename = "Table1.docx", table1)}
 
 The file appears in your working directory -- the folder R is currently
 pointing at. See the \emph{Word files (apa.save)} section below. The
@@ -88,13 +88,13 @@ documents} section below.
 open, copy from, or send -- the most common way to use an apaTables
 table:
 
-\preformatted{apa.save("Table1.docx", table1)}
+\preformatted{apa.save(filename = "Table1.docx", table1)}
 
 The file appears in your working directory -- the folder R is currently
 pointing at. Several tables can go into one file, each on its own page,
 numbered Table 1, Table 2, and so on in the order you list them:
 
-\preformatted{apa.save("AllTables.docx", table1, table2)}
+\preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
 
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to
@@ -111,7 +111,7 @@ that combine text and R code. The apaquarto extension makes a Quarto
 document follow APA style: place this table in such a document and it
 appears as a fully formatted APA table -- number, title, and note
 included -- in Word, PDF, or HTML. The extension must be installed beside the document, and one command does
-it. \code{\link{apa.quarto.new}("my-paper")} creates a new manuscript
+it. \code{\link{apa.quarto.new}(path = "my-paper")} creates a new manuscript
 folder with the extension already installed; for a folder you already
 have, \code{\link{apa.quarto.setup}()} installs the extension there
 instead.
@@ -186,8 +186,8 @@ library(apaTables)
 goggles_results <- afex::aov_ez(id = "participant",
                    dv = "attractiveness", data = goggles,
                    between = c("gender", "alcohol"))
-table1 <- apa.afex.table(goggles_results)
-apa.quarto.pdf(table1)
+table1 <- apa.afex.table(afex.output = goggles_results)
+apa.quarto.pdf(x = table1)
 ```}
 
 That \code{#| label: tbl-anova} line is not optional: without a label
@@ -211,7 +211,7 @@ sits on a page of its own, always at full size.
 
 To see this table (and every apaTables table type) in a complete
 working document, type
-\code{apa.quarto.example("apaTables-examples.qmd")} in the R console.
+\code{apa.quarto.example(filename = "apaTables-examples.qmd")} in the R console.
 Two ready-to-render example documents appear in your working directory,
 with the apaquarto extension installed beside them -- one per
 destination:
@@ -257,10 +257,10 @@ goggles_table
 
 # Quarto documents ----------------------------------------
 # Print a ready-to-paste apaquarto code chunk:
-apa.quarto.template(goggles_table)
+apa.quarto.template(x = goggles_table)
 
 # Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(goggles_table)
+apa.quarto.pdf(x = goggles_table)
 }
 
 \donttest{
@@ -343,7 +343,7 @@ ready-to-render example document with one apaTables table per page -- the
 fastest way to see every table type working in an apaquarto document. In
 the R console, type:
 
-\preformatted{apa.quarto.example("apaTables-examples.qmd")}
+\preformatted{apa.quarto.example(filename = "apaTables-examples.qmd")}
 
 \strong{Prefer a written guide?} A step-by-step guide to placing these
 tables in Quarto documents comes installed with the package. To open it,

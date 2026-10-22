@@ -1,6 +1,6 @@
-# apa_quarto_size_rung()'s contract, with the two edges named explicitly
-# because both are counter-intuitive and each is wrong in the opposite
-# direction. NA means "write no marker"; the default Table style is 10 pt.
+# apa_quarto_size_rung()'s contract. Every size names a style, the 10 pt
+# default included: the reference document's plain "Table" style is stock
+# apaquarto's (12 pt, wide margins), kept for the user's own markdown tables.
 
 test_that("apa_quarto_size_rung maps every band of the 6-12 range", {
   rung <- apaTables:::apa_quarto_size_rung
@@ -15,18 +15,17 @@ test_that("apa_quarto_size_rung maps every band of the 6-12 range", {
   expect_identical(rung(8.5), 8L)
   expect_identical(rung(9.9), 9L)
 
-  # EXACTLY 10 and just above it: no marker. There is no Table10 style and
-  # naming one makes Word discard the table's formatting entirely.
-  expect_identical(rung(10), NA_integer_)
-  expect_identical(rung(10.5), NA_integer_)
+  # EXACTLY 10 and just above it: Table10, named like every other size. An
+  # apaTables table with no marker would get the plain "Table" style.
+  expect_identical(rung(10), 10L)
+  expect_identical(rung(10.5), 10L)
 
   # the new upper band
   expect_identical(rung(11), 11L)
   expect_identical(rung(12), 12L)
   expect_identical(rung(11.5), 11L)
 
-  # ABOVE the ceiling: a real rung, NOT NA. NA here would silently deliver
-  # 10 pt while the warning claimed 12.
+  # ABOVE the ceiling: the largest style there is.
   expect_identical(rung(13), 12L)
   expect_identical(rung(16), 12L)
   expect_identical(rung(72), 12L)
@@ -34,9 +33,9 @@ test_that("apa_quarto_size_rung maps every band of the 6-12 range", {
 
 test_that("apa_quarto_size_rung never names a style the reference document lacks", {
   rung <- apaTables:::apa_quarto_size_rung
-  produced <- unique(stats::na.omit(vapply(seq(1, 40, by = 0.25),
-                                           function(s) rung(s), integer(1))))
-  expect_setequal(as.integer(produced), c(6L, 7L, 8L, 9L, 11L, 12L))
+  produced <- vapply(seq(1, 40, by = 0.25), function(s) rung(s), integer(1))
+  expect_false(anyNA(produced))
+  expect_setequal(unique(produced), 6:12)
 })
 
 test_that("Word reports every size it could not deliver, and stays silent when it could", {
@@ -63,11 +62,10 @@ test_that("Word reports every size it could not deliver, and stays silent when i
 
 test_that("apa_quarto_delivered_size matches what apa_quarto_size_rung implies", {
   # Direct check that the "what Word actually shows" helper agrees with the
-  # rung: NA rung means the default 10 pt was delivered, otherwise the rung
-  # itself is what was delivered.
+  # rung: the rung is the style, and the style is what is delivered.
   delivered <- apaTables:::apa_quarto_delivered_size
-  expect_identical(delivered(10), 10)
-  expect_identical(delivered(10.5), 10)
+  expect_identical(delivered(10), 10L)
+  expect_identical(delivered(10.5), 10L)
   expect_identical(delivered(8), 8L)
   expect_identical(delivered(16), 12L)
 })
@@ -85,6 +83,19 @@ test_that("the docx markdown block warns on an explicit out-of-range size and st
   expect_no_warning(
     apa_quarto_markdown_block(apa.cor.table(attitude), font.size = 8)
   )
+})
+
+test_that("every Word table carries a size marker, the 10 pt default included", {
+  # The plain "Table" style is stock apaquarto's, for the user's own markdown
+  # tables; an apaTables table that reached Word with no marker would take it
+  # (12 pt, 58-twip margins) instead of apaTables' own Table10.
+  local_mocked_bindings(apa_quarto_docx_target = function() TRUE)
+  narrow <- as.character(apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3])))
+  expect_match(narrow, "::: {.apa-table-size-10}", fixed = TRUE)
+  sized <- as.character(apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]),
+                                                  font.size = 8))
+  expect_match(sized, "::: {.apa-table-size-8}", fixed = TRUE)
+  expect_false(grepl("apa-table-size-10", sized, fixed = TRUE))
 })
 
 test_that("the HTML marker is emitted with or without a size", {
@@ -138,8 +149,9 @@ test_that("an explicit font.size on a non-docx target emits the exact-size marke
 test_that("a non-docx target with no explicit font.size carries no exact-size marker", {
   # The negative half of the same wiring: the automatic ladder must never reach
   # HTML (nothing shrinks automatically on a web page).
-  # test-render-markdown.R:552/:681 already cover this shape for the class
-  # marker's substring; this is the same assertion, restated here beside its
+  # test-render-markdown.R's rotation and no-rotation tests already cover
+  # this shape for the class marker's substring; this is the same assertion,
+  # restated here beside its
   # positive counterpart so the pairing is visible in one place.
   local_mocked_bindings(apa_quarto_docx_target = function() FALSE)
   b <- apa_quarto_markdown_block(apa.cor.table(attitude[, 1:3]))

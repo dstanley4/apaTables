@@ -17,7 +17,7 @@ apa.quarto.template(
 
 \item{label}{A length-1 character string naming the chunk. By default the
 name is built from the name of the table given for \code{x}, so
-\code{apa.quarto.template(table3)} names the chunk \code{tbl-table3};
+\code{apa.quarto.template(x = table3)} names the chunk \code{tbl-table3};
 when \code{x} is not a stored table but an expression written out in
 full, the name is \code{tbl-mytable}. A label you supply yourself is
 used exactly as given, so make it begin with \code{"tbl-"} -- Quarto
@@ -27,9 +27,11 @@ table's number (for example, "Table 1").}
 
 \item{code}{A length-1 character string with the R code that produces the
 table, used in the display line of the chunk. You can usually ignore
-this argument: by default, whatever you typed for \code{x} is reused in
-the chunk, so \code{apa.quarto.template(table1)} prints the line
-\code{apa.quarto.pdf(table1)}.}
+this argument: by default the chunk is built from what you typed for
+\code{x}, with the arguments of an apaTables call written by name -- so
+\code{apa.quarto.template(x = table1)} prints the line
+\code{apa.quarto.pdf(x = table1)}; a table function's call given as
+\code{x} is printed with each of its arguments named.}
 
 \item{target}{Which of the format-named entry points to print the chunk
 for -- \code{"pdf"} (the default), \code{"docx"}, \code{"html"}, or
@@ -57,8 +59,8 @@ You have made a table and want it in your Quarto document, but you would
 rather not write the code chunk yourself. Ask for it, in the R console:
 }
 \details{
-\preformatted{table1 <- apa.cor.table(attitude)
-apa.quarto.template(table1)}
+\preformatted{table1 <- apa.cor.table(data = attitude)
+apa.quarto.template(x = table1)}
 
 This prints a finished chunk, named after your table:
 
@@ -67,7 +69,7 @@ This prints a finished chunk, named after your table:
 #| message: false
 #| warning: true
 # table1 <- apa.cor.table(...)   # <- the line that builds your table
-apa.quarto.pdf(table1)
+apa.quarto.pdf(x = table1)
 ```}
 
 Copy it into your \code{.qmd} document, replace the comment with the
@@ -90,7 +92,7 @@ document itself -- and copy the chunk it prints into your \code{.qmd} file.
 
 \strong{The chunk is always two lines: build the table, then display it.}
 If you passed the table-building call itself --
-\code{apa.quarto.template(apa.cor.table(attitude))} -- both lines are
+\code{apa.quarto.template(x = apa.cor.table(data = attitude))} -- both lines are
 ready to run. If you passed a table you had already built, by name, the
 first line is a \emph{comment} showing where your own table-building line
 belongs; replace it with that line, or delete it if the table is built in
@@ -126,8 +128,8 @@ format: apaquarto-pdf
 In the R console, create the table and then ask for its Quarto code:
 
 \preformatted{library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.template(table1)}
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.template(x = table1)}
 
 The printed chunk displays \code{table1} but does not create it, so the
 chunk you paste into your Quarto document must also carry the lines that
@@ -142,8 +144,8 @@ does not is handled without anything being added to the chunk -- see
 #| message: false
 #| warning: true
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.pdf(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = table1)
 ```}
 
 Nothing in that chunk mentions the title or the note, and nothing needs
@@ -181,7 +183,7 @@ Quarto document.
 
 Every chunk in a Quarto document must have a different name, so the
 chunk's name is built from the name of the table you asked for:
-\code{apa.quarto.template(table3)} names the chunk \code{tbl-table3}.
+\code{apa.quarto.template(x = table3)} names the chunk \code{tbl-table3}.
 Two different tables therefore give two chunks that can both be pasted
 into the same document. Dots and underscores in the table's name become
 hyphens (\code{my.table} gives \code{tbl-my-table}), because a dot inside
@@ -194,14 +196,14 @@ the name yourself.
 }
 \examples{
 # Print a ready-to-paste chunk for the table (PDF document by default)
-table1 <- apa.cor.table(attitude)
-apa.quarto.template(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.template(x = table1)
 
 # The same chunk for a Word document
-apa.quarto.template(table1, target = "docx")
+apa.quarto.template(x = table1, target = "docx")
 }
 \seealso{
-\code{\link{apa.quarto.new}("my-paper")} starts an APA manuscript with the
+\code{\link{apa.quarto.new}(path = "my-paper")} starts an APA manuscript with the
 apaquarto extension already installed; \code{\link{apa.quarto.setup}()}
 installs the extension into a project you already have. A step-by-step
 guide to placing apaTables tables in Quarto documents also comes

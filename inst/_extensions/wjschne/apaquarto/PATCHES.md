@@ -3,7 +3,7 @@
 GENERATED from apaTables' patch branch of apaquarto -- do not edit by hand.
 
 Upstream base: `main` @ 9a2f392
-Bundle branch: `apatables-bundle` @ 342f81e
+Bundle branch: `apatables-bundle` @ 48504b5
 
 NOT YET OFFERED UPSTREAM. Every patch below is local to apaTables: none
 has been pushed anywhere and no pull request has been opened. This bundle
@@ -24,34 +24,35 @@ files** -- both silently revert the extension to stock while printing
  _extensions/apaquarto/apafloatstoend.lua           |  32 +-
  _extensions/apaquarto/apalandscapelatex.lua        |  98 +++
  _extensions/apaquarto/apalongtablenote.lua         | 729 ++++++++++++++++++++
- _extensions/apaquarto/apaquarto.docx               | Bin 33069 -> 30253 bytes
+ _extensions/apaquarto/apaquarto.docx               | Bin 33069 -> 30289 bytes
  _extensions/apaquarto/apatablelandscape.lua        | 240 +++++++
  _extensions/apaquarto/apatablelandscapecaption.lua | 190 ++++++
  _extensions/apaquarto/apatablelandscapenote.lua    |  80 +++
  _extensions/apaquarto/apatablemeta-decide.lua      |  16 +
  _extensions/apaquarto/apatablemeta.lua             |  63 ++
- _extensions/apaquarto/apatablesize.lua             | 248 +++++++
+ _extensions/apaquarto/apatablesize.lua             | 252 +++++++
  _extensions/apaquarto/apatablespanner.lua          |  60 ++
- _extensions/apaquarto/apatemplate.tex              | 230 ++++++-
+ _extensions/apaquarto/apatemplate.tex              | 247 ++++++-
  _extensions/apaquarto/doc-class.tex                |   4 +
+ _extensions/apaquarto/markdowntable.lua            |  40 +-
  _extensions/apaquarto/utilsapa.lua                 |  23 +
  tests/landscape-floats.qmd                         |  52 ++
  tests/longtable-counter.qmd                        |  58 ++
- 19 files changed, 3015 insertions(+), 25 deletions(-)
+ 20 files changed, 3075 insertions(+), 26 deletions(-)
 ```
 
 ## Full diff
 
 ```diff
 diff --git a/_extensions/apaquarto/_extension.yml b/_extensions/apaquarto/_extension.yml
-index 0f58672..2f8bb5a 100644
+index 0f58672..efd10e7 100644
 --- a/_extensions/apaquarto/_extension.yml
 +++ b/_extensions/apaquarto/_extension.yml
 @@ -1,6 +1,6 @@
  title: My Document in APA Style, Seventh Edition
  author: W. Joel Schneider
 -version: 5.0.18
-+version: 5.0.18+apaTables.34
++version: 5.0.18+apaTables.36
  quarto-required: ">=1.4.549"
  contributes:
    formats:
@@ -127,7 +128,7 @@ index 0f58672..2f8bb5a 100644
          # Add custom styles to docx
          - at: post-quarto
            path: docxstyler.lua
-+        # Select the table-size ladder style (Table6-Table9, Table11, Table12)
++        # Select apaTables' table-size style (Table6-Table12; Table10 is the default)
 +        - at: post-quarto
 +          path: apatablesize.lua
 +        # A column spanner is CENTRED over the columns it covers -- the
@@ -2032,7 +2033,7 @@ index 0000000..d316a91
 +    end }
 +}
 diff --git a/_extensions/apaquarto/apaquarto.docx b/_extensions/apaquarto/apaquarto.docx
-index 45c2659..b885f93 100644
+index 45c2659..1194d52 100644
 Binary files a/_extensions/apaquarto/apaquarto.docx and b/_extensions/apaquarto/apaquarto.docx differ
 diff --git a/_extensions/apaquarto/apatablelandscape.lua b/_extensions/apaquarto/apatablelandscape.lua
 new file mode 100644
@@ -2655,24 +2656,29 @@ index 0000000..f487e42
 +return { { FloatRefTarget = processfloat } }
 diff --git a/_extensions/apaquarto/apatablesize.lua b/_extensions/apaquarto/apatablesize.lua
 new file mode 100644
-index 0000000..88488e2
+index 0000000..d328c1f
 --- /dev/null
 +++ b/_extensions/apaquarto/apatablesize.lua
-@@ -0,0 +1,248 @@
+@@ -0,0 +1,252 @@
 +-- apaTables' Word table-size ladder. apa_quarto_markdown_block()
-+-- (R/quarto-table.R) emits a table at its DEFAULT 10 pt with zero per-cell
-+-- markup -- the reference document's "Table" table style already carries
-+-- 10 pt -- and for any other size appends an empty sibling marker
-+-- div immediately after the grid table's own markdown:
++-- (R/quarto-table.R) emits every table it sends to Word with zero per-cell
++-- markup and an empty sibling marker div immediately after the grid
++-- table's own markdown, at every size including the 10 pt default:
 +--
-+--   ::: {.apa-table-size-9}
++--   ::: {.apa-table-size-10}
 +--   :::
 +--
 +-- naming the target point size. This filter finds that marker inside the
-+-- same float, reads the size, selects the matching cloned table style
-+-- (Table6-Table9, Table11, Table12, each a clone of "Table" differing only in
-+-- <w:sz>/<w:szCs>) as the Table AST node's custom-style, and removes the
-+-- marker div so it leaves no trace in the rendered document.
++-- same float, reads the size, selects the matching table style
++-- (Table6-Table12, apaTables' own styles: the APA rules, 15-twip cell
++-- margins, differing only in <w:sz>/<w:szCs>) as the Table AST node's
++-- custom-style, and removes the marker div so it leaves no trace in the
++-- rendered document. The reference document's plain "Table" style is left
++-- as stock apaquarto has it (document-default 12 pt, 58-twip margins), so a
++-- markdown table the user writes -- which pandoc gives "Table" -- keeps
++-- the spacing it has without apaTables. apaTables' tight 15-twip margins on
++-- "Table" ran a markdown table's columns together ("3.10 0.82" read as
++-- "3.100.82").
 +--
 +-- MUST be a Lua filter operating on the AST, not the markdown-level
 +-- `: {custom-style="TableN"}` caption-attribute syntax: that syntax works
@@ -2687,7 +2693,7 @@ index 0000000..88488e2
 +-- chunk's label (apatablelandscape.lua finds its own marker the same way,
 +-- for the same reason -- see that file's banner). A FloatRefTarget-only
 +-- handler here silently does nothing for an unlabelled table: a wide one
-+-- would rotate but keep the "Table" style at 10 pt, leaving an inert
++-- would rotate but keep the plain "Table" style, leaving an inert
 +-- `apa-table-size-N` div in the rendered docx. MEASURED: a `Pandoc`-level
 +-- walk recurses into a `FloatRefTarget`'s content automatically, so ONE
 +-- handler covers both the labelled and unlabelled cases.
@@ -2729,8 +2735,8 @@ index 0000000..88488e2
 +-- place all three meet.
 +local htmlclass = "apa-table-html"
 +
-+-- The only sizes with a cloned table style in the reference document are
-+-- Table6-Table9, Table11 and Table12. R's apa_quarto_size_rung() already
++-- The only sizes with a table style of apaTables' own in the reference
++-- document are Table6-Table12. R's apa_quarto_size_rung() already
 +-- refuses to write a marker naming anything else, but this filter is a
 +-- bundled, independently loadable artifact -- another caller, a future R
 +-- change, or a hand-authored `::: {.apa-table-size-5}` in someone's own
@@ -2740,15 +2746,14 @@ index 0000000..88488e2
 +-- an unknown table style is to drop the style assignment ENTIRELY -- losing
 +-- the APA rules and cell margins along with the requested size. So the
 +-- check is repeated here, independently.
-+-- The range is 6-12, and there is deliberately NO "10". The reference
-+-- document's unmodified "Table" style already carries 10 pt, so a
-+-- table wanting 10 pt gets it by carrying NO marker at all; a "Table10"
-+-- style does not exist and must not be named. R's apa_quarto_size_rung()
-+-- enforces the same rule, and tests/testthat/test-word-size-styles.R
-+-- asserts this list and the styles actually in apaquarto.docx agree.
++-- The range is 6-12, 10 included: the default size is named like every
++-- other, because the plain "Table" style is no longer apaTables' (see the
++-- banner). R's apa_quarto_size_rung() enforces the same range, and
++-- tests/testthat/test-word-size-styles.R asserts this list and the styles
++-- actually in apaquarto.docx agree.
 +local valid_sizes = {
 +  ["6"] = true, ["7"] = true, ["8"] = true, ["9"] = true,
-+  ["11"] = true, ["12"] = true,
++  ["10"] = true, ["11"] = true, ["12"] = true,
 +}
 +
 +-- ONE marker div per TABLE, scoped to the Blocks LIST that table and its
@@ -2757,7 +2762,7 @@ index 0000000..88488e2
 +-- it to EVERY Table node) is a LAST-MARKER-WINS bug: three tables marked
 +-- 9/unmarked/6 all came out `Table6` -- reproduced even with bare
 +-- `pandoc --lua-filter=`, so it is not about Quarto's pipeline. A table
-+-- that should stay at the 10 pt default would be resized because some
++-- that should stay at its own size would be resized because some
 +-- OTHER table needed it, and a plain user-authored table with nothing to
 +-- do with apaTables could be silently restyled.
 +--
@@ -2792,7 +2797,7 @@ index 0000000..88488e2
 +        -- guessed at: the marker div is left exactly as it is (an empty
 +        -- div with an unrecognised class is inert in the rendered docx,
 +        -- the same as before this filter existed at all), and the table
-+        -- simply keeps its default "Table" style.
++        -- keeps the plain "Table" style pandoc gave it.
 +        if n and valid_sizes[n] then size = n end
 +      end
 +      -- HTML's exact size, carried as an attribute because a class cannot
@@ -2974,7 +2979,7 @@ index 0000000..74814d5
 +
 +return { { Table = centre_head_spanners } }
 diff --git a/_extensions/apaquarto/apatemplate.tex b/_extensions/apaquarto/apatemplate.tex
-index 8627834..75b4271 100644
+index 8627834..3b4cb51 100644
 --- a/_extensions/apaquarto/apatemplate.tex
 +++ b/_extensions/apaquarto/apatemplate.tex
 @@ -40,6 +40,20 @@ $endif$
@@ -2998,7 +3003,31 @@ index 8627834..75b4271 100644
  \usepackage{framed}
  
  
-@@ -148,9 +162,24 @@ $if(journalmode)$
+@@ -69,6 +83,23 @@ $else$
+ $endif$
+ 
+ \linenumbers
++% The class gets the longtable option, which lineno passes on to edtable:
++% with line numbers on, edtable numbers each row of a longtable on the page
++% and leaves a macro (\@ET@sw@cr) undefined until a row's first cell has
++% run. A caption line (longtable sets it as a \multicolumn) or a first
++% cell that is a \multicolumn skips that, and the document stops with
++% "Undefined control sequence". With numbering off inside the table,
++% edtable defines the macro at once. The \longtable command is patched,
++% not the environment names, because longtable* (Quarto's name for an
++% uncaptioned longtable) and xltabular (kableExtra's full_width) both call
++% it directly. A run-in heading waiting for the table, or a paragraph
++% running straight into it, is set first so that it keeps its number.
++\usepackage{etoolbox}
++\makeatletter
++\pretocmd{\longtable}{\if@noskipsec\mbox{}\fi\par\nolinenumbers}{}{%
++  \AtBeginEnvironment{longtable}{\par\nolinenumbers}%
++  \AtBeginEnvironment{longtable*}{\par\nolinenumbers}}
++\makeatother
+ $endif$
+ 
+ $if(linestretch)$
+@@ -148,9 +179,24 @@ $if(journalmode)$
  
  
  \makeatletter
@@ -3025,7 +3054,7 @@ index 8627834..75b4271 100644
  \endoldlt}
  \makeatother
  
-@@ -165,9 +194,14 @@ $if(journalmode)$
+@@ -165,9 +211,14 @@ $if(journalmode)$
  }% end code
  $else$
  \makeatletter
@@ -3041,7 +3070,7 @@ index 8627834..75b4271 100644
  \endoldlt
  }
  \makeatother
-@@ -176,6 +210,36 @@ $else$
+@@ -176,6 +227,36 @@ $else$
  $if(manuscriptmode)$
  \RequirePackage{longtable}
  \DeclareDelayedFloatFlavor{longtable}{table}
@@ -3078,7 +3107,7 @@ index 8627834..75b4271 100644
  $endif$
  $endif$
  $endif$
-@@ -207,18 +271,166 @@ $endfor$
+@@ -207,18 +288,166 @@ $endfor$
  \usepackage{etoolbox}
  
  \makeatletter
@@ -3266,6 +3295,62 @@ index 9c639b7..f680c7a 100644
  $endif$
    nolmodern,
    notxfonts,
+diff --git a/_extensions/apaquarto/markdowntable.lua b/_extensions/apaquarto/markdowntable.lua
+index a83fe51..dee924b 100644
+--- a/_extensions/apaquarto/markdowntable.lua
++++ b/_extensions/apaquarto/markdowntable.lua
+@@ -4,8 +4,16 @@ end
+ 
+ -- This filter finds and assigns the table identifier in plain
+ -- markdown tables so that the crossrefprefix.lua filter can find it.
++--
++-- Tables inside a table panel (a div labelled tbl-..., holding subtables)
++-- keep the earlier reading, which stops at the first hyphen, underscore,
++-- dot or colon after "tbl-". It gives subtables labelled {#tbl-pair-a},
++-- {#tbl-pair-b} the panel's own identifier, the only arrangement in which
++-- a panel of markdown subtables is numbered correctly here; reading their
++-- whole labels numbers each as a separate table, and leaving them without
++-- identifiers stops the render in apafigtblappendix.lua.
+ 
+-Table = function(tb)
++local function set_panel_identifier(tb)
+   if tb.caption.long then
+     tb.caption.long:walk {
+       Str = function(s)
+@@ -17,3 +25,33 @@ Table = function(tb)
+     return tb
+   end
+ end
++
++local function set_identifier(tb)
++  if tb.caption.long then
++    tb.caption.long:walk {
++      Str = function(s)
++        -- The whole label, up to the closing brace or a space before the
++        -- next attribute: %w+ stopped at the first hyphen, underscore, dot
++        -- or colon after "tbl-", so {#tbl-md-plain} and {#tbl-md-note}
++        -- both became "tbl-md" and the two tables were numbered alike.
++        local id = s.text:match("%{%#(tbl%-[^%s%}]+)")
++        if id then
++          tb.identifier = id
++        end
++      end
++    }
++    return tb
++  end
++end
++
++return {
++  {
++    traverse = "topdown",
++    Div = function(div)
++      if div.identifier:find("^tbl%-") then
++        return div:walk { Table = set_panel_identifier }, false
++      end
++    end,
++    Table = set_identifier
++  }
++}
 diff --git a/_extensions/apaquarto/utilsapa.lua b/_extensions/apaquarto/utilsapa.lua
 index 7650bf9..8f9cea8 100644
 --- a/_extensions/apaquarto/utilsapa.lua

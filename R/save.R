@@ -4,8 +4,8 @@
 #' the way to get an apaTables table into a manuscript you write in Word,
 #' or to give a journal its tables as a file of their own:
 #'
-#' \preformatted{table1 <- apa.cor.table(attitude)
-#' apa.save("Table1.docx", table1)}
+#' \preformatted{table1 <- apa.cor.table(data = attitude)
+#' apa.save(filename = "Table1.docx", table1)}
 #'
 #' The file appears in your working directory -- the folder R is currently
 #' pointing at. Open it in Word and the finished APA table is there: the
@@ -18,19 +18,23 @@
 #' Several tables can go into one file, each on a page of its own, in the
 #' order you list them:
 #'
-#' \preformatted{apa.save("AllTables.docx", table1, table2, table3)}
+#' \preformatted{apa.save(filename = "AllTables.docx", table1, table2, table3)}
 #'
-#' A table left with its default number is numbered by its position in the
-#' file -- Table 1, Table 2, Table 3 above -- while a number set when the
-#' table was built is kept.
+#' A number set when a table was built is kept. A table left with its
+#' default number takes the next number after the last numbered table before it, starting
+#' at 1: the three tables above become Table 1, Table 2 and Table 3, and if
+#' \code{table2} had been built with \code{table.number = 5} they would
+#' become Table 1, Table 5 and Table 6.
 #'
 #' Tables are set in 12 point, matching the manuscript body type APA style
 #' expects. Each page is upright (portrait) unless the table is too wide
 #' for it: \code{apa.save()} measures every table, and one that will not
-#' fit upright is placed on a landscape page at full size -- columns are
-#' never shrunk or cut off. To decide the orientation yourself, use the
+#' fit upright is placed on a landscape page at full size. A table too wide
+#' even for a landscape page -- or kept upright with \code{landscape =
+#' FALSE} -- is set in smaller type so that every column is kept; no column
+#' is cut off. To decide the orientation yourself, use the
 #' \code{landscape} argument of the function that built the table -- for
-#' example \code{apa.cor.table(attitude, landscape = TRUE)}; an explicit
+#' example \code{apa.cor.table(data = attitude, landscape = TRUE)}; an explicit
 #' value always wins over measurement.
 #'
 #' \strong{The title and the note are written from the table itself}, so
@@ -112,7 +116,9 @@ apa.save <- function(filename, ..., paper = "us") {
      } else if (ext == "pdf") {
           stop("apa.save() does not write PDF. For a PDF table, place apa.quarto.pdf() in an apaquarto / Quarto document and render to PDF. See vignette(\"apaquarto-usage\", package = \"apaTables\").", call. = FALSE)
      } else {
-          stop(sprintf("Unsupported file extension '.%s'. Use .docx or .html.", ext), call. = FALSE)
+          stop(if (nzchar(ext)) sprintf("Unsupported file extension '.%s'. Use .docx or .html.", ext)
+               else "The file name has no extension. Use .docx or .html, for example \"Table1.docx\".",
+               call. = FALSE)
      }
 
      invisible(filename)

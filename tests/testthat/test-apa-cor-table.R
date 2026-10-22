@@ -66,3 +66,15 @@ test_that("apa.cor.table works with album dataset", {
      # album has 4 numeric columns -> 3 correlation columns
      expect_equal(ncol(x$table_body), 7) # Variable, N, M, SD, 1-3
 })
+
+test_that("a call written for 2.0.8, with landscape passed by position, keeps its meaning", {
+  # 2.0.8's order was data, filename, table.number, show.conf.interval,
+  # show.sig.stars, landscape. show.pvalue is new and comes after landscape,
+  # so the sixth positional value is still landscape.
+  x <- apa.cor.table(attitude[, 1:3], NA, 1, TRUE, TRUE, FALSE)
+  expect_false(x$landscape)
+  expect_true(any(grepl("^p ", unlist(x$table_body))))
+  expect_identical(names(formals(apa.cor.table))[1:6],
+                   c("data", "filename", "table.number", "show.conf.interval",
+                     "show.sig.stars", "landscape"))
+})

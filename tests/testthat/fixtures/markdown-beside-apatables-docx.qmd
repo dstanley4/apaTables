@@ -1,0 +1,42 @@
+---
+title: "Markdown Beside apaTables"
+shorttitle: "Markdown Beside"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx: default
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+Text before. A table the user writes in markdown, then an apaTables table
+at its default size through the entry point, then one printed bare.
+
+| Group     | Wave 1 | Wave 2 |
+|-----------|-------:|-------:|
+| Treatment |   3.10 |   0.82 |
+| Control   |  20.00 |   1.25 |
+
+: Markdown Table {#tbl-md}
+
+```{r}
+#| label: tbl-entry
+#| echo: false
+cor_table <- apa.cor.table(attitude[, 1:3])
+apa.quarto.docx(cor_table)
+```
+
+```{r}
+#| label: tbl-bare
+#| echo: false
+apa.cor.table(attitude[, 1:2])
+```
+
+Text after.

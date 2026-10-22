@@ -121,7 +121,6 @@ test_that("an afex table renders through apaquarto to PDF", {
 })
 
 test_that("a d-value table renders through apaquarto to PDF (multi-line cells)", {
-  skip_if_not_installed("MBESS")
   txt <- render_apaquarto_pdf("apaquarto-dvalue.qmd", "dval")
   expect_match(txt, "Placebo", fixed = TRUE)
   expect_match(txt, "[", fixed = TRUE)           # a CI bracket -> multi-line cell

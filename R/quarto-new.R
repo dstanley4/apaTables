@@ -3,7 +3,7 @@
 #' @description
 #' One command gives you a working APA manuscript:
 #'
-#' \preformatted{apa.quarto.new("my-paper")}
+#' \preformatted{apa.quarto.new(path = "my-paper")}
 #'
 #' This creates a \code{my-paper} folder holding \code{my-paper.qmd} -- a
 #' Quarto document with a working APA header and one worked table -- and,
@@ -44,7 +44,7 @@
 #' the R console, type:
 #'
 #' \preformatted{library(apaTables)
-#' apa.quarto.new("my-paper")}
+#' apa.quarto.new(path = "my-paper")}
 #'
 #' This creates a folder called \code{my-paper} containing \code{my-
 #' paper.qmd}. The document's YAML header (the settings block between
@@ -100,7 +100,7 @@
 #' @examples
 #' # Start a new manuscript in a temporary folder
 #' proj <- file.path(tempdir(), "apaTables-quarto-new-example")
-#' apa.quarto.new(proj)
+#' apa.quarto.new(path = proj)
 #'
 #' # (delete the demo folder)
 #' unlink(proj, recursive = TRUE)
@@ -108,7 +108,7 @@
 apa.quarto.new <- function(path, filename = NULL, overwrite = FALSE) {
   if (missing(path) || !is.character(path) || length(path) != 1L || !nzchar(path))
     stop("Give apa.quarto.new() the name of the folder to create, for ",
-         "example apa.quarto.new(\"my-paper\").", call. = FALSE)
+         "example apa.quarto.new(path = \"my-paper\").", call. = FALSE)
   # Validate everything before installing or writing anything, so a bad call
   # leaves nothing behind: a `path` that already exists as a FILE would
   # otherwise let dir.create() fail silently and normalizePath(mustWork =
@@ -150,6 +150,6 @@ apa.quarto.new <- function(path, filename = NULL, overwrite = FALSE) {
   writeLines(txt, doc)
 
   apa_quarto_notify("apaTables created ", doc,
-                    "; open it and click Render, or run quarto render in this folder.")
+                    "; open it and press Preview in Positron, or run quarto render in this folder.")
   invisible(list(path = root, document = doc, setup = setup))
 }

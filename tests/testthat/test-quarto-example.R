@@ -57,13 +57,13 @@ test_that("both example templates ship and are complete", {
   # wrote), and each file names its twin.
   pdf_txt <- paste(readLines(tmpl_path("example-pdf.qmd"), warn = FALSE), collapse = "\n")
   expect_match(pdf_txt, "apaquarto-pdf:", fixed = TRUE)
-  expect_match(pdf_txt, "apa.quarto.pdf(my_table", fixed = TRUE)
-  expect_no_match(pdf_txt, "apa.quarto.docx(my_table", fixed = TRUE)
+  expect_match(pdf_txt, "apa.quarto.pdf(x = my_table", fixed = TRUE)
+  expect_no_match(pdf_txt, "apa.quarto.docx(x = my_table", fixed = TRUE)
   expect_match(pdf_txt, "-docx.qmd", fixed = TRUE)
   docx_txt <- paste(readLines(tmpl_path("example-docx.qmd"), warn = FALSE), collapse = "\n")
   expect_match(docx_txt, "apaquarto-docx:", fixed = TRUE)
-  expect_match(docx_txt, "apa.quarto.docx(my_table", fixed = TRUE)
-  expect_no_match(docx_txt, "apa.quarto.pdf(my_table", fixed = TRUE)
+  expect_match(docx_txt, "apa.quarto.docx(x = my_table", fixed = TRUE)
+  expect_no_match(docx_txt, "apa.quarto.pdf(x = my_table", fixed = TRUE)
   expect_match(docx_txt, "-pdf.qmd", fixed = TRUE)
 })
 

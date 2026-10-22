@@ -30,6 +30,7 @@ Imports:
     stats,
     utils,
     car,
+    MBESS,
     broom,
     dplyr,
     flextable (>= 0.9.0),
@@ -37,7 +38,6 @@ Imports:
     officer
 Suggests:
     testthat,
-    MBESS,
     afex,
     tidyr,
     rmarkdown,

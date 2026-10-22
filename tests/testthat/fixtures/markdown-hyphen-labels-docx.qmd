@@ -1,0 +1,47 @@
+---
+title: "Markdown Hyphen Labels"
+shorttitle: "Hyphen Labels"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-docx:
+    floatsintext: true
+---
+
+```{r}
+#| include: false
+library(apaTables)
+```
+
+See @tbl-apa-first, @tbl-md-plain, @tbl-md-note and @tbl-md_under.
+
+```{r}
+#| label: tbl-apa-first
+#| echo: false
+cor_table <- apa.cor.table(attitude[, 1:3])
+apa.quarto.docx(cor_table)
+```
+
+| Group     | Wave 1 | Wave 2 |
+|-----------|-------:|-------:|
+| Treatment |   3.10 |   0.82 |
+
+: Markdown Table Without a Note {#tbl-md-plain}
+
+| Measure    | Wave 1 | Wave 2 |
+|------------|-------:|-------:|
+| Commitment |   4.12 |   4.05 |
+
+: Markdown Table With a Note {#tbl-md-note apa-note="Values are means."}
+
+| Measure    | Wave 3 |
+|------------|-------:|
+| Commitment |   3.98 |
+
+: Markdown Table With an Underscore Label {#tbl-md_under}
+
+End.

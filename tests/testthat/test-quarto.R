@@ -36,7 +36,7 @@ test_that("apa.quarto.template emits NEITHER a tbl-cap NOR an apa-note line", {
   # TWO LINES, NO PIPE. The call takes the object as an ordinary argument;
   # the pipe form must be absent from the artifact the package HANDS the
   # user to paste, not merely from the prose about it.
-  expect_match(txt, "apa\\.quarto\\.pdf\\(my_tbl\\)")
+  expect_match(txt, "apa\\.quarto\\.pdf\\(x = my_tbl\\)")
   expect_false(grepl("|>", txt, fixed = TRUE))
   expect_false(any(grepl(" $", out)))  # printed chunk has no trailing whitespace
   # The console explanation has to SAY the title and note are coming, since
@@ -54,7 +54,7 @@ test_that("apa.quarto.template default code reuses what was typed for x", {
     apa_spec_finish(title = "T", number = 1L)
   my_tbl <- s
   out <- capture.output(txt <- apa.quarto.template(my_tbl))
-  expect_match(txt, "apa\\.quarto\\.pdf\\(my_tbl\\)")
+  expect_match(txt, "apa\\.quarto\\.pdf\\(x = my_tbl\\)")
 
   # BARE NAME: the template cannot know what built the object, so the build
   # line is a COMMENTED placeholder sitting where the real line goes.
@@ -69,7 +69,7 @@ test_that("apa.quarto.template default code reuses what was typed for x", {
   expect_equal(length(rlines), 2L)
   expect_match(rlines[1], "^# my_tbl <- ")
   expect_match(rlines[1], "the line that builds")
-  expect_equal(rlines[2], "apa.quarto.pdf(my_tbl)")
+  expect_equal(rlines[2], "apa.quarto.pdf(x = my_tbl)")
 
   # AND NO PROSE SENTENCE above the chunk telling the reader to remember the
   # build line, in either case: a novice copies the block, runs it, and meets
@@ -87,7 +87,7 @@ test_that("apa.quarto.template default code reuses what was typed for x", {
   # asserting the text without asserting it is uncommented would pass on a
   # placeholder that happened to contain the right call.
   expect_equal(rlines2[1], "mytable <- make_spec()")
-  expect_equal(rlines2[2], "apa.quarto.pdf(mytable)")
+  expect_equal(rlines2[2], "apa.quarto.pdf(x = mytable)")
   expect_false(any(grepl("code that creates", out2)))
 })
 
@@ -248,7 +248,7 @@ test_that("apa.quarto.template measures with the SAME ladder the chunk uses", {
   # instruction to set floatsintext: true -- three statements of one fact, in
   # three languages, none able to see the others. Rotation is measured in R
   # and executed by apaquarto in BOTH table placements.
-  expect_match(txt, "apa.quarto.pdf(wide)", fixed = TRUE)
+  expect_match(txt, "apa.quarto.pdf(x = wide)", fixed = TRUE)
   expect_no_match(txt, 'page = "landscape"', fixed = TRUE)
   expect_no_match(txt, "landscape")
   expect_no_match(joined, "floatsintext", fixed = TRUE)
@@ -361,7 +361,7 @@ test_that("apa.quarto.template leaves narrow tables untouched", {
   narrow <- apa.cor.table(attitude[, 1:3])               # 4.7 in
   out <- capture.output(txt <- apa.quarto.template(narrow, code = "narrow"))
   expect_no_match(txt, "landscape")                       # no markers
-  expect_match(txt, "apa.quarto.pdf(narrow)", fixed = TRUE)
+  expect_match(txt, "apa.quarto.pdf(x = narrow)", fixed = TRUE)
   expect_no_match(paste(out, collapse = "\n"), "floatsintext")
 })
 
@@ -460,4 +460,18 @@ test_that("apa.quarto.template writes no markers, wide table or not", {
   wide <- apa.reg.table(blk1, blk2)
   out2 <- capture.output(txt2 <- apa.quarto.template(wide, code = "wide"))
   expect_no_match(txt2, ":::", fixed = TRUE)
+})
+
+test_that("apa.quarto.template prints every argument by name", {
+  # The chunk is code the package hands the user to paste, so it names its
+  # arguments like everything else the package teaches: the builder call
+  # as the user typed it gains its names, and the entry point is x =.
+  capture.output(txt <- apa.quarto.template(apa.d.table(dose, libido, viagra)))
+  expect_match(txt, "apa.d.table(iv = dose, dv = libido, data = viagra)", fixed = TRUE)
+  expect_match(txt, "apa.quarto.pdf(x = mytable)", fixed = TRUE)
+  # a regression's models go to ... and stay unnamed; base R is untouched
+  capture.output(txt2 <- apa.quarto.template(
+    apa.reg.table(lm(rating ~ complaints, data = attitude), table.number = 2)))
+  expect_match(txt2, "apa.reg.table(lm(rating ~ complaints, data = attitude), table.number = 2)",
+               fixed = TRUE)
 })

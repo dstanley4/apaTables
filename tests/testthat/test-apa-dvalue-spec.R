@@ -1,5 +1,4 @@
 test_that("apa.d.table attaches a well-formed spec (woven d/CI -> multi-line cells)", {
-  skip_if_not_installed("MBESS")
   tbl <- apa.d.table(iv = dose, dv = libido, data = viagra)
   s <- tbl$spec
   expect_s3_class(s, "apa_table_spec")

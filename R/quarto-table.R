@@ -120,7 +120,7 @@ apa_ladder_no_fit_message <- function(content_12, budget, rotate, size) {
 #'   the automatic ladder, and the override branch is not reached at all.
 #'   Rotation is decided from the SIZE ACTUALLY EMITTED rather than the
 #'   ladder's own 10 pt guess: without this re-check an explicit `font.size`
-#'   would reach the LaTeX emitter unchecked -- `apa.cor.table(attitude)` at
+#'   would reach the LaTeX emitter unchecked -- `apa.cor.table(data = attitude)` at
 #'   20 pt measures 10.26 in against a 6.5 in upright page, and would render
 #'   with no warning and no rotation. When the page the table will land on
 #'   (rotated, if rotation is allowed) cannot hold it at that size it warns, naming a smaller size that fits, or --
@@ -511,9 +511,8 @@ apa_quarto_font_size <- function(plan, font.size = NULL, decision = NULL,
   decision$size
 }
 
-# The shrink ladder is a set of TABLE STYLES -- the reference document's own
-# unmodified "Table" style (10 pt) plus the clones Table6-Table9, Table11 and
-# Table12 -- selected by a Lua filter, NOT the per-cell
+# The shrink ladder is a set of TABLE STYLES -- Table6 through Table12 in the
+# reference document, 10 pt included -- selected by a Lua filter, NOT the per-cell
 # "[...]{custom-style=\"ApaTableN\"}" spans apa_markdown_table()'s font_size
 # argument still knows how to write. Per-cell spans were measured in real Word
 # to crush a real table's column ratio from 10.01:1 to 2.12:1 and break a long
@@ -535,7 +534,7 @@ APA_QUARTO_SIZE_CLASS_PREFIX <- "apa-table-size-"
 # apa_size_for_width() (measured 4.860447 on a 22-variable apa.cor.table(),
 # which the filter's own "^apa%-table%-size%-(%d+)$" pattern cannot match at
 # all -- the marker div would be emitted, the filter's Div handler would never
-# fire, and the table would silently stay at the DEFAULT 10 pt with no
+# fire, and the table would silently fall to the plain "Table" style with no
 # warning anywhere), or an explicit font.size the caller chose freely (never
 # refused, but naming a style that was never cloned is worse than refusing --
 # pandoc still writes custom-style="TableN", and Word's response to an
@@ -545,31 +544,25 @@ APA_QUARTO_SIZE_CLASS_PREFIX <- "apa-table-size-"
 # ONE place a size becomes a marker, so it is the one place that must snap to
 # a style that is real.
 #
-# NA means "write NO marker", which delivers the reference document's
-# unmodified "Table" style -- already 10 pt. Hence the two edges:
-#
-#   * exactly 10 returns NA, because there is no Table10 clone and naming a
-#     style Word does not know makes it DROP the style assignment entirely,
-#     costing the APA rules and cell margins as well as the size.
-#   * above 12 returns 12, NOT NA. NA there would write no marker, deliver
-#     10 pt, and leave the warning claiming 12.
+# Every size gets a marker, the 10 pt default included. The reference
+# document's plain "Table" style is stock apaquarto's (12 pt, wide cell
+# margins), kept for the markdown tables a user writes -- pandoc gives every
+# markdown table that style -- so an apaTables table that carried NO marker
+# would come out at 12 pt with margins the width model does not charge for.
+# Above 12 returns 12, the largest style there is.
 #
 # FLOOR, never round: rounding a ladder size up can put a column back over
 # the edge the ladder shrank it to clear.
 apa_quarto_size_rung <- function(size) {
   if (size >= APA_QUARTO_MAX_SIZE) return(as.integer(APA_QUARTO_MAX_SIZE))
-  rung <- floor(size)
-  if (rung == APA_QUARTO_DEFAULT_SIZE) return(NA_integer_)
-  as.integer(max(APA_QUARTO_READABLE_SIZE, rung))
+  as.integer(max(APA_QUARTO_READABLE_SIZE, floor(size)))
 }
 
-# What Word will actually put on the page for a requested size: the rung when
-# there is one, and the default 10 pt when there is not. The warning below
-# compares this with what the caller asked for -- never the rung, which is NA
-# in exactly the case where the delivered size is most easily got wrong.
+# What Word will actually put on the page for a requested size: the style
+# the rung names. The warning below compares this with what the caller asked
+# for.
 apa_quarto_delivered_size <- function(size) {
-  rung <- apa_quarto_size_rung(size)
-  if (is.na(rung)) APA_QUARTO_DEFAULT_SIZE else rung
+  apa_quarto_size_rung(size)
 }
 
 # Word adjusts, and says so. One message covers both ends and the
@@ -721,8 +714,9 @@ apa_quarto_docx_target <- function() {
 #' The non-PDF counterpart of `apa_quarto_latex_block()`: same ladder
 #' (`apa_layout_decide()`), same "rotate before shrink" policy, but the
 #' output is a pandoc grid table (`apa_markdown_table()`) rather than raw
-#' LaTeX, and a font-size choice below the default becomes a STYLE MARKER
-#' (one table style for the whole table) rather than per-cell markup.
+#' LaTeX, and on Word every table's type size -- the 10 pt default
+#' included -- becomes a STYLE MARKER (one table style for the whole table)
+#' rather than per-cell markup.
 #'
 #' Rotation in Word is DECIDED BY MEASUREMENT by default, but the
 #' `landscape =` argument -- carried on `x$landscape` -- is a binding
@@ -854,9 +848,10 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
     apa_quarto_warn_word_size(size, apa_quarto_delivered_size(size))
   }
   # The floor warning and the `apa-table-size-N` marker div are both
-  # consequences of the docx-only shrink ladder: the AUTOMATIC ladder never
-  # runs on HTML at all (HTML has no page, so nothing rotates and nothing
-  # shrinks automatically there), and no HTML CSS reads the
+  # docx-only: the floor warning because only Word shrinks automatically
+  # (HTML has no page, so nothing rotates and nothing shrinks automatically
+  # there), and the marker because only Word selects a table style by it --
+  # every Word table carries one, the 10 pt default included. No HTML CSS reads the
   # `apa-table-size-*` CLASS markers apatablesize.lua reads for docx (HTML's
   # size travels on the separate `apa-table-size-pt` ATTRIBUTE marker below,
   # set only for an explicit font.size and never by this automatic path;
@@ -864,8 +859,8 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   # that file's own header -- it consumes every marker it finds and only
   # branches on which one to apply). Gating both on `is_docx` -- the same
   # value that decides above whether rotation can execute -- keeps an HTML
-  # render from pricing, warning about, and marking a shrink it never
-  # performs; without the gate the reader's manuscript would carry a warning
+  # render from pricing, warning about, and marking a size it never
+  # applies; without the gate the reader's manuscript would carry a warning
   # asserting a floor that HTML output never applies.
   if (is_docx && is.null(font.size) && decision$size < APA_QUARTO_READABLE_SIZE) {
     apa_quarto_warn_floored()
@@ -876,7 +871,7 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   # this path, whatever size was chosen.
   body <- apa_markdown_table(plan, font_size = NULL, rules = TRUE)
   if (is_docx) {
-    if (!is.na(rung)) body <- apa_quarto_size_wrap(body, rung)
+    body <- apa_quarto_size_wrap(body, rung)
   } else if (!isFALSE(apa_quarto_html_target())) {
     # Emitted on every HTML render, not only a sized one: the marker is also
     # what apa.css's table-width rules are scoped to, and a table without it
@@ -1521,15 +1516,15 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' #| message: false
 #' #| warning: true
 #' library(apaTables)
-#' table1 <- apa.cor.table(attitude)
-#' apa.quarto.pdf(table1)
+#' table1 <- apa.cor.table(data = attitude)
+#' apa.quarto.pdf(x = table1)
 #' ```}
 #'
 #' Render the document, and the table appears fully APA-formatted -- number,
 #' italic title, and \emph{Note.} included -- with nothing else written.
 #' (New to Quarto? It is a free system for writing documents that combine
 #' text and R code, at \url{https://quarto.org}, and
-#' \code{\link{apa.quarto.new}("my-paper")} creates a working APA
+#' \code{\link{apa.quarto.new}(path = "my-paper")} creates a working APA
 #' manuscript with everything already installed. A slide deck works
 #' differently; see \strong{Slides are different} below.)
 #'
@@ -1672,7 +1667,7 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #'   lets apaTables choose.
 #' @return The table, ready for the document (a \code{knit_asis} object).
 #' @seealso
-#' \code{\link{apa.quarto.new}("my-paper")} starts an APA manuscript with the
+#' \code{\link{apa.quarto.new}(path = "my-paper")} starts an APA manuscript with the
 #' apaquarto extension already installed; \code{\link{apa.quarto.setup}()}
 #' installs the extension into a project you already have. A step-by-step
 #' guide to placing apaTables tables in Quarto documents also comes
@@ -1691,21 +1686,21 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' @examples
 #' # Build the table once; display it with the entry point named for the
 #' # document's own format: line
-#' my_table <- apa.cor.table(attitude)
+#' my_table <- apa.cor.table(data = attitude)
 #'
 #' # In a document whose YAML says format: apaquarto-pdf
-#' apa.quarto.pdf(my_table)
+#' apa.quarto.pdf(x = my_table)
 #'
 #' # format: apaquarto-docx
-#' apa.quarto.docx(my_table)
+#' apa.quarto.docx(x = my_table)
 #'
 #' # format: apaquarto-html
-#' apa.quarto.html(my_table)
+#' apa.quarto.html(x = my_table)
 #'
 #' # format: revealjs -- a slide has no automatic title or note, so pass
 #' # note = TRUE to show the note that explains the significance stars
-#' apa.quarto.revealjs(my_table)
-#' apa.quarto.revealjs(my_table, note = TRUE)
+#' apa.quarto.revealjs(x = my_table)
+#' apa.quarto.revealjs(x = my_table, note = TRUE)
 #' @rdname apa.quarto.pdf
 #' @export
 apa.quarto.pdf <- function(x, title = NULL, note = NULL, font.size = NULL) {

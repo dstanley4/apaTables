@@ -41,8 +41,8 @@ The correlations are reported in @tbl-correlations.
 #| label: tbl-correlations
 #| message: false
 #| warning: true
-my_table <- apa.cor.table(attitude[, 1:4])
-apa.quarto.pdf(my_table)
+my_table <- apa.cor.table(data = attitude[, 1:4])
+apa.quarto.pdf(x = my_table)
 ```
 
 ## Discussion

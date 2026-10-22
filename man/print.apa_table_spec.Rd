@@ -20,7 +20,7 @@ is set), the flattened title, a fixed-width body (multi-line cells stacked on
 continuation rows), then notes prefixed with "Note. ".
 }
 \examples{
-spec <- apa.cor.table(attitude)$spec
+spec <- apa.cor.table(data = attitude)$spec
 print(spec)
 }
 \keyword{internal}

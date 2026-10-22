@@ -10,7 +10,7 @@
 #'   \code{apa_table_spec}).
 #' @return A length-1 character string.
 #' @seealso
-#' \code{\link{apa.quarto.new}("my-paper")} starts an APA manuscript with the
+#' \code{\link{apa.quarto.new}(path = "my-paper")} starts an APA manuscript with the
 #' apaquarto extension already installed; \code{\link{apa.quarto.setup}()}
 #' installs the extension into a project you already have. A step-by-step
 #' guide to placing apaTables tables in Quarto documents also comes
@@ -18,8 +18,8 @@
 #'
 #' \preformatted{vignette("apaquarto-usage", package = "apaTables")}
 #' @examples
-#' my_table <- apa.cor.table(attitude)
-#' apa_caption(my_table)
+#' my_table <- apa.cor.table(data = attitude)
+#' apa_caption(x = my_table)
 #' @export
 apa_caption <- function(x) {
   x <- as_spec(x)
@@ -38,7 +38,7 @@ apa_caption <- function(x) {
 #'   \code{apa_table_spec}).
 #' @return A length-1 character string.
 #' @seealso
-#' \code{\link{apa.quarto.new}("my-paper")} starts an APA manuscript with the
+#' \code{\link{apa.quarto.new}(path = "my-paper")} starts an APA manuscript with the
 #' apaquarto extension already installed; \code{\link{apa.quarto.setup}()}
 #' installs the extension into a project you already have. A step-by-step
 #' guide to placing apaTables tables in Quarto documents also comes
@@ -46,11 +46,11 @@ apa_caption <- function(x) {
 #'
 #' \preformatted{vignette("apaquarto-usage", package = "apaTables")}
 #' @examples
-#' my_table <- apa.cor.table(attitude)
-#' apa_note_text(my_table)
+#' my_table <- apa.cor.table(data = attitude)
+#' apa_note_text(x = my_table)
 #'
 #' # Extend the generated wording rather than replace it
-#' paste(apa_note_text(my_table), "Data collected in 2026.")
+#' paste(apa_note_text(x = my_table), "Data collected in 2026.")
 #' @export
 apa_note_text <- function(x) {
   x <- as_spec(x)
@@ -105,6 +105,28 @@ APA_TYPE_BUILDER <- c(
 # spec assembled by hand through apa_spec_start()/apa_col()/apa_spec_finish()
 # carries no `table.type` at all (measured), and those are exactly the specs
 # the package's own tests and any custom caller build.
+# The code apa.quarto.template() prints names every argument, as everything
+# the package teaches does: apa.quarto.template(apa.cor.table(attitude))
+# prints `apa.cor.table(data = attitude)`. Only calls to apaTables' own
+# exported functions are rewritten; anything else is printed as it was
+# typed. Arguments that go to `...` (apa.reg.table()'s models) stay unnamed.
+apa_name_call_args <- function(expr) {
+  if (!is.call(expr)) return(expr)
+  fn <- expr[[1]]
+  fname <- if (is.name(fn)) {
+    as.character(fn)
+  } else if (is.call(fn) && identical(fn[[1]], as.name("::")) &&
+             identical(as.character(fn[[2]]), "apaTables")) {
+    as.character(fn[[3]])
+  } else {
+    return(expr)
+  }
+  if (!fname %in% getNamespaceExports("apaTables")) return(expr)
+  f <- get(fname, envir = asNamespace("apaTables"))
+  if (!is.function(f)) return(expr)
+  tryCatch(match.call(f, expr), error = function(e) expr)
+}
+
 apa_builder_hint <- function(spec) {
   ty <- spec$meta$table.type
   if (is.null(ty) || !length(ty) || is.na(ty[1]) || !nzchar(ty[1])) {
@@ -126,8 +148,8 @@ apa_builder_hint <- function(spec) {
 #' You have made a table and want it in your Quarto document, but you would
 #' rather not write the code chunk yourself. Ask for it, in the R console:
 #'
-#' \preformatted{table1 <- apa.cor.table(attitude)
-#' apa.quarto.template(table1)}
+#' \preformatted{table1 <- apa.cor.table(data = attitude)
+#' apa.quarto.template(x = table1)}
 #'
 #' This prints a finished chunk, named after your table:
 #'
@@ -136,7 +158,7 @@ apa_builder_hint <- function(spec) {
 #' #| message: false
 #' #| warning: true
 #' # table1 <- apa.cor.table(...)   # <- the line that builds your table
-#' apa.quarto.pdf(table1)
+#' apa.quarto.pdf(x = table1)
 #' ```}
 #'
 #' Copy it into your \code{.qmd} document, replace the comment with the
@@ -159,7 +181,7 @@ apa_builder_hint <- function(spec) {
 #'
 #' \strong{The chunk is always two lines: build the table, then display it.}
 #' If you passed the table-building call itself --
-#' \code{apa.quarto.template(apa.cor.table(attitude))} -- both lines are
+#' \code{apa.quarto.template(x = apa.cor.table(data = attitude))} -- both lines are
 #' ready to run. If you passed a table you had already built, by name, the
 #' first line is a \emph{comment} showing where your own table-building line
 #' belongs; replace it with that line, or delete it if the table is built in
@@ -195,8 +217,8 @@ apa_builder_hint <- function(spec) {
 #' In the R console, create the table and then ask for its Quarto code:
 #'
 #' \preformatted{library(apaTables)
-#' table1 <- apa.cor.table(attitude)
-#' apa.quarto.template(table1)}
+#' table1 <- apa.cor.table(data = attitude)
+#' apa.quarto.template(x = table1)}
 #'
 #' The printed chunk displays \code{table1} but does not create it, so the
 #' chunk you paste into your Quarto document must also carry the lines that
@@ -211,8 +233,8 @@ apa_builder_hint <- function(spec) {
 #' #| message: false
 #' #| warning: true
 #' library(apaTables)
-#' table1 <- apa.cor.table(attitude)
-#' apa.quarto.pdf(table1)
+#' table1 <- apa.cor.table(data = attitude)
+#' apa.quarto.pdf(x = table1)
 #' ```}
 #'
 #' Nothing in that chunk mentions the title or the note, and nothing needs
@@ -250,7 +272,7 @@ apa_builder_hint <- function(spec) {
 #'
 #' Every chunk in a Quarto document must have a different name, so the
 #' chunk's name is built from the name of the table you asked for:
-#' \code{apa.quarto.template(table3)} names the chunk \code{tbl-table3}.
+#' \code{apa.quarto.template(x = table3)} names the chunk \code{tbl-table3}.
 #' Two different tables therefore give two chunks that can both be pasted
 #' into the same document. Dots and underscores in the table's name become
 #' hyphens (\code{my.table} gives \code{tbl-my-table}), because a dot inside
@@ -265,7 +287,7 @@ apa_builder_hint <- function(spec) {
 #'   \code{apa_table_spec}).
 #' @param label A length-1 character string naming the chunk. By default the
 #'   name is built from the name of the table given for \code{x}, so
-#'   \code{apa.quarto.template(table3)} names the chunk \code{tbl-table3};
+#'   \code{apa.quarto.template(x = table3)} names the chunk \code{tbl-table3};
 #'   when \code{x} is not a stored table but an expression written out in
 #'   full, the name is \code{tbl-mytable}. A label you supply yourself is
 #'   used exactly as given, so make it begin with \code{"tbl-"} -- Quarto
@@ -274,9 +296,11 @@ apa_builder_hint <- function(spec) {
 #'   table's number (for example, "Table 1").
 #' @param code A length-1 character string with the R code that produces the
 #'   table, used in the display line of the chunk. You can usually ignore
-#'   this argument: by default, whatever you typed for \code{x} is reused in
-#'   the chunk, so \code{apa.quarto.template(table1)} prints the line
-#'   \code{apa.quarto.pdf(table1)}.
+#'   this argument: by default the chunk is built from what you typed for
+#'   \code{x}, with the arguments of an apaTables call written by name -- so
+#'   \code{apa.quarto.template(x = table1)} prints the line
+#'   \code{apa.quarto.pdf(x = table1)}; a table function's call given as
+#'   \code{x} is printed with each of its arguments named.
 #' @param target Which of the format-named entry points to print the chunk
 #'   for -- \code{"pdf"} (the default), \code{"docx"}, \code{"html"}, or
 #'   \code{"revealjs"}. This only picks which name the printed chunk uses;
@@ -296,7 +320,7 @@ apa_builder_hint <- function(spec) {
 #'   (most users simply copy the printed output; the surrounding
 #'   instructions are not part of the returned text).
 #' @seealso
-#' \code{\link{apa.quarto.new}("my-paper")} starts an APA manuscript with the
+#' \code{\link{apa.quarto.new}(path = "my-paper")} starts an APA manuscript with the
 #' apaquarto extension already installed; \code{\link{apa.quarto.setup}()}
 #' installs the extension into a project you already have. A step-by-step
 #' guide to placing apaTables tables in Quarto documents also comes
@@ -305,11 +329,11 @@ apa_builder_hint <- function(spec) {
 #' \preformatted{vignette("apaquarto-usage", package = "apaTables")}
 #' @examples
 #' # Print a ready-to-paste chunk for the table (PDF document by default)
-#' table1 <- apa.cor.table(attitude)
-#' apa.quarto.template(table1)
+#' table1 <- apa.cor.table(data = attitude)
+#' apa.quarto.template(x = table1)
 #'
 #' # The same chunk for a Word document
-#' apa.quarto.template(table1, target = "docx")
+#' apa.quarto.template(x = table1, target = "docx")
 #' @export
 apa.quarto.template <- function(x, label = NULL, code = NULL,
                                 target = c("pdf", "docx", "html",
@@ -322,7 +346,8 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
 
   x_expr <- substitute(x)
   if (is.null(code)) {
-    code <- paste(deparse(x_expr), collapse = " ")
+    code <- paste(deparse(apa_name_call_args(x_expr), width.cutoff = 500L),
+                  collapse = " ")
   }
   if (is.null(label)) {
     label <- apa_quarto_label(x_expr)
@@ -472,7 +497,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
   } else {
     sprintf("%s <- %s", obj, code)
   }
-  call_line <- sprintf("%s(%s)", target_fn, obj)
+  call_line <- sprintf("%s(x = %s)", target_fn, obj)
 
   # NO '#| apa-longtable: true', AND NOTHING REPLACES IT. That line asked
   # apaquarto to skip the float wrapper, because a longtable sealed in a

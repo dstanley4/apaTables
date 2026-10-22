@@ -68,15 +68,15 @@ document's \code{format:} line:
 #| message: false
 #| warning: true
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.pdf(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = table1)
 ```}
 
 Render the document, and the table appears fully APA-formatted -- number,
 italic title, and \emph{Note.} included -- with nothing else written.
 (New to Quarto? It is a free system for writing documents that combine
 text and R code, at \url{https://quarto.org}, and
-\code{\link{apa.quarto.new}("my-paper")} creates a working APA
+\code{\link{apa.quarto.new}(path = "my-paper")} creates a working APA
 manuscript with everything already installed. A slide deck works
 differently; see \strong{Slides are different} below.)
 
@@ -196,7 +196,7 @@ deck has no such list, so \code{apa.quarto.revealjs()} never adds a
 number.
 
 \strong{Title and note are opt-in, not automatic.}
-\code{apa.quarto.revealjs(x)} on its own puts the table alone on the
+\code{apa.quarto.revealjs(x = x)} on its own puts the table alone on the
 slide, nothing else. Pass \code{title = TRUE} and/or \code{note = TRUE}
 to add the title and note apaTables generated for the table -- the same
 arguments work here as on \code{apa.quarto.pdf()} and its siblings. This
@@ -207,8 +207,8 @@ note. Left at the
 default, a correlation table on a slide shows the stars with their
 meaning nowhere on the slide -- \code{note = TRUE} is the remedy:
 
-\preformatted{my_table <- apa.cor.table(attitude)
-apa.quarto.revealjs(my_table, note = TRUE)}
+\preformatted{my_table <- apa.cor.table(data = attitude)
+apa.quarto.revealjs(x = my_table, note = TRUE)}
 
 \strong{An explicit \code{font.size} is honoured exactly}, the same value
 you typed, though a size below 6 points -- where an APA table stops being
@@ -240,24 +240,24 @@ in, or save the table as a Word file with \code{\link{apa.save}}.
 \examples{
 # Build the table once; display it with the entry point named for the
 # document's own format: line
-my_table <- apa.cor.table(attitude)
+my_table <- apa.cor.table(data = attitude)
 
 # In a document whose YAML says format: apaquarto-pdf
-apa.quarto.pdf(my_table)
+apa.quarto.pdf(x = my_table)
 
 # format: apaquarto-docx
-apa.quarto.docx(my_table)
+apa.quarto.docx(x = my_table)
 
 # format: apaquarto-html
-apa.quarto.html(my_table)
+apa.quarto.html(x = my_table)
 
 # format: revealjs -- a slide has no automatic title or note, so pass
 # note = TRUE to show the note that explains the significance stars
-apa.quarto.revealjs(my_table)
-apa.quarto.revealjs(my_table, note = TRUE)
+apa.quarto.revealjs(x = my_table)
+apa.quarto.revealjs(x = my_table, note = TRUE)
 }
 \seealso{
-\code{\link{apa.quarto.new}("my-paper")} starts an APA manuscript with the
+\code{\link{apa.quarto.new}(path = "my-paper")} starts an APA manuscript with the
 apaquarto extension already installed; \code{\link{apa.quarto.setup}()}
 installs the extension into a project you already have. A step-by-step
 guide to placing apaTables tables in Quarto documents also comes

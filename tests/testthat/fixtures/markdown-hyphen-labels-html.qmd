@@ -1,0 +1,32 @@
+---
+title: "Markdown Labels HTML"
+shorttitle: "Labels HTML"
+author:
+  - name: Test Author
+    corresponding: true
+    email: test@example.org
+    affiliations:
+      - name: Test University
+format:
+  apaquarto-html: default
+---
+
+See @tbl-md-plain, @tbl-md-note and @tbl-md_under.
+
+| Group     | Wave 1 |
+|-----------|-------:|
+| Treatment |   3.10 |
+
+: Markdown Plain {#tbl-md-plain}
+
+| Measure    | Wave 1 |
+|------------|-------:|
+| Commitment |   4.12 |
+
+: Markdown Note {#tbl-md-note apa-note="Values are means."}
+
+| Measure    | Wave 2 |
+|------------|-------:|
+| Commitment |   4.05 |
+
+: Markdown Underscore {#tbl-md_under}

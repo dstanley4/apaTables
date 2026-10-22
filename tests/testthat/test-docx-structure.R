@@ -169,9 +169,10 @@ test_that("a table that is BOTH rotated AND shrunk gets the right style AND the 
   doc <- apa_docx_document_xml(d)
 
   expect_true(grepl('<w:tblStyle w:val="Table8"', doc, fixed = TRUE))
-  # The marker div left no trace -- no leftover custom-style text and no
-  # leaked "apa-table-size-8" marker anywhere the filter did not consume it.
-  expect_false(grepl("apa-table-size-", doc, fixed = TRUE))
+  # No check for leftover marker text: pandoc's Word writer drops an empty
+  # div without a trace whether or not the filter consumed it (measured), so
+  # such a check passes on a broken filter too. The table's style above is
+  # what shows the marker was read.
 
   secs <- apa_docx_sections(doc)
   rot <- Filter(function(s) grepl('w:orient="landscape"', s), secs)
@@ -187,8 +188,9 @@ test_that("an unlabelled (non-float) wide table can still shrink, not only rotat
   # handler -- see that file's own banner), so apatablesize.lua must not be
   # scoped to FloatRefTarget only: a `tbl-` labelled chunk's table lives
   # inside one at this stage, but an unlabelled one does not, and it would
-  # rotate yet keep the default "Table" style at 10 pt, leaving an inert
-  # apa-table-size-N div in the output. apatablesize.lua therefore uses the
+  # rotate yet keep the plain "Table" style, its apa-table-size-N marker
+  # unread (pandoc's Word writer then drops the empty div without a trace,
+  # so only the table's style shows it). apatablesize.lua therefore uses the
   # same Pandoc-level walk apatablelandscape.lua does.
   d <- apa_render_fixture_docx("landscape-unlabelled-shrunk")
   doc <- apa_docx_document_xml(d)
@@ -197,7 +199,6 @@ test_that("an unlabelled (non-float) wide table can still shrink, not only rotat
   # the ladder charges Word's fixed cell padding and takes
   # the next size down.
   expect_true(grepl('<w:tblStyle w:val="Table8"', doc, fixed = TRUE))
-  expect_false(grepl("apa-table-size-", doc, fixed = TRUE))
 
   secs <- apa_docx_sections(doc)
   rot <- Filter(function(s) grepl('w:orient="landscape"', s), secs)
@@ -227,9 +228,30 @@ test_that("three tables in one document each keep their OWN size, not the last m
   styles <- apa_docx_table_styles(doc)
   expect_length(styles, 3)
   expect_equal(sort(styles), sort(c("Table", "Table6", "Table9")))
+})
 
-  # No marker text leaked into the rendered document either.
-  expect_false(grepl("apa-table-size-", doc, fixed = TRUE))
+test_that("a user's markdown table keeps stock spacing while apaTables tables name Table10", {
+  # The plain "Table" style is the one pandoc gives every markdown table. It
+  # is stock apaquarto's again (12 pt, 58-twip margins); apaTables' own
+  # tables -- through the entry point or printed bare -- name Table10 for
+  # their 10 pt and 15-twip margins. Before, "Table" carried apaTables'
+  # settings and a markdown table's columns ran together in Word.
+  d <- apa_render_fixture_docx("markdown-beside-apatables-docx")
+  doc <- apa_docx_document_xml(d)
+  expect_identical(apa_docx_table_styles(doc), c("Table", "Table10", "Table10"))
+
+  # and the rendered document's own "Table" style is the stock one. Pandoc
+  # rewrites styles.xml with its own attribute order (w:styleId before
+  # w:type, w:type before w:w), so match attributes in any order.
+  tmp <- tempfile(); dir.create(tmp)
+  utils::unzip(d, files = "word/styles.xml", exdir = tmp)
+  s <- paste(readLines(file.path(tmp, "word", "styles.xml"), warn = FALSE),
+             collapse = "")
+  tbl <- regmatches(s, regexpr('<w:style [^>]*w:styleId="Table"[^>]*>.*?</w:style>',
+                               s, perl = TRUE))
+  expect_length(tbl, 1)
+  expect_false(grepl("<w:sz ", tbl, fixed = TRUE))
+  expect_true(grepl('<w:left [^>]*w:w="58"', tbl, perl = TRUE))
 })
 
 test_that("numbered-lines survives on the rotated section AND every page before it", {

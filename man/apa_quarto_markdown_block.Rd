@@ -27,8 +27,9 @@ a `knit_asis` object.
 The non-PDF counterpart of `apa_quarto_latex_block()`: same ladder
 (`apa_layout_decide()`), same "rotate before shrink" policy, but the
 output is a pandoc grid table (`apa_markdown_table()`) rather than raw
-LaTeX, and a font-size choice below the default becomes a STYLE MARKER
-(one table style for the whole table) rather than per-cell markup.
+LaTeX, and on Word every table's type size -- the 10 pt default
+included -- becomes a STYLE MARKER (one table style for the whole table)
+rather than per-cell markup.
 }
 \details{
 Rotation in Word is DECIDED BY MEASUREMENT by default, but the

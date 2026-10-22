@@ -10,8 +10,8 @@ apa.cor.table(
   table.number = 1,
   show.conf.interval = TRUE,
   show.sig.stars = TRUE,
-  show.pvalue = TRUE,
-  landscape = NA
+  landscape = NA,
+  show.pvalue = TRUE
 )
 }
 \arguments{
@@ -27,8 +27,8 @@ file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
 to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
 no number: none is then shown at the console or written to the Word file.
 When \code{\link{apa.save}} writes several tables to one file, a table
-left at the default is numbered by its position in that file, while a
-number given here is kept. In a Quarto document that uses the apaquarto
+left at the default takes the next number after the last numbered table before it
+(starting at 1), and a number given here is kept. In a Quarto document that uses the apaquarto
 extension this value is ignored: apaquarto numbers the tables itself, in
 the order they appear in the document.}
 
@@ -37,9 +37,6 @@ are always displayed. This argument will be removed in a later version.}
 
 \item{show.sig.stars}{If \code{TRUE} (the default), correlations are
 marked with stars for significance (* p < .05, ** p < .01).}
-
-\item{show.pvalue}{If \code{TRUE} (the default), the p-value for each
-correlation is displayed below its confidence interval.}
 
 \item{landscape}{Whether this table is placed on a rotated (landscape)
 page. The default, \code{NA}, means apaTables decides by measuring the
@@ -51,6 +48,11 @@ A table too wide for the page it is given is shrunk to fit rather
 than having a column cut off. Landscape is a property of a PAGE,
 so it applies to PDF and Word output and is ignored, without complaint,
 for HTML and slides. See \strong{Rotated (landscape) pages} below.}
+
+\item{show.pvalue}{If \code{TRUE} (the default), the p-value for each
+correlation is displayed below its confidence interval. It comes last
+among the arguments so that a call written for an earlier version,
+which passed \code{landscape} by position, keeps its meaning.}
 }
 \value{
 A table object (class \code{apa_table}). Typing its name at the
@@ -63,13 +65,13 @@ A table object (class \code{apa_table}). Typing its name at the
 \code{apa.cor.table()} creates a table of means, standard deviations, and
 Pearson correlations in APA style. Each correlation is reported with its
 95\% confidence interval and, optionally, significance stars and a
-p-value. Typing \code{apa.cor.table(attitude)} prints the finished table
+p-value. Typing \code{apa.cor.table(data = attitude)} prints the finished table
 at the console. The most common next step is saving the table as a Word
 file to use in a manuscript:
 }
 \details{
-\preformatted{table1 <- apa.cor.table(attitude)
-apa.save("Table1.docx", table1)}
+\preformatted{table1 <- apa.cor.table(data = attitude)
+apa.save(filename = "Table1.docx", table1)}
 
 The file appears in your working directory -- the folder R is currently
 pointing at. See the \emph{Word files (apa.save)} section below. The
@@ -91,14 +93,14 @@ variables.
 open, copy from, or send -- the most common way to use an apaTables
 table:
 
-\preformatted{table1 <- apa.cor.table(attitude)
-apa.save("Table1.docx", table1)}
+\preformatted{table1 <- apa.cor.table(data = attitude)
+apa.save(filename = "Table1.docx", table1)}
 
 The file appears in your working directory -- the folder R is currently
 pointing at. Several tables can go into one file, each on its own page,
 numbered Table 1, Table 2, and so on in the order you list them:
 
-\preformatted{apa.save("AllTables.docx", table1, table2)}
+\preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
 
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to
@@ -115,7 +117,7 @@ that combine text and R code. The apaquarto extension makes a Quarto
 document follow APA style: place this table in such a document and it
 appears as a fully formatted APA table -- number, title, and note
 included -- in Word, PDF, or HTML. The extension must be installed beside the document, and one command does
-it. \code{\link{apa.quarto.new}("my-paper")} creates a new manuscript
+it. \code{\link{apa.quarto.new}(path = "my-paper")} creates a new manuscript
 folder with the extension already installed; for a folder you already
 have, \code{\link{apa.quarto.setup}()} installs the extension there
 instead.
@@ -175,8 +177,8 @@ the render stops.
 #| message: false
 #| warning: true
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.pdf(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = table1)
 ```}
 
 That \code{#| label: tbl-correlations} line is not optional: without a
@@ -200,7 +202,7 @@ sits on a page of its own, always at full size.
 
 To see this table (and every apaTables table type) in a complete
 working document, type
-\code{apa.quarto.example("apaTables-examples.qmd")} in the R console.
+\code{apa.quarto.example(filename = "apaTables-examples.qmd")} in the R console.
 Two ready-to-render example documents appear in your working directory,
 with the apaquarto extension installed beside them -- one per
 destination:
@@ -231,22 +233,22 @@ PDF. Each destination measures the table it is actually going to draw.
 library(apaTables)
 
 # Means, standard deviations, and correlations for the attitude data
-table1 <- apa.cor.table(attitude)
+table1 <- apa.cor.table(data = attitude)
 table1
 
 # Word documents ----------------------------------------
 # Save the table as a .docx file. This example writes to a temporary
 # folder; for real use give an ordinary name, such as
-# apa.save("Table1.docx", table1), and the file appears in your
+# apa.save(filename = "Table1.docx", table1), and the file appears in your
 # working directory.
-apa.save(file.path(tempdir(), "table1.docx"), table1)
+apa.save(filename = file.path(tempdir(), "table1.docx"), table1)
 
 # Quarto documents ----------------------------------------
 # Print a ready-to-paste apaquarto code chunk:
-apa.quarto.template(table1)
+apa.quarto.template(x = table1)
 
 # Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(table1)
+apa.quarto.pdf(x = table1)
 
 # Clean up
 unlink(file.path(tempdir(), "table1.docx"))
@@ -257,7 +259,7 @@ ready-to-render example document with one apaTables table per page -- the
 fastest way to see every table type working in an apaquarto document. In
 the R console, type:
 
-\preformatted{apa.quarto.example("apaTables-examples.qmd")}
+\preformatted{apa.quarto.example(filename = "apaTables-examples.qmd")}
 
 \strong{Prefer a written guide?} A step-by-step guide to placing these
 tables in Quarto documents comes installed with the package. To open it,
