@@ -94,10 +94,10 @@ Related functions:
 # Write both example documents to a temporary folder
 out <- file.path(tempdir(), "apaTables-examples.qmd")
 apa.quarto.example(filename = out)
-#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.33) at _extensions/wjschne/apaquarto.
+#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.34) at _extensions/wjschne/apaquarto.
 #> Wrote two example documents (the apaquarto extension is already installed alongside them):
-#>   /tmp/RtmpzwIi50/apaTables-examples-pdf.qmd  (renders to PDF; needs a LaTeX engine such as TinyTeX)
-#>   /tmp/RtmpzwIi50/apaTables-examples-docx.qmd  (renders to Word; no LaTeX needed)
+#>   /tmp/RtmpYhydi8/apaTables-examples-pdf.qmd  (renders to PDF; needs a LaTeX engine such as TinyTeX)
+#>   /tmp/RtmpYhydi8/apaTables-examples-docx.qmd  (renders to Word; no LaTeX needed)
 #> The repeated-measures page in each needs the afex and tidyr packages: install.packages(c("afex", "tidyr"))
 
 # (delete the demo files, and the extension folder installed beside them)
