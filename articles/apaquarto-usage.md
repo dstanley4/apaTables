@@ -3,9 +3,9 @@
 ## What this vignette covers
 
 You have made a table with apaTables – for example
-`apa.cor.table(attitude)` – and you want that table to appear, fully
-APA-formatted, in a manuscript. This vignette shows how to place any
-apaTables table into a Quarto document that uses the apaquarto
+`apa.cor.table(data = attitude)` – and you want that table to appear,
+fully APA-formatted, in a manuscript. This vignette shows how to place
+any apaTables table into a Quarto document that uses the apaquarto
 extension.
 
 **If you are not sure which route you want yet**, start at the package’s
@@ -31,7 +31,7 @@ the whole starting point for you. In the R console, type:
 ``` r
 
 library(apaTables)
-apa.quarto.new("my-paper")
+apa.quarto.new(path = "my-paper")
 ```
 
 This creates a folder called `my-paper` containing `my-paper.qmd`: a
@@ -40,9 +40,10 @@ with `corresponding: true` and an affiliation, and
 `format: apaquarto-pdf`) and one worked table already in it. Beside it
 sits an `_extensions/wjschne/apaquarto` folder holding the apaquarto
 extension apaTables ships and tests against. Open
-`my-paper/my-paper.qmd` and click Render (or run `quarto render` in that
-folder from a Terminal), and it renders to a complete APA PDF on the
-first try – nothing to install, and nothing to configure.
+`my-paper/my-paper.qmd` and press Preview in Positron (or run
+`quarto render` in that folder from a Terminal), and it renders to a
+complete APA PDF on the first try – nothing to install, and nothing to
+configure.
 
 > **The second half of that is the part that matters, and it is easy to
 > skip.** If you already know Quarto it is tempting to write the
@@ -102,9 +103,9 @@ library(apaTables)
 apa.quarto.setup()
 ```
 
-(or `apa.quarto.setup("path/to/project")` to act on a folder other than
-the current one). This installs the exact copy of apaquarto that
-apaTables ships and tests against into an
+(or `apa.quarto.setup(path = "path/to/project")` to act on a folder
+other than the current one). This installs the exact copy of apaquarto
+that apaTables ships and tests against into an
 `_extensions/wjschne/apaquarto` folder next to your document. It is safe
 to run at any time: on a project whose copy is already correct, it does
 nothing and says nothing. Your document’s YAML header (the settings
@@ -187,7 +188,7 @@ so there is nothing to install first. In the R console, type:
 ``` r
 
 library(apaTables)
-apa.quarto.example("apaTables-examples.qmd")
+apa.quarto.example(filename = "apaTables-examples.qmd")
 ```
 
 This writes two complete, ready-to-render Quarto documents into your
@@ -228,8 +229,8 @@ extension](#installing-the-apaquarto-extension), one command.)
 ``` r
 
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.template(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.template(x = table1)
 ```
 
     #> Copy this chunk into your apaquarto (.qmd) document:
@@ -239,7 +240,7 @@ apa.quarto.template(table1)
     #> #| message: false
     #> #| warning: true
     #> # table1 <- apa.cor.table(...)   # <- the line that builds your table
-    #> apa.quarto.pdf(table1)
+    #> apa.quarto.pdf(x = table1)
     #> ```
     #> 
     #> The table's title and note need no lines here.
@@ -263,8 +264,8 @@ So the chunk in your document looks like this:
 #| message: false
 #| warning: true
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.pdf(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = table1)
 ```
 ````
 
@@ -279,8 +280,8 @@ you would rather start from apaTables’ wording than compose one from
 scratch.
 
 The chunk is named after the table you asked about:
-`apa.quarto.template(table1)` gives the chunk the name `tbl-table1`, so
-two tables give two chunks that can both go in the same document.
+`apa.quarto.template(x = table1)` gives the chunk the name `tbl-table1`,
+so two tables give two chunks that can both go in the same document.
 
 Render the document, and the table appears with its number, title, and
 note in APA format. That is all you need to do – most users never need
@@ -319,8 +320,8 @@ extension](#installing-the-apaquarto-extension), one command.)
 #| message: false
 #| warning: true
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.pdf(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = table1)
 ```
 ````
 
@@ -332,8 +333,8 @@ wrapped with the table number and the placement apaquarto adds:
 
 ``` r
 
-my_table <- apa.cor.table(attitude)
-apa.quarto.pdf(my_table)
+my_table <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = my_table)
 #> Warning: This document renders to `apaquarto-html`. To produce PDF, set
 #> `format: apaquarto-pdf` in the YAML.
 ```
@@ -380,8 +381,8 @@ collected at the end of the manuscript. The chunk is the ordinary chunk:
 #| message: false
 #| warning: true
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.pdf(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = table1)
 ```
 ````
 
@@ -464,17 +465,17 @@ supplies both automatically. If you do want to write your own, you can
 start from apaTables’ wording rather than composing it from scratch. Two
 helpers return the same strings apaTables generates, ready to paste into
 `tbl-cap` and `apa-note` (or to extend, e.g. with
-`paste(apa_note_text(table1), "Additional detail here.")`):
+`paste(apa_note_text(x = table1), "Additional detail here.")`):
 
 ``` r
 
-apa_caption(table1)
+apa_caption(x = table1)
 #> [1] "Descriptive Statistics and Correlations"
 ```
 
 ``` r
 
-apa_note_text(table1)
+apa_note_text(x = table1)
 #> [1] "N = number of cases. M = mean. SD = standard deviation. Values in square brackets indicate the 95% confidence interval. * indicates p < .05. ** indicates p < .01."
 ```
 
@@ -520,7 +521,7 @@ Concretely:
   #| label: tbl-wide
   #| tbl-cap: "My Wide Table"
   my_table <- apa.reg.table(blk1, blk2)
-  apa.quarto.pdf(my_table)
+  apa.quarto.pdf(x = my_table)
   ```
 
   :::
@@ -575,7 +576,7 @@ A slide deck has no float, so a table there has no number and, unlike
 [`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 /
 [`apa.quarto.html()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md),
-no automatic title or note either: `apa.quarto.revealjs(x)` puts the
+no automatic title or note either: `apa.quarto.revealjs(x = x)` puts the
 table alone on the slide. Pass `title = TRUE` and/or `note = TRUE` to
 add the ones apaTables generated. This matters for a correlation table
 in particular. Its cells mark a significant correlation with `**`, and
@@ -603,8 +604,8 @@ library(apaTables)
 ```{r}
 #| message: false
 #| warning: true
-my_table <- apa.cor.table(attitude)
-apa.quarto.revealjs(my_table, note = TRUE)
+my_table <- apa.cor.table(data = attitude)
+apa.quarto.revealjs(x = my_table, note = TRUE)
 ```
 
 These are the pairwise correlations among the seven attitude items; the
@@ -615,7 +616,7 @@ Render this with Quarto (`quarto render my-talk.qmd`, or the Preview
 button in Positron) and the table appears on the second slide, sized to
 fit, with its note below it and no table number.
 
-An explicit size – `apa.quarto.revealjs(x, font.size = 16)` – is
+An explicit size – `apa.quarto.revealjs(x = x, font.size = 16)` – is
 honoured exactly, though a size below 6 points – where an APA table
 stops being comfortable to read – draws a warning in the rendered draft.
 Left at the default, apaTables shrinks the table automatically to fit
@@ -636,7 +637,7 @@ Word files, or when you are not using Quarto:
 ``` r
 
 library(apaTables)
-table1 <- apa.cor.table(attitude)
+table1 <- apa.cor.table(data = attitude)
 apa.save(filename = "Table1.docx", table1)   # Word document
 apa.save(filename = "Table1.html", table1)   # HTML file
 ```

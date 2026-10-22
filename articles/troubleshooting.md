@@ -88,6 +88,18 @@ they need to run
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
 once before rendering.
 
+**Does your document cache its chunks** (`cache: true`)? Quarto then
+reuses a chunk’s earlier output instead of running it again. After you
+update apaTables, a table from a cached chunk in a Word document can
+come out in larger type with wider spacing than apaTables gives it.
+Render once with the cache refreshed, by typing this in a terminal (not
+the R console):
+
+    quarto render mydocument.qmd --cache-refresh
+
+Deleting the `mydocument_cache` folder beside the document does the
+same.
+
 ## “The numbers in my two-way ANOVA look wrong.”
 
 **If
@@ -112,17 +124,6 @@ options(contrasts = c("contr.sum", "contr.poly"))
 The examples on the
 [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
 help page set this line before every model.
-
-## “My colleague’s table has different columns from mine.”
-
-[`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md)
-shows confidence intervals for its d values only when the MBESS package
-is installed. Install it and the columns appear:
-
-``` r
-
-install.packages("MBESS")
-```
 
 ## “My table is missing rows, or its note has vanished.”
 

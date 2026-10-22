@@ -146,6 +146,15 @@ file?</strong> The extension lives in an <code>_extensions</code> folder
 next to the document. Send the whole folder and there is nothing for the
 recipient to do; send the file on its own and they need to run
 <code><a href="../reference/apa.quarto.setup.html">apa.quarto.setup()</a></code> once before rendering.</p>
+<p><strong>Does your document cache its chunks</strong>
+(<code>cache: true</code>)? Quarto then reuses a chunk’s earlier output
+instead of running it again. After you update apaTables, a table from a
+cached chunk in a Word document can come out in larger type with wider
+spacing than apaTables gives it. Render once with the cache refreshed,
+by typing this in a terminal (not the R console):</p>
+<pre><code>quarto render mydocument.qmd --cache-refresh</code></pre>
+<p>Deleting the <code>mydocument_cache</code> folder beside the document
+does the same.</p>
 </div>
 <div class="section level2">
 <h2 id="the-numbers-in-my-two-way-anova-look-wrong-">“The numbers in my two-way ANOVA look wrong.”<a class="anchor" aria-label="anchor" href="#the-numbers-in-my-two-way-anova-look-wrong-"></a>
@@ -160,19 +169,10 @@ III table it uses sum-to-zero contrasts whether or not you set them, so
 its F values match programs such as SPSS. Your own analysis, for example
 with <code><a href="https://rdrr.io/pkg/car/man/Anova.html" class="external-link">car::Anova()</a></code>, does not. Set the contrasts before
 fitting the model so both use the same coding:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>contrasts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contr.sum"</span>, <span class="st">"contr.poly"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The examples on the <code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code> help page set this
 line before every model.</p>
-</div>
-<div class="section level2">
-<h2 id="my-colleagues-table-has-different-columns-from-mine-">“My colleague’s table has different columns from mine.”<a class="anchor" aria-label="anchor" href="#my-colleagues-table-has-different-columns-from-mine-"></a>
-</h2>
-<p><code><a href="../reference/apa.d.table.html">apa.d.table()</a></code> shows confidence intervals for its d
-values only when the MBESS package is installed. Install it and the
-columns appear:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"MBESS"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="my-table-is-missing-rows-or-its-note-has-vanished-">“My table is missing rows, or its note has vanished.”<a class="anchor" aria-label="anchor" href="#my-table-is-missing-rows-or-its-note-has-vanished-"></a>

@@ -110,8 +110,8 @@ file extension. Legacy <code>.doc</code>/<code>.rtf</code> names are saved as
 to <code>1</code>. Use <code>0</code> (or <code>NA</code>, or <code>NULL</code>) for a table with
 no number: none is then shown at the console or written to the Word file.
 When <code><a href="apa.save.html">apa.save</a></code> writes several tables to one file, a table
-left at the default is numbered by its position in that file, while a
-number given here is kept. In a Quarto document that uses the apaquarto
+left at the default takes the next number after the last numbered table before it
+(starting at 1), and a number given here is kept. In a Quarto document that uses the apaquarto
 extension this value is ignored: apaquarto numbers the tables itself, in
 the order they appear in the document.</p></dd>
 
@@ -154,7 +154,7 @@ for HTML and slides. See <strong>Rotated (landscape) pages</strong> below.</p></
 
 <div class="sourceCode"><pre><code><span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.2way.table.html">apa.2way.table</a></span><span class="op">(</span>iv1 <span class="op">=</span> <span class="va">gender</span>, iv2 <span class="op">=</span> <span class="va">alcohol</span>,</span>
 <span>                         dv <span class="op">=</span> <span class="va">attractiveness</span>, data <span class="op">=</span> <span class="va">goggles</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="st">"Table1.docx"</span>, <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"Table1.docx"</span>, <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
 
 <p>The file appears in your working directory – the folder R is currently
 pointing at. See the <em>Word files (apa.save)</em> section below. The
@@ -169,12 +169,12 @@ documents</em> section below.</p>
 <p><code><a href="apa.save.html">apa.save</a></code> writes the finished table to a Word file you can
 open, copy from, or send – the most common way to use an apaTables
 table:</p>
-<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="st">"Table1.docx"</span>, <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"Table1.docx"</span>, <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
 
 <p>The file appears in your working directory – the folder R is currently
 pointing at. Several tables can go into one file, each on its own page,
 numbered Table 1, Table 2, and so on in the order you list them:</p>
-<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="st">"AllTables.docx"</span>, <span class="va">table1</span>, <span class="va">table2</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"AllTables.docx"</span>, <span class="va">table1</span>, <span class="va">table2</span><span class="op">)</span></span></code></pre></div>
 
 <p>The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to
@@ -192,7 +192,7 @@ that combine text and R code. The apaquarto extension makes a Quarto
 document follow APA style: place this table in such a document and it
 appears as a fully formatted APA table – number, title, and note
 included – in Word, PDF, or HTML. The extension must be installed beside the document, and one command does
-it. <code><a href="apa.quarto.new.html">apa.quarto.new</a>("my-paper")</code> creates a new manuscript
+it. <code><a href="apa.quarto.new.html">apa.quarto.new</a>(path = "my-paper")</code> creates a new manuscript
 folder with the extension already installed; for a folder you already
 have, <code><a href="apa.quarto.setup.html">apa.quarto.setup()</a></code> installs the extension there
 instead.
@@ -249,7 +249,7 @@ chunk: without it the document cannot find
 library(apaTables)
 table1 &lt;- apa.2way.table(iv1 = gender, iv2 = alcohol,
                          dv = attractiveness, data = goggles)
-apa.quarto.pdf(table1)
+apa.quarto.pdf(x = table1)
 ```</code></pre></div>
 
 <p>That <code>#| label: tbl-means</code> line is not optional: without a label
@@ -271,7 +271,7 @@ last piece. None of this applies to <code><a href="apa.save.html">apa.save</a></
 sits on a page of its own, always at full size.</p>
 <p>To see this table (and every apaTables table type) in a complete
 working document, type
-<code>apa.quarto.example("apaTables-examples.qmd")</code> in the R console.
+<code>apa.quarto.example(filename = "apaTables-examples.qmd")</code> in the R console.
 Two ready-to-render example documents appear in your working directory,
 with the apaquarto extension installed beside them – one per
 destination:</p>
@@ -302,7 +302,7 @@ PDF. Each destination measures the table it is actually going to draw.</p>
 ready-to-render example document with one apaTables table per page – the
 fastest way to see every table type working in an apaquarto document. In
 the R console, type:</p>
-<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.quarto.example.html">apa.quarto.example</a></span><span class="op">(</span><span class="st">"apaTables-examples.qmd"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.quarto.example.html">apa.quarto.example</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"apaTables-examples.qmd"</span><span class="op">)</span></span></code></pre></div>
 
 <p><strong>Prefer a written guide?</strong> A step-by-step guide to placing these
 tables in Quarto documents comes installed with the package. To open it,
@@ -364,13 +364,13 @@ a Word or HTML file; <code><a href="apa.quarto.template.html">apa.quarto.templat
 <span class="r-in"><span><span class="co"># apa.save() can write several tables into one Word document</span></span></span>
 <span class="r-in"><span><span class="co"># (here, in a temporary</span></span></span>
 <span class="r-in"><span><span class="co"># folder; for real use give an ordinary name, such as</span></span></span>
-<span class="r-in"><span><span class="co"># apa.save("Table1.docx", table1), and the file appears in your</span></span></span>
+<span class="r-in"><span><span class="co"># apa.save(filename = "Table1.docx", table1), and the file appears in your</span></span></span>
 <span class="r-in"><span><span class="co"># working directory)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="apa.save.html">apa.save</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"my_tables.docx"</span><span class="op">)</span>, <span class="va">table2</span>, <span class="va">table3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"my_tables.docx"</span><span class="op">)</span>, <span class="va">table2</span>, <span class="va">table3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Quarto documents ----------------------------------------</span></span></span>
 <span class="r-in"><span><span class="co"># Print a ready-to-paste apaquarto code chunk:</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Copy this chunk into your apaquarto (.qmd) document:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```{r}</span>
@@ -378,7 +378,7 @@ a Word or HTML file; <code><a href="apa.quarto.template.html">apa.quarto.templat
 <span class="r-out co"><span class="r-pr">#&gt;</span> #| message: false</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> #| warning: true</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # table2 &lt;- apa.2way.table(...)   # &lt;- the line that builds your table</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> apa.quarto.pdf(table2)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> apa.quarto.pdf(x = table2)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> The table's title and note need no lines here.</span>
@@ -388,7 +388,7 @@ a Word or HTML file; <code><a href="apa.quarto.template.html">apa.quarto.templat
 <span class="r-out co"><span class="r-pr">#&gt;</span> or an #| apa-note line for the note (or pass title = / note = to it).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Or write your own chunk; apa.quarto.pdf() displays the table body:</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">table2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|   |::: {custom-style=\"ApaTableRule\"}                                                                                                              |\n|   |b                                                                                                                                              |\n|   |:::                                                                                                                                            |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|   |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |\n|   |1                                  |2                                  |3                                  |4                                  |\n|   |:::                                |:::                                |:::                                |:::                                |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|a  |*M*              |*SD*             |*M*              |*SD*             |*M*              |*SD*             |*M*              |*SD*             |\n+:==+================:+================:+================:+================:+================:+================:+================:+================:+\n|1  |1.00             |1.00             |2.00             |1.00             |3.00             |1.00             |3.00             |1.00             |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|2  |2.00             |1.00             |3.00             |1.00             |2.00             |1.00             |4.00             |1.00             |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='Descriptive Statistics for Dv in a 2(A) by 4(B) Design' apa-note='[&amp;#34;*M* = mean. *SD* = standard deviation.&amp;#34;]'}\n:::\n"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "knit_asis"</span>

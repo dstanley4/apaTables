@@ -59,9 +59,9 @@ apa_layout_decide(
   override branch is not reached at all. Rotation is decided from the
   SIZE ACTUALLY EMITTED rather than the ladder's own 10 pt guess:
   without this re-check an explicit \`font.size\` would reach the LaTeX
-  emitter unchecked – \`apa.cor.table(attitude)\` at 20 pt measures
-  10.26 in against a 6.5 in upright page, and would render with no
-  warning and no rotation. When the page the table will land on
+  emitter unchecked – \`apa.cor.table(data = attitude)\` at 20 pt
+  measures 10.26 in against a 6.5 in upright page, and would render with
+  no warning and no rotation. When the page the table will land on
   (rotated, if rotation is allowed) cannot hold it at that size it
   warns, naming a smaller size that fits, or – for a table whose
   \`\tabcolsep\` alone exceeds the rotated budget – saying that no size,

@@ -138,7 +138,7 @@ creates an APA Style correlation table, see Table 1, using the
 <em>attitude</em> dataset built into <em>R</em>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
-<span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span>,</span>
+<span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span></code></pre></div>
@@ -177,10 +177,10 @@ then ask for its Quarto code:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span>,</span>
+<span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -197,8 +197,8 @@ nothing more than the label is required:</p>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="in">table1 &lt;- apa.cor.table(attitude)</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(table1)</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="in">table1 &lt;- apa.cor.table(data = attitude)</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table1)</span></span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>That <code>#| label: tbl-correlations</code> line is not optional:
 without a label starting <code>tbl-</code>, Quarto builds no float for
@@ -212,12 +212,13 @@ such a table on a rotated (landscape) page, and apaTables does that for
 you: it measures the table, and when it will not fit upright it asks
 apaquarto for a rotated page. Nothing has to be added to the chunk and
 nothing has to be added to the document’s YAML header – the display line
-is simply <code>apa.quarto.pdf(table1)</code>, and it works whether your
-tables sit in the text or are collected at the end of the manuscript.
-(Documents that already wrap a chunk in <code>::: {.landscape}</code>
-markers keep rendering exactly as before; the markers are just no longer
-something you have to write.) Word output needs none of this either:
-<code><a href="../reference/apa.save.html">apa.save()</a></code> turns the page to landscape automatically.</p>
+is simply <code>apa.quarto.pdf(x = table1)</code>, and it works whether
+your tables sit in the text or are collected at the end of the
+manuscript. (Documents that already wrap a chunk in
+<code>::: {.landscape}</code> markers keep rendering exactly as before;
+the markers are just no longer something you have to write.) Word output
+needs none of this either: <code><a href="../reference/apa.save.html">apa.save()</a></code> turns the page to
+landscape automatically.</p>
 <p><strong>The automatic title and note work identically in PDF, Word,
 and HTML.</strong> A chunk rendered to <code>apaquarto-docx</code> or
 <code>apaquarto-html</code> shows the same generated (or your own) title
@@ -226,8 +227,8 @@ and note a PDF render would – use <code><a href="../reference/apa.quarto.pdf.h
 to match the document’s YAML <code>format:</code> line.
 <code><a href="../reference/apa.save.html">apa.save()</a></code>, shown above, remains the way to write a Word or
 HTML file of its own, outside any Quarto document.</p>
-<p><code>apa.quarto.template(table1)</code> prints one plain chunk – no
-title line, no note line, no wrapper lines, and nothing to add to the
+<p><code>apa.quarto.template(x = table1)</code> prints one plain chunk –
+no title line, no note line, no wrapper lines, and nothing to add to the
 YAML header. It names the chunk after your table object
 (<code>tbl-table1</code>); shown here with the build lines filled
 in:</p>
@@ -236,15 +237,15 @@ in:</p>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="in">table1 &lt;- apa.cor.table(attitude)</span></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(table1)</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="in">table1 &lt;- apa.cor.table(data = attitude)</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table1)</span></span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>If a table is still too wide for its page – even a rotated one –
 apaTables prints it smaller during PDF rendering, as small as it has to
 be, so that nothing is cut off. This is automatic; the chunk needs
 nothing extra, and there is no setting to change:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
 <p>If fitting the table takes the type below 6 points – where an APA
 table stops being comfortable to read – a warning in the rendered draft
 says so and points you to <code><a href="../reference/apa.save.html">apa.save()</a></code> for a full-size Word
@@ -319,7 +320,7 @@ then ask for its Quarto code:</p>
 <span><span class="va">table2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">basic.reg</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table2</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -335,7 +336,7 @@ render the document.</p>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
 <span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="in">basic.reg &lt;- lm(sales ~ adverts + airplay, data = album)</span></span>
 <span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="in">table2 &lt;- apa.reg.table(basic.reg)</span></span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="in">apa.quarto.pdf(table2)</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table2)</span></span>
 <span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -422,7 +423,7 @@ then ask for its Quarto code:</p>
 <span><span class="va">table3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="va">block1</span>, <span class="va">block2</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table3</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table3</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -439,14 +440,14 @@ render the document.</p>
 <span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="in">block1 &lt;- lm(sales ~ adverts + airplay, data = album)</span></span>
 <span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="in">block2 &lt;- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)</span></span>
 <span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="in">table3 &lt;- apa.reg.table(block1, block2)</span></span>
-<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table3)</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table3)</span></span>
 <span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>One caution for PDF: a regression table with several blocks is wider
 than the upright (portrait) PDF page. APA style places such a table on a
 rotated (landscape) page, and apaTables does that for you: it measures
 the table and asks apaquarto for a rotated page when one is needed.
 Nothing has to be added to the chunk or to the document’s YAML header –
-the display line is simply <code>apa.quarto.pdf(table3)</code>. This
+the display line is simply <code>apa.quarto.pdf(x = table3)</code>. This
 two-block table (Table 3) measures about 7.1 inches: more than the 6.5
 inches an upright page gives a table, but well within the 9 inches of a
 rotated one. So it lands on a rotated page at full size with every
@@ -454,11 +455,11 @@ column present. A table wider still – wider than even a rotated page –
 is printed smaller instead, as small as it has to be so that every
 column is kept. If that takes the type below 6 points the rendered draft
 carries a warning saying so, and <code><a href="../reference/apa.save.html">apa.save()</a></code> Word output
-keeps every column at full size (its page turns to landscape
-instead).</p>
+turns the page to landscape first, using smaller type only when even
+that is too narrow.</p>
 <p>This table is wide enough to be rotated, and
-<code>apa.quarto.template(table3)</code> still prints one plain chunk
-(named <code>tbl-table3</code> after the object) – the rotation is
+<code>apa.quarto.template(x = table3)</code> still prints one plain
+chunk (named <code>tbl-table3</code> after the object) – the rotation is
 worked out when the document is rendered, not written into the chunk.
 Shown with the build lines filled in:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="in">```{r}</span></span>
@@ -469,7 +470,7 @@ Shown with the build lines filled in:</p>
 <span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="in">block1 &lt;- lm(sales ~ adverts + airplay, data = album)</span></span>
 <span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="in">block2 &lt;- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)</span></span>
 <span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="in">table3 &lt;- apa.reg.table(block1, block2)</span></span>
-<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table3)</span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table3)</span></span>
 <span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>Alongside the chunk it prints the reason, in the words it actually
 uses:</p>
@@ -500,7 +501,7 @@ table based on lm_output; see Table 4.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">table4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span><span class="va">lm_output</span>,</span>
+<span><span class="va">table4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span>lm_output <span class="op">=</span> <span class="va">lm_output</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table4.docx"</span>,</span>
@@ -540,10 +541,10 @@ then ask for its Quarto code:</p>
 <span><span class="va">lm_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">libido</span> <span class="op">~</span> <span class="va">dose</span>,</span>
 <span>                data <span class="op">=</span> <span class="va">viagra</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">table4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span><span class="va">lm_output</span>,</span>
+<span><span class="va">table4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span>lm_output <span class="op">=</span> <span class="va">lm_output</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table4</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table4</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -559,8 +560,8 @@ render the document.</p>
 <span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
 <span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="in">options(contrasts = c("contr.sum", "contr.poly"))</span></span>
 <span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="in">lm_output &lt;- lm(libido ~ dose, data = viagra)</span></span>
-<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="in">table4 &lt;- apa.aov.table(lm_output)</span></span>
-<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table4)</span></span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="in">table4 &lt;- apa.aov.table(lm_output = lm_output)</span></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table4)</span></span>
 <span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>The <strong>apa.1way.table()</strong> function creates a table with
 the mean and sd for each cell; see Table 5.</p>
@@ -610,7 +611,7 @@ then ask for its Quarto code:</p>
 <span>                         data <span class="op">=</span> <span class="va">viagra</span>,</span>
 <span>                         table.number <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table5</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table5</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -625,7 +626,7 @@ render the document.</p>
 <span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
 <span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
 <span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a><span class="in">table5 &lt;- apa.1way.table(iv = dose, dv = libido, data = viagra)</span></span>
-<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(table5)</span></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table5)</span></span>
 <span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>The <strong>apa.d.table()</strong> function show a d-value (with
 confidence interval) for each paired comparison; see Table 6.</p>
@@ -675,7 +676,7 @@ then ask for its Quarto code:</p>
 <span>                      data <span class="op">=</span> <span class="va">viagra</span>,</span>
 <span>                      table.number <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table6</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table6</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -690,7 +691,7 @@ render the document.</p>
 <span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
 <span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
 <span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a><span class="in">table6 &lt;- apa.d.table(iv = dose, dv = libido, data = viagra)</span></span>
-<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(table6)</span></span>
+<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table6)</span></span>
 <span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -711,7 +712,7 @@ table based on lm_output; see Table 7.</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dstanley4/apaTables" class="external-link">apaTables</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">table7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span><span class="va">lm_output</span>,</span>
+<span><span class="va">table7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span>lm_output <span class="op">=</span> <span class="va">lm_output</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table7.docx"</span>,</span>
@@ -751,10 +752,10 @@ then ask for its Quarto code:</p>
 <span><span class="va">lm_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">attractiveness</span> <span class="op">~</span> <span class="va">gender</span><span class="op">*</span><span class="va">alcohol</span>,</span>
 <span>                data <span class="op">=</span> <span class="va">goggles</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">table7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span><span class="va">lm_output</span>,</span>
+<span><span class="va">table7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.aov.table.html">apa.aov.table</a></span><span class="op">(</span>lm_output <span class="op">=</span> <span class="va">lm_output</span>,</span>
 <span>                        table.number <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table7</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table7</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -770,8 +771,8 @@ render the document.</p>
 <span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
 <span id="cb41-6"><a href="#cb41-6" tabindex="-1"></a><span class="in">options(contrasts = c("contr.sum", "contr.poly"))</span></span>
 <span id="cb41-7"><a href="#cb41-7" tabindex="-1"></a><span class="in">lm_output &lt;- lm(attractiveness ~ gender*alcohol, data = goggles)</span></span>
-<span id="cb41-8"><a href="#cb41-8" tabindex="-1"></a><span class="in">table7 &lt;- apa.aov.table(lm_output)</span></span>
-<span id="cb41-9"><a href="#cb41-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table7)</span></span>
+<span id="cb41-8"><a href="#cb41-8" tabindex="-1"></a><span class="in">table7 &lt;- apa.aov.table(lm_output = lm_output)</span></span>
+<span id="cb41-9"><a href="#cb41-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table7)</span></span>
 <span id="cb41-10"><a href="#cb41-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>The <strong>apa.2way.table()</strong> function creates a table with
 the mean and sd for each cell; see Table 8. Marginal means can also be
@@ -830,7 +831,7 @@ then ask for its Quarto code:</p>
 <span>                         show.marginal.means <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         table.number <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table8</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table8</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -847,7 +848,7 @@ render the document.</p>
 <span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a><span class="in">table8 &lt;- apa.2way.table(iv1 = gender, iv2 = alcohol,</span></span>
 <span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a><span class="in">                         dv = attractiveness, data = goggles,</span></span>
 <span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a><span class="in">                         show.marginal.means = TRUE)</span></span>
-<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table8)</span></span>
+<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table8)</span></span>
 <span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>You can use the <em>tidyverse</em> package to conduct paired
 comparisons within each gender again using
@@ -918,8 +919,8 @@ then ask for their Quarto code:</p>
 <span>                       data <span class="op">=</span> <span class="va">goggles.women</span>,</span>
 <span>                       table.number <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table9</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table10</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table9</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table10</span><span class="op">)</span></span></code></pre></div>
 <p>This prints ready-made Quarto code chunks. They carry no title or
 note lines and need none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 each table itself, every time you render. Copy each printed chunk into
@@ -936,7 +937,7 @@ render the document.</p>
 <span id="cb51-6"><a href="#cb51-6" tabindex="-1"></a><span class="in">library(dplyr)</span></span>
 <span id="cb51-7"><a href="#cb51-7" tabindex="-1"></a><span class="in">goggles.men &lt;- filter(goggles, gender == "Male")</span></span>
 <span id="cb51-8"><a href="#cb51-8" tabindex="-1"></a><span class="in">table9 &lt;- apa.d.table(iv = alcohol, dv = attractiveness, data = goggles.men)</span></span>
-<span id="cb51-9"><a href="#cb51-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table9)</span></span>
+<span id="cb51-9"><a href="#cb51-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table9)</span></span>
 <span id="cb51-10"><a href="#cb51-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 <p>The chunk for Table 10 carries its own label, its own line creating
 <code>goggles.women</code>, and its own call to
@@ -949,7 +950,7 @@ render the document.</p>
 <span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a><span class="in">library(dplyr)</span></span>
 <span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a><span class="in">goggles.women &lt;- filter(goggles, gender == "Female")</span></span>
 <span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a><span class="in">table10 &lt;- apa.d.table(iv = alcohol, dv = attractiveness, data = goggles.women)</span></span>
-<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(table10)</span></span>
+<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table10)</span></span>
 <span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -1046,7 +1047,7 @@ are no longer required.</p>
 <span>                                       within <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drink"</span>, <span class="st">"imagery"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Now we make the table based on the output:</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table11</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span><span class="va">drink_attitude_results</span>,</span>
+<code class="sourceCode R"><span><span class="va">table11</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span>afex.output <span class="op">=</span> <span class="va">drink_attitude_results</span>,</span>
 <span>                          table.number <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table11.docx"</span>,</span>
@@ -1098,10 +1099,10 @@ then ask for its Quarto code:</p>
 <span>                                       data <span class="op">=</span> <span class="va">drink_attitude_long</span>,</span>
 <span>                                       within <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drink"</span>, <span class="st">"imagery"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">table11</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span><span class="va">drink_attitude_results</span>,</span>
+<span><span class="va">table11</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span>afex.output <span class="op">=</span> <span class="va">drink_attitude_results</span>,</span>
 <span>                          table.number <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table11</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table11</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -1128,8 +1129,8 @@ render the document.</p>
 <span id="cb63-16"><a href="#cb63-16" tabindex="-1"></a><span class="in">                                       dv = "attitude",</span></span>
 <span id="cb63-17"><a href="#cb63-17" tabindex="-1"></a><span class="in">                                       data = drink_attitude_long,</span></span>
 <span id="cb63-18"><a href="#cb63-18" tabindex="-1"></a><span class="in">                                       within = c("drink", "imagery"))</span></span>
-<span id="cb63-19"><a href="#cb63-19" tabindex="-1"></a><span class="in">table11 &lt;- apa.afex.table(drink_attitude_results)</span></span>
-<span id="cb63-20"><a href="#cb63-20" tabindex="-1"></a><span class="in">apa.quarto.pdf(table11)</span></span>
+<span id="cb63-19"><a href="#cb63-19" tabindex="-1"></a><span class="in">table11 &lt;- apa.afex.table(afex.output = drink_attitude_results)</span></span>
+<span id="cb63-20"><a href="#cb63-20" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table11)</span></span>
 <span id="cb63-21"><a href="#cb63-21" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -1221,7 +1222,7 @@ are no longer required.</p>
 <span>                               within <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"looks"</span>, <span class="st">"personality"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Now we make the table based on the output:</p>
 <div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span><span class="va">dating_results</span>,</span>
+<code class="sourceCode R"><span><span class="va">table12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span>afex.output <span class="op">=</span> <span class="va">dating_results</span>,</span>
 <span>                          table.number <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"table12.docx"</span>,</span>
@@ -1274,10 +1275,10 @@ then ask for its Quarto code:</p>
 <span>                               between <span class="op">=</span> <span class="st">"gender"</span>,</span>
 <span>                               within <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"looks"</span>, <span class="st">"personality"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">table12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span><span class="va">dating_results</span>,</span>
+<span><span class="va">table12</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span>afex.output <span class="op">=</span> <span class="va">dating_results</span>,</span>
 <span>                          table.number <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span><span class="va">table12</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/apa.quarto.template.html">apa.quarto.template</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">table12</span><span class="op">)</span></span></code></pre></div>
 <p>This prints a ready-made Quarto code chunk. It carries no title or
 note line and needs none: <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> writes both from
 the table itself, every time you render. Copy the printed chunk into
@@ -1305,8 +1306,8 @@ render the document.</p>
 <span id="cb74-17"><a href="#cb74-17" tabindex="-1"></a><span class="in">                               data = dating_long,</span></span>
 <span id="cb74-18"><a href="#cb74-18" tabindex="-1"></a><span class="in">                               between = "gender",</span></span>
 <span id="cb74-19"><a href="#cb74-19" tabindex="-1"></a><span class="in">                               within = c("looks", "personality"))</span></span>
-<span id="cb74-20"><a href="#cb74-20" tabindex="-1"></a><span class="in">table12 &lt;- apa.afex.table(dating_results)</span></span>
-<span id="cb74-21"><a href="#cb74-21" tabindex="-1"></a><span class="in">apa.quarto.pdf(table12)</span></span>
+<span id="cb74-20"><a href="#cb74-20" tabindex="-1"></a><span class="in">table12 &lt;- apa.afex.table(afex.output = dating_results)</span></span>
+<span id="cb74-21"><a href="#cb74-21" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = table12)</span></span>
 <span id="cb74-22"><a href="#cb74-22" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
 </div>
 </div>

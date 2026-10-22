@@ -118,11 +118,11 @@ to start a whole new manuscript in one command,
 # Install the apaquarto extension into a temporary project folder
 proj <- file.path(tempdir(), "apaTables-quarto-setup-example")
 dir.create(proj, showWarnings = FALSE)
-apa.quarto.setup(proj)
-#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.34) at _extensions/wjschne/apaquarto.
+apa.quarto.setup(path = proj)
+#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.36) at _extensions/wjschne/apaquarto.
 
 # Running it again on the same, already-correct folder does nothing
-apa.quarto.setup(proj)
+apa.quarto.setup(path = proj)
 
 # (delete the demo folder)
 unlink(proj, recursive = TRUE)

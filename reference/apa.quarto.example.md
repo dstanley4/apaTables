@@ -5,7 +5,7 @@ The fastest way to learn the Quarto workflow is to see it working.
 working directory, with everything they need already installed beside
 them:
 
-    apa.quarto.example("apaTables-examples.qmd")
+    apa.quarto.example(filename = "apaTables-examples.qmd")
 
 Two files appear:
 
@@ -51,7 +51,7 @@ apa.quarto.example(filename = "apaTables-examples.qmd", overwrite = FALSE)
 
   Path used as the stem for both files. A `.qmd` extension, if present,
   is stripped before deriving the two output names:
-  `apa.quarto.example("apaTables-examples.qmd")` writes
+  `apa.quarto.example(filename = "apaTables-examples.qmd")` writes
   `apaTables-examples-pdf.qmd` and `apaTables-examples-docx.qmd`. A bare
   name (the default) is written in the current working directory (the
   folder R is currently using); an absolute or `~` path is written
@@ -75,7 +75,7 @@ them, as described under `filename`.
 
 ## See also
 
-[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`("my-paper")`
+[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`(path = "my-paper")`
 starts an APA manuscript with the apaquarto extension already installed;
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
 installs the extension into a project you already have. A step-by-step
@@ -94,10 +94,10 @@ Related functions:
 # Write both example documents to a temporary folder
 out <- file.path(tempdir(), "apaTables-examples.qmd")
 apa.quarto.example(filename = out)
-#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.34) at _extensions/wjschne/apaquarto.
+#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.36) at _extensions/wjschne/apaquarto.
 #> Wrote two example documents (the apaquarto extension is already installed alongside them):
-#>   /tmp/RtmpYhydi8/apaTables-examples-pdf.qmd  (renders to PDF; needs a LaTeX engine such as TinyTeX)
-#>   /tmp/RtmpYhydi8/apaTables-examples-docx.qmd  (renders to Word; no LaTeX needed)
+#>   /tmp/RtmpUe8QU5/apaTables-examples-pdf.qmd  (renders to PDF; needs a LaTeX engine such as TinyTeX)
+#>   /tmp/RtmpUe8QU5/apaTables-examples-docx.qmd  (renders to Word; no LaTeX needed)
 #> The repeated-measures page in each needs the afex and tidyr packages: install.packages(c("afex", "tidyr"))
 
 # (delete the demo files, and the extension folder installed beside them)

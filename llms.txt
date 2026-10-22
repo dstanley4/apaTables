@@ -49,12 +49,12 @@ nothing but apaTables itself:
 
 library(apaTables)
 
-table1 <- apa.cor.table(attitude)
+table1 <- apa.cor.table(data = attitude)
 
 regression <- lm(rating ~ complaints + learning, data = attitude)
 table2 <- apa.reg.table(regression)
 
-apa.save("Tables.docx", table1, table2)
+apa.save(filename = "Tables.docx", table1, table2)
 ```
 
 `Tables.docx` appears in your working directory — the folder R is
@@ -86,7 +86,7 @@ complete, working example documents:
 ``` r
 
 library(apaTables)
-apa.quarto.example("apaTables-examples.qmd")
+apa.quarto.example(filename = "apaTables-examples.qmd")
 ```
 
 Two example documents appear in your working directory, with the
@@ -122,7 +122,7 @@ each table.
 
 ``` r
 
-apa.quarto.new("my-paper")
+apa.quarto.new(path = "my-paper")
 ```
 
 This creates a `my-paper` folder holding a working APA manuscript with
@@ -167,8 +167,8 @@ Make the table in R, then save it as a Word file:
 
 library(apaTables)
 
-my_table <- apa.cor.table(attitude)
-apa.save("Table1.docx", my_table)
+my_table <- apa.cor.table(data = attitude)
+apa.save(filename = "Table1.docx", my_table)
 ```
 
 A file called `Table1.docx` now sits in your working directory — the
@@ -179,11 +179,12 @@ To put several tables in one file, list them all:
 
 ``` r
 
-apa.save("AllTables.docx", table1, table2, table3)
+apa.save(filename = "AllTables.docx", table1, table2, table3)
 ```
 
 They are numbered Table 1, Table 2 and Table 3, in the order you list
-them.
+them. (A number you gave a table when you built it – `table.number = 5`,
+say – is kept, and the tables after it count on from it.)
 
 The title and the note are written by apaTables from the table itself.
 **On this route there is no way to supply your own wording at this
@@ -201,7 +202,7 @@ numbered. To start a paper set up that way, run this once:
 
 ``` r
 
-apa.quarto.new("my-paper")
+apa.quarto.new(path = "my-paper")
 ```
 
 > **Do not skip this step, and do not replace it by writing the settings
@@ -247,13 +248,18 @@ too, so the call and the format line agree.) Further down, wherever you
 want a table, put your analysis in a block like this one:
 
     ```{r}
-    my_table <- apa.cor.table(attitude)
-    apa.quarto.docx(my_table)
+    #| label: tbl-correlations
+    #| message: false
+    #| warning: true
+    my_table <- apa.cor.table(data = attitude)
+    apa.quarto.docx(x = my_table)
     ```
 
-Then render the document (the Preview button in Positron). Quarto runs
-your R code and produces `my-paper.docx`, with the table numbered and
-captioned for you.
+The `#| label:` line must begin with `tbl-` – without it Quarto does not
+treat the block as a table, and it gets no number and no title. Then
+render the document (the Preview button in Positron). Quarto runs your R
+code and produces `my-paper.docx`, with the table numbered and captioned
+for you.
 
 ### 2. How do I make tables in a PDF?
 
@@ -263,7 +269,7 @@ place and numbered. To start a paper set up that way, run this once:
 
 ``` r
 
-apa.quarto.new("my-paper")
+apa.quarto.new(path = "my-paper")
 ```
 
 > **Do not skip this step, and do not replace it by writing the settings
@@ -298,11 +304,16 @@ line reads `format: apaquarto-pdf`. Where you want the table, put a
 block like this one:
 
     ```{r}
-    my_table <- apa.cor.table(attitude)
-    apa.quarto.pdf(my_table)
+    #| label: tbl-correlations
+    #| message: false
+    #| warning: true
+    my_table <- apa.cor.table(data = attitude)
+    apa.quarto.pdf(x = my_table)
     ```
 
-Then render the document (the Preview button in Positron), and you get
+The `#| label:` line must begin with `tbl-` – without it Quarto does not
+treat the block as a table, and it gets no number and no title. Then
+render the document (the Preview button in Positron), and you get
 `my-paper.pdf`.
 
 A table too wide to stand upright is turned sideways for you, and a
@@ -335,8 +346,8 @@ In the settings block at the top of your document:
 and on the slide where you want the table:
 
     ```{r}
-    my_table <- apa.cor.table(attitude)
-    apa.quarto.revealjs(my_table)
+    my_table <- apa.cor.table(data = attitude)
+    apa.quarto.revealjs(x = my_table)
     ```
 
 The table is sized to fit the slide. A very large table may still be too
@@ -368,7 +379,7 @@ Whether you are new to Quarto or not, start a paper with:
 
 ``` r
 
-apa.quarto.new("my-paper")
+apa.quarto.new(path = "my-paper")
 ```
 
 > **Do not skip this step, and do not replace it by writing the settings
@@ -409,7 +420,7 @@ a plain APA table at the console — no file and no rendering involved:
 
 ``` r
 
-my_table <- apa.cor.table(attitude)
+my_table <- apa.cor.table(data = attitude)
 my_table
 ```
 
@@ -444,8 +455,8 @@ entry point matches your document:
 
 ``` r
 
-my_table <- apa.cor.table(attitude)
-apa.quarto.pdf(my_table,
+my_table <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = my_table,
                title = "Correlations Among Seven Attitude Measures",
                note  = "N = 30 clerical employees.")
 ```
@@ -462,8 +473,8 @@ and
     #| label: tbl-correlations
     #| tbl-cap: "Correlations Among Seven Attitude Measures"
     #| apa-note: "N = 30 clerical employees."
-    my_table <- apa.cor.table(attitude)
-    apa.quarto.pdf(my_table)
+    my_table <- apa.cor.table(data = attitude)
+    apa.quarto.pdf(x = my_table)
     ```
 
 **If you use both, the settings line wins.** So if you pass `title =`
@@ -490,7 +501,7 @@ same formatting as a generated one:
 ``` r
 
 my_table <- apa.reg.table(blk1)
-apa.quarto.pdf(my_table,
+apa.quarto.pdf(x = my_table,
                note = "*N* = 200. *R*^2^ is the variance explained.")
 ```
 
@@ -509,8 +520,8 @@ own line as APA requires:
     ```{r}
     #| label: tbl-correlations
     #| apa-note: ["*N* = 30 clerical employees.","\\* indicates *p* < .05."]
-    my_table <- apa.cor.table(attitude)
-    apa.quarto.pdf(my_table)
+    my_table <- apa.cor.table(data = attitude)
+    apa.quarto.pdf(x = my_table)
     ```
 
 The backslashes in front of the star keep it from being read as the
@@ -525,7 +536,7 @@ ways shown above, and on every destination:
 ``` r
 
 my_table <- apa.reg.table(blkA, blkB)
-apa.quarto.pdf(my_table,
+apa.quarto.pdf(x = my_table,
                note = "*N* = 200. Δ*R*² is the change in variance explained.")
 ```
 
@@ -535,7 +546,7 @@ and the same thing as a settings line:
     #| label: tbl-blocks
     #| apa-note: "*N* = 200. Δ*R*² is the change in variance explained."
     my_table <- apa.reg.table(blkA, blkB)
-    apa.quarto.pdf(my_table)
+    apa.quarto.pdf(x = my_table)
     ```
 
 **If you would rather not paste a character you cannot type**, you can
@@ -546,7 +557,7 @@ string, and the settings line reads it too, as long as the value is in
 
 ``` r
 
-apa.quarto.pdf(my_table,
+apa.quarto.pdf(x = my_table,
                note = "*N* = 200. \u0394*R*\u00b2 is the change in variance explained.")
 ```
 
@@ -554,7 +565,7 @@ apa.quarto.pdf(my_table,
     #| label: tbl-blocks
     #| apa-note: "*N* = 200. \u0394*R*\u00b2 is the change in variance explained."
     my_table <- apa.reg.table(blkA, blkB)
-    apa.quarto.pdf(my_table)
+    apa.quarto.pdf(x = my_table)
     ```
 
 **LaTeX maths notation such as `$\Delta$` also works**, in PDF, Word and
@@ -579,9 +590,9 @@ gives the note.
 
 ``` r
 
-my_table <- apa.cor.table(attitude)
-apa.quarto.pdf(my_table,
-               note = paste(apa_note_text(my_table),
+my_table <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = my_table,
+               note = paste(apa_note_text(x = my_table),
                             "Data collected in 2026."))
 ```
 
@@ -591,10 +602,10 @@ code:
 
 ``` r
 
-my_table <- apa.cor.table(attitude)
-apa_caption(my_table)
+my_table <- apa.cor.table(data = attitude)
+apa_caption(x = my_table)
 #> Descriptive Statistics and Correlations
-apa_note_text(my_table)
+apa_note_text(x = my_table)
 #> N = number of cases. M = mean. SD = standard deviation. ...
 ```
 
@@ -603,8 +614,8 @@ then edit what you copied:
     ```{r}
     #| label: tbl-correlations
     #| apa-note: "N = number of cases. M = mean. SD = standard deviation. Data collected in 2026."
-    my_table <- apa.cor.table(attitude)
-    apa.quarto.pdf(my_table)
+    my_table <- apa.cor.table(data = attitude)
+    apa.quarto.pdf(x = my_table)
     ```
 
 ### 8. How do I put a table on a landscape page?
@@ -624,8 +635,8 @@ There are two ways, and they do the same thing.
 
 ``` r
 
-my_table <- apa.cor.table(attitude, landscape = TRUE)
-apa.quarto.pdf(my_table)
+my_table <- apa.cor.table(data = attitude, landscape = TRUE)
+apa.quarto.pdf(x = my_table)
 ```
 
 It takes three values:
@@ -641,8 +652,8 @@ It takes three values:
     ```{r}
     #| label: tbl-correlations
     #| apa-landscape: true
-    my_table <- apa.cor.table(attitude)
-    apa.quarto.pdf(my_table)
+    my_table <- apa.cor.table(data = attitude)
+    apa.quarto.pdf(x = my_table)
     ```
 
 **If you use both, the settings line wins** — including when it says
@@ -666,8 +677,8 @@ All four Quarto functions take `font.size`, in points:
 
 ``` r
 
-my_table <- apa.cor.table(attitude)
-apa.quarto.pdf(my_table, font.size = 10)
+my_table <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = my_table, font.size = 10)
 ```
 
 The size applies to the body of the table. The title above it and the
@@ -705,20 +716,23 @@ route (section 1a) there is no font size setting at this time** — those
 tables are always 12 point Times New Roman, matching the manuscript body
 type APA style expects. If a table is too wide at 12 points,
 [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-turns its page landscape rather than shrinking the type.
+turns its page landscape first; only a table too wide even for that (or
+kept upright with `landscape = FALSE`) is set in smaller type, so that
+every column is kept.
 
 ### What’s new in Version 4.0.0
 
 - **One-command APA manuscript**: apaTables now ships its own patched
   copy of the [apaquarto](https://wjschne.github.io/apaquarto/)
-  extension and can install it for you. `apa.quarto.new("my-paper")`
-  creates a folder with a working Quarto document and the extension
-  already installed, so the first render produces a real APA manuscript:
+  extension and can install it for you.
+  `apa.quarto.new(path = "my-paper")` creates a folder with a working
+  Quarto document and the extension already installed, so the first
+  render produces a real APA manuscript:
 
   ``` r
 
   library(apaTables)
-  apa.quarto.new("my-paper")
+  apa.quarto.new(path = "my-paper")
   ```
 
   [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
@@ -738,8 +752,8 @@ turns its page landscape rather than shrinking the type.
 
   ``` r
 
-  my_table <- apa.cor.table(attitude)
-  apa.quarto.pdf(my_table)
+  my_table <- apa.cor.table(data = attitude)
+  apa.quarto.pdf(x = my_table)
   ```
 
   The helper
@@ -767,10 +781,17 @@ turns its page landscape rather than shrinking the type.
   with [`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html)
   output for repeated-measures and mixed designs instead.
 
-- **`apa.knit.table.for.pdf()` and `apa.knit.table.for.papaja()`
-  removed**: both belonged to the kableExtra LaTeX path, which the
-  apaquarto path above replaces. `kableExtra` and `papaja` are no longer
-  listed in Suggests.
+- **`apa.reg.boot.table()` removed**: bootstrapped regression tables are
+  not part of this release.
+  [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  still makes the standard regression table.
+
+- **Upgrading from 2.0.8**: the [migration
+  guide](https://dstanley4.github.io/apaTables/articles/migrating-to-4.0.html)
+  lists what to change – Word files are now `.docx`, tables are numbered
+  1 by default, a table now prints sideways only when it needs to,
+  correlation tables show *p* values, and some ANOVA and hierarchical
+  regression numbers are corrected.
 
 ### Install the CRAN Version
 

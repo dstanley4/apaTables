@@ -76,7 +76,7 @@ not include "Note.".</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="apa.quarto.new.html">apa.quarto.new</a>("my-paper")</code> starts an APA manuscript with the
+    <div class="dont-index"><p><code><a href="apa.quarto.new.html">apa.quarto.new</a>(path = "my-paper")</code> starts an APA manuscript with the
 apaquarto extension already installed; <code><a href="apa.quarto.setup.html">apa.quarto.setup()</a></code>
 installs the extension into a project you already have. A step-by-step
 guide to placing apaTables tables in Quarto documents also comes
@@ -87,12 +87,12 @@ installed with the package. To open it, type:</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">apa_note_text</span><span class="op">(</span><span class="va">my_table</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">apa_note_text</span><span class="op">(</span>x <span class="op">=</span> <span class="va">my_table</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N = number of cases. M = mean. SD = standard deviation. Values in square brackets indicate the 95% confidence interval. * indicates p &lt; .05. ** indicates p &lt; .01."</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extend the generated wording rather than replace it</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu">apa_note_text</span><span class="op">(</span><span class="va">my_table</span><span class="op">)</span>, <span class="st">"Data collected in 2026."</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu">apa_note_text</span><span class="op">(</span>x <span class="op">=</span> <span class="va">my_table</span><span class="op">)</span>, <span class="st">"Data collected in 2026."</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N = number of cases. M = mean. SD = standard deviation. Values in square brackets indicate the 95% confidence interval. * indicates p &lt; .05. ** indicates p &lt; .01. Data collected in 2026."</span>
 </code></pre></div>
     </div>

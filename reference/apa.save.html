@@ -81,8 +81,8 @@ value is an error.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
-<div class="sourceCode"><pre><code><span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span><span class="va">attitude</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="st">"Table1.docx"</span>, <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode"><pre><code><span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"Table1.docx"</span>, <span class="va">table1</span><span class="op">)</span></span></code></pre></div>
 
 <p>The file appears in your working directory – the folder R is currently
 pointing at. Open it in Word and the finished APA table is there: the
@@ -93,18 +93,22 @@ for a web page (a legacy <code>.doc</code>/<code>.rtf</code> name is written as
 <code>.docx</code>). <code>apa.save()</code> does not write PDF files.</p>
 <p>Several tables can go into one file, each on a page of its own, in the
 order you list them:</p>
-<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="st">"AllTables.docx"</span>, <span class="va">table1</span>, <span class="va">table2</span>, <span class="va">table3</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"AllTables.docx"</span>, <span class="va">table1</span>, <span class="va">table2</span>, <span class="va">table3</span><span class="op">)</span></span></code></pre></div>
 
-<p>A table left with its default number is numbered by its position in the
-file – Table 1, Table 2, Table 3 above – while a number set when the
-table was built is kept.</p>
+<p>A number set when a table was built is kept. A table left with its
+default number takes the next number after the last numbered table before it, starting
+at 1: the three tables above become Table 1, Table 2 and Table 3, and if
+<code>table2</code> had been built with <code>table.number = 5</code> they would
+become Table 1, Table 5 and Table 6.</p>
 <p>Tables are set in 12 point, matching the manuscript body type APA style
 expects. Each page is upright (portrait) unless the table is too wide
 for it: <code>apa.save()</code> measures every table, and one that will not
-fit upright is placed on a landscape page at full size – columns are
-never shrunk or cut off. To decide the orientation yourself, use the
+fit upright is placed on a landscape page at full size. A table too wide
+even for a landscape page – or kept upright with <code>landscape =
+FALSE</code> – is set in smaller type so that every column is kept; no column
+is cut off. To decide the orientation yourself, use the
 <code>landscape</code> argument of the function that built the table – for
-example <code>apa.cor.table(attitude, landscape = TRUE)</code>; an explicit
+example <code>apa.cor.table(data = attitude, landscape = TRUE)</code>; an explicit
 value always wins over measurement.</p>
 <p><strong>The title and the note are written from the table itself</strong>, so
 they stay correct when the analysis changes; there is no <code>title</code>

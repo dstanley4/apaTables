@@ -12,10 +12,10 @@ released.
 - apaTables now ships its own patched copy of the
   [apaquarto](https://wjschne.github.io/apaquarto/) Quarto extension and
   can install it for you, rather than asking you to run Quarto’s own
-  extension commands. `apa.quarto.new(path)` creates a folder containing
-  a Quarto document with a working APA header and a worked table, with
-  the extension already installed beside it, so the very first render
-  produces a real APA manuscript.
+  extension commands. `apa.quarto.new(path = "my-paper")` creates a
+  folder containing a Quarto document with a working APA header and a
+  worked table, with the extension already installed beside it, so the
+  very first render produces a real APA manuscript.
   [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
   installs or repairs the extension in a project you already have, and
   is silent when the project’s copy is already correct. Running
@@ -32,6 +32,13 @@ released.
   a document that mixes markdown tables with apaTables tables, the
   apaTables table after each markdown table repeats its number instead.
   The bundled extension carries the fix.
+- In an apaquarto Word or HTML document, markdown tables whose labels
+  share a first part – `{#tbl-md-plain}` and `{#tbl-md-note}`, or
+  `{#tbl-a_b}` and `{#tbl-a_c}`, say – number 1, 2, 3, … like any
+  others, and their cross-references match. With the stock extension
+  such tables are captioned with the same number, because each label was
+  read only up to the first hyphen, underscore, dot or colon after
+  `tbl-`. The bundled extension carries the fix.
 - In an apaquarto PDF, a long table written in markdown, or made by
   [`knitr::kable()`](https://rdrr.io/pkg/knitr/man/kable.html) in a
   chunk with a `tbl-cap`, continues onto the next page with every row,
@@ -48,6 +55,15 @@ released.
   caption ends with two), and a table’s note is kept on a page with at
   least one of its rows unless the note itself is longer than about a
   quarter of a page.
+- An apaquarto PDF with line numbers (`numbered-lines: true`) renders
+  when it contains tables: the text around each table is numbered and
+  the rows of the table are not. With the stock extension, a captioned
+  table set to break across pages (`apa-longtable: true`) stops the
+  render with “Undefined control sequence”, and so does an uncaptioned
+  table whose first cell spans columns (`\multicolumn`). The bundled
+  extension sets every apaTables table and every captioned markdown
+  table that way, so without the fix a line-numbered manuscript with
+  almost any table would not render.
 - In an apaquarto PDF, a table written as raw LaTeX, by
   `knitr::kable(format = "latex")` or kableExtra, in a chunk with a
   `tbl-cap`, prints like any other table: its title sits above the top
@@ -85,7 +101,7 @@ released.
 - [`apa.quarto.template()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.template.md),
   run in the R console, prints a ready-to-paste block of code for a
   table you have already built. It derives the chunk label from the name
-  you typed – `apa.quarto.template(table3)` labels the chunk
+  you typed – `apa.quarto.template(x = table3)` labels the chunk
   `tbl-table3` – so two templates pasted into one document do not
   collide.
 - Wide and tall tables are handled without anything being added to the
@@ -98,16 +114,14 @@ released.
   rotated page, `FALSE` forbids one, and the default measures. The chunk
   option `#| apa-landscape:` overrides that argument and can also forbid
   one.
-- `font.size` means the same thing on all four Quarto destinations: your
-  size exactly, applied to the table body. Where a destination cannot
-  deliver the size asked for, it says so in the rendered draft rather
-  than silently ignoring it. Word’s range is 6 to 12 pt.
-- In Word output, the automatic fit now counts the fixed padding every
-  Word table cell carries (which does not shrink with the type, so it
-  weighs most on dense tables at small sizes). A many-column table that
-  used to be shrunk until it *just* fit — and then wrapped its widest
-  column’s labels — now takes the next size down and keeps every label
-  on one line.
+- The Quarto entry points take a `font.size` argument, and it means the
+  same thing on all four destinations: your size exactly, applied to the
+  table body. Where a destination cannot deliver the size asked for, it
+  says so in the rendered draft. Word’s range is 6 to 12 pt.
+- In Word output, the automatic fit counts the fixed padding every Word
+  table cell carries (which does not shrink with the type, so it weighs
+  most on dense tables at small sizes), so a many-column table is set at
+  a size that keeps every label on one line.
 - The page a table is fitted to is read from the document’s own settings
   rather than assumed: US letter and A4 paper and a `geometry: margin=`
   setting are recognised. When the YAML carries something apaTables
@@ -139,19 +153,25 @@ released.
 
 - Table numbers are now real by default. `table.number` defaults to `1`,
   so a table built without one is Table 1; version 2.0.8 defaulted to
-  `NA` and printed the literal line “Table NA”. Setting
-  `table.number = 0` – or `NA`, or `NULL` – now means the table carries
-  no number at all: none is shown at the console or written to the Word
-  file. When
+  `NA`, which showed no number at the console and wrote “Table XX” in
+  the file. Setting `table.number = 0` – or `NA`, or `NULL` – now means
+  the table carries no number at all: none is shown at the console or
+  written to the Word file. When
   [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-  writes several tables to one file, a table left at the default is
-  numbered by its position in that file (Table 1, Table 2, Table 3),
-  while a number you supplied is kept. In an apaquarto document the
-  value is ignored, because apaquarto numbers the tables itself.
-- [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-  now writes Microsoft Word `.docx` and `.html` files (chosen by file
-  extension) via flextable/officer. The hand-rolled RTF engine has been
-  retired; a `.doc`/`.rtf` filename is written as `.docx`.
+  writes several tables to one file, a number you supplied is kept, and
+  a table left at the default takes the next number after the last
+  numbered table before it, starting at 1 (three defaults give Table 1,
+  2, 3; a supplied 5 in the middle gives Table 1, 5, 6). In an apaquarto
+  document the value is ignored, because apaquarto numbers the tables
+  itself.
+- New
+  [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+  writes one or more tables to a Microsoft Word `.docx` or an `.html`
+  file (chosen by file extension) via flextable/officer. A table
+  function’s `filename =` argument writes the same files: the
+  hand-rolled RTF engine of 2.0.8 has been retired, so a `.doc`/`.rtf`
+  filename is written as `.docx`, and any other ending stops with an
+  error.
   [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
   does not write PDF; for a PDF table, use
   [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
@@ -164,10 +184,12 @@ released.
   [`apa.cor.table()`](https://dstanley4.github.io/apaTables/reference/apa.cor.table.md),
   [`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md)
   and
+  [`apa.2way.table()`](https://dstanley4.github.io/apaTables/reference/apa.2way.table.md)
+  defaulted to `landscape = TRUE` and
   [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
-  defaulted to `landscape = TRUE`, so those tables were rotated whether
-  or not they needed it. Nothing rotates now unless it does not fit.
-  Pass `landscape = TRUE` for the old orientation.
+  always wrote a landscape page, so those tables were rotated whether or
+  not they needed it. Nothing rotates now unless it does not fit. Pass
+  `landscape = TRUE` for the old orientation.
 - [`apa.afex.table()`](https://dstanley4.github.io/apaTables/reference/apa.afex.table.md)
   is new: an APA ANOVA table from
   [`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html) output,
@@ -204,22 +226,43 @@ released.
   it depended on was archived on CRAN; use
   [`apa.afex.table()`](https://dstanley4.github.io/apaTables/reference/apa.afex.table.md)
   with [`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html)
-  output for repeated-measures and mixed designs instead. `ez` is no
-  longer listed in Suggests.
+  output for repeated-measures and mixed designs instead.
 
 - **Breaking:** `apa.reg.boot.table()` has been removed. Bootstrapped
   regression tables are not part of this release; use
   [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
   for the standard regression table.
 
-- Dependencies have changed. `boot`, `tibble` and `MBESS` are no longer
-  imported – `boot` and `tibble` are unused, and `MBESS` is now
-  suggested rather than required, so it is needed only for the
-  confidence intervals in
-  [`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md).
-  `flextable` and `officer` are new imports, used by
+- `apa.knit.table.for.pdf()` and `apa.knit.table.for.papaja()`, which
+  appeared only in the unreleased 3.0 versions below, are not in this
+  release;
+  [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
+  in an apaquarto document and
   [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-  to write the Word and HTML files.
+  replace them.
+
+- Correlation tables print each correlation’s *p* value on a line below
+  its confidence interval (`show.pvalue = FALSE` gives the 2.0.8
+  layout), and gain an *N* column.
+
+- The object a table function returns uses the same field names for
+  every table type: `table_number`, `table_title`, `table_body` and
+  `table_note`. In 2.0.8, correlation, d-value, one-way and two-way
+  tables used `table.number`, `table.title`, `table.body` and
+  `table.note` and the class `apa.table`; the class is now `apa_table`
+  throughout. A regression table’s `sr2` and `sr2_95%_CI` columns are
+  now `Unique_R2` and `Unique_95%_CI`. Titles and notes are generated in
+  APA title case.
+
+- Dependencies have changed. R 4.1.0 or later is required (2.0.8 needed
+  R 3.1.2). `boot`, `tibble` and `methods` are no longer imported
+  (`boot` and `tibble` are unused). `flextable` and `officer` are new
+  imports, used by
+  [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+  to write the Word and HTML files, and `knitr`, which 2.0.8 suggested,
+  is now imported. `MBESS` stays a required import, as in 2.0.8: it
+  computes the confidence intervals for d values, R-squared and partial
+  eta-squared, so every installation of apaTables prints them.
 
 - On a Mac without XQuartz, some builds of `gdtools` (a package
   `flextable` needs) cannot load – Posit Package Manager’s can fail this
@@ -268,13 +311,6 @@ released.
   rows (usually because a later predictor has missing values) now stop
   with a message that shows how to fit every block to the same rows,
   instead of an error from inside base R.
-- [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
-  labelled the confidence-interval column with the `conf.level` you
-  supplied even when that value was out of range. Only `.90` and `.95`
-  are supported and anything else is treated as `.90`, so
-  `apa.aov.table(fit, conf.level = .85)` computed a 90% interval and
-  headed the column “85% CI”. The header, the console column name, and
-  the interval now always agree.
 - Building a d-value table no longer disables warnings for the rest of
   the session.
   [`MBESS::ci.smd()`](https://rdrr.io/pkg/MBESS/man/ci.smd.html) sets

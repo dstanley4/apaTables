@@ -2,7 +2,7 @@
 
 One command gives you a working APA manuscript:
 
-    apa.quarto.new("my-paper")
+    apa.quarto.new(path = "my-paper")
 
 This creates a `my-paper` folder holding `my-paper.qmd` – a Quarto
 document with a working APA header and one worked table – and, beside
@@ -62,7 +62,7 @@ title, and *Note.* line automatically, in Word, PDF, or HTML. In the R
 console, type:
 
     library(apaTables)
-    apa.quarto.new("my-paper")
+    apa.quarto.new(path = "my-paper")
 
 This creates a folder called `my-paper` containing `my- paper.qmd`. The
 document's YAML header (the settings block between `---` lines at the
@@ -125,9 +125,9 @@ to install or repair the extension in a project you already have,
 ``` r
 # Start a new manuscript in a temporary folder
 proj <- file.path(tempdir(), "apaTables-quarto-new-example")
-apa.quarto.new(proj)
-#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.34) at _extensions/wjschne/apaquarto.
-#> apaTables created /tmp/RtmpYhydi8/apaTables-quarto-new-example/apaTables-quarto-new-example.qmd; open it and click Render, or run quarto render in this folder.
+apa.quarto.new(path = proj)
+#> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.36) at _extensions/wjschne/apaquarto.
+#> apaTables created /tmp/RtmpUe8QU5/apaTables-quarto-new-example/apaTables-quarto-new-example.qmd; open it and press Preview in Positron, or run quarto render in this folder.
 
 # (delete the demo folder)
 unlink(proj, recursive = TRUE)

@@ -43,11 +43,11 @@ apa.reg.table(
   (or `NA`, or `NULL`) for a table with no number: none is then shown at
   the console or written to the Word file. When
   [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-  writes several tables to one file, a table left at the default is
-  numbered by its position in that file, while a number given here is
-  kept. In a Quarto document that uses the apaquarto extension this
-  value is ignored: apaquarto numbers the tables itself, in the order
-  they appear in the document.
+  writes several tables to one file, a table left at the default takes
+  the next number after the last numbered table before it (starting at
+  1), and a number given here is kept. In a Quarto document that uses
+  the apaquarto extension this value is ignored: apaquarto numbers the
+  tables itself, in the order they appear in the document.
 
 - prop.var.conf.level:
 
@@ -87,7 +87,7 @@ to make PDF and Word manuscripts, respectively.
 
     blk1 <- lm(sales ~ adverts + airplay, data = album)
     table1 <- apa.reg.table(blk1)
-    apa.save("Table1.docx", table1)
+    apa.save(filename = "Table1.docx", table1)
 
 The file appears in your working directory – the folder R is currently
 pointing at. See the *Word files (apa.save)* section below. The table
@@ -114,13 +114,13 @@ noncentral F distribution for fixed predictors.
 writes the finished table to a Word file you can open, copy from, or
 send – the most common way to use an apaTables table:
 
-    apa.save("Table1.docx", table1)
+    apa.save(filename = "Table1.docx", table1)
 
 The file appears in your working directory – the folder R is currently
 pointing at. Several tables can go into one file, each on its own page,
 numbered Table 1, Table 2, and so on in the order you list them:
 
-    apa.save("AllTables.docx", table1, table2)
+    apa.save(filename = "AllTables.docx", table1, table2)
 
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to supply
@@ -137,7 +137,7 @@ document follow APA style: place this table in such a document and it
 appears as a fully formatted APA table – number, title, and note
 included – in Word, PDF, or HTML. The extension must be installed beside
 the document, and one command does it.
-[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`("my-paper")`
+[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`(path = "my-paper")`
 creates a new manuscript folder with the extension already installed;
 for a folder you already have,
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
@@ -207,7 +207,7 @@ and the render stops.
     library(apaTables)
     blk1 <- lm(sales ~ adverts + airplay, data = album)
     table1 <- apa.reg.table(blk1)
-    apa.quarto.pdf(table1)
+    apa.quarto.pdf(x = table1)
     ```
 
 That `#| label: tbl-regression` line is not optional: without a label
@@ -233,10 +233,10 @@ below the last piece. None of this applies to
 files: there, each table sits on a page of its own, always at full size.
 
 To see this table (and every apaTables table type) in a complete working
-document, type `apa.quarto.example("apaTables-examples.qmd")` in the R
-console. Two ready-to-render example documents appear in your working
-directory, with the apaquarto extension installed beside them – one per
-destination:
+document, type `apa.quarto.example(filename = "apaTables-examples.qmd")`
+in the R console. Two ready-to-render example documents appear in your
+working directory, with the apaquarto extension installed beside them –
+one per destination:
 
     apaTables-examples-pdf.qmd
     apaTables-examples-docx.qmd
@@ -287,7 +287,7 @@ writes a complete, ready-to-render example document with one apaTables
 table per page – the fastest way to see every table type working in an
 apaquarto document. In the R console, type:
 
-    apa.quarto.example("apaTables-examples.qmd")
+    apa.quarto.example(filename = "apaTables-examples.qmd")
 
 **Prefer a written guide?** A step-by-step guide to placing these tables
 in Quarto documents comes installed with the package. To open it, type:
@@ -345,13 +345,13 @@ table1
 # Word documents ----------------------------------------
 # Save the table as a .docx file (here, in a temporary
 # folder; for real use give an ordinary name, such as
-# apa.save("Table1.docx", table1), and the file appears in your
+# apa.save(filename = "Table1.docx", table1), and the file appears in your
 # working directory)
-apa.save(file.path(tempdir(), "table1.docx"), table1)
+apa.save(filename = file.path(tempdir(), "table1.docx"), table1)
 
 # Quarto documents ----------------------------------------
 # Print a ready-to-paste apaquarto code chunk:
-apa.quarto.template(table1)
+apa.quarto.template(x = table1)
 #> Copy this chunk into your apaquarto (.qmd) document:
 #> 
 #> ```{r}
@@ -359,7 +359,7 @@ apa.quarto.template(table1)
 #> #| message: false
 #> #| warning: true
 #> # table1 <- apa.reg.table(...)   # <- the line that builds your table
-#> apa.quarto.pdf(table1)
+#> apa.quarto.pdf(x = table1)
 #> ```
 #> 
 #> The table's title and note need no lines here.
@@ -369,7 +369,7 @@ apa.quarto.template(table1)
 #> or an #| apa-note line for the note (or pass title = / note = to it).
 
 # Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(table1)
+apa.quarto.pdf(x = table1)
 #> [1] "+----------------------+-------------+---------------------------+---------+-----------------------+------------------+--------------------+---------+-----------------------------+\n|Predictor             |*b*          |95% CI                     |*β*      |95% CI                 |Unique *R*^2^     |95% CI              |*r*      |Fit                          |\n+:=====================+============:+:=========================:+========:+:=====================:+=================:+:==================:+========:+:============================+\n|(Intercept)           |41.12\\*\\*    |[22.72, 59.53]             |         |                       |                  |                    |         |                             |\n+----------------------+-------------+---------------------------+---------+-----------------------+------------------+--------------------+---------+-----------------------------+\n|adverts               |0.09\\*\\*     |[0.07, 0.10]               |0.52     |[0.44, 0.61]           |.27\\*\\*           |[.18, .36]          |.58\\*\\*  |                             |\n+----------------------+-------------+---------------------------+---------+-----------------------+------------------+--------------------+---------+-----------------------------+\n|airplay               |3.59\\*\\*     |[3.02, 4.15]               |0.55     |[0.46, 0.63]           |.29\\*\\*           |[.20, .38]          |.60\\*\\*  |                             |\n+----------------------+-------------+---------------------------+---------+-----------------------+------------------+--------------------+---------+-----------------------------+\n|                      |             |                           |         |                       |                  |                    |         |*R*^2^ = .629\\*\\*            |\n+----------------------+-------------+---------------------------+---------+-----------------------+------------------+--------------------+---------+-----------------------------+\n|                      |             |                           |         |                       |                  |                    |         |95% CI[.55,.69]              |\n+----------------------+-------------+---------------------------+---------+-----------------------+------------------+--------------------+---------+-----------------------------+\n|                      |             |                           |         |                       |                  |                    |         |                             |\n+----------------------+-------------+---------------------------+---------+-----------------------+------------------+--------------------+---------+-----------------------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='Regression Predicting Sales' apa-note='[&#34;*N* = 200. *b* = unstandardized regression weight. *β* = standardized regression weight. Unique *R*^2^ = semipartial correlation squared. *r* = zero-order correlation. CI = confidence interval.&#34;,&#34;\\\\* indicates *p* < .05. \\\\*\\\\* indicates *p* < .01.&#34;]'}\n:::\n"
 #> attr(,"class")
 #> [1] "knit_asis"
@@ -405,7 +405,7 @@ blk1 <- lm(sales ~ adverts + airplay + I(adverts * airplay), data = album)
 table5 <- apa.reg.table(blk1, table.number = 5)
 
 # apa.save() can write several tables into one Word document
-apa.save(file.path(tempdir(), "regression_tables.docx"),
+apa.save(filename = file.path(tempdir(), "regression_tables.docx"),
          table1, table2, table3, table4, table5)
 
 # Clean up

@@ -3,7 +3,7 @@
 apa.quarto.example() writes two complete example manuscripts into
 your working directory, with everything they need already installed
 beside them:
-apa.quarto.example("apaTables-examples.qmd")
+apa.quarto.example(filename = "apaTables-examples.qmd")
 
 Two files appear:
 apaTables-examples-pdf.qmd
@@ -36,7 +36,7 @@ setup.'><meta property="og:description" content='The fastest way to learn the Qu
 apa.quarto.example() writes two complete example manuscripts into
 your working directory, with everything they need already installed
 beside them:
-apa.quarto.example("apaTables-examples.qmd")
+apa.quarto.example(filename = "apaTables-examples.qmd")
 
 Two files appear:
 apaTables-examples-pdf.qmd
@@ -111,7 +111,7 @@ setup.'></head><body>
 <code>apa.quarto.example()</code> writes two complete example manuscripts into
 your working directory, with everything they need already installed
 beside them:</p>
-<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.quarto.example.html">apa.quarto.example</a></span><span class="op">(</span><span class="st">"apaTables-examples.qmd"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/apa.quarto.example.html">apa.quarto.example</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"apaTables-examples.qmd"</span><span class="op">)</span></span></code></pre></div>
 
 <p>Two files appear:</p>
 <div class="sourceCode"><pre><code><span><span class="va">apaTables</span><span class="op">-</span><span class="va">examples</span><span class="op">-</span><span class="va">pdf.qmd</span></span>
@@ -155,7 +155,7 @@ setup.</p>
 <dl><dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
 <dd><p>Path used as the stem for both files. A <code>.qmd</code>
 extension, if present, is stripped before deriving the two output names:
-<code>apa.quarto.example("apaTables-examples.qmd")</code> writes
+<code>apa.quarto.example(filename = "apaTables-examples.qmd")</code> writes
 <code>apaTables-examples-pdf.qmd</code> and
 <code>apaTables-examples-docx.qmd</code>. A bare name (the
 default) is written in the current working directory (the folder R is
@@ -181,7 +181,7 @@ files.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="apa.quarto.new.html">apa.quarto.new</a>("my-paper")</code> starts an APA manuscript with the
+    <div class="dont-index"><p><code><a href="apa.quarto.new.html">apa.quarto.new</a>(path = "my-paper")</code> starts an APA manuscript with the
 apaquarto extension already installed; <code><a href="apa.quarto.setup.html">apa.quarto.setup()</a></code>
 installs the extension into a project you already have. A step-by-step
 guide to placing apaTables tables in Quarto documents also comes
@@ -197,10 +197,10 @@ installed with the package. To open it, type:</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Write both example documents to a temporary folder</span></span></span>
 <span class="r-in"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"apaTables-examples.qmd"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">apa.quarto.example</span><span class="op">(</span>filename <span class="op">=</span> <span class="va">out</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.34) at _extensions/wjschne/apaquarto.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.36) at _extensions/wjschne/apaquarto.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Wrote two example documents (the apaquarto extension is already installed alongside them):</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   /tmp/RtmpYhydi8/apaTables-examples-pdf.qmd  (renders to PDF; needs a LaTeX engine such as TinyTeX)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   /tmp/RtmpYhydi8/apaTables-examples-docx.qmd  (renders to Word; no LaTeX needed)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   /tmp/RtmpUe8QU5/apaTables-examples-pdf.qmd  (renders to PDF; needs a LaTeX engine such as TinyTeX)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   /tmp/RtmpUe8QU5/apaTables-examples-docx.qmd  (renders to Word; no LaTeX needed)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The repeated-measures page in each needs the afex and tidyr packages: install.packages(c("afex", "tidyr"))</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># (delete the demo files, and the extension folder installed beside them)</span></span></span>

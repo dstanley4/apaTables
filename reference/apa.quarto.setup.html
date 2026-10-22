@@ -188,11 +188,11 @@ manuscript in one command, <code><a href="apa.quarto.template.html">apa.quarto.t
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Install the apaquarto extension into a temporary project folder</span></span></span>
 <span class="r-in"><span><span class="va">proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"apaTables-quarto-setup-example"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">proj</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">apa.quarto.setup</span><span class="op">(</span><span class="va">proj</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.34) at _extensions/wjschne/apaquarto.</span>
+<span class="r-in"><span><span class="fu">apa.quarto.setup</span><span class="op">(</span>path <span class="op">=</span> <span class="va">proj</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.36) at _extensions/wjschne/apaquarto.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Running it again on the same, already-correct folder does nothing</span></span></span>
-<span class="r-in"><span><span class="fu">apa.quarto.setup</span><span class="op">(</span><span class="va">proj</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">apa.quarto.setup</span><span class="op">(</span>path <span class="op">=</span> <span class="va">proj</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># (delete the demo folder)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">proj</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>

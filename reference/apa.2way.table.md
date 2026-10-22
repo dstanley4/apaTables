@@ -57,11 +57,11 @@ apa.2way.table(
   (or `NA`, or `NULL`) for a table with no number: none is then shown at
   the console or written to the Word file. When
   [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-  writes several tables to one file, a table left at the default is
-  numbered by its position in that file, while a number given here is
-  kept. In a Quarto document that uses the apaquarto extension this
-  value is ignored: apaquarto numbers the tables itself, in the order
-  they appear in the document.
+  writes several tables to one file, a table left at the default takes
+  the next number after the last numbered table before it (starting at
+  1), and a number given here is kept. In a Quarto document that uses
+  the apaquarto extension this value is ignored: apaquarto numbers the
+  tables itself, in the order they appear in the document.
 
 - show.conf.interval:
 
@@ -103,7 +103,7 @@ to make PDF and Word manuscripts, respectively.
 
     table1 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
                              dv = attractiveness, data = goggles)
-    apa.save("Table1.docx", table1)
+    apa.save(filename = "Table1.docx", table1)
 
 The file appears in your working directory – the folder R is currently
 pointing at. See the *Word files (apa.save)* section below. The table
@@ -117,13 +117,13 @@ below.
 writes the finished table to a Word file you can open, copy from, or
 send – the most common way to use an apaTables table:
 
-    apa.save("Table1.docx", table1)
+    apa.save(filename = "Table1.docx", table1)
 
 The file appears in your working directory – the folder R is currently
 pointing at. Several tables can go into one file, each on its own page,
 numbered Table 1, Table 2, and so on in the order you list them:
 
-    apa.save("AllTables.docx", table1, table2)
+    apa.save(filename = "AllTables.docx", table1, table2)
 
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to supply
@@ -140,7 +140,7 @@ document follow APA style: place this table in such a document and it
 appears as a fully formatted APA table – number, title, and note
 included – in Word, PDF, or HTML. The extension must be installed beside
 the document, and one command does it.
-[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`("my-paper")`
+[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`(path = "my-paper")`
 creates a new manuscript folder with the extension already installed;
 for a folder you already have,
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
@@ -210,7 +210,7 @@ part of the chunk: without it the document cannot find
     library(apaTables)
     table1 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
                              dv = attractiveness, data = goggles)
-    apa.quarto.pdf(table1)
+    apa.quarto.pdf(x = table1)
     ```
 
 That `#| label: tbl-means` line is not optional: without a label
@@ -236,10 +236,10 @@ below the last piece. None of this applies to
 files: there, each table sits on a page of its own, always at full size.
 
 To see this table (and every apaTables table type) in a complete working
-document, type `apa.quarto.example("apaTables-examples.qmd")` in the R
-console. Two ready-to-render example documents appear in your working
-directory, with the apaquarto extension installed beside them – one per
-destination:
+document, type `apa.quarto.example(filename = "apaTables-examples.qmd")`
+in the R console. Two ready-to-render example documents appear in your
+working directory, with the apaquarto extension installed beside them –
+one per destination:
 
     apaTables-examples-pdf.qmd
     apaTables-examples-docx.qmd
@@ -271,7 +271,7 @@ writes a complete, ready-to-render example document with one apaTables
 table per page – the fastest way to see every table type working in an
 apaquarto document. In the R console, type:
 
-    apa.quarto.example("apaTables-examples.qmd")
+    apa.quarto.example(filename = "apaTables-examples.qmd")
 
 **Prefer a written guide?** A step-by-step guide to placing these tables
 in Quarto documents comes installed with the package. To open it, type:
@@ -338,13 +338,13 @@ table3
 # apa.save() can write several tables into one Word document
 # (here, in a temporary
 # folder; for real use give an ordinary name, such as
-# apa.save("Table1.docx", table1), and the file appears in your
+# apa.save(filename = "Table1.docx", table1), and the file appears in your
 # working directory)
-apa.save(file.path(tempdir(), "my_tables.docx"), table2, table3)
+apa.save(filename = file.path(tempdir(), "my_tables.docx"), table2, table3)
 
 # Quarto documents ----------------------------------------
 # Print a ready-to-paste apaquarto code chunk:
-apa.quarto.template(table2)
+apa.quarto.template(x = table2)
 #> Copy this chunk into your apaquarto (.qmd) document:
 #> 
 #> ```{r}
@@ -352,7 +352,7 @@ apa.quarto.template(table2)
 #> #| message: false
 #> #| warning: true
 #> # table2 <- apa.2way.table(...)   # <- the line that builds your table
-#> apa.quarto.pdf(table2)
+#> apa.quarto.pdf(x = table2)
 #> ```
 #> 
 #> The table's title and note need no lines here.
@@ -362,7 +362,7 @@ apa.quarto.template(table2)
 #> or an #| apa-note line for the note (or pass title = / note = to it).
 
 # Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(table2)
+apa.quarto.pdf(x = table2)
 #> [1] "+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|   |::: {custom-style=\"ApaTableRule\"}                                                                                                              |\n|   |b                                                                                                                                              |\n|   |:::                                                                                                                                            |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|   |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |\n|   |1                                  |2                                  |3                                  |4                                  |\n|   |:::                                |:::                                |:::                                |:::                                |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|a  |*M*              |*SD*             |*M*              |*SD*             |*M*              |*SD*             |*M*              |*SD*             |\n+:==+================:+================:+================:+================:+================:+================:+================:+================:+\n|1  |1.00             |1.00             |2.00             |1.00             |3.00             |1.00             |3.00             |1.00             |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|2  |2.00             |1.00             |3.00             |1.00             |2.00             |1.00             |4.00             |1.00             |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='Descriptive Statistics for Dv in a 2(A) by 4(B) Design' apa-note='[&#34;*M* = mean. *SD* = standard deviation.&#34;]'}\n:::\n"
 #> attr(,"class")
 #> [1] "knit_asis"

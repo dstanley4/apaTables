@@ -24,7 +24,7 @@ A length-1 character string.
 
 ## See also
 
-[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`("my-paper")`
+[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`(path = "my-paper")`
 starts an APA manuscript with the apaquarto extension already installed;
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
 installs the extension into a project you already have. A step-by-step
@@ -36,11 +36,11 @@ installed with the package. To open it, type:
 ## Examples
 
 ``` r
-my_table <- apa.cor.table(attitude)
-apa_note_text(my_table)
+my_table <- apa.cor.table(data = attitude)
+apa_note_text(x = my_table)
 #> [1] "N = number of cases. M = mean. SD = standard deviation. Values in square brackets indicate the 95% confidence interval. * indicates p < .05. ** indicates p < .01."
 
 # Extend the generated wording rather than replace it
-paste(apa_note_text(my_table), "Data collected in 2026.")
+paste(apa_note_text(x = my_table), "Data collected in 2026.")
 #> [1] "N = number of cases. M = mean. SD = standard deviation. Values in square brackets indicate the 95% confidence interval. * indicates p < .05. ** indicates p < .01. Data collected in 2026."
 ```

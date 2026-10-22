@@ -24,7 +24,7 @@ A length-1 character string.
 
 ## See also
 
-[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`("my-paper")`
+[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`(path = "my-paper")`
 starts an APA manuscript with the apaquarto extension already installed;
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
 installs the extension into a project you already have. A step-by-step
@@ -36,7 +36,7 @@ installed with the package. To open it, type:
 ## Examples
 
 ``` r
-my_table <- apa.cor.table(attitude)
-apa_caption(my_table)
+my_table <- apa.cor.table(data = attitude)
+apa_caption(x = my_table)
 #> [1] "Descriptive Statistics and Correlations"
 ```

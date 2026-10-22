@@ -83,7 +83,7 @@ built into *R*.
 ``` r
 
 library(apaTables)
-table1 <- apa.cor.table(attitude,
+table1 <- apa.cor.table(data = attitude,
                         table.number = 1)
 
 print(table1)
@@ -138,10 +138,10 @@ Quarto code:
 
 library(apaTables)
 
-table1 <- apa.cor.table(attitude,
+table1 <- apa.cor.table(data = attitude,
                         table.number = 1)
 
-apa.quarto.template(table1)
+apa.quarto.template(x = table1)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -166,8 +166,8 @@ so nothing more than the label is required:
 #| message: false
 #| warning: true
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.pdf(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = table1)
 ```
 ````
 
@@ -183,11 +183,11 @@ such a table on a rotated (landscape) page, and apaTables does that for
 you: it measures the table, and when it will not fit upright it asks
 apaquarto for a rotated page. Nothing has to be added to the chunk and
 nothing has to be added to the document’s YAML header – the display line
-is simply `apa.quarto.pdf(table1)`, and it works whether your tables sit
-in the text or are collected at the end of the manuscript. (Documents
-that already wrap a chunk in `::: {.landscape}` markers keep rendering
-exactly as before; the markers are just no longer something you have to
-write.) Word output needs none of this either:
+is simply `apa.quarto.pdf(x = table1)`, and it works whether your tables
+sit in the text or are collected at the end of the manuscript.
+(Documents that already wrap a chunk in `::: {.landscape}` markers keep
+rendering exactly as before; the markers are just no longer something
+you have to write.) Word output needs none of this either:
 [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
 turns the page to landscape automatically.
 
@@ -204,10 +204,10 @@ to match the document’s YAML `format:` line.
 shown above, remains the way to write a Word or HTML file of its own,
 outside any Quarto document.
 
-`apa.quarto.template(table1)` prints one plain chunk – no title line, no
-note line, no wrapper lines, and nothing to add to the YAML header. It
-names the chunk after your table object (`tbl-table1`); shown here with
-the build lines filled in:
+`apa.quarto.template(x = table1)` prints one plain chunk – no title
+line, no note line, no wrapper lines, and nothing to add to the YAML
+header. It names the chunk after your table object (`tbl-table1`); shown
+here with the build lines filled in:
 
 ```` markdown
 ```{r}
@@ -215,8 +215,8 @@ the build lines filled in:
 #| message: false
 #| warning: true
 library(apaTables)
-table1 <- apa.cor.table(attitude)
-apa.quarto.pdf(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = table1)
 ```
 ````
 
@@ -227,7 +227,7 @@ nothing extra, and there is no setting to change:
 
 ``` r
 
-apa.quarto.pdf(table1)
+apa.quarto.pdf(x = table1)
 ```
 
 If fitting the table takes the type below 6 points – where an APA table
@@ -316,7 +316,7 @@ basic.reg <- lm(sales ~ adverts + airplay,
 table2 <- apa.reg.table(basic.reg,
                         table.number = 2)
 
-apa.quarto.template(table2)
+apa.quarto.template(x = table2)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -339,7 +339,7 @@ render stops. Then render the document.
 library(apaTables)
 basic.reg <- lm(sales ~ adverts + airplay, data = album)
 table2 <- apa.reg.table(basic.reg)
-apa.quarto.pdf(table2)
+apa.quarto.pdf(x = table2)
 ```
 ````
 
@@ -445,7 +445,7 @@ block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
 table3 <- apa.reg.table(block1, block2,
                         table.number = 3)
 
-apa.quarto.template(table3)
+apa.quarto.template(x = table3)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -469,7 +469,7 @@ library(apaTables)
 block1 <- lm(sales ~ adverts + airplay, data = album)
 block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
 table3 <- apa.reg.table(block1, block2)
-apa.quarto.pdf(table3)
+apa.quarto.pdf(x = table3)
 ```
 ````
 
@@ -478,7 +478,7 @@ than the upright (portrait) PDF page. APA style places such a table on a
 rotated (landscape) page, and apaTables does that for you: it measures
 the table and asks apaquarto for a rotated page when one is needed.
 Nothing has to be added to the chunk or to the document’s YAML header –
-the display line is simply `apa.quarto.pdf(table3)`. This two-block
+the display line is simply `apa.quarto.pdf(x = table3)`. This two-block
 table (Table 3) measures about 7.1 inches: more than the 6.5 inches an
 upright page gives a table, but well within the 9 inches of a rotated
 one. So it lands on a rotated page at full size with every column
@@ -487,11 +487,11 @@ printed smaller instead, as small as it has to be so that every column
 is kept. If that takes the type below 6 points the rendered draft
 carries a warning saying so, and
 [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-Word output keeps every column at full size (its page turns to landscape
-instead).
+Word output turns the page to landscape first, using smaller type only
+when even that is too narrow.
 
 This table is wide enough to be rotated, and
-`apa.quarto.template(table3)` still prints one plain chunk (named
+`apa.quarto.template(x = table3)` still prints one plain chunk (named
 `tbl-table3` after the object) – the rotation is worked out when the
 document is rendered, not written into the chunk. Shown with the build
 lines filled in:
@@ -505,7 +505,7 @@ library(apaTables)
 block1 <- lm(sales ~ adverts + airplay, data = album)
 block2 <- lm(sales ~ adverts + airplay + I(adverts*airplay), data = album)
 table3 <- apa.reg.table(block1, block2)
-apa.quarto.pdf(table3)
+apa.quarto.pdf(x = table3)
 ```
 ````
 
@@ -542,7 +542,7 @@ lm_output; see Table 4.
 
 library(apaTables)
 
-table4 <- apa.aov.table(lm_output,
+table4 <- apa.aov.table(lm_output = lm_output,
                         table.number = 4)
 ```
 
@@ -598,10 +598,10 @@ options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(libido ~ dose,
                 data = viagra)
 
-table4 <- apa.aov.table(lm_output,
+table4 <- apa.aov.table(lm_output = lm_output,
                         table.number = 4)
 
-apa.quarto.template(table4)
+apa.quarto.template(x = table4)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -624,8 +624,8 @@ render stops. Then render the document.
 library(apaTables)
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(libido ~ dose, data = viagra)
-table4 <- apa.aov.table(lm_output)
-apa.quarto.pdf(table4)
+table4 <- apa.aov.table(lm_output = lm_output)
+apa.quarto.pdf(x = table4)
 ```
 ````
 
@@ -695,7 +695,7 @@ table5 <- apa.1way.table(iv = dose,
                          data = viagra,
                          table.number = 5)
 
-apa.quarto.template(table5)
+apa.quarto.template(x = table5)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -717,7 +717,7 @@ render stops. Then render the document.
 #| warning: true
 library(apaTables)
 table5 <- apa.1way.table(iv = dose, dv = libido, data = viagra)
-apa.quarto.pdf(table5)
+apa.quarto.pdf(x = table5)
 ```
 ````
 
@@ -787,7 +787,7 @@ table6 <- apa.d.table(iv = dose,
                       data = viagra,
                       table.number = 6)
 
-apa.quarto.template(table6)
+apa.quarto.template(x = table6)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -809,7 +809,7 @@ render stops. Then render the document.
 #| warning: true
 library(apaTables)
 table6 <- apa.d.table(iv = dose, dv = libido, data = viagra)
-apa.quarto.pdf(table6)
+apa.quarto.pdf(x = table6)
 ```
 ````
 
@@ -836,7 +836,7 @@ lm_output; see Table 7.
 
 library(apaTables)
 
-table7 <- apa.aov.table(lm_output,
+table7 <- apa.aov.table(lm_output = lm_output,
                         table.number = 7)
 ```
 
@@ -892,10 +892,10 @@ options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(attractiveness ~ gender*alcohol,
                 data = goggles)
 
-table7 <- apa.aov.table(lm_output,
+table7 <- apa.aov.table(lm_output = lm_output,
                         table.number = 7)
 
-apa.quarto.template(table7)
+apa.quarto.template(x = table7)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -918,8 +918,8 @@ render stops. Then render the document.
 library(apaTables)
 options(contrasts = c("contr.sum", "contr.poly"))
 lm_output <- lm(attractiveness ~ gender*alcohol, data = goggles)
-table7 <- apa.aov.table(lm_output)
-apa.quarto.pdf(table7)
+table7 <- apa.aov.table(lm_output = lm_output)
+apa.quarto.pdf(x = table7)
 ```
 ````
 
@@ -997,7 +997,7 @@ table8 <- apa.2way.table(iv1 = gender,
                          show.marginal.means = TRUE,
                          table.number = 8)
 
-apa.quarto.template(table8)
+apa.quarto.template(x = table8)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -1021,7 +1021,7 @@ library(apaTables)
 table8 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
                          dv = attractiveness, data = goggles,
                          show.marginal.means = TRUE)
-apa.quarto.pdf(table8)
+apa.quarto.pdf(x = table8)
 ```
 ````
 
@@ -1111,8 +1111,8 @@ table10 <- apa.d.table(iv = alcohol,
                        data = goggles.women,
                        table.number = 10)
 
-apa.quarto.template(table9)
-apa.quarto.template(table10)
+apa.quarto.template(x = table9)
+apa.quarto.template(x = table10)
 ```
 
 This prints ready-made Quarto code chunks. They carry no title or note
@@ -1136,7 +1136,7 @@ library(apaTables)
 library(dplyr)
 goggles.men <- filter(goggles, gender == "Male")
 table9 <- apa.d.table(iv = alcohol, dv = attractiveness, data = goggles.men)
-apa.quarto.pdf(table9)
+apa.quarto.pdf(x = table9)
 ```
 ````
 
@@ -1152,7 +1152,7 @@ library(apaTables)
 library(dplyr)
 goggles.women <- filter(goggles, gender == "Female")
 table10 <- apa.d.table(iv = alcohol, dv = attractiveness, data = goggles.women)
-apa.quarto.pdf(table10)
+apa.quarto.pdf(x = table10)
 ```
 ````
 
@@ -1271,7 +1271,7 @@ Now we make the table based on the output:
 
 ``` r
 
-table11 <- apa.afex.table(drink_attitude_results,
+table11 <- apa.afex.table(afex.output = drink_attitude_results,
                           table.number = 11)
 ```
 
@@ -1339,10 +1339,10 @@ drink_attitude_results <- afex::aov_ez(id = "participant",
                                        data = drink_attitude_long,
                                        within = c("drink", "imagery"))
 
-table11 <- apa.afex.table(drink_attitude_results,
+table11 <- apa.afex.table(afex.output = drink_attitude_results,
                           table.number = 11)
 
-apa.quarto.template(table11)
+apa.quarto.template(x = table11)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -1376,8 +1376,8 @@ drink_attitude_results <- afex::aov_ez(id = "participant",
                                        dv = "attitude",
                                        data = drink_attitude_long,
                                        within = c("drink", "imagery"))
-table11 <- apa.afex.table(drink_attitude_results)
-apa.quarto.pdf(table11)
+table11 <- apa.afex.table(afex.output = drink_attitude_results)
+apa.quarto.pdf(x = table11)
 ```
 ````
 
@@ -1491,7 +1491,7 @@ Now we make the table based on the output:
 
 ``` r
 
-table12 <- apa.afex.table(dating_results,
+table12 <- apa.afex.table(afex.output = dating_results,
                           table.number = 12)
 ```
 
@@ -1560,10 +1560,10 @@ dating_results <- afex::aov_ez(id = "participant",
                                between = "gender",
                                within = c("looks", "personality"))
 
-table12 <- apa.afex.table(dating_results,
+table12 <- apa.afex.table(afex.output = dating_results,
                           table.number = 12)
 
-apa.quarto.template(table12)
+apa.quarto.template(x = table12)
 ```
 
 This prints a ready-made Quarto code chunk. It carries no title or note
@@ -1598,8 +1598,8 @@ dating_results <- afex::aov_ez(id = "participant",
                                data = dating_long,
                                between = "gender",
                                within = c("looks", "personality"))
-table12 <- apa.afex.table(dating_results)
-apa.quarto.pdf(table12)
+table12 <- apa.afex.table(afex.output = dating_results)
+apa.quarto.pdf(x = table12)
 ```
 ````
 

@@ -32,8 +32,8 @@ Invisibly returns the `filename` actually written.
 
 ## Details
 
-    table1 <- apa.cor.table(attitude)
-    apa.save("Table1.docx", table1)
+    table1 <- apa.cor.table(data = attitude)
+    apa.save(filename = "Table1.docx", table1)
 
 The file appears in your working directory – the folder R is currently
 pointing at. Open it in Word and the finished APA table is there: the
@@ -46,20 +46,24 @@ not write PDF files.
 Several tables can go into one file, each on a page of its own, in the
 order you list them:
 
-    apa.save("AllTables.docx", table1, table2, table3)
+    apa.save(filename = "AllTables.docx", table1, table2, table3)
 
-A table left with its default number is numbered by its position in the
-file – Table 1, Table 2, Table 3 above – while a number set when the
-table was built is kept.
+A number set when a table was built is kept. A table left with its
+default number takes the next number after the last numbered table
+before it, starting at 1: the three tables above become Table 1, Table 2
+and Table 3, and if `table2` had been built with `table.number = 5` they
+would become Table 1, Table 5 and Table 6.
 
 Tables are set in 12 point, matching the manuscript body type APA style
 expects. Each page is upright (portrait) unless the table is too wide
 for it: `apa.save()` measures every table, and one that will not fit
-upright is placed on a landscape page at full size – columns are never
-shrunk or cut off. To decide the orientation yourself, use the
-`landscape` argument of the function that built the table – for example
-`apa.cor.table(attitude, landscape = TRUE)`; an explicit value always
-wins over measurement.
+upright is placed on a landscape page at full size. A table too wide
+even for a landscape page – or kept upright with `landscape = FALSE` –
+is set in smaller type so that every column is kept; no column is cut
+off. To decide the orientation yourself, use the `landscape` argument of
+the function that built the table – for example
+`apa.cor.table(data = attitude, landscape = TRUE)`; an explicit value
+always wins over measurement.
 
 **The title and the note are written from the table itself**, so they
 stay correct when the analysis changes; there is no `title` or `note`

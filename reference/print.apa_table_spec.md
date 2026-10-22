@@ -28,7 +28,7 @@ print(x, ...)
 ## Examples
 
 ``` r
-spec <- apa.cor.table(attitude)$spec
+spec <- apa.cor.table(data = attitude)$spec
 print(spec)
 #> 
 #> Table 1

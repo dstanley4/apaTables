@@ -69,127 +69,272 @@
     
     
 <div class="section level2">
-<h2 id="what-changed-at-a-glance">What changed at a glance<a class="anchor" aria-label="anchor" href="#what-changed-at-a-glance"></a>
+<h2 id="who-this-guide-is-for">Who this guide is for<a class="anchor" aria-label="anchor" href="#who-this-guide-is-for"></a>
 </h2>
-<p>apaTables 4.0 adds native support for <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> and Quarto
-documents. The statistics, the <code>apa.*.table()</code> function
-names, and their arguments are <strong>unchanged</strong> — existing
-analysis code keeps working without modification. The change is in how
-tables are <em>output</em>: the package now writes <code>.docx</code>
-and <code>.html</code> files through the flextable and officer packages,
-and it integrates directly with Quarto for PDF, Word, and HTML
-output.</p>
+<p>This guide is for code written for apaTables 2.0.8, the version on
+CRAN before 4.0.0. It lists what you may need to change and what now
+behaves differently. (Versions 3.0.0 and 3.0.1 were never released to
+CRAN. If you installed one of them from GitHub, the last section is for
+you.)</p>
 </div>
 <div class="section level2">
-<h2 id="file-output-is-now--docx--html">File output is now <code>.docx</code> / <code>.html</code><a class="anchor" aria-label="anchor" href="#file-output-is-now--docx--html"></a>
+<h2 id="what-keeps-working">What keeps working<a class="anchor" aria-label="anchor" href="#what-keeps-working"></a>
 </h2>
-<p><code><a href="../reference/apa.save.html">apa.save()</a></code> writes Word <code>.docx</code> and HTML
-<code>.html</code> files, chosen by the file extension you provide. The
-format is <code>apa.save(filename, ..., paper)</code> where
-<code>...</code> accepts one or more table objects created by
-<code>apa.*.table()</code> functions. The old hand-rolled RTF engine is
-gone.</p>
-<p><strong>Before (apaTables 3.x):</strong> passing a <code>.doc</code>
-or <code>.rtf</code> name produced an RTF-format file.</p>
+<p>The table functions – <code><a href="../reference/apa.cor.table.html">apa.cor.table()</a></code>,
+<code><a href="../reference/apa.reg.table.html">apa.reg.table()</a></code>, <code><a href="../reference/apa.d.table.html">apa.d.table()</a></code>,
+<code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code>, <code><a href="../reference/apa.1way.table.html">apa.1way.table()</a></code> and
+<code><a href="../reference/apa.2way.table.html">apa.2way.table()</a></code> – keep their names and every argument they
+had in 2.0.8, so most scripts that build tables with them run unchanged.
+What changes is the kind of file they write, some default settings, some
+names inside the table object, and some of the numbers in ANOVA and
+hierarchical regression tables, where 2.0.8 had errors. A few scripts
+now stop with a message instead – a file name with an unusual ending, or
+regression blocks that do not build on one another. Each is described
+below.</p>
+</div>
+<div class="section level2">
+<h2 id="two-functions-were-removed">Two functions were removed<a class="anchor" aria-label="anchor" href="#two-functions-were-removed"></a>
+</h2>
+<p><code>apa.ezANOVA.table()</code> is gone, because the ez package it
+relied on was archived on CRAN. Use <code><a href="../reference/apa.afex.table.html">apa.afex.table()</a></code>
+instead, with the output of <code><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">afex::aov_ez()</a></code>. It covers
+between-participant, repeated-measures and mixed designs. The afex
+package does not come with apaTables; install it once with
+<code>install.packages("afex")</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 3.x — wrote an RTF-based file named Table1.doc</span></span>
-<span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="va">my_table</span>, filename <span class="op">=</span> <span class="st">"Table1.doc"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>After (apaTables 4.0):</strong> use <code>.docx</code> for
-Word or <code>.html</code> for HTML.</p>
+<code class="sourceCode R"><span><span class="va">goggles_results</span> <span class="op">&lt;-</span> <span class="fu">afex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/afex/man/aov_car.html" class="external-link">aov_ez</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"participant"</span>,</span>
+<span>     dv <span class="op">=</span> <span class="st">"attractiveness"</span>, data <span class="op">=</span> <span class="va">goggles</span>,</span>
+<span>     between <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"alcohol"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/apa.afex.table.html">apa.afex.table</a></span><span class="op">(</span>afex.output <span class="op">=</span> <span class="va">goggles_results</span><span class="op">)</span></span></code></pre></div>
+<p><code>apa.reg.boot.table()</code> is gone too, and there is no
+replacement in this release: apaTables 4.0 does not make bootstrapped
+regression tables. <code><a href="../reference/apa.reg.table.html">apa.reg.table()</a></code> still makes the standard
+regression table.</p>
+</div>
+<div class="section level2">
+<h2 id="files-are-now-word--docx-files">Files are now Word <code>.docx</code> files<a class="anchor" aria-label="anchor" href="#files-are-now-word--docx-files"></a>
+</h2>
+<p>In 2.0.8, <code>filename = "Table1.doc"</code> wrote an RTF file with
+a <code>.doc</code> name. The same code in 4.0 writes a real Word file
+named <code>Table1.docx</code>, and prints a message naming the file
+each time:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 4.0 — writes a proper Word file</span></span>
-<span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="va">my_table</span>, filename <span class="op">=</span> <span class="st">"Table1.docx"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># or HTML</span></span>
-<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="va">my_table</span>, filename <span class="op">=</span> <span class="st">"Table1.html"</span><span class="op">)</span></span></code></pre></div>
-<p>If you pass a legacy <code>.doc</code> or <code>.rtf</code> filename,
-apaTables 4.0 writes the file as <code>.docx</code> and prints a
-one-time message explaining the change. Nothing silently disappears; the
-output just lands in a <code>.docx</code> file.</p>
-<p>Table-builder functions still accept a <code>filename=</code>
-argument directly, which is convenient for one-table workflows:</p>
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span>, filename <span class="op">=</span> <span class="st">"Table1.doc"</span><span class="op">)</span></span>
+<span><span class="co"># apaTables 4.0 writes Word files in .docx format (the legacy .doc/.rtf</span></span>
+<span><span class="co"># RTF engine was retired). Writing: Table1.docx</span></span></code></pre></div>
+<p>A <code>.rtf</code> name is handled the same way. Change the name to
+<code>.docx</code> and the message stops. A name ending in
+<code>.html</code> writes a web page instead. A name ending in
+<code>.pdf</code> stops with a message explaining how to make a PDF
+table (see “Tables in Quarto documents” below), and any other ending, or
+none, stops with an error asking for <code>.docx</code> or
+<code>.html</code> (2.0.8 wrote a file under any name).</p>
+<p><code><a href="../reference/apa.save.html">apa.save()</a></code> is new in 4.0, and it is the usual way to
+write tables to a file. Build the table on one line and save it on the
+next:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># write directly from the builder</span></span>
-<span><span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mtcars</span>, filename <span class="op">=</span> <span class="st">"Table1.docx"</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>paper</code> argument of <code><a href="../reference/apa.save.html">apa.save()</a></code> accepts
-<code>"us"</code> (default, 8.5 x 11 in) or <code>"a4"</code> for
-<code>.docx</code> output.</p>
-</div>
-<div class="section level2">
-<h2 id="table-numbers-are-real-by-default">Table numbers are real by default<a class="anchor" aria-label="anchor" href="#table-numbers-are-real-by-default"></a>
-</h2>
-<p><code>table.number</code> now defaults to <code>1</code>, so a table
-built without one is Table 1 where 3.x printed “Table 0”.
-<code>table.number = 0</code> (or <code>NA</code>, or <code>NULL</code>)
-now means the table carries no number at all: none at the console, none
-in the Word file. <code><a href="../reference/apa.save.html">apa.save()</a></code> numbers tables left at the
-default by their position in the file.</p>
-</div>
-<div class="section level2">
-<h2 id="pdf-moved-to-quarto">PDF moved to Quarto<a class="anchor" aria-label="anchor" href="#pdf-moved-to-quarto"></a>
-</h2>
-<p><a href="https://quarto.org" class="external-link">Quarto</a> is a free system for writing
-documents that combine text, R code, and output. <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a> is a Quarto
-extension that makes the rendered document follow APA style (7th
-edition). There is no native PDF writer in apaTables 4.0. To get a PDF,
-place <code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> inside an apaquarto / Quarto
-document and render it.</p>
-<p>A minimal Quarto chunk looks like this:</p>
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"Table1.docx"</span>, <span class="va">my_table</span><span class="op">)</span></span></code></pre></div>
+<p>It also writes several tables to a single Word file, one table per
+page:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># In a .qmd file rendered with apaquarto:</span></span>
-<span><span class="co"># ```{r}</span></span>
-<span><span class="co"># #| label: tbl-correlations</span></span>
-<span><span class="co"># my_table &lt;- apa.cor.table(data = mtcars)</span></span>
-<span><span class="co"># apa.quarto.pdf(my_table)</span></span>
-<span><span class="co"># ```</span></span></code></pre></div>
-<p>The <code>#| label:</code> line is the one setting that is not
-optional, and it must begin with <code>tbl-</code>. Without it Quarto
-does not treat the chunk as a table at all, so there is no number, no
-title, and no note, however you try to supply them.</p>
-<p>Everything else is automatic. apaquarto supplies the table number,
-the italic title, and the “Note.” framing, and apaTables writes the
-title and note from the table itself. There is nothing to type for them,
-and nothing to keep in step when your analysis changes. To use your own
-wording instead, add a <code>tbl-cap</code> line for the title or an
-<code>apa-note</code> line for the note. The helpers
-<code><a href="../reference/apa_caption.html">apa_caption()</a></code> and <code><a href="../reference/apa_note_text.html">apa_note_text()</a></code> return
-apaTables’ own wording if you would rather start from that than compose
-one. <code><a href="../reference/apa.quarto.template.html">apa.quarto.template()</a></code>, run in the R console, prints a
-whole ready-to-paste chunk. A table object returned from a chunk is also
-auto-rendered via <code>knit_print()</code>.</p>
-<p>For a full walkthrough, see the companion vignette:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"apaquarto-usage"</span>, package <span class="op">=</span> <span class="st">"apaTables"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="va">table2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.reg.table.html">apa.reg.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">rating</span> <span class="op">~</span> <span class="va">complaints</span> <span class="op">+</span> <span class="va">privileges</span>, data <span class="op">=</span> <span class="va">attitude</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"Tables.docx"</span>, <span class="va">table1</span>, <span class="va">table2</span><span class="op">)</span></span></code></pre></div>
+<p>The pages are US letter. Add <code>paper = "a4"</code> for A4.</p>
 </div>
 <div class="section level2">
-<h2 id="removed-functions">Removed functions<a class="anchor" aria-label="anchor" href="#removed-functions"></a>
+<h2 id="tables-are-numbered-1-unless-you-say-otherwise">Tables are numbered 1 unless you say otherwise<a class="anchor" aria-label="anchor" href="#tables-are-numbered-1-unless-you-say-otherwise"></a>
 </h2>
-<p><code>apa.knit.table.for.pdf()</code> and
-<code>apa.knit.table.for.papaja()</code> have been removed. Both wrote
-LaTeX through <code>kableExtra</code>, and both are replaced by the
-<code><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf()</a></code> / apaquarto path described above, which
-produces the table natively:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># was: apa.knit.table.for.pdf(my_table)</span></span>
-<span><span class="fu"><a href="../reference/apa.quarto.pdf.html">apa.quarto.pdf</a></span><span class="op">(</span><span class="va">my_table</span><span class="op">)</span></span></code></pre></div>
-<p><code>apa.knit.table.for.papaja()</code> only ever implemented the
-regression branch; every other table type came back as a bare space,
-which became an empty table in the finished document. For a regression
-table in a papaja document, the same replacement applies, and
-<code><a href="../reference/apa.save.html">apa.save()</a></code> writes the table directly to a file:</p>
+<p>In 2.0.8, <code>table.number</code> defaulted to <code>NA</code>: a
+table built without one had no number at the console, and its file said
+“Table XX”. It now defaults to <code>1</code>. A number you supply is
+used as before. To leave a table unnumbered, use
+<code>table.number = 0</code> (or <code>NA</code>, or
+<code>NULL</code>).</p>
+<p>When <code><a href="../reference/apa.save.html">apa.save()</a></code> writes several tables to one file, a
+number you supplied is kept, and a table left at the default takes the
+next number after the last numbered table before it, starting at 1.
+Three tables left at the default become Table 1, Table 2 and Table 3. If
+the second is given <code>table.number = 5</code>, they become Table 1,
+Table 5 and Table 6.</p>
+</div>
+<div class="section level2">
+<h2 id="which-tables-are-printed-sideways">Which tables are printed sideways<a class="anchor" aria-label="anchor" href="#which-tables-are-printed-sideways"></a>
+</h2>
+<p>In 2.0.8 the orientation of each file was fixed by the function that
+wrote it:</p>
+<ul>
+<li>
+<code><a href="../reference/apa.cor.table.html">apa.cor.table()</a></code>, <code><a href="../reference/apa.d.table.html">apa.d.table()</a></code> and
+<code><a href="../reference/apa.2way.table.html">apa.2way.table()</a></code> wrote a landscape (sideways) page unless
+you passed <code>landscape = FALSE</code>;</li>
+<li>
+<code><a href="../reference/apa.reg.table.html">apa.reg.table()</a></code> always wrote a landscape page;</li>
+<li>
+<code><a href="../reference/apa.1way.table.html">apa.1way.table()</a></code> wrote an upright page unless you
+passed <code>landscape = TRUE</code>;</li>
+<li>
+<code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code> always wrote an upright page.</li>
+</ul>
+<p>In 4.0 every table function takes a <code>landscape</code> argument
+(<code><a href="../reference/apa.reg.table.html">apa.reg.table()</a></code> and <code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code> gain it),
+and by default apaTables measures the table and turns the page only when
+the table does not fit upright. In the Word files that
+<code><a href="../reference/apa.save.html">apa.save()</a></code> (or <code>filename =</code>) writes:</p>
+<ul>
+<li>small d-value and two-way tables, such as the examples on their help
+pages, and correlation tables of up to about five variables, now print
+upright; larger ones still turn sideways when they need to;</li>
+<li>regression tables are wide enough that they usually still print
+sideways.</li>
+</ul>
+<p><code>landscape = TRUE</code> gives you a landscape page whether the
+table needs it or not. <code>landscape = FALSE</code> keeps the page
+upright; a table too wide for it is set in smaller type so that every
+column is kept.</p>
+<p>A Quarto manuscript measures each table against its own page and type
+size, so there more tables stay upright – a one-block regression table,
+for example.</p>
+</div>
+<div class="section level2">
+<h2 id="numbers-that-can-differ-from-2-0-8">Numbers that can differ from 2.0.8<a class="anchor" aria-label="anchor" href="#numbers-that-can-differ-from-2-0-8"></a>
+</h2>
+<p>These changes correct errors in 2.0.8, so a table can show different
+numbers from the one 2.0.8 printed for the same model:</p>
+<ul>
+<li>
+<strong><code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code>, Type III (the
+default).</strong> If your model was fitted with R’s default contrasts
+and had an interaction, 2.0.8 printed each main effect at one level of
+the other factor rather than the main effect. In the
+<code>goggles</code> example, alcohol printed as <em>F</em> = 0.61,
+<em>p</em> = .546 instead of <em>F</em> = 20.07, <em>p</em> &lt; .001.
+apaTables 4.0 refits the model with sum-to-zero contrasts, as SPSS does,
+so the table is right whether or not you set
+<code>options(contrasts = c("contr.sum", "contr.poly"))</code>. If you
+already set that line, your main effects are unchanged.</li>
+<li>
+<strong><code><a href="../reference/apa.aov.table.html">apa.aov.table()</a></code>, all types.</strong> 2.0.8
+rounded the sums of squares and <em>F</em> to two decimals before
+computing the mean squares, partial eta-squared and its confidence
+interval, so those could be off by .01, or print as <code>NaN</code> for
+a dependent variable on a very small scale. They are now computed at
+full precision and rounded only when printed. With
+<code>type = 2</code>, the first effect’s confidence interval is no
+longer blank.</li>
+<li>
+<strong><code><a href="../reference/apa.reg.table.html">apa.reg.table()</a></code> with several blocks.</strong>
+2.0.8 accepted blocks that did not build on one another and printed a
+negative change in <em>R</em><sup>2</sup> with a <code>[NaN, NaN]</code>
+interval. Each block must now contain every predictor of the block
+before it, plus at least one more, and all blocks must be fitted to the
+same cases. Code that broke these rules now stops with a message saying
+what to change.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="correlation-tables-show-p-values">Correlation tables show p values<a class="anchor" aria-label="anchor" href="#correlation-tables-show-p-values"></a>
+</h2>
+<p>A correlation table now prints each correlation’s <em>p</em> value on
+a line below its confidence interval. To leave those lines out, as 2.0.8
+did, add <code>show.pvalue = FALSE</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span>, show.pvalue <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>Correlation tables also gain an <em>N</em> column, the number of
+cases for each variable.</p>
+</div>
+<div class="section level2">
+<h2 id="if-your-script-reads-values-out-of-the-table-object">If your script reads values out of the table object<a class="anchor" aria-label="anchor" href="#if-your-script-reads-values-out-of-the-table-object"></a>
+</h2>
+<p>Most scripts only print or save a table. If yours reads values out of
+the object a table function returns, these changed:</p>
+<ul>
+<li>Correlation, d-value, one-way and two-way tables now use the same
+names as regression and ANOVA tables already did:
+<code>table_number</code>, <code>table_title</code>,
+<code>table_body</code> and <code>table_note</code> instead of
+<code>table.number</code>, <code>table.title</code>,
+<code>table.body</code> and <code>table.note</code>. The old names now
+give <code>NULL</code>. The object’s class is <code>apa_table</code> (it
+was <code>apa.table</code> for those four).</li>
+<li>In a regression table, the columns <code>sr2</code> and
+<code>sr2_95%_CI</code> are now <code>Unique_R2</code> and
+<code>Unique_95%_CI</code> (the interval column follows
+<code>prop.var.conf.level</code>, so <code>Unique_90%_CI</code> at .90),
+and the <code>Unique_R2</code> values carry significance stars, so
+<code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric()</a></code> on that column no longer works. In a table
+with several blocks, the <code>Difference</code> column is now
+<code>Delta_Fit</code>, and each block starts with a “Model 1”, “Model
+2”, … row, so the predictor rows sit one row lower per block.</li>
+<li>In an ANOVA table, a very small <em>p</em> value prints as
+<code>&lt;.001</code> rather than <code>.000</code>.</li>
+<li>A correlation table has the new <code>N</code> column and the
+<em>p</em> value lines.</li>
+<li>Titles and notes are worded differently, in APA title case. For
+example, “Means, standard deviations, and correlations with confidence
+intervals” is now “Descriptive Statistics and Correlations”.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="tables-in-quarto-documents">Tables in Quarto documents<a class="anchor" aria-label="anchor" href="#tables-in-quarto-documents"></a>
+</h2>
+<p>This part is new rather than changed. apaTables 4.0 places its tables
+directly in <a href="https://quarto.org" class="external-link">Quarto</a> documents formatted
+by the <a href="https://wjschne.github.io/apaquarto/" class="external-link">apaquarto</a>
+extension, which produces APA-style manuscripts as PDF, Word or HTML.
+Build the table on one line, and pass it to the function named for the
+document’s format on the next. In a <code>.qmd</code> document rendered
+with apaquarto, a table chunk looks like this:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="in">#| label: tbl-correlations</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="in">my_table &lt;- apa.cor.table(data = attitude)</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = my_table)</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>The <code>#| label:</code> line must begin with <code>tbl-</code>;
+without it Quarto does not treat the chunk as a table.</p>
+<p>For a full walkthrough, see the companion vignette:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span><span class="va">my_table</span>, filename <span class="op">=</span> <span class="st">"Table1.docx"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"apaquarto-usage"</span>, package <span class="op">=</span> <span class="st">"apaTables"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="dependency-changes">Dependency changes<a class="anchor" aria-label="anchor" href="#dependency-changes"></a>
 </h2>
-<p><code>flextable</code> and <code>officer</code> are now in
-<code>Imports</code> (hard dependencies). <code>kableExtra</code> and
-<code>papaja</code> are no longer listed at all —
-<code>kableExtra</code> was needed only by the removed LaTeX path, and
-<code>papaja</code> only by the removed papaja helper.</p>
+<p>apaTables 4.0 needs R 4.1.0 or later (2.0.8 needed R 3.1.2). The
+boot, tibble and methods packages are no longer required. The flextable
+and officer packages are new requirements; they write the Word and HTML
+files. knitr, which 2.0.8 only suggested, is now required. MBESS is
+still required, as in 2.0.8.</p>
+</div>
+<div class="section level2">
+<h2 id="if-you-used-version-3-0-0-or-3-0-1-from-github">If you used version 3.0.0 or 3.0.1 from GitHub<a class="anchor" aria-label="anchor" href="#if-you-used-version-3-0-0-or-3-0-1-from-github"></a>
+</h2>
+<p>Those versions were never released to CRAN. In 3.0,
+<code><a href="../reference/apa.cor.table.html">apa.cor.table()</a></code> had <code>show.pvalue</code> before
+<code>landscape</code>; in 4.0 it comes after, as the last argument, so
+a 3.0 call that gave both without their names now needs them named.
+Those versions also had two functions that 4.0 removes.
+<code>apa.knit.table.for.pdf()</code> and
+<code>apa.knit.table.for.papaja()</code> wrote LaTeX through the
+kableExtra package. For a table in a PDF, place it in a Quarto document
+rendered with apaquarto:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="in">#| label: tbl-correlations</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="in">#| warning: true</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="in">library(apaTables)</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="in">my_table &lt;- apa.cor.table(data = attitude)</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="in">apa.quarto.pdf(x = my_table)</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>For a Word file, use <code><a href="../reference/apa.save.html">apa.save()</a></code>:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">attitude</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/apa.save.html">apa.save</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"Table1.docx"</span>, <span class="va">my_table</span><span class="op">)</span></span></code></pre></div>
+<p>The kableExtra and papaja packages are no longer listed among
+apaTables’ dependencies.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

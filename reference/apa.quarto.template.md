@@ -24,9 +24,9 @@ apa.quarto.template(
 
   A length-1 character string naming the chunk. By default the name is
   built from the name of the table given for `x`, so
-  `apa.quarto.template(table3)` names the chunk `tbl-table3`; when `x`
-  is not a stored table but an expression written out in full, the name
-  is `tbl-mytable`. A label you supply yourself is used exactly as
+  `apa.quarto.template(x = table3)` names the chunk `tbl-table3`; when
+  `x` is not a stored table but an expression written out in full, the
+  name is `tbl-mytable`. A label you supply yourself is used exactly as
   given, so make it begin with `"tbl-"` – Quarto only treats a chunk as
   a table when its label does. Writing `@tbl-table3` in your document
   text then produces that table's number (for example, "Table 1").
@@ -35,9 +35,11 @@ apa.quarto.template(
 
   A length-1 character string with the R code that produces the table,
   used in the display line of the chunk. You can usually ignore this
-  argument: by default, whatever you typed for `x` is reused in the
-  chunk, so `apa.quarto.template(table1)` prints the line
-  `apa.quarto.pdf(table1)`.
+  argument: by default the chunk is built from what you typed for `x`,
+  with the arguments of an apaTables call written by name – so
+  `apa.quarto.template(x = table1)` prints the line
+  `apa.quarto.pdf(x = table1)`; a table function's call given as `x` is
+  printed with each of its arguments named.
 
 - target:
 
@@ -65,8 +67,8 @@ not part of the returned text).
 
 ## Details
 
-    table1 <- apa.cor.table(attitude)
-    apa.quarto.template(table1)
+    table1 <- apa.cor.table(data = attitude)
+    apa.quarto.template(x = table1)
 
 This prints a finished chunk, named after your table:
 
@@ -75,7 +77,7 @@ This prints a finished chunk, named after your table:
     #| message: false
     #| warning: true
     # table1 <- apa.cor.table(...)   # <- the line that builds your table
-    apa.quarto.pdf(table1)
+    apa.quarto.pdf(x = table1)
     ```
 
 Copy it into your `.qmd` document, replace the comment with the line
@@ -105,11 +107,11 @@ file.
 
 **The chunk is always two lines: build the table, then display it.** If
 you passed the table-building call itself –
-`apa.quarto.template(apa.cor.table(attitude))` – both lines are ready to
-run. If you passed a table you had already built, by name, the first
-line is a *comment* showing where your own table-building line belongs;
-replace it with that line, or delete it if the table is built in an
-earlier chunk.
+`apa.quarto.template(x = apa.cor.table(data = attitude))` – both lines
+are ready to run. If you passed a table you had already built, by name,
+the first line is a *comment* showing where your own table-building line
+belongs; replace it with that line, or delete it if the table is built
+in an earlier chunk.
 
 **The chunk's `#| label:` line is not optional** on the three manuscript
 destinations, unlike the optional `tbl-cap` and `apa-note` lines this
@@ -141,8 +143,8 @@ to render:
 In the R console, create the table and then ask for its Quarto code:
 
     library(apaTables)
-    table1 <- apa.cor.table(attitude)
-    apa.quarto.template(table1)
+    table1 <- apa.cor.table(data = attitude)
+    apa.quarto.template(x = table1)
 
 The printed chunk displays `table1` but does not create it, so the chunk
 you paste into your Quarto document must also carry the lines that do –
@@ -157,8 +159,8 @@ without anything being added to the chunk – see *wide tables* below:
     #| message: false
     #| warning: true
     library(apaTables)
-    table1 <- apa.cor.table(attitude)
-    apa.quarto.pdf(table1)
+    table1 <- apa.cor.table(data = attitude)
+    apa.quarto.pdf(x = table1)
     ```
 
 Nothing in that chunk mentions the title or the note, and nothing needs
@@ -199,7 +201,7 @@ Quarto document.
 
 Every chunk in a Quarto document must have a different name, so the
 chunk's name is built from the name of the table you asked for:
-`apa.quarto.template(table3)` names the chunk `tbl-table3`. Two
+`apa.quarto.template(x = table3)` names the chunk `tbl-table3`. Two
 different tables therefore give two chunks that can both be pasted into
 the same document. Dots and underscores in the table's name become
 hyphens (`my.table` gives `tbl-my-table`), because a dot inside a name
@@ -212,7 +214,7 @@ yourself.
 
 ## See also
 
-[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`("my-paper")`
+[`apa.quarto.new`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)`(path = "my-paper")`
 starts an APA manuscript with the apaquarto extension already installed;
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
 installs the extension into a project you already have. A step-by-step
@@ -225,8 +227,8 @@ installed with the package. To open it, type:
 
 ``` r
 # Print a ready-to-paste chunk for the table (PDF document by default)
-table1 <- apa.cor.table(attitude)
-apa.quarto.template(table1)
+table1 <- apa.cor.table(data = attitude)
+apa.quarto.template(x = table1)
 #> Copy this chunk into your apaquarto (.qmd) document:
 #> 
 #> ```{r}
@@ -234,7 +236,7 @@ apa.quarto.template(table1)
 #> #| message: false
 #> #| warning: true
 #> # table1 <- apa.cor.table(...)   # <- the line that builds your table
-#> apa.quarto.pdf(table1)
+#> apa.quarto.pdf(x = table1)
 #> ```
 #> 
 #> The table's title and note need no lines here.
@@ -244,7 +246,7 @@ apa.quarto.template(table1)
 #> or an #| apa-note line for the note (or pass title = / note = to it).
 
 # The same chunk for a Word document
-apa.quarto.template(table1, target = "docx")
+apa.quarto.template(x = table1, target = "docx")
 #> Copy this chunk into your apaquarto (.qmd) document:
 #> 
 #> ```{r}
@@ -252,7 +254,7 @@ apa.quarto.template(table1, target = "docx")
 #> #| message: false
 #> #| warning: true
 #> # table1 <- apa.cor.table(...)   # <- the line that builds your table
-#> apa.quarto.docx(table1)
+#> apa.quarto.docx(x = table1)
 #> ```
 #> 
 #> The table's title and note need no lines here.

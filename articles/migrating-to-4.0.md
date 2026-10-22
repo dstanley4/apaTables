@@ -1,113 +1,243 @@
 # Migrating to apaTables 4.0
 
-## What changed at a glance
+## Who this guide is for
 
-apaTables 4.0 adds native support for
-[apaquarto](https://wjschne.github.io/apaquarto/) and Quarto documents.
-The statistics, the `apa.*.table()` function names, and their arguments
-are **unchanged** — existing analysis code keeps working without
-modification. The change is in how tables are *output*: the package now
-writes `.docx` and `.html` files through the flextable and officer
-packages, and it integrates directly with Quarto for PDF, Word, and HTML
-output.
+This guide is for code written for apaTables 2.0.8, the version on CRAN
+before 4.0.0. It lists what you may need to change and what now behaves
+differently. (Versions 3.0.0 and 3.0.1 were never released to CRAN. If
+you installed one of them from GitHub, the last section is for you.)
 
-## File output is now `.docx` / `.html`
+## What keeps working
 
-[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-writes Word `.docx` and HTML `.html` files, chosen by the file extension
-you provide. The format is `apa.save(filename, ..., paper)` where `...`
-accepts one or more table objects created by `apa.*.table()` functions.
-The old hand-rolled RTF engine is gone.
-
-**Before (apaTables 3.x):** passing a `.doc` or `.rtf` name produced an
-RTF-format file.
-
-``` r
-
-# 3.x — wrote an RTF-based file named Table1.doc
-my_table <- apa.cor.table(data = mtcars)
-apa.save(my_table, filename = "Table1.doc")
-```
-
-**After (apaTables 4.0):** use `.docx` for Word or `.html` for HTML.
-
-``` r
-
-# 4.0 — writes a proper Word file
-my_table <- apa.cor.table(data = mtcars)
-apa.save(my_table, filename = "Table1.docx")
-
-# or HTML
-apa.save(my_table, filename = "Table1.html")
-```
-
-If you pass a legacy `.doc` or `.rtf` filename, apaTables 4.0 writes the
-file as `.docx` and prints a one-time message explaining the change.
-Nothing silently disappears; the output just lands in a `.docx` file.
-
-Table-builder functions still accept a `filename=` argument directly,
-which is convenient for one-table workflows:
-
-``` r
-
-# write directly from the builder
-apa.cor.table(data = mtcars, filename = "Table1.docx")
-```
-
-The `paper` argument of
-[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-accepts `"us"` (default, 8.5 x 11 in) or `"a4"` for `.docx` output.
-
-## Table numbers are real by default
-
-`table.number` now defaults to `1`, so a table built without one is
-Table 1 where 3.x printed “Table 0”. `table.number = 0` (or `NA`, or
-`NULL`) now means the table carries no number at all: none at the
-console, none in the Word file.
-[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-numbers tables left at the default by their position in the file.
-
-## PDF moved to Quarto
-
-[Quarto](https://quarto.org) is a free system for writing documents that
-combine text, R code, and output.
-[apaquarto](https://wjschne.github.io/apaquarto/) is a Quarto extension
-that makes the rendered document follow APA style (7th edition). There
-is no native PDF writer in apaTables 4.0. To get a PDF, place
-[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-inside an apaquarto / Quarto document and render it.
-
-A minimal Quarto chunk looks like this:
-
-``` r
-
-# In a .qmd file rendered with apaquarto:
-# ```{r}
-# #| label: tbl-correlations
-# my_table <- apa.cor.table(data = mtcars)
-# apa.quarto.pdf(my_table)
-# ```
-```
-
-The `#| label:` line is the one setting that is not optional, and it
-must begin with `tbl-`. Without it Quarto does not treat the chunk as a
-table at all, so there is no number, no title, and no note, however you
-try to supply them.
-
-Everything else is automatic. apaquarto supplies the table number, the
-italic title, and the “Note.” framing, and apaTables writes the title
-and note from the table itself. There is nothing to type for them, and
-nothing to keep in step when your analysis changes. To use your own
-wording instead, add a `tbl-cap` line for the title or an `apa-note`
-line for the note. The helpers
-[`apa_caption()`](https://dstanley4.github.io/apaTables/reference/apa_caption.md)
+The table functions –
+[`apa.cor.table()`](https://dstanley4.github.io/apaTables/reference/apa.cor.table.md),
+[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md),
+[`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md),
+[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md),
+[`apa.1way.table()`](https://dstanley4.github.io/apaTables/reference/apa.1way.table.md)
 and
-[`apa_note_text()`](https://dstanley4.github.io/apaTables/reference/apa_note_text.md)
-return apaTables’ own wording if you would rather start from that than
-compose one.
-[`apa.quarto.template()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.template.md),
-run in the R console, prints a whole ready-to-paste chunk. A table
-object returned from a chunk is also auto-rendered via `knit_print()`.
+[`apa.2way.table()`](https://dstanley4.github.io/apaTables/reference/apa.2way.table.md)
+– keep their names and every argument they had in 2.0.8, so most scripts
+that build tables with them run unchanged. What changes is the kind of
+file they write, some default settings, some names inside the table
+object, and some of the numbers in ANOVA and hierarchical regression
+tables, where 2.0.8 had errors. A few scripts now stop with a message
+instead – a file name with an unusual ending, or regression blocks that
+do not build on one another. Each is described below.
+
+## Two functions were removed
+
+`apa.ezANOVA.table()` is gone, because the ez package it relied on was
+archived on CRAN. Use
+[`apa.afex.table()`](https://dstanley4.github.io/apaTables/reference/apa.afex.table.md)
+instead, with the output of
+[`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html). It covers
+between-participant, repeated-measures and mixed designs. The afex
+package does not come with apaTables; install it once with
+`install.packages("afex")`.
+
+``` r
+
+goggles_results <- afex::aov_ez(id = "participant",
+     dv = "attractiveness", data = goggles,
+     between = c("gender", "alcohol"))
+apa.afex.table(afex.output = goggles_results)
+```
+
+`apa.reg.boot.table()` is gone too, and there is no replacement in this
+release: apaTables 4.0 does not make bootstrapped regression tables.
+[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+still makes the standard regression table.
+
+## Files are now Word `.docx` files
+
+In 2.0.8, `filename = "Table1.doc"` wrote an RTF file with a `.doc`
+name. The same code in 4.0 writes a real Word file named `Table1.docx`,
+and prints a message naming the file each time:
+
+``` r
+
+my_table <- apa.cor.table(data = attitude, filename = "Table1.doc")
+# apaTables 4.0 writes Word files in .docx format (the legacy .doc/.rtf
+# RTF engine was retired). Writing: Table1.docx
+```
+
+A `.rtf` name is handled the same way. Change the name to `.docx` and
+the message stops. A name ending in `.html` writes a web page instead. A
+name ending in `.pdf` stops with a message explaining how to make a PDF
+table (see “Tables in Quarto documents” below), and any other ending, or
+none, stops with an error asking for `.docx` or `.html` (2.0.8 wrote a
+file under any name).
+
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+is new in 4.0, and it is the usual way to write tables to a file. Build
+the table on one line and save it on the next:
+
+``` r
+
+my_table <- apa.cor.table(data = attitude)
+apa.save(filename = "Table1.docx", my_table)
+```
+
+It also writes several tables to a single Word file, one table per page:
+
+``` r
+
+table1 <- apa.cor.table(data = attitude)
+table2 <- apa.reg.table(lm(rating ~ complaints + privileges, data = attitude))
+apa.save(filename = "Tables.docx", table1, table2)
+```
+
+The pages are US letter. Add `paper = "a4"` for A4.
+
+## Tables are numbered 1 unless you say otherwise
+
+In 2.0.8, `table.number` defaulted to `NA`: a table built without one
+had no number at the console, and its file said “Table XX”. It now
+defaults to `1`. A number you supply is used as before. To leave a table
+unnumbered, use `table.number = 0` (or `NA`, or `NULL`).
+
+When
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+writes several tables to one file, a number you supplied is kept, and a
+table left at the default takes the next number after the last numbered
+table before it, starting at 1. Three tables left at the default become
+Table 1, Table 2 and Table 3. If the second is given `table.number = 5`,
+they become Table 1, Table 5 and Table 6.
+
+## Which tables are printed sideways
+
+In 2.0.8 the orientation of each file was fixed by the function that
+wrote it:
+
+- [`apa.cor.table()`](https://dstanley4.github.io/apaTables/reference/apa.cor.table.md),
+  [`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md)
+  and
+  [`apa.2way.table()`](https://dstanley4.github.io/apaTables/reference/apa.2way.table.md)
+  wrote a landscape (sideways) page unless you passed
+  `landscape = FALSE`;
+- [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  always wrote a landscape page;
+- [`apa.1way.table()`](https://dstanley4.github.io/apaTables/reference/apa.1way.table.md)
+  wrote an upright page unless you passed `landscape = TRUE`;
+- [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  always wrote an upright page.
+
+In 4.0 every table function takes a `landscape` argument
+([`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+and
+[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+gain it), and by default apaTables measures the table and turns the page
+only when the table does not fit upright. In the Word files that
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+(or `filename =`) writes:
+
+- small d-value and two-way tables, such as the examples on their help
+  pages, and correlation tables of up to about five variables, now print
+  upright; larger ones still turn sideways when they need to;
+- regression tables are wide enough that they usually still print
+  sideways.
+
+`landscape = TRUE` gives you a landscape page whether the table needs it
+or not. `landscape = FALSE` keeps the page upright; a table too wide for
+it is set in smaller type so that every column is kept.
+
+A Quarto manuscript measures each table against its own page and type
+size, so there more tables stay upright – a one-block regression table,
+for example.
+
+## Numbers that can differ from 2.0.8
+
+These changes correct errors in 2.0.8, so a table can show different
+numbers from the one 2.0.8 printed for the same model:
+
+- **[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md),
+  Type III (the default).** If your model was fitted with R’s default
+  contrasts and had an interaction, 2.0.8 printed each main effect at
+  one level of the other factor rather than the main effect. In the
+  `goggles` example, alcohol printed as *F* = 0.61, *p* = .546 instead
+  of *F* = 20.07, *p* \< .001. apaTables 4.0 refits the model with
+  sum-to-zero contrasts, as SPSS does, so the table is right whether or
+  not you set `options(contrasts = c("contr.sum", "contr.poly"))`. If
+  you already set that line, your main effects are unchanged.
+- **[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md),
+  all types.** 2.0.8 rounded the sums of squares and *F* to two decimals
+  before computing the mean squares, partial eta-squared and its
+  confidence interval, so those could be off by .01, or print as `NaN`
+  for a dependent variable on a very small scale. They are now computed
+  at full precision and rounded only when printed. With `type = 2`, the
+  first effect’s confidence interval is no longer blank.
+- **[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  with several blocks.** 2.0.8 accepted blocks that did not build on one
+  another and printed a negative change in *R*² with a `[NaN, NaN]`
+  interval. Each block must now contain every predictor of the block
+  before it, plus at least one more, and all blocks must be fitted to
+  the same cases. Code that broke these rules now stops with a message
+  saying what to change.
+
+## Correlation tables show p values
+
+A correlation table now prints each correlation’s *p* value on a line
+below its confidence interval. To leave those lines out, as 2.0.8 did,
+add `show.pvalue = FALSE`:
+
+``` r
+
+my_table <- apa.cor.table(data = attitude, show.pvalue = FALSE)
+```
+
+Correlation tables also gain an *N* column, the number of cases for each
+variable.
+
+## If your script reads values out of the table object
+
+Most scripts only print or save a table. If yours reads values out of
+the object a table function returns, these changed:
+
+- Correlation, d-value, one-way and two-way tables now use the same
+  names as regression and ANOVA tables already did: `table_number`,
+  `table_title`, `table_body` and `table_note` instead of
+  `table.number`, `table.title`, `table.body` and `table.note`. The old
+  names now give `NULL`. The object’s class is `apa_table` (it was
+  `apa.table` for those four).
+- In a regression table, the columns `sr2` and `sr2_95%_CI` are now
+  `Unique_R2` and `Unique_95%_CI` (the interval column follows
+  `prop.var.conf.level`, so `Unique_90%_CI` at .90), and the `Unique_R2`
+  values carry significance stars, so
+  [`as.numeric()`](https://rdrr.io/r/base/numeric.html) on that column
+  no longer works. In a table with several blocks, the `Difference`
+  column is now `Delta_Fit`, and each block starts with a “Model 1”,
+  “Model 2”, … row, so the predictor rows sit one row lower per block.
+- In an ANOVA table, a very small *p* value prints as `<.001` rather
+  than `.000`.
+- A correlation table has the new `N` column and the *p* value lines.
+- Titles and notes are worded differently, in APA title case. For
+  example, “Means, standard deviations, and correlations with confidence
+  intervals” is now “Descriptive Statistics and Correlations”.
+
+## Tables in Quarto documents
+
+This part is new rather than changed. apaTables 4.0 places its tables
+directly in [Quarto](https://quarto.org) documents formatted by the
+[apaquarto](https://wjschne.github.io/apaquarto/) extension, which
+produces APA-style manuscripts as PDF, Word or HTML. Build the table on
+one line, and pass it to the function named for the document’s format on
+the next. In a `.qmd` document rendered with apaquarto, a table chunk
+looks like this:
+
+```` markdown
+```{r}
+#| label: tbl-correlations
+#| message: false
+#| warning: true
+library(apaTables)
+my_table <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = my_table)
+```
+````
+
+The `#| label:` line must begin with `tbl-`; without it Quarto does not
+treat the chunk as a table.
 
 For a full walkthrough, see the companion vignette:
 
@@ -116,35 +246,44 @@ For a full walkthrough, see the companion vignette:
 vignette("apaquarto-usage", package = "apaTables")
 ```
 
-## Removed functions
-
-`apa.knit.table.for.pdf()` and `apa.knit.table.for.papaja()` have been
-removed. Both wrote LaTeX through `kableExtra`, and both are replaced by
-the
-[`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-/ apaquarto path described above, which produces the table natively:
-
-``` r
-
-# was: apa.knit.table.for.pdf(my_table)
-apa.quarto.pdf(my_table)
-```
-
-`apa.knit.table.for.papaja()` only ever implemented the regression
-branch; every other table type came back as a bare space, which became
-an empty table in the finished document. For a regression table in a
-papaja document, the same replacement applies, and
-[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-writes the table directly to a file:
-
-``` r
-
-apa.save(my_table, filename = "Table1.docx")
-```
-
 ## Dependency changes
 
-`flextable` and `officer` are now in `Imports` (hard dependencies).
-`kableExtra` and `papaja` are no longer listed at all — `kableExtra` was
-needed only by the removed LaTeX path, and `papaja` only by the removed
-papaja helper.
+apaTables 4.0 needs R 4.1.0 or later (2.0.8 needed R 3.1.2). The boot,
+tibble and methods packages are no longer required. The flextable and
+officer packages are new requirements; they write the Word and HTML
+files. knitr, which 2.0.8 only suggested, is now required. MBESS is
+still required, as in 2.0.8.
+
+## If you used version 3.0.0 or 3.0.1 from GitHub
+
+Those versions were never released to CRAN. In 3.0,
+[`apa.cor.table()`](https://dstanley4.github.io/apaTables/reference/apa.cor.table.md)
+had `show.pvalue` before `landscape`; in 4.0 it comes after, as the last
+argument, so a 3.0 call that gave both without their names now needs
+them named. Those versions also had two functions that 4.0 removes.
+`apa.knit.table.for.pdf()` and `apa.knit.table.for.papaja()` wrote LaTeX
+through the kableExtra package. For a table in a PDF, place it in a
+Quarto document rendered with apaquarto:
+
+```` markdown
+```{r}
+#| label: tbl-correlations
+#| message: false
+#| warning: true
+library(apaTables)
+my_table <- apa.cor.table(data = attitude)
+apa.quarto.pdf(x = my_table)
+```
+````
+
+For a Word file, use
+[`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md):
+
+``` r
+
+my_table <- apa.cor.table(data = attitude)
+apa.save(filename = "Table1.docx", my_table)
+```
+
+The kableExtra and papaja packages are no longer listed among apaTables’
+dependencies.
