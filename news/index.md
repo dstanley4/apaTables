@@ -394,6 +394,14 @@ released.
   -0.81 (not significant) instead of -4.26 (*p* \< .01). Coding chosen
   for one model is kept when it is dummy coding (such as `contr.SAS`);
   other coding, such as effect coding, stops with a message.
+- [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  stops with a message naming the fix when a model was fitted with
+  `lm(..., model = FALSE)` (2.0.8 stopped with “argument of length 0”):
+  fit it again without `model = FALSE`.
+  [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  accepts such a model, as 2.0.8 did, except for a Type III table whose
+  factors need recoding to sum-to-zero contrasts, which needs the data
+  stored in the model and says so.
 - A *p* value of exactly .01 is now marked with one significance star.
   In 2.0.8 it was unmarked; one star was given only for .01 \< p \< .05.
 - The confidence intervals for the semi-partial correlation squared of
