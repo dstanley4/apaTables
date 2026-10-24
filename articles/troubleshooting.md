@@ -147,6 +147,34 @@ The examples on the
 [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
 help page set this line before every model.
 
+## “A correlation with p = .010 has two stars.”
+
+**The stars come from the exact p-value; the printed p-value is rounded
+to three decimals.** When the exact value is just below .01, rounding
+prints it as .010, beside two stars. In the same way, a value just below
+.05 prints as .050, beside one star. The stars are correct: the exact
+p-value is below the cutoff that the note gives.
+
+For example, in this table the correlation between `hp` and `drat`
+prints as `-.45**` with `p = .010` under it:
+
+``` r
+
+apa.cor.table(data = mtcars[, c("mpg", "hp", "drat")])
+```
+
+The exact p-value is .009989, which
+[`cor.test()`](https://rdrr.io/r/stats/cor.test.html) shows:
+
+``` r
+
+cor.test(x = mtcars$hp, y = mtcars$drat)
+```
+
+This happens only for a p-value from .0095 up to .01, or from .0495 up
+to .05. If a reader or reviewer asks about it, report the exact p-value
+from [`cor.test()`](https://rdrr.io/r/stats/cor.test.html) in the text.
+
 ## “My table is missing rows, the note has vanished, or the PDF will not render.”
 
 Are you rendering with `documentmode: jou`, the two-column journal

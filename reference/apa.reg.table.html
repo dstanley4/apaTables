@@ -4,7 +4,8 @@ or more lm results. For each predictor the table
 reports the unstandardized regression weight (b), the standardized
 regression weight (beta), and the semi-partial correlation squared, each
 with a confidence interval, and the zero-order correlation, along with
-model fit (R-squared). When several lm results are supplied
+model fit (R-squared). The Details section below describes when beta and
+the zero-order correlation (r) are left out. When several lm results are supplied
 (blocks in a hierarchical regression), the table also reports the change
 in R-squared for each block. The table prints to the console. The most
 common next step is saving the table as a Word file to use in a
@@ -22,7 +23,8 @@ or more lm results. For each predictor the table
 reports the unstandardized regression weight (b), the standardized
 regression weight (beta), and the semi-partial correlation squared, each
 with a confidence interval, and the zero-order correlation, along with
-model fit (R-squared). When several lm results are supplied
+model fit (R-squared). The Details section below describes when beta and
+the zero-order correlation (r) are left out. When several lm results are supplied
 (blocks in a hierarchical regression), the table also reports the change
 in R-squared for each block. The table prints to the console. The most
 common next step is saving the table as a Word file to use in a
@@ -82,7 +84,8 @@ or more <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm
 reports the unstandardized regression weight (b), the standardized
 regression weight (beta), and the semi-partial correlation squared, each
 with a confidence interval, and the zero-order correlation, along with
-model fit (R-squared). When several <code>lm</code> results are supplied
+model fit (R-squared). The Details section below describes when beta and
+the zero-order correlation (r) are left out. When several <code>lm</code> results are supplied
 (blocks in a hierarchical regression), the table also reports the change
 in R-squared for each block. The table prints to the console. The most
 common next step is saving the table as a Word file to use in a
@@ -192,12 +195,24 @@ the sampling error in them and can be too narrow (see Jones &amp; Waller, 2013, 
 intervals that do).</p>
 <p>beta and r are not shown when any block has a factor (categorical)
 predictor or a term that R builds into new model columns, such as
-an interaction written <code>a * b</code> or <code>a:b</code>, or <code><a href="https://rdrr.io/r/stats/poly.html" class="external-link">poly()</a></code>;
-beta is not shown when the models are weighted. A product written with
-<code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>, such as <code>I(a * b)</code>, keeps beta, and r for that term
-is left blank; a single transformed term such as <code>log(x)</code> keeps both,
-computed on the transformed variable. The table note defines only the
-columns shown.</p>
+an interaction written <code>a * b</code> or <code>a:b</code>, or <code><a href="https://rdrr.io/r/stats/poly.html" class="external-link">poly()</a></code>,
+and they are not shown when the models are weighted. Otherwise, a
+product written with <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>, such as <code>I(a * b)</code>, keeps beta,
+and r for that term is left blank; a single transformed term such as
+<code>log(x)</code> keeps both, computed on the transformed variable. The
+table note defines only the columns shown.</p>
+<p>An unordered categorical predictor is shown with each level compared with
+the first level (the default coding in R), so the rows are labeled by
+level, such as <code>factor(cyl)6</code>. This holds even when
+<code>options(contrasts = c("contr.sum", "contr.poly"))</code> was set before
+the model was fitted, as is common for an ANOVA: <code>apa.reg.table()</code>
+fits the model again with the default coding, which gives the same fit
+and R-squared. Coding chosen for one model – in
+<code>lm(contrasts = ...)</code>, with <code><a href="https://rdrr.io/r/stats/zC.html" class="external-link">C()</a></code> in the formula, or set on
+the variable – is kept when it compares each level with one reference
+level; other coding, such as effect coding, stops with a message. An
+ordered factor keeps the polynomial rows (<code>.L</code>, <code>.Q</code>) that R
+gives it.</p>
 <p>The table describes the models as <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> fitted them, so cases that
 <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> dropped for missing values (the default) are not in it, and
 the N in the note is the number of cases the models used. Every block

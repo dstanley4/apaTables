@@ -243,8 +243,12 @@ function. The constructed table includes the unstandardized regression
 coefficient (*b* with CI), standardized regression coefficient (*beta*
 with CI), semi-partial correlation squared (labeled *Unique R*² in the
 table, with CI), the correlation ($`r`$), and the overall fit of the
-model (indexed by $`R^2`$ with CI). The *album* sales dataset from Field
-et al. (2012) is used to illustrate the **apa.reg.table()** function.
+model (indexed by $`R^2`$ with CI). The *beta* and $`r`$ columns are
+left out for some models, such as weighted models or models with a
+factor predictor; the **apa.reg.table()** help page (type
+[`?apa.reg.table`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+in the console) describes when. The *album* sales dataset from Field et
+al. (2012) is used to illustrate the **apa.reg.table()** function.
 
 ## Basic regression table
 
@@ -373,10 +377,12 @@ analysis is common in psychology. The example below examines whether
 advertisements and amount of airplay for a song interact to predict
 album sales. The resulting table is presented in Table 3. Although this
 example only uses two blocks, note that any number of blocks can be used
-with the **apa.reg.table()** function. As well, if the predictors in any
-of the blocks are a product-term, the zero-order correlation will be
-omitted from the output to prevent interpretation errors common in
-psychology.
+with the **apa.reg.table()** function. As well, the table shows no
+zero-order correlation ($`r`$) for a product term written with
+[`I()`](https://rdrr.io/r/base/AsIs.html), as in the example below: that
+cell is left blank to prevent interpretation errors common in
+psychology. With an interaction written as `a * b` or `a:b`, the *beta*
+and $`r`$ columns are left out altogether.
 
 The **apa.reg.table()** function allows for multiple (i.e., 2 or more)
 blocks as per below; see Table 3.

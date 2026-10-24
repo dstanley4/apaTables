@@ -5,11 +5,12 @@ more [`lm`](https://rdrr.io/r/stats/lm.html) results. For each predictor
 the table reports the unstandardized regression weight (b), the
 standardized regression weight (beta), and the semi-partial correlation
 squared, each with a confidence interval, and the zero-order
-correlation, along with model fit (R-squared). When several `lm` results
-are supplied (blocks in a hierarchical regression), the table also
-reports the change in R-squared for each block. The table prints to the
-console. The most common next step is saving the table as a Word file to
-use in a manuscript:
+correlation, along with model fit (R-squared). The Details section below
+describes when beta and the zero-order correlation (r) are left out.
+When several `lm` results are supplied (blocks in a hierarchical
+regression), the table also reports the change in R-squared for each
+block. The table prints to the console. The most common next step is
+saving the table as a Word file to use in a manuscript:
 
     blk1 <- lm(sales ~ adverts + airplay, data = album)
     table1 <- apa.reg.table(blk1)
@@ -125,12 +126,24 @@ intervals that do).
 beta and r are not shown when any block has a factor (categorical)
 predictor or a term that R builds into new model columns, such as an
 interaction written `a * b` or `a:b`, or
-[`poly()`](https://rdrr.io/r/stats/poly.html); beta is not shown when
-the models are weighted. A product written with
+[`poly()`](https://rdrr.io/r/stats/poly.html), and they are not shown
+when the models are weighted. Otherwise, a product written with
 [`I()`](https://rdrr.io/r/base/AsIs.html), such as `I(a * b)`, keeps
 beta, and r for that term is left blank; a single transformed term such
 as `log(x)` keeps both, computed on the transformed variable. The table
 note defines only the columns shown.
+
+An unordered categorical predictor is shown with each level compared
+with the first level (the default coding in R), so the rows are labeled
+by level, such as `factor(cyl)6`. This holds even when
+`options(contrasts = c("contr.sum", "contr.poly"))` was set before the
+model was fitted, as is common for an ANOVA: `apa.reg.table()` fits the
+model again with the default coding, which gives the same fit and
+R-squared. Coding chosen for one model – in `lm(contrasts = ...)`, with
+[`C()`](https://rdrr.io/r/stats/zC.html) in the formula, or set on the
+variable – is kept when it compares each level with one reference level;
+other coding, such as effect coding, stops with a message. An ordered
+factor keeps the polynomial rows (`.L`, `.Q`) that R gives it.
 
 The table describes the models as
 [`lm()`](https://rdrr.io/r/stats/lm.html) fitted them, so cases that

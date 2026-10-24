@@ -23,8 +23,9 @@ file they write, some default settings, some names inside the table
 object, and some of the numbers in ANOVA and hierarchical regression
 tables, where 2.0.8 had errors. A few scripts now stop with a message
 instead – a file name with an unusual ending, regression blocks that do
-not build on one another, a model with an offset, or a setting outside
-the values a function accepts. Each is described below.
+not build on one another, a model with an offset, a regression with
+effect-coded predictors, or a setting outside the values a function
+accepts. Each is described below.
 
 ## Two functions were removed
 
@@ -188,6 +189,19 @@ numbers from the one 2.0.8 printed for the same model:
   with the pooled standard deviation as before, and no test of equal
   variances is run. Compare the standard deviations in the table to
   judge whether one pooled value describes both groups.
+- **[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  with weights.** For a model fitted with `weights`, 2.0.8 printed the
+  unweighted correlation in the *r* column, beside the weighted *b*,
+  semi-partial correlation squared and *R*². The *r* column is now left
+  out for weighted models, as beta already was.
+- **[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  with a categorical predictor after
+  `options(contrasts = c("contr.sum", "contr.poly"))`.** 2.0.8 used the
+  sum-to-zero coding that line sets, so the rows read `factor(cyl)1`,
+  `factor(cyl)2` and each b compared one group with the mean of the
+  group means. The rows now compare each level with the first level, as
+  without the line: in `lm(mpg ~ factor(cyl) + wt, data = mtcars)`, 6
+  cylinders is -4.26, not -0.81.
 - **Significance stars.** A *p* value of exactly .01 was unmarked in
   2.0.8; it is now marked with one star.
 - **[`apa.2way.table()`](https://dstanley4.github.io/apaTables/reference/apa.2way.table.md)
@@ -218,6 +232,15 @@ argument of [`lm()`](https://rdrr.io/r/stats/lm.html)). In 2.0.8,
 [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
 printed the offset as a predictor row with no estimate. Fit the model
 without the offset.
+
+[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+also stops for a categorical predictor coded for that model in a way
+other than comparing each level with one reference level – effect coding
+set with `lm(contrasts = list(cyl = "contr.sum"))`, with `C(cyl, sum)`
+in the formula, or on the variable. 2.0.8 printed such rows as `cyl1`,
+`cyl2`. Fit the model with
+`lm(..., contrasts = list(cyl = "contr.treatment"))`, or without
+[`C()`](https://rdrr.io/r/stats/zC.html).
 
 ## New p values and n columns
 
@@ -253,7 +276,14 @@ the object a table function returns, these changed:
   [`as.numeric()`](https://rdrr.io/r/base/numeric.html) on that column
   no longer works. In a table with several blocks, the `Difference`
   column is now `Delta_Fit`, and each block starts with a “Model 1”,
-  “Model 2”, … row, so the predictor rows sit one row lower per block.
+  “Model 2”, … row, so the predictor rows sit one row lower per block. A
+  table for a weighted model has no `r` column. When R writes a
+  predictor name in backticks, as it does for a name with a space or a
+  hyphen, the table now has the `beta`, `beta_95%_CI` and `r` columns
+  that 2.0.8 left out, and the `Predictor` value has no backticks
+  (`pre-test`, not `` `pre-test` ``). A term written with
+  [`I()`](https://rdrr.io/r/base/AsIs.html) has a new `Predictor` value:
+  `I(wt * qsec)` is now `wt x qsec`, and `I(wt^2)` is now `wt^2`.
 - In an ANOVA table, a very small *p* value prints as `<.001` rather
   than `.000`.
 - A correlation table has the new `N` column and the *p* value lines.

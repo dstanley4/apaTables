@@ -262,8 +262,13 @@ in the table, with CI), the correlation
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>),
 and the overall fit of the model (indexed by
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
-with CI). The <em>album</em> sales dataset from Field et al. (2012) is
-used to illustrate the <strong>apa.reg.table()</strong> function.</p>
+with CI). The <em>beta</em> and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
+columns are left out for some models, such as weighted models or models
+with a factor predictor; the <strong>apa.reg.table()</strong> help page
+(type <code><a href="../reference/apa.reg.table.html">?apa.reg.table</a></code> in the console) describes when. The
+<em>album</em> sales dataset from Field et al. (2012) is used to
+illustrate the <strong>apa.reg.table()</strong> function.</p>
 </div>
 <div class="section level2">
 <h2 id="basic-regression-table">Basic regression table<a class="anchor" aria-label="anchor" href="#basic-regression-table"></a>
@@ -369,9 +374,14 @@ examines whether advertisements and amount of airplay for a song
 interact to predict album sales. The resulting table is presented in
 Table 3. Although this example only uses two blocks, note that any
 number of blocks can be used with the <strong>apa.reg.table()</strong>
-function. As well, if the predictors in any of the blocks are a
-product-term, the zero-order correlation will be omitted from the output
-to prevent interpretation errors common in psychology.</p>
+function. As well, the table shows no zero-order correlation
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>)
+for a product term written with <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>, as in the example
+below: that cell is left blank to prevent interpretation errors common
+in psychology. With an interaction written as <code>a * b</code> or
+<code>a:b</code>, the <em>beta</em> and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
+columns are left out altogether.</p>
 <p>The <strong>apa.reg.table()</strong> function allows for multiple
 (i.e., 2 or more) blocks as per below; see Table 3.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">

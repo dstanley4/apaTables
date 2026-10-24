@@ -197,6 +197,27 @@ contrasts before fitting the model so both use the same coding:</p>
 line before every model.</p>
 </div>
 <div class="section level2">
+<h2 id="a-correlation-with-p--010-has-two-stars-">“A correlation with p = .010 has two stars.”<a class="anchor" aria-label="anchor" href="#a-correlation-with-p--010-has-two-stars-"></a>
+</h2>
+<p><strong>The stars come from the exact p-value; the printed p-value is
+rounded to three decimals.</strong> When the exact value is just below
+.01, rounding prints it as .010, beside two stars. In the same way, a
+value just below .05 prints as .050, beside one star. The stars are
+correct: the exact p-value is below the cutoff that the note gives.</p>
+<p>For example, in this table the correlation between <code>hp</code>
+and <code>drat</code> prints as <code>-.45**</code> with
+<code>p = .010</code> under it:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/apa.cor.table.html">apa.cor.table</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mtcars</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mpg"</span>, <span class="st">"hp"</span>, <span class="st">"drat"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p>The exact p-value is .009989, which <code><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test()</a></code>
+shows:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mtcars</span><span class="op">$</span><span class="va">hp</span>, y <span class="op">=</span> <span class="va">mtcars</span><span class="op">$</span><span class="va">drat</span><span class="op">)</span></span></code></pre></div>
+<p>This happens only for a p-value from .0095 up to .01, or from .0495
+up to .05. If a reader or reviewer asks about it, report the exact
+p-value from <code><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test()</a></code> in the text.</p>
+</div>
+<div class="section level2">
 <h2 id="my-table-is-missing-rows-the-note-has-vanished-or-the-pdf-will-not-render-">“My table is missing rows, the note has vanished, or the PDF will
 not render.”<a class="anchor" aria-label="anchor" href="#my-table-is-missing-rows-the-note-has-vanished-or-the-pdf-will-not-render-"></a>
 </h2>
@@ -313,7 +334,7 @@ Mac, log back in, and restart R (or RStudio, or Positron). Nothing else
 needs to change, and the problem will not come back.</p>
 <p><strong>To keep working right now</strong>, run this in the R
 console:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gdtools"</span>, repos <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span></span></code></pre></div>
 <p>Then restart R. This replaces the one package that needs XQuartz with
 the CRAN version, which does not. It works at once, but if your R is set
