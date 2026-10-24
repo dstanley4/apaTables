@@ -8,7 +8,7 @@ fully APA-formatted, in a manuscript. This vignette shows how to place
 any apaTables table into a Quarto document that uses the apaquarto
 extension.
 
-**If you are not sure which route you want yet**, start at the package’s
+**If you are not sure which route you want yet**, start at the apaTables
 home page: <https://dstanley4.github.io/apaTables/>. Under *Where do you
 want your table to end up?* it has a short answer for each kind of
 document – Word, PDF, Quarto, reveal.js slides, PowerPoint, or just
@@ -51,8 +51,8 @@ configure.
 > [`apa.quarto.new()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)
 > at all. That does not work. The settings block only *names* a format;
 > the `_extensions` folder is what supplies it. Without that folder, a
-> document whose settings say `format: apaquarto-pdf` does not render at
-> all – Quarto stops with
+> document with settings that say `format: apaquarto-pdf` does not
+> render at all – Quarto stops with
 >
 >     ERROR: Unable to read the extension 'apaquarto'.
 >     Please ensure that you provided the correct id and that the extension is installed.
@@ -70,8 +70,8 @@ That is the whole workflow for a brand-new document. The rest of this
 vignette explains three things: what
 [`apa.quarto.new()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)
 set up for you; how to add more apaTables tables to the document it
-created, or to a project you already have; and what to do if a project’s
-copy of the extension needs repairing.
+created, or to a project you already have; and what to do if the copy of
+the extension in a project needs repairing.
 
 ## What are Quarto and apaquarto?
 
@@ -91,8 +91,8 @@ by hand.
 [`apa.quarto.new()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md),
 above, already installs the extension for a brand-new project. For a
 project you already have – one that does not yet contain an
-`_extensions/wjschne/apaquarto` folder, or one whose copy needs to be
-repaired – there is
+`_extensions/wjschne/apaquarto` folder, or one with a copy that needs to
+be repaired – there is
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md).
 Run it in the R console, from the folder that contains (or will contain)
 your `.qmd` document:
@@ -107,39 +107,39 @@ apa.quarto.setup()
 other than the current one). This installs the exact copy of apaquarto
 that apaTables ships and tests against into an
 `_extensions/wjschne/apaquarto` folder next to your document. It is safe
-to run at any time: on a project whose copy is already correct, it does
-nothing and says nothing. Your document’s YAML header (the settings
-block between `---` lines at the top) then selects an apaquarto format,
-for example `format: apaquarto-pdf` (or `apaquarto-docx`,
+to run at any time: when the copy in a project is already correct, it
+does nothing and says nothing. The YAML header of your document (the
+settings block between `---` lines at the top) then selects an apaquarto
+format, for example `format: apaquarto-pdf` (or `apaquarto-docx`,
 `apaquarto-html`). Pick the matching entry point function –
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md),
 [`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md),
 or
 [`apa.quarto.html()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-– and the table, its number, its title, and its note all come out the
+– and the table, the number, the title, and the note all come out the
 same way in every one of the three. The one exception is page fitting.
-In PDF and Word, a table too wide for its page rotates or shrinks to fit
+In PDF and Word, a table too wide for the page rotates or shrinks to fit
 rather than losing columns; an HTML document has no page to fit, so
 every column is always present there too, just without rotating or
 shrinking. The title and note are automatic in Word and HTML exactly as
 they are in PDF. (Using the “wrong” one of the three – say,
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-in a document whose YAML actually says `apaquarto-docx` – still produces
-a correct table. The rendered draft just carries one line naming the
-YAML change that would make the two agree. See
+in a document with YAML that actually says `apaquarto-docx` – still
+produces a correct table. The rendered draft just carries one line
+naming the YAML change that would make the two agree. See
 [`?apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-for the full behaviour, shared by all three.) Full details about
+for the full behavior, shared by all three.) Full details about
 apaquarto itself are on the [apaquarto
 website](https://wjschne.github.io/apaquarto/).
 
 **Do not run `quarto add wjschne/apaquarto` or
 `quarto update extension wjschne/apaquarto` in one of these folders.**
-Both commands silently replace apaTables’ patched copy with the plain,
-unpatched extension – while reporting `[No Change]`. That brings back a
-numbering bug (one tall table thrown onto extra pages can knock every
-table numbered after it out of sequence), and it can strand a long
-table’s note on the wrong page. If you have already run one of those
-commands, running
+Both commands silently replace the patched copy from apaTables with the
+plain, unpatched extension – while reporting `[No Change]`. That brings
+back a numbering bug (one tall table thrown onto extra pages can knock
+every table numbered after it out of sequence), and it can strand the
+note of a long table on the wrong page. If you have already run one of
+those commands, running
 [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
 again puts the tested copy back.
 
@@ -155,7 +155,7 @@ in that folder themselves before rendering. With the extension folder
 absent, Quarto fails before any R code runs, so there is no point at
 which apaTables can step in and install it for them.
 
-## The document’s YAML header
+## The YAML header
 
 Every apaquarto document begins with a YAML header: the settings block
 between `---` lines at the very top of the document. apaquarto needs an
@@ -200,14 +200,15 @@ the `format:` line, the
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 versus
 [`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-calls, and prose describing the destination (its name, and the table
-widths as that destination lays them out), the two files are identical.
-Both need R, apaTables and Quarto; the PDF one also needs a LaTeX engine
-such as TinyTeX, and the repeated-measures page in each needs the afex
-and tidyr packages: `install.packages(c("afex", "tidyr"))`. A comment at
-the top of each file repeats all of that and explains how to render it.
-Opening these files, rendering them, and comparing the code to the
-output is the quickest way to understand everything below.
+calls, and prose describing the destination (the destination name, and
+the table widths as that destination lays them out), the two files are
+identical. Both need R, apaTables and Quarto; the PDF one also needs a
+LaTeX engine such as TinyTeX, and the repeated-measures page in each
+needs the afex and tidyr packages:
+`install.packages(c("afex", "tidyr"))`. A comment at the top of each
+file repeats all of that and explains how to render it. Opening these
+files, rendering them, and comparing the code to the output is the
+quickest way to understand everything below.
 
 ## The easy way: apa.quarto.template()
 
@@ -217,11 +218,10 @@ that chunk yourself:
 [`apa.quarto.template()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.template.md)
 writes it for you.
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-already supplies the table’s title and note automatically, so the
-printed chunk needs nothing added to get a complete APA table. The
-number, title, and note that appear around the body are added by the
-apaquarto extension. (apaquarto must be installed first – see
-[Installing the apaquarto
+already supplies the title and note automatically, so the printed chunk
+needs nothing added to get a complete APA table. The number, title, and
+note that appear around the body are added by the apaquarto extension.
+(apaquarto must be installed first – see [Installing the apaquarto
 extension](#installing-the-apaquarto-extension), one command.)
 
 **What you type** (in the R console):
@@ -243,14 +243,14 @@ apa.quarto.template(x = table1)
     #> apa.quarto.pdf(x = table1)
     #> ```
     #> 
-    #> The table's title and note need no lines here.
+    #> The title and note need no lines here.
     #> apa.quarto.pdf() writes both from the table itself, every time
     #> you render, so they stay correct when your analysis changes.
     #> To use your own wording instead, add an #| tbl-cap line for the title
     #> or an #| apa-note line for the note (or pass title = / note = to it).
 
 **What you get** is the printed chunk above, together with instructions.
-Copy the chunk into your Quarto document. Its first line is a comment
+Copy the chunk into your Quarto document. The first line is a comment
 showing where the line that builds `table1` belongs – replace that
 comment with your own building line. You also need
 [`library(apaTables)`](https://github.com/dstanley4/apaTables), without
@@ -269,21 +269,21 @@ apa.quarto.pdf(x = table1)
 ```
 ````
 
-Nothing in that chunk mentions the table’s title or its note, and
-nothing needs to:
+Nothing in that chunk mentions the title or the note, and nothing needs
+to:
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 writes both from the table itself, every time you render, so they stay
 correct when your analysis changes. To use your own wording instead, add
 a `tbl-cap` line for the title or an `apa-note` line for the note. See
 [Helpers for the caption and note](#helpers-for-the-caption-and-note) if
-you would rather start from apaTables’ wording than compose one from
+you would rather start from the apaTables wording than compose one from
 scratch.
 
 The chunk is named after the table you asked about:
 `apa.quarto.template(x = table1)` gives the chunk the name `tbl-table1`,
 so two tables give two chunks that can both go in the same document.
 
-Render the document, and the table appears with its number, title, and
+Render the document, and the table appears with the number, title, and
 note in APA format. That is all you need to do – most users never need
 anything beyond this.
 
@@ -298,7 +298,7 @@ headers, row labels, title, and note.
 converts any apaTables result into a complete APA table. **apaquarto
 supplies everything around it** – the table number, the italic title
 placement, the *Note.* line placement, and the cross-reference – which
-it reads from the chunk’s `label`. (apaquarto must be installed first –
+it reads from the chunk `label`. (apaquarto must be installed first –
 see [Installing the apaquarto
 extension](#installing-the-apaquarto-extension), one command.)
 
@@ -327,7 +327,7 @@ apa.quarto.pdf(x = table1)
 
 The chunk below runs here in the vignette so you can see exactly what
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-contributes: the table body together with its generated title and note,
+contributes: the table body together with the generated title and note,
 as a PDF render shows them. In an actual apaquarto document this is
 wrapped with the table number and the placement apaquarto adds:
 
@@ -356,9 +356,9 @@ hand. Just use the matching entry point function
 ([`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 or
 [`apa.quarto.html()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md))
-so the call and the document’s YAML agree.
+so the call and the YAML header agree.
 [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-remains the way to write a Word or HTML file of its own, outside any
+remains the way to write a separate Word or HTML file, outside any
 Quarto document (see the last section of this vignette).
 
 ### One caution: wide tables and PDF
@@ -397,10 +397,10 @@ Word output remains the full-size route (the Word page turns to
 landscape automatically).
 
 **Measuring is only the default – you can decide it yourself instead.**
-Every apaTables builder has a `landscape` argument. Leave it at its
+Every apaTables builder has a `landscape` argument. Leave it at the
 default, `NA`, and apaTables measures as described above. Pass
 `landscape = TRUE` to insist on a rotated page regardless, or
-`landscape = FALSE` to insist on an upright one. Either is honoured
+`landscape = FALSE` to insist on an upright one. Either is honored
 wherever the destination can carry it out; in a Quarto PDF that means
 the chunk needs a `tbl-` label (“Rotating a page needs a label”, at the
 end of this section). A table too wide for the page it is given is
@@ -426,7 +426,7 @@ settings line to add, whether the chunk was written by
 [`apa.quarto.template()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.template.md)
 or by hand.
 
-If a table is still too wide for its page – even a rotated one –
+If a table is still too wide for the page – even a rotated one –
 apaTables prints it smaller, as small as it has to be, so that nothing
 is cut off. This happens automatically during PDF rendering; you do not
 have to do anything, and there is no setting to change. If the table has
@@ -436,25 +436,27 @@ read – a warning in the rendered draft says so and points you to
 for a full-size Word version. The table itself is still complete.
 
 Rotating a page needs a label. Give every table chunk a settings line
-`#| label: tbl-something` – the label a table needs anyway for its
+`#| label: tbl-something` – the label a table needs anyway for the
 number and for references to it. Without one the document does not treat
-the chunk as a table at all, so its page cannot be turned. A wide table
+the chunk as a table at all, so the page cannot be turned. A wide table
 there is printed smaller on the upright page instead, with every column
-kept. If the chunk asked for a rotated page, the rendered draft says the
-label is what is missing.
+kept. If a rotated page was requested, the rendered draft says the label
+is what is missing.
 
 ### Journal mode (`documentmode: jou`) is not supported
 
 apaquarto can typeset a manuscript as a printed journal article, in two
 narrow columns, with `documentmode: jou`. Do not put apaTables tables in
 such a document. A two-column page cannot break a table across pages, so
-rows, columns and whole notes can be missing from the rendered PDF with
-nothing reported anywhere. A document of four ordinary tables came out
-with two of the notes and several variable names simply absent.
-apaTables warns during the render, but the warning is not a repair:
-there is no setting that makes journal mode safe. Render with
-`documentmode: man` instead – which is the mode a manuscript is
-submitted in – or save the table as a Word file with
+rows, columns and whole notes can be missing from the rendered PDF, or
+the render can stop with a LaTeX error, such as
+`longtable not in 1-column mode`, and write no PDF at all. A document of
+four ordinary tables came out with two of the notes and several variable
+names simply absent. When the PDF does render, apaTables puts a warning
+in it, but the warning is not a repair: there is no setting that makes
+journal mode safe. Render with `documentmode: man` instead – which is
+the mode a manuscript is submitted in – or save the table as a Word file
+with
 [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md).
 
 ### Helpers for the caption and note
@@ -462,20 +464,20 @@ submitted in – or save the table as a Word file with
 Most chunks need neither `tbl-cap` nor `apa-note` at all, since
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 supplies both automatically. If you do want to write your own, you can
-start from apaTables’ wording rather than composing it from scratch. Two
-helpers return the same strings apaTables generates, ready to paste into
-`tbl-cap` and `apa-note` (or to extend, e.g. with
-`paste(apa_note_text(x = table1), "Additional detail here.")`):
+start from the apaTables wording rather than composing it from scratch.
+Two helpers return the same strings apaTables generates, ready to paste
+into `tbl-cap` and `apa-note` (or to extend, e.g. with
+`paste(apa.note.text(x = table1), "Additional detail here.")`):
 
 ``` r
 
-apa_caption(x = table1)
+apa.caption(x = table1)
 #> [1] "Descriptive Statistics and Correlations"
 ```
 
 ``` r
 
-apa_note_text(x = table1)
+apa.note.text(x = table1)
 #> [1] "N = number of cases. M = mean. SD = standard deviation. Values in square brackets indicate the 95% confidence interval. * indicates p < .05. ** indicates p < .01."
 ```
 
@@ -494,13 +496,13 @@ Concretely:
 
 - **Write your own `tbl-cap`.** The automatic title does not arrive, so
   a chunk without a `#| tbl-cap:` settings line produces a table
-  numbered (“Table N”) with no title at all. Captions render in Quarto’s
-  own style (“Table 1: Title”) rather than APA’s bold “Table 1” over an
-  italic title.
+  numbered (“Table N”) with no title at all. Captions render in the
+  Quarto default style (“Table 1: Title”) rather than the APA-style bold
+  “Table 1” over an italic title.
 
 - **There is no way to get a note under a table.** `#| apa-note:` is
   ignored (nothing reads it), and `note =` has nothing to write into.
-  Most APA tables need their note, which is the main reason to prefer an
+  Most APA tables need a note, which is the main reason to prefer an
   apaquarto document or
   [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
   when the table is the point.
@@ -511,8 +513,8 @@ Concretely:
 
 - **Wide tables are not rotated for you.** Automatic landscape pages are
   a request R makes of the extension, and there is no extension to ask.
-  Place the wide table’s chunk between two marker lines instead – plain
-  Quarto, no extension needed:
+  Place the chunk for the wide table between two marker lines instead –
+  plain Quarto, no extension needed:
 
   ```` markdown
   ::: {.landscape}
@@ -528,7 +530,7 @@ Concretely:
   ````
 
 - **Give the page 1-inch margins**, or wide tables lose usable space to
-  plain Quarto’s narrower default text area:
+  the narrower default text area in plain Quarto:
 
   ``` yaml
   format: pdf
@@ -536,7 +538,7 @@ Concretely:
     - margin=1in
   ```
 
-The table bodies themselves keep their APA look. If you need titles,
+The table bodies themselves keep the APA look. If you need titles,
 notes, and automatic landscape pages, use an apaquarto document
 ([`apa.quarto.new()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.new.md)),
 or
@@ -553,18 +555,18 @@ slide format. PowerPoint is not supported yet.
 
 If a document using
 [`apa.quarto.revealjs()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-renders to PowerPoint anyway, the table still appears, styled by
-PowerPoint’s own default table look rather than APA format. A warning on
-the slide tells you so and names `format: revealjs` as the supported
+renders to PowerPoint anyway, the table still appears, styled by the
+default PowerPoint table look rather than APA format. A warning on the
+slide tells you so and names `format: revealjs` as the supported
 destination, so a deck is never handed out without your knowing.
 
 The obstacle is not something a PowerPoint template or setting can fix.
-Quarto renders PowerPoint through pandoc, and pandoc’s PowerPoint writer
-gives no way to set a table’s text size from the document, so a table
-arrives at PowerPoint’s own type size. Even if the type size could be
-lowered, a larger table (a two-block regression table, for instance)
-would still be taller than a slide. A working route needs a different
-mechanism, and that is planned for a future release.
+Quarto renders PowerPoint through pandoc, and the pandoc PowerPoint
+writer gives no way to set the text size of a table from the document,
+so a table arrives at the default PowerPoint type size. Even if the type
+size could be lowered, a larger table (a two-block regression table, for
+instance) would still be taller than a slide. A working route needs a
+different mechanism, and that is planned for a future release.
 
 A slide deck is plain Quarto: it does not use the apaquarto extension at
 all, so nothing above about installing or sharing apaquarto applies to a
@@ -579,9 +581,9 @@ A slide deck has no float, so a table there has no number and, unlike
 no automatic title or note either: `apa.quarto.revealjs(x = x)` puts the
 table alone on the slide. Pass `title = TRUE` and/or `note = TRUE` to
 add the ones apaTables generated. This matters for a correlation table
-in particular. Its cells mark a significant correlation with `**`, and
+in particular. The cells mark a significant correlation with `**`, and
 the sentence saying what `**` means lives in the note – so the default
-slide shows the stars with their meaning nowhere on it, and
+slide shows the stars with no explanation on the slide, and
 `note = TRUE` is the remedy.
 
 Here is a complete, minimal revealjs deck with one table slide – a
@@ -614,13 +616,13 @@ strongest is between rating and complaints, at .83.
 
 Render this with Quarto (`quarto render my-talk.qmd`, or the Preview
 button in Positron) and the table appears on the second slide, sized to
-fit, with its note below it and no table number.
+fit, with the note below it and no table number.
 
 An explicit size – `apa.quarto.revealjs(x = x, font.size = 16)` – is
-honoured exactly, though a size below 6 points – where an APA table
-stops being comfortable to read – draws a warning in the rendered draft.
-Left at the default, apaTables shrinks the table automatically to fit
-the slide.
+honored exactly, though a size below 6 points – where an APA table stops
+being comfortable to read – draws a warning in the rendered draft. Left
+at the default, apaTables shrinks the table automatically to fit the
+slide.
 
 See
 [`?apa.quarto.revealjs`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)

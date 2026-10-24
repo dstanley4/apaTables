@@ -17,13 +17,14 @@ The table functions –
 [`apa.1way.table()`](https://dstanley4.github.io/apaTables/reference/apa.1way.table.md)
 and
 [`apa.2way.table()`](https://dstanley4.github.io/apaTables/reference/apa.2way.table.md)
-– keep their names and every argument they had in 2.0.8, so most scripts
+– keep the same names and every argument from 2.0.8, so most scripts
 that build tables with them run unchanged. What changes is the kind of
 file they write, some default settings, some names inside the table
 object, and some of the numbers in ANOVA and hierarchical regression
 tables, where 2.0.8 had errors. A few scripts now stop with a message
-instead – a file name with an unusual ending, or regression blocks that
-do not build on one another. Each is described below.
+instead – a file name with an unusual ending, regression blocks that do
+not build on one another, a model with an offset, or a setting outside
+the values a function accepts. Each is described below.
 
 ## Two functions were removed
 
@@ -93,7 +94,7 @@ The pages are US letter. Add `paper = "a4"` for A4.
 ## Tables are numbered 1 unless you say otherwise
 
 In 2.0.8, `table.number` defaulted to `NA`: a table built without one
-had no number at the console, and its file said “Table XX”. It now
+had no number at the console, and the file said “Table XX”. It now
 defaults to `1`. A number you supply is used as before. To leave a table
 unnumbered, use `table.number = 0` (or `NA`, or `NULL`).
 
@@ -132,7 +133,7 @@ only when the table does not fit upright. In the Word files that
 [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
 (or `filename =`) writes:
 
-- small d-value and two-way tables, such as the examples on their help
+- small d-value and two-way tables, such as the examples on the help
   pages, and correlation tables of up to about five variables, now print
   upright; larger ones still turn sideways when they need to;
 - regression tables are wide enough that they usually still print
@@ -142,9 +143,9 @@ only when the table does not fit upright. In the Word files that
 or not. `landscape = FALSE` keeps the page upright; a table too wide for
 it is set in smaller type so that every column is kept.
 
-A Quarto manuscript measures each table against its own page and type
-size, so there more tables stay upright – a one-block regression table,
-for example.
+In a Quarto manuscript, apaTables measures each table against the page
+and type size of the manuscript, so more tables stay upright there – a
+one-block regression table, for example.
 
 ## Numbers that can differ from 2.0.8
 
@@ -152,7 +153,7 @@ These changes correct errors in 2.0.8, so a table can show different
 numbers from the one 2.0.8 printed for the same model:
 
 - **[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md),
-  Type III (the default).** If your model was fitted with R’s default
+  Type III (the default).** If your model was fitted with the R default
   contrasts and had an interaction, 2.0.8 printed each main effect at
   one level of the other factor rather than the main effect. In the
   `goggles` example, alcohol printed as *F* = 0.61, *p* = .546 instead
@@ -162,11 +163,12 @@ numbers from the one 2.0.8 printed for the same model:
   you already set that line, your main effects are unchanged.
 - **[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md),
   all types.** 2.0.8 rounded the sums of squares and *F* to two decimals
-  before computing the mean squares, partial eta-squared and its
-  confidence interval, so those could be off by .01, or print as `NaN`
-  for a dependent variable on a very small scale. They are now computed
-  at full precision and rounded only when printed. With `type = 2`, the
-  first effect’s confidence interval is no longer blank.
+  before computing the mean squares, partial eta-squared and the
+  confidence interval for it, so those could be off by .01, or print as
+  `NaN` for a dependent variable on a very small scale. They are now
+  computed at full precision and rounded only when printed. With
+  `type = 2`, the confidence interval for the first effect is no longer
+  blank.
 - **[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
   with several blocks.** 2.0.8 accepted blocks that did not build on one
   another and printed a negative change in *R*² with a `[NaN, NaN]`
@@ -174,12 +176,54 @@ numbers from the one 2.0.8 printed for the same model:
   before it, plus at least one more, and all blocks must be fitted to
   the same cases. Code that broke these rules now stops with a message
   saying what to change.
+- **[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  intervals for the semi-partial correlation squared and the change in
+  *R*².** 2.0.8 could print a negative lower limit for these proportions
+  of variance. The limits are now held to the range 0 to 1, so such a
+  limit prints as .00.
+- **[`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md).**
+  2.0.8 left a d-value and the interval for it blank (`-` and `[-,-]`)
+  when Levene’s test, centered on the median, gave *p* \< .05 for that
+  pair of groups. A d-value is now reported for every pair, computed
+  with the pooled standard deviation as before, and no test of equal
+  variances is run. Compare the standard deviations in the table to
+  judge whether one pooled value describes both groups.
+- **Significance stars.** A *p* value of exactly .01 was unmarked in
+  2.0.8; it is now marked with one star.
+- **[`apa.2way.table()`](https://dstanley4.github.io/apaTables/reference/apa.2way.table.md)
+  marginal means.** 2.0.8 counted a case with a missing value on one
+  factor in the marginal mean of the other factor, though it was in no
+  cell. Marginal means now use only the cases in the cells.
 
-## Correlation tables show p values
+## Settings that now stop with a message
 
-A correlation table now prints each correlation’s *p* value on a line
-below its confidence interval. To leave those lines out, as 2.0.8 did,
-add `show.pvalue = FALSE`:
+apaTables 4.0 checks these settings, and a value it does not accept
+stops with a message naming the values allowed:
+
+- `conf.level` in
+  [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  and `prop.var.conf.level` in
+  [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  must be `.90` or `.95` (2.0.8 silently used `.90` and `.95`,
+  respectively, in place of any other value);
+- `landscape` must be `TRUE`, `FALSE` or `NA`;
+- `table.number` must be a whole number, 0 or more.
+
+[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+and
+[`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+also stop for a model with an offset (an
+[`offset()`](https://rdrr.io/r/stats/offset.html) term, or the `offset`
+argument of [`lm()`](https://rdrr.io/r/stats/lm.html)). In 2.0.8,
+[`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+printed the offset as a predictor row with no estimate. Fit the model
+without the offset.
+
+## New p values and n columns
+
+A correlation table now prints the *p* value for each correlation on a
+line below the confidence interval. To leave those lines out, as 2.0.8
+did, add `show.pvalue = FALSE`:
 
 ``` r
 
@@ -187,7 +231,9 @@ my_table <- apa.cor.table(data = attitude, show.pvalue = FALSE)
 ```
 
 Correlation tables also gain an *N* column, the number of cases for each
-variable.
+variable. When the data have missing values, the note gives the range of
+the number of cases behind each correlation. d-value and one-way tables
+gain an *n* column, the number of cases in each group.
 
 ## If your script reads values out of the table object
 
@@ -198,7 +244,7 @@ the object a table function returns, these changed:
   names as regression and ANOVA tables already did: `table_number`,
   `table_title`, `table_body` and `table_note` instead of
   `table.number`, `table.title`, `table.body` and `table.note`. The old
-  names now give `NULL`. The object’s class is `apa_table` (it was
+  names now give `NULL`. The object class is `apa_table` (it was
   `apa.table` for those four).
 - In a regression table, the columns `sr2` and `sr2_95%_CI` are now
   `Unique_R2` and `Unique_95%_CI` (the interval column follows
@@ -211,17 +257,19 @@ the object a table function returns, these changed:
 - In an ANOVA table, a very small *p* value prints as `<.001` rather
   than `.000`.
 - A correlation table has the new `N` column and the *p* value lines.
+- d-value and one-way tables have a new `n` column, the number of cases
+  in each group, after the variable names.
 - Titles and notes are worded differently, in APA title case. For
   example, “Means, standard deviations, and correlations with confidence
   intervals” is now “Descriptive Statistics and Correlations”.
 
 ## Tables in Quarto documents
 
-This part is new rather than changed. apaTables 4.0 places its tables
+This part is new rather than changed. apaTables 4.0 places tables
 directly in [Quarto](https://quarto.org) documents formatted by the
 [apaquarto](https://wjschne.github.io/apaquarto/) extension, which
 produces APA-style manuscripts as PDF, Word or HTML. Build the table on
-one line, and pass it to the function named for the document’s format on
+one line, and pass it to the function named for the document format on
 the next. In a `.qmd` document rendered with apaquarto, a table chunk
 looks like this:
 
@@ -259,8 +307,8 @@ still required, as in 2.0.8.
 Those versions were never released to CRAN. In 3.0,
 [`apa.cor.table()`](https://dstanley4.github.io/apaTables/reference/apa.cor.table.md)
 had `show.pvalue` before `landscape`; in 4.0 it comes after, as the last
-argument, so a 3.0 call that gave both without their names now needs
-them named. Those versions also had two functions that 4.0 removes.
+argument, so a 3.0 call that gave both without names now needs them
+named. Those versions also had two functions that 4.0 removes.
 `apa.knit.table.for.pdf()` and `apa.knit.table.for.papaja()` wrote LaTeX
 through the kableExtra package. For a table in a PDF, place it in a
 Quarto document rendered with apaquarto:
@@ -285,5 +333,5 @@ my_table <- apa.cor.table(data = attitude)
 apa.save(filename = "Table1.docx", my_table)
 ```
 
-The kableExtra and papaja packages are no longer listed among apaTables’
-dependencies.
+The kableExtra and papaja packages are no longer listed among the
+apaTables dependencies.

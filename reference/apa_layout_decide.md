@@ -57,22 +57,22 @@ apa_layout_decide(
   option, so the ONLY question left is whether the page needs to rotate
   to hold it. \`NULL\` (default) runs the automatic ladder, and the
   override branch is not reached at all. Rotation is decided from the
-  SIZE ACTUALLY EMITTED rather than the ladder's own 10 pt guess:
-  without this re-check an explicit \`font.size\` would reach the LaTeX
-  emitter unchecked – \`apa.cor.table(data = attitude)\` at 20 pt
-  measures 10.26 in against a 6.5 in upright page, and would render with
-  no warning and no rotation. When the page the table will land on
-  (rotated, if rotation is allowed) cannot hold it at that size it
-  warns, naming a smaller size that fits, or – for a table whose
-  \`\tabcolsep\` alone exceeds the rotated budget – saying that no size,
-  explicit or automatic, can fit it.
+  SIZE ACTUALLY EMITTED rather than the ladder's 10 pt guess: without
+  this re-check an explicit \`font.size\` would reach the LaTeX emitter
+  unchecked – \`apa.cor.table(data = attitude)\` at 20 pt measures 10.26
+  in against a 6.5 in upright page, and would render with no warning and
+  no rotation. When the page the table will land on (rotated, if
+  rotation is allowed) cannot hold it at that size it warns, naming a
+  smaller size that fits, or – for a table whose \`\tabcolsep\` alone
+  exceeds the rotated budget – saying that no size, explicit or
+  automatic, can fit it.
 
 - col_overhead_in:
 
   fixed per-column overhead in inches that the destination adds to every
   column whatever the type size, and that the content model therefore
-  cannot see. \`0\` (the default) for LaTeX, whose own \`\tabcolsep\`
-  term is already in the model; the Word render passes
+  cannot see. \`0\` (the default) for LaTeX, whose \`\tabcolsep\` term
+  is already in the model; the Word render passes
   \`APA_WORD_CELL_PADDING_IN\`, the bundled styles' fixed
   \`\<w:tblCellMar\>\`. Charged on the WIDTH side – it is part of the
   space the table really occupies – so every budget in a warning is

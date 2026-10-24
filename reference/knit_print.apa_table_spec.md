@@ -7,7 +7,7 @@ returned from a chunk. Delegates to the same rendering
 [`apa.quarto.docx`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 /
 [`apa.quarto.html`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-share, so a bare \`table1\` on its own line in a chunk takes exactly the
+share, so a bare \`table1\` alone on a line in a chunk takes exactly the
 same path as the explicit call the template writes – including the
 automatic rotated page for a table too wide to stand upright.
 "Rendering" the document turns it into the finished Word, PDF, or HTML

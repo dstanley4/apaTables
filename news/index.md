@@ -9,9 +9,9 @@ released.
 
 ### apaquarto / Quarto support
 
-- apaTables now ships its own patched copy of the
+- apaTables now ships a patched copy of the
   [apaquarto](https://wjschne.github.io/apaquarto/) Quarto extension and
-  can install it for you, rather than asking you to run Quarto’s own
+  can install it for you, rather than asking you to run the Quarto
   extension commands. `apa.quarto.new(path = "my-paper")` creates a
   folder containing a Quarto document with a working APA header and a
   worked table, with the extension already installed beside it, so the
@@ -77,8 +77,8 @@ released.
   the table drifts away from where it was written, and a long one is cut
   off at the foot of the page with its note.
 - Tables drop directly into apaquarto documents. Build the table on one
-  line and pass it to the entry point named for the document’s own
-  destination on the next:
+  line and pass it to the entry point named for the output format on the
+  next:
   [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md),
   [`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md),
   [`apa.quarto.html()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
@@ -93,11 +93,11 @@ released.
   instead, add a `tbl-cap` or `apa-note` chunk option, or pass `title =`
   / `note =` to the entry point; whichever is supplied wins over the
   generated version, and the chunk option wins over the argument.
-  [`apa_caption()`](https://dstanley4.github.io/apaTables/reference/apa_caption.md)
+  [`apa.caption()`](https://dstanley4.github.io/apaTables/reference/apa.caption.md)
   and
-  [`apa_note_text()`](https://dstanley4.github.io/apaTables/reference/apa_note_text.md)
-  return apaTables’ own wording for an author who would rather start
-  from it.
+  [`apa.note.text()`](https://dstanley4.github.io/apaTables/reference/apa.note.text.md)
+  return the apaTables wording for an author who would rather start from
+  it.
 - [`apa.quarto.template()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.template.md),
   run in the R console, prints a ready-to-paste block of code for a
   table you have already built. It derives the chunk label from the name
@@ -122,11 +122,11 @@ released.
   table cell carries (which does not shrink with the type, so it weighs
   most on dense tables at small sizes), so a many-column table is set at
   a size that keeps every label on one line.
-- The page a table is fitted to is read from the document’s own settings
-  rather than assumed: US letter and A4 paper and a `geometry: margin=`
-  setting are recognised. When the YAML carries something apaTables
-  cannot measure, the standard manuscript page is used and the knitted
-  draft says so.
+- The page a table is fitted to is read from the settings in the
+  document rather than assumed: US letter and A4 paper and a
+  `geometry: margin=` setting are recognized. When the YAML carries
+  something apaTables cannot measure, the standard manuscript page is
+  used and the knitted draft says so.
 - New
   [`apa.quarto.example()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.example.md)
   writes **two** ready-to-edit example documents that demonstrate every
@@ -144,9 +144,9 @@ released.
   handed out without your knowing.
 - Journal mode (`documentmode: jou`) is not supported for apaTables
   tables. A two-column page cannot break a table across pages, so rows,
-  columns and whole notes can be missing with nothing reported.
-  apaTables warns during the render; use `documentmode: man`, or save
-  the table with
+  columns and whole notes can be missing, or the render can stop with a
+  LaTeX error and write no PDF. When the PDF does render, apaTables puts
+  a warning in it; use `documentmode: man`, or save the table with
   [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md).
 
 ### File output
@@ -180,7 +180,7 @@ released.
 - **Every** table function now takes a `landscape` argument, and it is a
   three-way setting rather than an on/off switch: `TRUE` forces a
   rotated page, `FALSE` forbids one, and the default – `NA` – measures
-  the table and decides. **This changes existing behaviour**: in 2.0.8
+  the table and decides. **This changes existing behavior**: in 2.0.8
   [`apa.cor.table()`](https://dstanley4.github.io/apaTables/reference/apa.cor.table.md),
   [`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md)
   and
@@ -194,7 +194,7 @@ released.
   is new: an APA ANOVA table from
   [`afex::aov_ez()`](https://rdrr.io/pkg/afex/man/aov_car.html) output,
   covering the repeated-measures and mixed designs `apa.ezANOVA.table()`
-  used to serve. Its `table.title` argument is honoured in every
+  used to serve. Its `table.title` argument is honored in every
   destination, and “ANOVA Results” is the title when none is given.
 - `.html` output from
   [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
@@ -202,7 +202,11 @@ released.
   holds the “Table N” line and the italic title, and the note sits below
   the table, with its italics and super/subscripts intact. Table numbers
   are assigned exactly as for `.docx`, so the same tables saved to both
-  formats carry the same numbers.
+  formats carry the same numbers. Writing `.html` needs pandoc; without
+  it
+  [`apa.save()`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
+  stops with a message that says so and points to `.docx`, which does
+  not need pandoc.
 - Tables are left-aligned so each shares the same left margin as its
   number, title, and note. Correlation and d-value tables add a blank
   line of separation between variable rows for readability.
@@ -211,14 +215,13 @@ released.
   the table from its note. The note preserves italics and
   super/subscripts (e.g., *M*, *SD*, eta-squared symbols), and the
   significance-star sentence (“\* indicates p \< .05. \*\* indicates p
-  \< .01.”) starts on its own line. Regression Fit cells render
-  R-squared and change-in-R-squared with proper italics, superscripts,
-  and the Delta symbol. Table pages use 0.5 in side margins, and a table
-  wider than the text area is scaled to fit it rather than clipped by
-  Word.
+  \< .01.”) starts on a new line. Regression Fit cells render R-squared
+  and change-in-R-squared with proper italics, superscripts, and the
+  Delta symbol. Table pages use 0.5 in side margins, and a table wider
+  than the text area is scaled to fit it rather than clipped by Word.
 - Notes keep their styling in every destination – italic *M*, subscripts
   and superscripts, and a multi-part note that starts each part, such as
-  the significance-star sentence, on its own line.
+  the significance-star sentence, on a new line.
 
 ### Deprecations and dependencies
 
@@ -243,7 +246,35 @@ released.
 
 - Correlation tables print each correlation’s *p* value on a line below
   its confidence interval (`show.pvalue = FALSE` gives the 2.0.8
-  layout), and gain an *N* column.
+  layout), and gain an *N* column. When the data have missing values,
+  the note also gives the range of the number of cases behind each
+  correlation (pairwise deletion).
+
+- d-value and one-way tables gain an *n* column: the number of cases in
+  each group.
+
+- Settings are checked, and a value that is not allowed stops with a
+  message naming the values that are: `conf.level` in
+  [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  and `prop.var.conf.level` in
+  [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  must be `.90` or `.95` (2.0.8 silently used `.90` and `.95`,
+  respectively, in place of any other value); `landscape` must be
+  `TRUE`, `FALSE` or `NA`; and `table.number` must be a whole number, 0
+  or more.
+
+- [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  and
+  [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  stop with a message for a model with an offset (an
+  [`offset()`](https://rdrr.io/r/stats/offset.html) term, or the
+  `offset` argument of [`lm()`](https://rdrr.io/r/stats/lm.html)).
+  2.0.8’s
+  [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  printed the offset as a predictor row with no estimate, and R-squared
+  is then not the usual proportion of variance explained;
+  [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md)
+  refuses such models too.
 
 - The object a table function returns uses the same field names for
   every table type: `table_number`, `table_title`, `table_body` and
@@ -305,20 +336,63 @@ released.
   in R-squared with a `[NaN, NaN]` interval under a hierarchical title.
   Each block must now contain every term of the block before it,
   interactions included, plus at least one more; a step written as a new
-  parameterisation, such as `wt` followed by `poly(wt, 2)`, is still
+  parameterization, such as `wt` followed by `poly(wt, 2)`, is still
   accepted. Blocks must also be fitted to the same cases in the same
-  order, with the same weights and offset. Blocks fitted to different
-  rows (usually because a later predictor has missing values) now stop
-  with a message that shows how to fit every block to the same rows,
-  instead of an error from inside base R.
+  order, with the same weights. Blocks fitted to different rows (usually
+  because a later predictor has missing values) now stop with a message
+  that shows how to fit every block to the same rows, instead of an
+  error from inside base R.
+- [`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md)
+  reports a d-value for every pair of groups. 2.0.8 left the d-value and
+  the interval for it blank when Levene’s test (centered on the median)
+  gave p \< .05, and the help page did not say a test made the decision.
+  Every d-value now uses the pooled standard deviation, no test of equal
+  variances is run, and the note says that the d-values use the pooled
+  standard deviation. The note also says that d-values are absolute, so
+  the direction of a difference is read from the means.
+- [`apa.2way.table()`](https://dstanley4.github.io/apaTables/reference/apa.2way.table.md)
+  leaves out a case with a missing value on either factor or on the
+  dependent variable from the marginal means, as it already did from the
+  cells. 2.0.8 counted a case missing one factor in the marginal mean of
+  the other, so a marginal mean could differ from the cells beside it.
+- A *p* value of exactly .01 is now marked with one significance star.
+  In 2.0.8 it was unmarked; one star was given only for .01 \< p \< .05.
+- The confidence intervals for the semi-partial correlation squared of
+  each predictor and for the change in R-squared are held to the range 0
+  to 1. The asymptotic method used for them could print a negative lower
+  limit for a proportion of variance.
+- The two-way table note no longer says that the marginal means pertain
+  to main effects. They are the observed means at each level of a
+  factor; in an unbalanced design these differ from the unweighted means
+  a Type III test compares.
 - Building a d-value table no longer disables warnings for the rest of
   the session.
   [`MBESS::ci.smd()`](https://rdrr.io/pkg/MBESS/man/ci.smd.html) sets
   `options(warn = -1)` and does not restore it, so after one
   [`apa.d.table()`](https://dstanley4.github.io/apaTables/reference/apa.d.table.md)
   call every later warning – from any package – was discarded; inside a
-  Quarto render that included apaTables’ own too-wide-table warning.
-  apaTables now saves and restores the option around its MBESS calls.
+  Quarto render that included the apaTables too-wide-table warning.
+  apaTables now saves and restores the option around each call to MBESS.
+- Common input mistakes now stop with a message that says what to
+  change, instead of an error from inside R: a `dv` that is not numeric;
+  a group, or a cell of a two-way table, with fewer than two cases (the
+  message names it); a correlation table with fewer than two numeric
+  columns, or a column with only one value; a model from
+  [`glm()`](https://rdrr.io/r/stats/glm.html) given to
+  [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md)
+  or
+  [`apa.aov.table()`](https://dstanley4.github.io/apaTables/reference/apa.aov.table.md),
+  or no model given to
+  [`apa.reg.table()`](https://dstanley4.github.io/apaTables/reference/apa.reg.table.md);
+  a regression model with no predictor or no intercept; a show/hide
+  argument that is not `TRUE` or `FALSE`; and a `filename` that is not
+  one name. `filename = NULL` now means no file, as `NA` does.
+- A grouping variable with unused factor levels, as is common after
+  [`subset()`](https://rdrr.io/r/base/subset.html), now gives a table:
+  the unused levels are left out. 2.0.8 stopped with an error.
+- Printing a table returns the table invisibly, as
+  [`print()`](https://rdrr.io/r/base/print.html) methods do, instead of
+  `NULL`.
 
 ## apaTables 3.0
 

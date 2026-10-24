@@ -12,7 +12,7 @@ Two files appear:
     apaTables-examples-pdf.qmd
     apaTables-examples-docx.qmd
 
-Both show every apaTables table type, one table per page, each with its
+Both show every apaTables table type, one table per page, each with an
 APA number, title, and note. They are the same document set up for
 different destinations: render the `-pdf` file and you get a PDF
 manuscript (this needs a LaTeX engine such as TinyTeX); render the
@@ -21,7 +21,7 @@ with the Preview button in Positron, or in a terminal:
 
     quarto render apaTables-examples-docx.qmd
 
-Then read the finished manuscript side by side with its `.qmd` source
+Then read the finished manuscript side by side with the `.qmd` source
 file. Every table in the output was made by a short code chunk you can
 find in the source, copy, and adapt to your own data – that comparison
 is the whole lesson. Along the way you will see two tables arrive on
@@ -69,7 +69,7 @@ apa.quarto.example(filename = "apaTables-examples.qmd", overwrite = FALSE)
 ## Value
 
 A named character vector `c(pdf = ..., docx = ...)` with the paths to
-the two written files, invisibly. Called for its side effects: it also
+the two written files, invisibly. Called for the side effects: it also
 writes (or repairs) an `_extensions/wjschne/apaquarto` folder beside
 them, as described under `filename`.
 
@@ -96,8 +96,8 @@ out <- file.path(tempdir(), "apaTables-examples.qmd")
 apa.quarto.example(filename = out)
 #> Installed the apaquarto extension apaTables ships (version 5.0.18+apaTables.36) at _extensions/wjschne/apaquarto.
 #> Wrote two example documents (the apaquarto extension is already installed alongside them):
-#>   /tmp/RtmpUe8QU5/apaTables-examples-pdf.qmd  (renders to PDF; needs a LaTeX engine such as TinyTeX)
-#>   /tmp/RtmpUe8QU5/apaTables-examples-docx.qmd  (renders to Word; no LaTeX needed)
+#>   /tmp/RtmpRFeKqp/apaTables-examples-pdf.qmd  (renders to PDF; needs a LaTeX engine such as TinyTeX)
+#>   /tmp/RtmpRFeKqp/apaTables-examples-docx.qmd  (renders to Word; no LaTeX needed)
 #> The repeated-measures page in each needs the afex and tidyr packages: install.packages(c("afex", "tidyr"))
 
 # (delete the demo files, and the extension folder installed beside them)

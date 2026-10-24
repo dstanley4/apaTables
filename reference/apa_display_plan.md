@@ -46,16 +46,16 @@ always last. Each row is
 `list(cells = <list of cell>, rules = <list of column ranges>)`. Each
 cell is
 `list(rt = <richtext>, span = <columns it covers>, align = <"l"/"r"/"c">)`;
-a column not covered by any spanner at that level becomes its own blank,
-span-1 cell, so a row's cell spans always sum to `n_col`. `rules` lists
-the column range (`c(from, to)`) each spanner in that row covers – the
-caller decides what to draw there (a `\cmidrule`, a bottom border,
+a column not covered by any spanner at that level becomes a separate
+blank, span-1 cell, so a row's cell spans always sum to `n_col`. `rules`
+lists the column range (`c(from, to)`) each spanner in that row covers –
+the caller decides what to draw there (a `\cmidrule`, a bottom border,
 nothing).
 
 `body` is a list of rows: a `list(type = "group", label = <richtext>)`
 entry appears immediately before the first data row of a row group
-(added by the internal `apa_row_group()`, which has no help page of its
-own to link to), and every spec body row becomes a
+(added by the internal `apa_row_group()`, which has no help page to link
+to), and every spec body row becomes a
 `list(type = "data", cells = <list of richtext, one per column>)` entry.
 A spec with no row groups produces an all-`"data"` body, reproducing a
 flat table exactly.

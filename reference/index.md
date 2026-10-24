@@ -35,7 +35,7 @@ project up and writes the code for you.
   : Start a new APA manuscript that renders on the first try
 
 - [`apa.quarto.setup()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.setup.md)
-  : Install or repair this project's apaquarto extension
+  : Install or repair the apaquarto extension in a project
 
 - [`apa.quarto.template()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.template.md)
   : Print a ready-to-paste apaquarto chunk for a table
@@ -44,12 +44,12 @@ project up and writes the code for you.
   : Write two ready-to-render example documents showing every apaTables
   table
 
-- [`apa_caption()`](https://dstanley4.github.io/apaTables/reference/apa_caption.md)
+- [`apa.caption()`](https://dstanley4.github.io/apaTables/reference/apa.caption.md)
   :
 
   Caption text for a table (for the apaquarto `tbl-cap` settings line)
 
-- [`apa_note_text()`](https://dstanley4.github.io/apaTables/reference/apa_note_text.md)
+- [`apa.note.text()`](https://dstanley4.github.io/apaTables/reference/apa.note.text.md)
   :
 
   Note text for a table (for the apaquarto `apa-note` settings line)

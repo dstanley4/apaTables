@@ -27,12 +27,12 @@ a length-1 character string: one `longtable` environment.
 ## Why there is no caption (measured)
 
 Quarto's `main.lua` rewrites any raw-LaTeX `longtable` that contains no
-`\caption` into `longtable*`, and every later fixup – Quarto's own and
-apaquarto's `apalongtablenote.lua` alike – matches the literal UNSTARRED
-name, so a starred environment becomes invisible to all of them.
-Measured on two byte-identical documents differing only in that one
-string: the unstarred form kept 60 of 60 marked rows with the note
-spliced into the table's own foot; the starred form kept 45, **rows
+`\caption` into `longtable*`, and every later fixup – those in Quarto
+and `apalongtablenote.lua` in apaquarto alike – matches the literal
+UNSTARRED name, so a starred environment becomes invisible to all of
+them. Measured on two byte-identical documents differing only in that
+one string: the unstarred form kept 60 of 60 marked rows with the note
+spliced into the foot of the table; the starred form kept 45, **rows
 46-60 vanished with no error**, and the note printed on another page.
 Writing our own `\caption` is not an escape route either – the render
 then dies inside Quarto's filter chain (`main.lua:3237`, `refType`).
@@ -50,7 +50,7 @@ rows / `\midrule` twice, for `\endfirsthead` and `\endhead`. `\endfoot`
 draws NOTHING – no rule may appear at a page break in the middle of a
 table – but it is not EMPTY: it carries an invisible zero-width strut
 that reserves the room `longtable` needs for the last foot, without
-which that foot can break onto a page of its own, carrying the note away
+which that foot can break onto a separate page, carrying the note away
 from the last row. `\bottomrule` belongs to `\endlastfoot`, which must
 exist because `apalongtablenote.lua` splices the note into it. Row
 groups are a full-width bold `\multicolumn` preceded by `\addlinespace`;

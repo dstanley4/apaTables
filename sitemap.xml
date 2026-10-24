@@ -17,8 +17,10 @@
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.2way.table.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.afex.table.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.aov.table.html</loc></url>
+<url><loc>https://dstanley4.github.io/apaTables/reference/apa.caption.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.cor.table.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.d.table.html</loc></url>
+<url><loc>https://dstanley4.github.io/apaTables/reference/apa.note.text.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.quarto.example.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.quarto.new.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.html</loc></url>
@@ -27,7 +29,6 @@
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.reg.table.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa.save.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apaTables-package.html</loc></url>
-<url><loc>https://dstanley4.github.io/apaTables/reference/apa_caption.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_ci.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_ci_label.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_display_plan.html</loc></url>
@@ -38,7 +39,6 @@
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_latex_table.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_layout_decide.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_name_to_title.html</loc></url>
-<url><loc>https://dstanley4.github.io/apaTables/reference/apa_note_text.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_quarto_markdown_block.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_quarto_target_message.html</loc></url>
 <url><loc>https://dstanley4.github.io/apaTables/reference/apa_size_for_width.html</loc></url>

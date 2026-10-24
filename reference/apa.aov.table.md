@@ -3,9 +3,20 @@
 `apa.aov.table()` creates a fixed-effects ANOVA table in APA style from
 an [`lm`](https://rdrr.io/r/stats/lm.html) result. For each predictor
 the table reports the sum of squares, degrees of freedom, mean square,
-F, p, and partial eta-squared with its confidence interval. The table
+F, p, and partial eta-squared with a confidence interval. The table
 prints to the console. The most common next step is saving the table as
 a Word file to use in a manuscript:
+
+    options(contrasts = c("contr.sum", "contr.poly"))
+    lm_output <- lm(libido ~ dose, data = viagra)
+    table1 <- apa.aov.table(lm_output = lm_output)
+    apa.save(filename = "Table1.docx", table1)
+
+The file appears in your working directory – the folder R is currently
+pointing at. See the *Word files (apa.save)* section below. The table
+can also be placed in a Quarto document, so a rendered manuscript comes
+out with the table already in place – see the *Quarto documents* section
+below.
 
 ## Usage
 
@@ -24,14 +35,17 @@ apa.aov.table(
 
 - lm_output:
 
-  A result from [`lm`](https://rdrr.io/r/stats/lm.html) in which all
-  predictors are factors (categorical variables).
+  A result from [`lm`](https://rdrr.io/r/stats/lm.html) (or
+  [`aov()`](https://rdrr.io/r/stats/aov.html)) in which all predictors
+  are factors (categorical variables). Models from
+  [`glm()`](https://rdrr.io/r/stats/glm.html) are not supported.
 
 - filename:
 
   Optional file name. If supplied, the table is also saved as a Word
   (`.docx`) or HTML (`.html`) file, according to the file extension.
-  Legacy `.doc`/`.rtf` names are saved as `.docx`.
+  Legacy `.doc`/`.rtf` names are saved as `.docx`. An existing file with
+  that name is replaced.
 
 - table.number:
 
@@ -49,7 +63,8 @@ apa.aov.table(
 
   Confidence level (`.90`, the default, or `.95`) for the interval
   around partial eta-squared. Using `.90` keeps conclusions based on
-  this interval consistent with the p-value.
+  this interval consistent with the p-value. Any other value stops with
+  a message.
 
 - type:
 
@@ -60,7 +75,7 @@ apa.aov.table(
   Whether this table is placed on a rotated (landscape) page. The
   default, `NA`, means apaTables decides by measuring the table against
   the page. Pass `TRUE` to insist on a rotated page or `FALSE` to insist
-  on an upright one. An explicit value is honoured wherever the
+  on an upright one. An explicit value is honored wherever the
   destination can carry it out; in a Quarto PDF that means the chunk
   needs a `tbl-` label (see
   [`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)).
@@ -71,8 +86,8 @@ apa.aov.table(
 
 ## Value
 
-A table object (class `apa_table`). Typing its name at the console
-displays the table. Pass it to
+A table object (class `apa_table`). Typing the object name at the
+console displays the table. Pass it to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
 to create a Word or HTML file. Or, if you are working in a Quarto
 document, use
@@ -83,28 +98,25 @@ to make PDF and Word manuscripts, respectively.
 
 ## Details
 
-    options(contrasts = c("contr.sum", "contr.poly"))
-    lm_output <- lm(libido ~ dose, data = viagra)
-    table1 <- apa.aov.table(lm_output = lm_output)
-    apa.save(filename = "Table1.docx", table1)
-
-The file appears in your working directory – the folder R is currently
-pointing at. See the *Word files (apa.save)* section below. The table
-can also be placed in a Quarto document, so a rendered manuscript comes
-out with the table already in place – see the *Quarto documents* section
-below.
-
 Confidence intervals for partial eta-squared are calculated with the
 noncentral approach described by Smithson (2001) and Fidler and Thompson
 (2001). For Type III sums of squares to match programs such as SPSS,
 factor contrasts must sum to zero. `apa.aov.table()` sees to this
-itself: when `type = 3` and a factor uses R's default treatment
+itself: when `type = 3` and a factor uses the R default treatment
 contrasts, it refits the model with sum-to-zero contrasts, from the data
 stored in the model object, before computing the table, so the table is
 the same whether or not you set them. The examples still set
 `options(contrasts = c("contr.sum", "contr.poly"))`, which keeps the
 coefficients of your own [`lm()`](https://rdrr.io/r/stats/lm.html) model
 consistent with the table.
+
+The table describes the model as
+[`lm()`](https://rdrr.io/r/stats/lm.html) fitted it, so cases that
+[`lm()`](https://rdrr.io/r/stats/lm.html) dropped for missing values
+(the default) are not in it. A model with an offset (an
+[`offset()`](https://rdrr.io/r/stats/offset.html) term, or the `offset`
+argument of [`lm()`](https://rdrr.io/r/stats/lm.html)) is not supported
+and stops with a message.
 
 ## Word files (apa.save)
 
@@ -115,17 +127,17 @@ send – the most common way to use an apaTables table:
     apa.save(filename = "Table1.docx", table1)
 
 The file appears in your working directory – the folder R is currently
-pointing at. Several tables can go into one file, each on its own page,
-numbered Table 1, Table 2, and so on in the order you list them:
+pointing at. Several tables can go into one file, each on a separate
+page, numbered Table 1, Table 2, and so on in the order you list them:
 
     apa.save(filename = "AllTables.docx", table1, table2)
 
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to supply
 your own wording at this time. Tables are set in 12 point, and a table
-too wide for an upright page gets a rotated (landscape) page of its own
-rather than smaller type – so a wide table coming out sideways is
-expected, not an error.
+too wide for an upright page gets a rotated (landscape) page rather than
+smaller type – so a wide table coming out sideways is expected, not an
+error.
 
 ## Quarto documents
 
@@ -179,9 +191,9 @@ There are four format-named functions for this –
 [`apa.quarto.html`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 and
 [`apa.quarto.revealjs`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-– one for each Quarto destination, and they behave identically: the
-document's own YAML `format:` line decides what is actually produced, so
-the name only states intent. This page's examples use
+– one for each Quarto destination, and they behave identically: the YAML
+`format:` line in the document decides what is actually produced, so the
+name only states intent. The examples on this page use
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 to match the `format: apaquarto-pdf` shown above; swap in
 [`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
@@ -191,7 +203,7 @@ together with the matching YAML line for Word or HTML.
 
 In the document, the table lives inside a code chunk like this one.
 [`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-displays the table body with its title and note included automatically,
+displays the table body with the title and note included automatically,
 so this chunk is complete – there is no title or note line to write, and
 the wording stays correct when the analysis changes. The
 [`library(apaTables)`](https://github.com/dstanley4/apaTables) line is
@@ -200,7 +212,7 @@ easy to leave out and it matters: without it the document cannot find
 line sets sum-to-zero contrasts before the model is fitted.
 `apa.aov.table()` uses those contrasts for a Type III table whether or
 not the line is there, so the table is right either way; the line keeps
-your own model's coefficients in the same coding as the table:
+the coefficients of your own model in the same coding as the table:
 
     ```{r}
     #| label: tbl-anova
@@ -222,18 +234,18 @@ number, no title, and no note, however you try to supply them.
 and apaTables does that for you. It measures the table and asks
 apaquarto for a rotated page when one is needed, whether your tables sit
 in the text or are collected at the end of the manuscript. There is
-nothing to add to the chunk and nothing to add to the document's YAML
-header. A table wider still – wider than even a rotated page – is
-printed smaller instead, as small as it has to be so that no column is
-cut off. If that takes the type below 6 points, a warning in the
-rendered draft says so and points to
+nothing to add to the chunk and nothing to add to the YAML header. A
+table wider still – wider than even a rotated page – is printed smaller
+instead, as small as it has to be so that no column is cut off. If that
+takes the type below 6 points, a warning in the rendered draft says so
+and points to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-for a full-size Word version. A table too tall for its page needs
+for a full-size Word version. A table too tall for the page needs
 nothing either: it continues onto the next page by itself, with the
 column headings repeated at the top of each continuation and the note
 below the last piece. None of this applies to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-files: there, each table sits on a page of its own, always at full size.
+files: there, each table sits alone on a page, always at full size.
 
 To see this table (and every apaTables table type) in a complete working
 document, type `apa.quarto.example(filename = "apaTables-examples.qmd")`
@@ -361,19 +373,11 @@ apa.quarto.template(x = table1)
 #> apa.quarto.pdf(x = table1)
 #> ```
 #> 
-#> The table's title and note need no lines here.
+#> The title and note need no lines here.
 #> apa.quarto.pdf() writes both from the table itself, every time
 #> you render, so they stay correct when your analysis changes.
 #> To use your own wording instead, add an #| tbl-cap line for the title
 #> or an #| apa-note line for the note (or pass title = / note = to it).
-
-# Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(x = table1)
-#> [1] "+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Predictor                    |*SS*             |*df*    |*MS*             |*F*           |*p*           |*η*^2^~p~  |90% CI                          |\n+:============================+================:+=======:+================:+=============:+=============:+==========:+===============================:+\n|dose                         |20.13            |2       |10.07            |5.12          |.025          |.46        |[.04, .62]                      |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n|Error                        |23.60            |12      |1.97             |              |              |           |                                |\n+-----------------------------+-----------------+--------+-----------------+--------------+--------------+-----------+--------------------------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='ANOVA Results for Libido' apa-note='[&#34;*SS* = Sum of squares. *df* = degrees of freedom. *MS* = mean square. CI indicates the confidence interval for *η*^2^~p~.&#34;]'}\n:::\n"
-#> attr(,"class")
-#> [1] "knit_asis"
-#> attr(,"knit_cacheable")
-#> [1] NA
 
 # Clean up
 unlink(file.path(tempdir(), "my_tables.docx"))

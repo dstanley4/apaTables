@@ -2,7 +2,7 @@
 
 Internal. Its one caller is
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md),
-when it writes a `.docx` or `.html` file of its own. The Quarto entry
+when it writes a separate `.docx` or `.html` file. The Quarto entry
 points
 ([`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md),
 [`apa.quarto.docx`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md),

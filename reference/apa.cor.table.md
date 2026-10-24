@@ -1,11 +1,20 @@
 # Create an APA-style correlation table
 
 `apa.cor.table()` creates a table of means, standard deviations, and
-Pearson correlations in APA style. Each correlation is reported with its
+Pearson correlations in APA style. Each correlation is reported with a
 95% confidence interval and, optionally, significance stars and a
 p-value. Typing `apa.cor.table(data = attitude)` prints the finished
 table at the console. The most common next step is saving the table as a
 Word file to use in a manuscript:
+
+    table1 <- apa.cor.table(data = attitude)
+    apa.save(filename = "Table1.docx", table1)
+
+The file appears in your working directory – the folder R is currently
+pointing at. See the *Word files (apa.save)* section below. The table
+can also be placed in a Quarto document, so a rendered manuscript comes
+out with the table already in place – see the *Quarto documents* section
+below.
 
 ## Usage
 
@@ -26,13 +35,15 @@ apa.cor.table(
 - data:
 
   A data frame. Non-numeric columns are dropped before the table is
-  constructed.
+  constructed. At least two numeric columns must remain, and each needs
+  at least two different values.
 
 - filename:
 
   Optional file name. If supplied, the table is also saved as a Word
   (`.docx`) or HTML (`.html`) file, according to the file extension.
-  Legacy `.doc`/`.rtf` names are saved as `.docx`.
+  Legacy `.doc`/`.rtf` names are saved as `.docx`. An existing file with
+  that name is replaced.
 
 - table.number:
 
@@ -61,7 +72,7 @@ apa.cor.table(
   Whether this table is placed on a rotated (landscape) page. The
   default, `NA`, means apaTables decides by measuring the table against
   the page. Pass `TRUE` to insist on a rotated page or `FALSE` to insist
-  on an upright one. An explicit value is honoured wherever the
+  on an upright one. An explicit value is honored wherever the
   destination can carry it out; in a Quarto PDF that means the chunk
   needs a `tbl-` label (see
   [`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)).
@@ -73,14 +84,14 @@ apa.cor.table(
 - show.pvalue:
 
   If `TRUE` (the default), the p-value for each correlation is displayed
-  below its confidence interval. It comes last among the arguments so
+  below the confidence interval. It comes last among the arguments so
   that a call written for an earlier version, which passed `landscape`
-  by position, keeps its meaning.
+  by position, works as before.
 
 ## Value
 
-A table object (class `apa_table`). Typing its name at the console
-displays the table. Pass it to
+A table object (class `apa_table`). Typing the object name at the
+console displays the table. Pass it to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
 to create a Word or HTML file. Or, if you are working in a Quarto
 document, use
@@ -91,21 +102,17 @@ to make PDF and Word manuscripts, respectively.
 
 ## Details
 
-    table1 <- apa.cor.table(data = attitude)
-    apa.save(filename = "Table1.docx", table1)
-
-The file appears in your working directory – the folder R is currently
-pointing at. See the *Word files (apa.save)* section below. The table
-can also be placed in a Quarto document, so a rendered manuscript comes
-out with the table already in place – see the *Quarto documents* section
-below.
-
 For each variable the table reports the number of cases (*N*), mean
 (*M*), and standard deviation (*SD*), computed after removing missing
-values for that variable. Correlations and their confidence intervals
-are computed pairwise with
+values for that variable. Correlations and the confidence intervals for
+them are computed pairwise with
 [`cor.test`](https://rdrr.io/r/stats/cor.test.html), so each correlation
-uses all cases that are complete for that pair of variables.
+uses all cases that are complete for that pair of variables (pairwise
+deletion). With missing values, a correlation can rest on fewer cases
+than the *N* for either variable; the table note then gives the range of
+these pairwise sample sizes. Each confidence interval is the Fisher
+r-to-z interval that [`cor.test`](https://rdrr.io/r/stats/cor.test.html)
+computes.
 
 ## Word files (apa.save)
 
@@ -117,17 +124,17 @@ send – the most common way to use an apaTables table:
     apa.save(filename = "Table1.docx", table1)
 
 The file appears in your working directory – the folder R is currently
-pointing at. Several tables can go into one file, each on its own page,
-numbered Table 1, Table 2, and so on in the order you list them:
+pointing at. Several tables can go into one file, each on a separate
+page, numbered Table 1, Table 2, and so on in the order you list them:
 
     apa.save(filename = "AllTables.docx", table1, table2)
 
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to supply
 your own wording at this time. Tables are set in 12 point, and a table
-too wide for an upright page gets a rotated (landscape) page of its own
-rather than smaller type – so a wide correlation table coming out
-sideways is expected, not an error.
+too wide for an upright page gets a rotated (landscape) page rather than
+smaller type – so a wide correlation table coming out sideways is
+expected, not an error.
 
 ## Quarto documents
 
@@ -181,9 +188,9 @@ There are four format-named functions for this –
 [`apa.quarto.html`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 and
 [`apa.quarto.revealjs`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-– one for each Quarto destination, and they behave identically: the
-document's own YAML `format:` line decides what is actually produced, so
-the name only states intent. This page's examples use
+– one for each Quarto destination, and they behave identically: the YAML
+`format:` line in the document decides what is actually produced, so the
+name only states intent. The examples on this page use
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 to match the `format: apaquarto-pdf` shown above; swap in
 [`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
@@ -193,7 +200,7 @@ together with the matching YAML line for Word or HTML.
 
 In the document, the table lives inside a code chunk like this one.
 [`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-displays the table body with its title and note included automatically,
+displays the table body with the title and note included automatically,
 so this chunk is complete – there is no title or note line to write, and
 the wording stays correct when the analysis changes. The
 [`library(apaTables)`](https://github.com/dstanley4/apaTables) line is
@@ -218,18 +225,18 @@ number, no title, and no note, however you try to supply them.
 and apaTables does that for you. It measures the table and asks
 apaquarto for a rotated page when one is needed, whether your tables sit
 in the text or are collected at the end of the manuscript. There is
-nothing to add to the chunk and nothing to add to the document's YAML
-header. A table wider still – wider than even a rotated page – is
-printed smaller instead, as small as it has to be so that no column is
-cut off. If that takes the type below 6 points, a warning in the
-rendered draft says so and points to
+nothing to add to the chunk and nothing to add to the YAML header. A
+table wider still – wider than even a rotated page – is printed smaller
+instead, as small as it has to be so that no column is cut off. If that
+takes the type below 6 points, a warning in the rendered draft says so
+and points to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-for a full-size Word version. A table too tall for its page needs
+for a full-size Word version. A table too tall for the page needs
 nothing either: it continues onto the next page by itself, with the
 column headings repeated at the top of each continuation and the note
 below the last piece. None of this applies to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-files: there, each table sits on a page of its own, always at full size.
+files: there, each table sits alone on a page, always at full size.
 
 To see this table (and every apaTables table type) in a complete working
 document, type `apa.quarto.example(filename = "apaTables-examples.qmd")`
@@ -385,19 +392,11 @@ apa.quarto.template(x = table1)
 #> apa.quarto.pdf(x = table1)
 #> ```
 #> 
-#> The table's title and note need no lines here.
+#> The title and note need no lines here.
 #> apa.quarto.pdf() writes both from the table itself, every time
 #> you render, so they stay correct when your analysis changes.
 #> To use your own wording instead, add an #| tbl-cap line for the title
 #> or an #| apa-note line for the note (or pass title = / note = to it).
-
-# Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(x = table1)
-#> [1] "+----------------------+-----+----------+----------+-------------------+-------------------+-------------------+-------------------+-----------------+-------------------+\n|Variable              |*N*  |*M*       |*SD*      |1                  |2                  |3                  |4                  |5                |6                  |\n+:=====================+====:+=========:+=========:+==================:+==================:+==================:+==================:+================:+==================:+\n|1\\. rating            |30   |64.63     |12.17     |                   |                   |                   |                   |                 |                   |\n+----------------------+-----+----------+----------+-------------------+-------------------+-------------------+-------------------+-----------------+-------------------+\n|2\\. complaints        |30   |66.60     |13.31     |.83\\*\\*\\           |                   |                   |                   |                 |                   |\n|                      |     |          |          |[.66, .91]\\        |                   |                   |                   |                 |                   |\n|                      |     |          |          |*p* < .001         |                   |                   |                   |                 |                   |\n+----------------------+-----+----------+----------+-------------------+-------------------+-------------------+-------------------+-----------------+-------------------+\n|3\\. privileges        |30   |53.13     |12.24     |.43\\*\\             |.56\\*\\*\\           |                   |                   |                 |                   |\n|                      |     |          |          |[.08, .68]\\        |[.25, .76]\\        |                   |                   |                 |                   |\n|                      |     |          |          |*p* = .019         |*p* = .001         |                   |                   |                 |                   |\n+----------------------+-----+----------+----------+-------------------+-------------------+-------------------+-------------------+-----------------+-------------------+\n|4\\. learning          |30   |56.37     |11.74     |.62\\*\\*\\           |.60\\*\\*\\           |.49\\*\\*\\           |                   |                 |                   |\n|                      |     |          |          |[.34, .80]\\        |[.30, .79]\\        |[.16, .72]\\        |                   |                 |                   |\n|                      |     |          |          |*p* < .001         |*p* < .001         |*p* = .006         |                   |                 |                   |\n+----------------------+-----+----------+----------+-------------------+-------------------+-------------------+-------------------+-----------------+-------------------+\n|5\\. raises            |30   |64.63     |10.40     |.59\\*\\*\\           |.67\\*\\*\\           |.45\\*\\             |.64\\*\\*\\           |                 |                   |\n|                      |     |          |          |[.29, .78]\\        |[.41, .83]\\        |[.10, .69]\\        |[.36, .81]\\        |                 |                   |\n|                      |     |          |          |*p* < .001         |*p* < .001         |*p* = .014         |*p* < .001         |                 |                   |\n+----------------------+-----+----------+----------+-------------------+-------------------+-------------------+-------------------+-----------------+-------------------+\n|6\\. critical          |30   |74.77     |9.89      |.16\\               |.19\\               |.15\\               |.12\\               |.38\\*\\           |                   |\n|                      |     |          |          |[-.22, .49]\\       |[-.19, .51]\\       |[-.22, .48]\\       |[-.25, .46]\\       |[.02, .65]\\      |                   |\n|                      |     |          |          |*p* = .409         |*p* = .321         |*p* = .438         |*p* = .542         |*p* = .040       |                   |\n+----------------------+-----+----------+----------+-------------------+-------------------+-------------------+-------------------+-----------------+-------------------+\n|7\\. advance           |30   |42.93     |10.29     |.16\\               |.22\\               |.34\\               |.53\\*\\*\\           |.57\\*\\*\\         |.28\\               |\n|                      |     |          |          |[-.22, .49]\\       |[-.15, .54]\\       |[-.02, .63]\\       |[.21, .75]\\        |[.27, .77]\\      |[-.09, .58]\\       |\n|                      |     |          |          |*p* = .413         |*p* = .233         |*p* = .063         |*p* = .003         |*p* < .001       |*p* = .129         |\n+----------------------+-----+----------+----------+-------------------+-------------------+-------------------+-------------------+-----------------+-------------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='Descriptive Statistics and Correlations' apa-note='[&#34;*N* = number of cases. *M* = mean. *SD* = standard deviation. Values in square brackets indicate the 95% confidence interval.&#34;,&#34;\\\\* indicates *p* < .05. \\\\*\\\\* indicates *p* < .01.&#34;]'}\n:::\n"
-#> attr(,"class")
-#> [1] "knit_asis"
-#> attr(,"knit_cacheable")
-#> [1] NA
 
 # Clean up
 unlink(file.path(tempdir(), "table1.docx"))

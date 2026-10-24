@@ -9,7 +9,7 @@ transcription errors. This package builds complete APA style tables
 directly from analysis output. A single command saves a finished table
 as a Microsoft Word (.docx) file, ready for a manuscript. Tables can
 also be placed in Quarto documents (via the bundled apaquarto
-extension), so a rendered Word or PDF manuscript comes out with its
+extension), so a rendered Word or PDF manuscript comes out with the
 tables already in place – numbered, titled, and with notes. The same
 tables can be shown on reveal.js slides, and HTML output is also
 supported. Using this package minimizes transcription errors and reduces

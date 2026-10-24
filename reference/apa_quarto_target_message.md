@@ -25,7 +25,7 @@ apa_quarto_target_message(called, actual)
 - actual:
 
   the RAW render-target token, e.g. from `apa_quarto_actual_format()`
-  (`"latex"`, `"docx"`, `"html"`, ...) – not yet normalised to a format
+  (`"latex"`, `"docx"`, `"html"`, ...) – not yet normalized to a format
   key; this function does that itself via `apa_quarto_actual_entry()`.
 
 ## Value

@@ -2,7 +2,24 @@
 
 `apa.save()` writes one or more finished tables to a single file – the
 way to get an apaTables table into a manuscript you write in Word, or to
-give a journal its tables as a file of their own:
+give a journal the tables as a separate file:
+
+    table1 <- apa.cor.table(data = attitude)
+    apa.save(filename = "Table1.docx", table1)
+
+The file appears in your working directory – the folder R is currently
+pointing at. Open it in Word and the finished APA table is there: the
+"Table N" line, the italic title, the body, and the *Note.* below it.
+Copy it into your manuscript, or send the file as it is. The format is
+chosen by the file extension: `.docx` for Word, `.html` for a web page
+(a legacy `.doc`/`.rtf` name is written as `.docx`). `apa.save()` does
+not write PDF files.
+
+If a file with that name already exists, `apa.save()` replaces it, as
+[`write.csv()`](https://rdrr.io/r/utils/write.table.html) does, so
+running your script again updates the file. Make any hand edits in a
+copy, under another name: edits to the file the script writes are lost
+the next time the script runs.
 
 ## Usage
 
@@ -32,27 +49,16 @@ Invisibly returns the `filename` actually written.
 
 ## Details
 
-    table1 <- apa.cor.table(data = attitude)
-    apa.save(filename = "Table1.docx", table1)
-
-The file appears in your working directory – the folder R is currently
-pointing at. Open it in Word and the finished APA table is there: the
-"Table N" line, the italic title, the body, and the *Note.* below it.
-Copy it into your manuscript, or send the file as it is. The format is
-chosen by the file extension: `.docx` for Word, `.html` for a web page
-(a legacy `.doc`/`.rtf` name is written as `.docx`). `apa.save()` does
-not write PDF files.
-
-Several tables can go into one file, each on a page of its own, in the
+Several tables can go into one file, each on a separate page, in the
 order you list them:
 
     apa.save(filename = "AllTables.docx", table1, table2, table3)
 
-A number set when a table was built is kept. A table left with its
-default number takes the next number after the last numbered table
-before it, starting at 1: the three tables above become Table 1, Table 2
-and Table 3, and if `table2` had been built with `table.number = 5` they
-would become Table 1, Table 5 and Table 6.
+A number set when a table was built is kept. A table left at the default
+number takes the next number after the last numbered table before it,
+starting at 1: the three tables above become Table 1, Table 2 and Table
+3, and if `table2` had been built with `table.number = 5` they would
+become Table 1, Table 5 and Table 6.
 
 Tables are set in 12 point, matching the manuscript body type APA style
 expects. Each page is upright (portrait) unless the table is too wide
@@ -64,6 +70,10 @@ off. To decide the orientation yourself, use the `landscape` argument of
 the function that built the table – for example
 `apa.cor.table(data = attitude, landscape = TRUE)`; an explicit value
 always wins over measurement.
+
+An `.html` file is written with the help of pandoc, a free program. If R
+cannot find it, `apa.save()` stops and says so; a `.docx` file does not
+need pandoc.
 
 **The title and the note are written from the table itself**, so they
 stay correct when the analysis changes; there is no `title` or `note`

@@ -7,6 +7,16 @@ marginal means can be displayed. The table prints to the console. The
 most common next step is saving the table as a Word file to use in a
 manuscript:
 
+    table1 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
+                             dv = attractiveness, data = goggles)
+    apa.save(filename = "Table1.docx", table1)
+
+The file appears in your working directory – the folder R is currently
+pointing at. See the *Word files (apa.save)* section below. The table
+can also be placed in a Quarto document, so a rendered manuscript comes
+out with the table already in place – see the *Quarto documents* section
+below.
+
 ## Usage
 
 ``` r
@@ -49,7 +59,8 @@ apa.2way.table(
 
   Optional file name. If supplied, the table is also saved as a Word
   (`.docx`) or HTML (`.html`) file, according to the file extension.
-  Legacy `.doc`/`.rtf` names are saved as `.docx`.
+  Legacy `.doc`/`.rtf` names are saved as `.docx`. An existing file with
+  that name is replaced.
 
 - table.number:
 
@@ -78,7 +89,7 @@ apa.2way.table(
   Whether this table is placed on a rotated (landscape) page. The
   default, `NA`, means apaTables decides by measuring the table against
   the page. Pass `TRUE` to insist on a rotated page or `FALSE` to insist
-  on an upright one. An explicit value is honoured wherever the
+  on an upright one. An explicit value is honored wherever the
   destination can carry it out; in a Quarto PDF that means the chunk
   needs a `tbl-` label (see
   [`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)).
@@ -89,8 +100,8 @@ apa.2way.table(
 
 ## Value
 
-A table object (class `apa_table`). Typing its name at the console
-displays the table. Pass it to
+A table object (class `apa_table`). Typing the object name at the
+console displays the table. Pass it to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
 to create a Word or HTML file. Or, if you are working in a Quarto
 document, use
@@ -101,15 +112,26 @@ to make PDF and Word manuscripts, respectively.
 
 ## Details
 
-    table1 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
-                             dv = attractiveness, data = goggles)
-    apa.save(filename = "Table1.docx", table1)
+The mean and standard deviation for each cell use the cases in that cell
+with a value on `dv`; a case with a missing value on `dv`, `iv1` or
+`iv2` is left out. With `show.conf.interval = TRUE`, the 95% confidence
+interval for each cell mean is the one-sample *t* interval from
+[`t.test`](https://rdrr.io/r/stats/t.test.html), which uses only the
+scores in that cell, not a pooled error term.
 
-The file appears in your working directory – the folder R is currently
-pointing at. See the *Word files (apa.save)* section below. The table
-can also be placed in a Quarto document, so a rendered manuscript comes
-out with the table already in place – see the *Quarto documents* section
-below.
+`dv` must be numeric (a TRUE/FALSE `dv` gives proportions). A level of
+`iv1` or `iv2` that no row of `data` has (for example, one left over
+after [`subset()`](https://rdrr.io/r/base/subset.html)) is left out of
+the table. Every cell needs at least two complete cases, or the function
+stops with a message naming the cell.
+
+The marginal means (`show.marginal.means = TRUE`) are the observed means
+of all cases at each level of one factor, across the levels of the
+other, the same means SPSS reports in the Descriptive Statistics table.
+In an unbalanced design, where the cells differ in the number of cases,
+each cell counts in proportion to the number of cases in it, so these
+means can differ from the unweighted means of the cell means that a Type
+III test of a main effect compares.
 
 ## Word files (apa.save)
 
@@ -120,17 +142,17 @@ send – the most common way to use an apaTables table:
     apa.save(filename = "Table1.docx", table1)
 
 The file appears in your working directory – the folder R is currently
-pointing at. Several tables can go into one file, each on its own page,
-numbered Table 1, Table 2, and so on in the order you list them:
+pointing at. Several tables can go into one file, each on a separate
+page, numbered Table 1, Table 2, and so on in the order you list them:
 
     apa.save(filename = "AllTables.docx", table1, table2)
 
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to supply
 your own wording at this time. Tables are set in 12 point, and a table
-too wide for an upright page gets a rotated (landscape) page of its own
-rather than smaller type – so a wide table coming out sideways is
-expected, not an error.
+too wide for an upright page gets a rotated (landscape) page rather than
+smaller type – so a wide table coming out sideways is expected, not an
+error.
 
 ## Quarto documents
 
@@ -184,9 +206,9 @@ There are four format-named functions for this –
 [`apa.quarto.html`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 and
 [`apa.quarto.revealjs`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-– one for each Quarto destination, and they behave identically: the
-document's own YAML `format:` line decides what is actually produced, so
-the name only states intent. This page's examples use
+– one for each Quarto destination, and they behave identically: the YAML
+`format:` line in the document decides what is actually produced, so the
+name only states intent. The examples on this page use
 [`apa.quarto.pdf()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
 to match the `format: apaquarto-pdf` shown above; swap in
 [`apa.quarto.docx()`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
@@ -196,7 +218,7 @@ together with the matching YAML line for Word or HTML.
 
 In the document, the table lives inside a code chunk like this one.
 [`apa.quarto.pdf`](https://dstanley4.github.io/apaTables/reference/apa.quarto.pdf.md)
-displays the table body with its title and note included automatically,
+displays the table body with the title and note included automatically,
 so this chunk is complete – there is no title or note line to write, and
 the wording stays correct when the analysis changes. The
 [`library(apaTables)`](https://github.com/dstanley4/apaTables) line is
@@ -222,18 +244,18 @@ number, no title, and no note, however you try to supply them.
 and apaTables does that for you. It measures the table and asks
 apaquarto for a rotated page when one is needed, whether your tables sit
 in the text or are collected at the end of the manuscript. There is
-nothing to add to the chunk and nothing to add to the document's YAML
-header. A table wider still – wider than even a rotated page – is
-printed smaller instead, as small as it has to be so that no column is
-cut off. If that takes the type below 6 points, a warning in the
-rendered draft says so and points to
+nothing to add to the chunk and nothing to add to the YAML header. A
+table wider still – wider than even a rotated page – is printed smaller
+instead, as small as it has to be so that no column is cut off. If that
+takes the type below 6 points, a warning in the rendered draft says so
+and points to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-for a full-size Word version. A table too tall for its page needs
+for a full-size Word version. A table too tall for the page needs
 nothing either: it continues onto the next page by itself, with the
 column headings repeated at the top of each continuation and the note
 below the last piece. None of this applies to
 [`apa.save`](https://dstanley4.github.io/apaTables/reference/apa.save.md)
-files: there, each table sits on a page of its own, always at full size.
+files: there, each table sits alone on a page, always at full size.
 
 To see this table (and every apaTables table type) in a complete working
 document, type `apa.quarto.example(filename = "apaTables-examples.qmd")`
@@ -355,19 +377,11 @@ apa.quarto.template(x = table2)
 #> apa.quarto.pdf(x = table2)
 #> ```
 #> 
-#> The table's title and note need no lines here.
+#> The title and note need no lines here.
 #> apa.quarto.pdf() writes both from the table itself, every time
 #> you render, so they stay correct when your analysis changes.
 #> To use your own wording instead, add an #| tbl-cap line for the title
 #> or an #| apa-note line for the note (or pass title = / note = to it).
-
-# Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(x = table2)
-#> [1] "+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|   |::: {custom-style=\"ApaTableRule\"}                                                                                                              |\n|   |b                                                                                                                                              |\n|   |:::                                                                                                                                            |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|   |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |::: {custom-style=\"ApaTableRule\"}  |\n|   |1                                  |2                                  |3                                  |4                                  |\n|   |:::                                |:::                                |:::                                |:::                                |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|a  |*M*              |*SD*             |*M*              |*SD*             |*M*              |*SD*             |*M*              |*SD*             |\n+:==+================:+================:+================:+================:+================:+================:+================:+================:+\n|1  |1.00             |1.00             |2.00             |1.00             |3.00             |1.00             |3.00             |1.00             |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n|2  |2.00             |1.00             |3.00             |1.00             |2.00             |1.00             |4.00             |1.00             |\n+---+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+\n\n::: {.apa-table-html}\n:::\n\n\n::: {.apa-table-meta apa-title='Descriptive Statistics for Dv in a 2(A) by 4(B) Design' apa-note='[&#34;*M* = mean. *SD* = standard deviation.&#34;]'}\n:::\n"
-#> attr(,"class")
-#> [1] "knit_asis"
-#> attr(,"knit_cacheable")
-#> [1] NA
 
 # Clean up
 unlink(file.path(tempdir(), "my_tables.docx"))

@@ -1,20 +1,20 @@
-# Install or repair this project's apaquarto extension
+# Install or repair the apaquarto extension in a project
 
 You already have a project folder, and you want apaTables tables to come
-out APA-formatted when its documents render. Run this once, in the R
-console, from that folder:
+out APA-formatted when the documents in it render. Run this once, in the
+R console, from that folder:
 
     apa.quarto.setup()
 
 It puts the apaquarto extension into an `_extensions` folder beside your
 document. **What gets installed is not the standard apaquarto release**:
-it is apaTables' own tested copy – apaquarto plus table fixes that are
+it is a copy tested with apaTables – apaquarto plus table fixes that are
 not yet in the standard release. That is also why this command exists at
-all. Running Quarto's own `quarto add` or `quarto update` in a project
-silently replaces the tested copy with the standard one – while
-reporting `[No Change]` – which brings back bugs in table numbering and
-in where a long table's note lands. Running `apa.quarto.setup()` again
-puts the tested copy back.
+all. Running `quarto add` or `quarto update` in a project silently
+replaces the tested copy with the standard one – while reporting
+`[No Change]` – which brings back bugs in table numbering and in where
+the note of a long table lands. Running `apa.quarto.setup()` again puts
+the tested copy back.
 
 It is safe to run at any time: on a project that is already correct it
 does nothing and says nothing. When it does repair something during a
@@ -32,8 +32,12 @@ apa.quarto.setup(path = ".", auto = TRUE, force = FALSE)
 
 - path:
 
-  Project folder. Defaults to the current directory, or, during a
-  render, the folder whose `_extensions` the render is using.
+  Project folder. Defaults to the current directory. During a render, if
+  this folder has no copy of the extension, the copy in a parent folder
+  of the same Quarto project is used instead (Quarto finds extensions
+  there too). `apa.quarto.setup()` never changes a folder above the
+  project folder (the one with `_quarto.yml`), and outside a Quarto
+  project it changes only the folder given here.
 
 - auto:
 
@@ -64,7 +68,7 @@ document:
     apa.quarto.setup()
 
 This puts an `_extensions/wjschne/apaquarto` folder next to your
-document, and its YAML header – the settings block between `---` lines
+document, and the YAML header – the settings block between `---` lines
 at the very top of the document – can then select an apaquarto format.
 apaquarto needs an author in that header – with no author, or an empty
 one, the render stops with a LaTeX error – and it reports a problem
@@ -81,14 +85,14 @@ unless that author has an affiliation and is marked
     format: apaquarto-pdf
     ---
 
-`apa.quarto.setup()` is safe to run at any time – on a project whose
-copy is already correct, it does nothing and says nothing. Do **not**
+`apa.quarto.setup()` is safe to run at any time – when the copy in a
+project is already correct, it does nothing and says nothing. Do **not**
 run `quarto add wjschne/apaquarto` or
 `quarto update extension wjschne/apaquarto` in one of these folders:
 both commands silently replace the patched copy with the plain,
 unpatched extension, while reporting `[No Change]`. That reintroduces
-bugs in table numbering and in where a long table's note lands. If you
-have already run one of those commands, running `apa.quarto.setup()`
+bugs in table numbering and in where the note of a long table lands. If
+you have already run one of those commands, running `apa.quarto.setup()`
 again puts the tested copy back.
 
 Sending a coauthor or reviewer the whole project folder carries
@@ -101,7 +105,7 @@ automatically.
 ## See also
 
 A step-by-step guide to placing apaTables tables in Quarto documents
-comes installed with the package – see its "Installing the apaquarto
+comes installed with the package – see the "Installing the apaquarto
 extension" section. To open it, type:
 
     vignette("apaquarto-usage", package = "apaTables")

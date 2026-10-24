@@ -12,7 +12,7 @@ apa_latex_escape(txt)
 
 - txt:
 
-  a length-1 (or vectorised) character string.
+  a length-1 (or vectorized) character string.
 
 ## Value
 
