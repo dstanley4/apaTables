@@ -171,14 +171,14 @@ apa_chunk_twocolumn <- function() {
 # The width and height, in inches, that this document gives a table.
 #
 # Returns a list with `width`, `height`, `config` (a short label for the
-# configuration that was recognised) and `unknown` -- NULL when the answer
+# configuration that was recognized) and `unknown` -- NULL when the answer
 # rests on a measurement, or a short description of the setting that could
 # not be interpreted when it does not.
 #
 # When the configuration cannot be worked out the APA manuscript page
 # (6.5 x 9.0 in) is used rather than the narrowest budget in the table
 # above. Falling back to the narrowest -- the 3.331 in journal column --
-# would shrink every table in every unrecognised document to the smallest
+# would shrink every table in every unrecognized document to the smallest
 # font the fitter has, trading a rare wrong decision for a certain bad one.
 # What must not happen is that the fallback be SILENT, so `unknown` is
 # filled in and the caller warns.
@@ -296,7 +296,7 @@ apa_warn_unknown_geometry <- function(geom) {
   if (is.null(geom$unknown)) return(invisible(FALSE))
   apa_warn_once("page-geometry", paste0(
     "apaTables could not work out how much of the page this document gives ",
-    "a table, because its YAML header carries ", geom$unknown,
+    "a table, because the YAML header carries ", geom$unknown,
     ", so this table was laid out for a standard APA manuscript page (",
     format(APA_DEFAULT_GEOMETRY[["width"]], trim = TRUE), " inches wide by ",
     format(APA_DEFAULT_GEOMETRY[["height"]], trim = TRUE),
@@ -329,10 +329,10 @@ apa_warn_journal_mode <- function(geom) {
     return(invisible(FALSE))
   }
   apa_warn_once("journal-mode", paste0(
-    "This document is in apaquarto's journal mode (documentmode: jou), which ",
+    "This document is in the apaquarto journal mode (documentmode: jou), which ",
     "apaTables does not support: a two-column journal page cannot break a ",
     "table across pages, so rows, columns and whole notes can be missing from ",
-    "the rendered PDF with no error anywhere -- check every table in the PDF ",
+    "the rendered PDF -- check every table in the PDF ",
     "against what apaTables printed at the console, and where anything is ",
     "missing either render the manuscript with documentmode: man or save that ",
     "table as a Word file instead, where nothing is dropped: ",

@@ -258,13 +258,13 @@ apa_slide_char_width <- function(plan) {
 }
 
 apa_slide_font_pt <- function(plan, font.size = NULL) {
-  # An explicit size is honoured EXACTLY, whatever it is. CSS can
+  # An explicit size is honored EXACTLY, whatever it is. CSS can
   # be exact, so unlike Word (which must snap to the five cloned table
   # styles that exist) nothing is rounded, snapped or refused here.
   #
   # But it is CHECKED: without the check, apa.quarto.revealjs(x,
   # font.size = 2) would put a 2 pt table on a slide with nothing said
-  # anywhere. The shared RULE is "honour it
+  # anywhere. The shared RULE is "honor it
   # exactly, and say so when it is below the size an APA table stops being
   # readable at"; the delivery is not shared, which is why this calls
   # the check directly rather than routing through apa_quarto_font_size().
@@ -453,7 +453,7 @@ apa_quarto_revealjs_block <- function(x, font.size = NULL,
 # revealjs KEEPS spans (colspan="2" x4, colspan="6" x1, measured on the
 # same table), so this is NEVER applied there -- flattening a span that
 # already works would throw away correct output. This is a pptx fix, not a
-# "slides" fix; do not generalise it.
+# "slides" fix; do not generalize it.
 #
 # Do not delete this on the theory that an unsupported PowerPoint table is
 # merely ugly-but-correct. Without it a real render is WRONG: `alcohol` sits
@@ -516,7 +516,7 @@ apa_slide_flatten_spanners <- function(plan) {
     # function runs for pptx alone. PowerPoint ignores CSS entirely, so
     # apa_slide_css()'s ApaTableRule selector can never reach this markup --
     # the ranges would be dead data. On revealjs the ranges are KEPT and they
-    # draw; do not generalise this line into "slides have no
+    # draw; do not generalize this line into "slides have no
     # cmidrules".
     list(cells = cells, rules = list())
   })
@@ -544,7 +544,7 @@ apa_slide_flatten_spanners <- function(plan) {
 #
 # POWERPOINT IS NOT CLAIMED HERE AS A SUPPORTED DESTINATION, and the reason
 # is NOT "font.size has no lever there": measured on a real render,
-# PowerPoint honours
+# PowerPoint honors
 # an explicit `<a:rPr sz="...">` exactly (monotonic across four declared
 # sizes, glyph-extent verified with pdftotext -bbox). The obstacle is that
 # pandoc's pptx writer never emits one and gives no per-table hook to add
@@ -580,16 +580,16 @@ apa_slide_flatten_spanners <- function(plan) {
 #' before you rely on it.
 #'
 #' \strong{revealjs is the supported slide format.} Set \code{format:
-#' revealjs} in the document's YAML -- everything below describes that
+#' revealjs} in the YAML header -- everything below describes that
 #' format. \strong{PowerPoint is not supported yet.} The obstacle is not something a PowerPoint template or setting can fix.
-#' Quarto renders PowerPoint through pandoc, and pandoc's PowerPoint writer gives no way to
-#' set a table's text size from the document, so a table placed on a
-#' PowerPoint slide comes out at PowerPoint's own type size. Even at a
+#' Quarto renders PowerPoint through pandoc, and the pandoc PowerPoint writer gives no way to
+#' set the text size of a table from the document, so a table placed on a
+#' PowerPoint slide comes out at the default PowerPoint type size. Even at a
 #' smaller size, a larger table (a two-block regression table, for instance)
 #' is taller than a slide. Support for PowerPoint is planned for a future
 #' release; apaTables has no working route to a PowerPoint table yet. If a
 #' document using \code{apa.quarto.revealjs()} renders to PowerPoint anyway,
-#' the table still appears -- styled only by PowerPoint's own default table
+#' the table still appears -- styled only by the default PowerPoint table
 #' look, not APA format -- and a warning says PowerPoint is not yet
 #' supported and names \code{format: revealjs} as the supported
 #' destination.
@@ -600,21 +600,21 @@ apa_slide_flatten_spanners <- function(plan) {
 #' number.
 #'
 #' \strong{Title and note are opt-in, not automatic.}
-#' \code{apa.quarto.revealjs(x = x)} on its own puts the table alone on the
+#' \code{apa.quarto.revealjs(x = x)}, with no other arguments, puts the table alone on the
 #' slide, nothing else. Pass \code{title = TRUE} and/or \code{note = TRUE}
 #' to add the title and note apaTables generated for the table -- the same
-#' arguments work here as on \code{apa.quarto.pdf()} and its siblings. This
-#' matters most for a correlation table: its cells mark a significant
+#' arguments work here as on \code{apa.quarto.pdf()} and the related functions. This
+#' matters most for a correlation table: the cells mark a significant
 #' correlation with \code{**}, and the sentence explaining what \code{**}
 #' means (\code{* indicates p < .05. ** indicates p < .01.}) lives in the
 #' note. Left at the
-#' default, a correlation table on a slide shows the stars with their
-#' meaning nowhere on the slide -- \code{note = TRUE} is the remedy:
+#' default, a correlation table on a slide shows the stars with no
+#' explanation on the slide -- \code{note = TRUE} is the remedy:
 #'
 #' \preformatted{my_table <- apa.cor.table(data = attitude)
 #' apa.quarto.revealjs(x = my_table, note = TRUE)}
 #'
-#' \strong{An explicit \code{font.size} is honoured exactly}, the same value
+#' \strong{An explicit \code{font.size} is honored exactly}, the same value
 #' you typed, though a size below 6 points -- where an APA table stops being
 #' comfortable to read -- warns in the rendered draft. Left at the default,
 #' apaTables shrinks the table automatically to fit the slide.

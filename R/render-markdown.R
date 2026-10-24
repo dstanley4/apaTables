@@ -285,7 +285,7 @@ apa_md_rule <- function(w, ch) {
 }
 
 # The `+===+` line, carrying alignment. Left "|:===", right "===:|",
-# centre both.
+# center both.
 apa_md_align_rule <- function(w, align) {
   seg <- vapply(seq_along(w), function(j) {
     k <- w[j]
@@ -298,7 +298,7 @@ apa_md_align_rule <- function(w, align) {
 }
 
 # A pandoc fenced-div marker: an opening "::: {...}" or the bare closing
-# ":::". apa_md_row() must never glue one of these to its neighbour with a
+# ":::". apa_md_row() must never glue one of these to its neighbor with a
 # trailing "\\" (see below) -- a fence line only opens/closes a BLOCK when it
 # sits on its own line; a "\\" hard break keeps the following text in the
 # SAME inline paragraph as the marker, so pandoc reads a literal "Str \":::\""

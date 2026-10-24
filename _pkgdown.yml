@@ -29,8 +29,8 @@ reference:
   - apa.quarto.setup
   - apa.quarto.template
   - apa.quarto.example
-  - apa_caption
-  - apa_note_text
+  - apa.caption
+  - apa.note.text
 - title: Save tables to Word or HTML
   desc: >
     The other way out of apaTables: one command writes a table -- or several

@@ -19,7 +19,7 @@
 #' row always last. Each row is \code{list(cells = <list of cell>, rules =
 #' <list of column ranges>)}. Each cell is \code{list(rt = <richtext>, span =
 #' <columns it covers>, align = <"l"/"r"/"c">)}; a column not covered by any
-#' spanner at that level becomes its own blank, span-1 cell, so a row's cell
+#' spanner at that level becomes a separate blank, span-1 cell, so a row's cell
 #' spans always sum to \code{n_col}. \code{rules} lists the column range
 #' (\code{c(from, to)}) each spanner in that row covers -- the caller decides
 #' what to draw there (a \code{\\cmidrule}, a bottom border, nothing).
@@ -27,7 +27,7 @@
 #' \code{body} is a list of rows: a \code{list(type = "group", label =
 #' <richtext>)} entry appears immediately before the first data row of a row
 #' group (added by the internal \code{apa_row_group()}, which has no help page
-#' of its own to link to), and every spec body row becomes a
+#' to link to), and every spec body row becomes a
 #' \code{list(type = "data", cells = <list of richtext, one per column>)}
 #' entry. A spec with no row groups produces an all-\code{"data"} body,
 #' reproducing a flat table exactly.

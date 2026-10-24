@@ -13,7 +13,7 @@
 #' \preformatted{apaTables-examples-pdf.qmd
 #' apaTables-examples-docx.qmd}
 #'
-#' Both show every apaTables table type, one table per page, each with its
+#' Both show every apaTables table type, one table per page, each with an
 #' APA number, title, and note. They are the same document set up for
 #' different destinations: render the \code{-pdf} file and you get a PDF
 #' manuscript (this needs a LaTeX engine such as TinyTeX); render the
@@ -22,7 +22,7 @@
 #'
 #' \preformatted{quarto render apaTables-examples-docx.qmd}
 #'
-#' Then read the finished manuscript side by side with its \code{.qmd}
+#' Then read the finished manuscript side by side with the \code{.qmd}
 #' source file. Every table in the output was made by a short code chunk
 #' you can find in the source, copy, and adapt to your own data -- that
 #' comparison is the whole lesson. Along the way you will see two tables
@@ -56,7 +56,7 @@
 #'   either output file already exists; set \code{TRUE} to replace existing
 #'   files.
 #' @return A named character vector \code{c(pdf = ..., docx = ...)} with
-#'   the paths to the two written files, invisibly. Called for its side
+#'   the paths to the two written files, invisibly. Called for the side
 #'   effects: it also writes (or repairs) an \code{_extensions/wjschne/apaquarto}
 #'   folder beside them, as described under \code{filename}.
 #' @seealso

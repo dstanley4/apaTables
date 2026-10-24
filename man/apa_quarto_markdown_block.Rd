@@ -46,7 +46,7 @@ Title and note are attached the same way
 bundled `apatablemeta.lua`. That filter is registered `at: post-quarto`
 in `_extension.yml`'s COMMON filter list, so it already runs on this
 destination too (never reimplemented or branched on precedence here; see
-that function's own comment for why).
+the comment on that function for why).
 Unlike the LaTeX path, where `apa_quarto_render()` combines the two
 outside `apa_quarto_latex_block()`, here the div is appended INSIDE this
 function. This is the one function every non-PDF entry point and every

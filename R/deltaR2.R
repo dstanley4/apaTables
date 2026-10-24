@@ -27,6 +27,12 @@ get_deltaR2_ci <- function(R2_2,R2_1,n,conf_level=.95){
      LL <- (r20A -r20B) - z*sqrt(var_delta_r2)
      UL <- (r20A -r20B) + z*sqrt(var_delta_r2)
 
+     # A proportion of variance lies between 0 and 1, but this asymptotic
+     # interval is symmetric and can reach past either end; the limits are
+     # held to [0, 1], as the noncentral-F interval for R2 already is.
+     LL <- max(0, LL)
+     UL <- min(1, UL)
+
      output <- list()
      output$LL <- LL
      output$UL <- UL

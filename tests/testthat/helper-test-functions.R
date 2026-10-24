@@ -1,3 +1,18 @@
+# TRUE when a CSS rule flextable wrote raises its run as a superscript.
+# flextable 0.9.12 writes vertical-align:super; 0.9.10, which DESCRIPTION
+# still allows, writes position: relative with a bottom offset (a subscript
+# gets a top offset instead, so this does not match one).
+css_is_superscript <- function(rule) {
+  grepl("vertical-align:\\s*super", rule) ||
+    grepl("position:\\s*relative;\\s*bottom:\\s*[0-9.]+pt", rule)
+}
+
+# The CSS rule flextable wrote for one class in a rendered table, "" if none.
+ft_css_rule <- function(html, cl) {
+  r <- regmatches(html, regexpr(paste0("\\.", cl, "\\{[^}]*\\}"), html))
+  if (length(r)) r else ""
+}
+
 # Every font size set on a flextable, header and body parts together.
 ft_font_sizes <- function(ft) {
   sort(unique(c(as.vector(ft$header$styles$text$font.size$data),

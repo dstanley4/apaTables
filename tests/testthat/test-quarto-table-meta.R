@@ -38,6 +38,7 @@ test_that("the div's raw text survives a pandoc round-trip", {
   # attribute has different rules, which is why it needs its own coverage.
   div <- apa_meta_div(title_md = 'A "quoted" title',
                       note_md  = 'back\\slash and "quotes"')
+  skip_if(Sys.which("pandoc") == "", "pandoc not available")
   parsed <- system2("pandoc", c("-f", "markdown", "-t", "native"),
                     input = div, stdout = TRUE)
   expect_true(any(grepl("apa-table-meta", parsed, fixed = TRUE)))
@@ -94,6 +95,7 @@ test_that("both quote characters survive the meta div into pandoc's AST", {
                       note_md  = "x = y")
   expect_false(grepl("\\'", div, fixed = TRUE))
   expect_false(grepl('\\"', div, fixed = TRUE))
+  skip_if(Sys.which("pandoc") == "", "pandoc not available")
   json <- paste(system2("pandoc", c("-f", "markdown", "-t", "json"),
                         input = div, stdout = TRUE), collapse = "")
   # pandoc's JSON escapes a double quote as \" -- this is the value coming
@@ -127,6 +129,7 @@ test_that("a `\",\"` inside a note part is NOT guarded, and this says so", {
   # The previous test for this asserted only the R-side string and so could
   # not have observed the failure. This one asks pandoc, which is where the
   # decoding actually happens.
+  skip_if(Sys.which("pandoc") == "", "pandoc not available")
   div  <- apa_meta_div(title_md = "T", note_md = apa_note_attr(c('a","b', "c")))
   json <- paste(system2("pandoc", c("-f", "markdown", "-t", "json"),
                         input = div, stdout = TRUE), collapse = "")
@@ -143,11 +146,13 @@ test_that("a `\",\"` inside a note part is NOT guarded, and this says so", {
                          input = apa_meta_div("T", apa_note_attr(c("a", "c"))),
                          stdout = TRUE), collapse = "")
   expect_equal(length(regmatches(clean, gregexpr('\\\\",\\\\"', clean))[[1]]), 1L)
+})
 
-  # Unreachable from the generated path, which is why it is documented rather
-  # than defended: no builder puts a double quote in a note. Checked here
-  # against the real builders, so a future note that introduces one fails this
-  # and gets a decision made about it.
+test_that("no builder puts a double quote in a note", {
+  # The limitation in the test above is unreachable from the generated path,
+  # which is why it is documented rather than defended. Checked here against
+  # the real builders, so a future note that introduces a double quote fails
+  # this and gets a decision made about it.
   op <- options(contrasts = c("contr.sum", "contr.poly"))
   on.exit(options(op), add = TRUE)
   viagra <- NULL
@@ -195,6 +200,7 @@ test_that("apa.quarto.pdf() emits the meta div INSIDE the same asis_output as th
   # And the combined string really does parse as a RawBlock followed by a
   # Div carrying the class -- not merely "the substring is present somewhere",
   # which a corrupted, unparseable fence could also satisfy.
+  skip_if(Sys.which("pandoc") == "", "pandoc not available")
   parsed <- system2("pandoc", c("-f", "markdown", "-t", "native"),
                     input = txt, stdout = TRUE)
   expect_true(any(grepl("RawBlock", parsed, fixed = TRUE)))
@@ -212,6 +218,7 @@ test_that("apa.quarto.pdf() with title/note args still parses as a Div under pan
                         note = "A note.")
   txt <- as.character(out)
   expect_match(txt, "A Title With", fixed = TRUE)
+  skip_if(Sys.which("pandoc") == "", "pandoc not available")
   parsed <- system2("pandoc", c("-f", "markdown", "-t", "native"),
                     input = txt, stdout = TRUE)
   expect_true(any(grepl('"apa-table-meta"', parsed, fixed = TRUE)))

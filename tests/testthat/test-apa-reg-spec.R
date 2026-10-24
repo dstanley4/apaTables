@@ -51,7 +51,7 @@ test_that("apa.reg.table attaches a well-formed spec (single block)", {
   expect_length(s$notes, 2L)
   expect_match(as_plaintext(s$notes[[2]]), "^\\* indicates")
   expect_match(as_plaintext(s$notes[[2]]), "p < \\.01\\.$")
-  expect_match(apa_note_text(s), "p < \\.01\\.$")   # apaquarto string still ends with stars
+  expect_match(apa.note.text(s), "p < \\.01\\.$")   # apaquarto string still ends with stars
   expect_false(grepl("Note\\.", note))   # no "Note." prefix in the spec
 })
 

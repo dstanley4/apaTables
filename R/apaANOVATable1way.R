@@ -1,5 +1,6 @@
 #' Create an APA-style table of means for a one-way design
 #'
+#' @description
 #' \code{apa.1way.table()} creates a table of means and standard deviations
 #' of a dependent variable for each level of a grouping variable, in APA
 #' style. Optionally, the 95\% confidence interval for each mean is
@@ -26,7 +27,7 @@
 #' @param filename Optional file name. If supplied, the table is also saved
 #'   as a Word (\code{.docx}) or HTML (\code{.html}) file, according to the
 #'   file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
-#'   \code{.docx}.
+#'   \code{.docx}. An existing file with that name is replaced.
 #' @param table.number Number for the "Table N" line of the output. Defaults
 #'   to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
 #'   no number: none is then shown at the console or written to the Word file.
@@ -40,7 +41,7 @@
 #' @param landscape Whether this table is placed on a rotated (landscape)
 #'   page. The default, \code{NA}, means apaTables decides by measuring the
 #'   table against the page. Pass \code{TRUE} to insist on a rotated page or
-#'   \code{FALSE} to insist on an upright one. An explicit value is honoured
+#'   \code{FALSE} to insist on an upright one. An explicit value is honored
 #'   wherever the destination can carry it out; in a Quarto PDF that means
 #'   the chunk needs a \code{tbl-} label (see \code{\link{apa.quarto.pdf}}).
 #'   A table too wide for the page it is given is shrunk to fit rather
@@ -48,8 +49,23 @@
 #'   so it applies to PDF and Word output and is ignored, without complaint,
 #'   for HTML and slides. See \strong{Rotated (landscape) pages} below.
 #'
-#' @return A table object (class \code{apa_table}). Typing its name at the
-#'   console displays the table. Pass it to \code{\link{apa.save}} to create
+#' @details
+#' The size (\emph{n}), mean and standard deviation of each group use the
+#' cases in that group with a value on \code{dv}; a case with a missing
+#' \code{dv} is left out, and a case with no value on \code{iv} is in no
+#' group. With \code{show.conf.interval = TRUE}, the 95\% confidence
+#' interval for each mean is the one-sample \emph{t} interval from
+#' \code{\link[stats]{t.test}}, which uses only the scores in that group,
+#' not a pooled error term.
+#'
+#' \code{dv} must be numeric (a TRUE/FALSE \code{dv} gives proportions). A
+#' level of \code{iv} that no row of \code{data} has (for example, one left
+#' over after \code{subset()}) is left out of the table. Every other group
+#' needs at least two cases with a value on \code{dv}, or the function
+#' stops with a message naming the group.
+#'
+#' @return A table object (class \code{apa_table}). Typing the object name at
+#'   the console displays the table. Pass it to \code{\link{apa.save}} to create
 #'   a Word or HTML file. Or, if you are working in a Quarto document, use
 #'   \code{\link{apa.quarto.pdf}} or \code{\link{apa.quarto.docx}} to make
 #'   PDF and Word manuscripts, respectively.
@@ -62,7 +78,7 @@
 #' \preformatted{apa.save(filename = "Table1.docx", table1)}
 #'
 #' The file appears in your working directory -- the folder R is currently
-#' pointing at. Several tables can go into one file, each on its own page,
+#' pointing at. Several tables can go into one file, each on a separate page,
 #' numbered Table 1, Table 2, and so on in the order you list them:
 #'
 #' \preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
@@ -70,8 +86,8 @@
 #' The title above each table and the note below it are written by
 #' apaTables from the table itself; on this route there is no way to
 #' supply your own wording at this time. Tables are set in 12 point, and a
-#' table too wide for an upright page gets a rotated (landscape) page of
-#' its own rather than smaller type -- so a wide table coming out sideways
+#' table too wide for an upright page gets a rotated (landscape) page
+#' rather than smaller type -- so a wide table coming out sideways
 #' is expected, not an error.
 #'
 #' @section Quarto documents:
@@ -121,14 +137,14 @@
 #' There are four format-named functions for this -- \code{\link{apa.quarto.pdf}},
 #' \code{\link{apa.quarto.docx}}, \code{\link{apa.quarto.html}} and
 #' \code{\link{apa.quarto.revealjs}} -- one for each Quarto destination, and
-#' they behave identically: the document's own
-#' YAML \code{format:} line decides what is actually produced, so the name only
-#' states intent. This page's examples use \code{apa.quarto.pdf()} to match the
+#' they behave identically: the YAML
+#' \code{format:} line in the document decides what is actually produced, so the name only
+#' states intent. The examples on this page use \code{apa.quarto.pdf()} to match the
 #' \code{format: apaquarto-pdf} shown above; swap in \code{apa.quarto.docx()} or
 #' \code{apa.quarto.html()} together with the matching YAML line for Word or HTML.
 #'
 #' In the document, the table lives inside a code chunk like this one.
-#' \code{\link{apa.quarto.pdf}} displays the table body with its title and
+#' \code{\link{apa.quarto.pdf}} displays the table body with the title and
 #' note included automatically, so this chunk is complete -- there is no
 #' title or note line to write, and the wording stays correct when the
 #' analysis changes. The \code{library(apaTables)} line is part of the
@@ -152,16 +168,16 @@
 #' (portrait) PDF page, APA style places it on a rotated (landscape) page --
 #' and apaTables does that for you. It measures the table and asks apaquarto
 #' for a rotated page when one is needed, whether your tables sit in the text
-#' or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the document's
+#' or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the
 #' YAML header. A table wider still -- wider than even a rotated page -- is
 #' printed smaller instead, as small as it has to be so
 #' that no column is cut off. If that takes the type below 6 points, a
 #' warning in the rendered draft says so and points to \code{\link{apa.save}}
-#' for a full-size Word version. A table too tall for its page needs nothing
+#' for a full-size Word version. A table too tall for the page needs nothing
 #' either: it continues onto the next page by itself, with the column
 #' headings repeated at the top of each continuation and the note below the
 #' last piece. None of this applies to \code{\link{apa.save}} files: there, each table
-#' sits on a page of its own, always at full size.
+#' sits alone on a page, always at full size.
 #'
 #' To see this table (and every apaTables table type) in a complete
 #' working document, type
@@ -219,13 +235,13 @@
 #' # Print a ready-to-paste apaquarto code chunk:
 #' apa.quarto.template(x = table1)
 #'
-#' # Or write your own chunk; apa.quarto.pdf() displays the table body:
-#' apa.quarto.pdf(x = table1)
-#'
 #' # Clean up
 #' unlink(file.path(tempdir(), "table1.docx"))
 #' @export
 apa.1way.table <- function(iv, dv, data,filename=NA, table.number=1, show.conf.interval=FALSE, landscape=NA){
+     apa_check_landscape(landscape)
+     show.conf.interval <- apa_check_flag(show.conf.interval, "show.conf.interval")
+     filename <- apa_check_filename(filename)
      data <- as.data.frame(data)
      table_number_explicit <- !missing(table.number)
      table.number <- apa_table_number_value(table.number)
@@ -262,22 +278,20 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=1, show.conf.i
 
      iv <- as.factor(data[,iv.name])
      dv <- data[,dv.name]
+     dv <- apa_check_numeric_dv("apa.1way.table", dv, dv.name)
+     # levels with no cases (left over after subset(), say) are not groups
+     iv <- apa_drop_empty_levels(iv)
+     apa_check_has_groups("apa.1way.table", iv, iv.name)
+     apa_check_group_sizes("apa.1way.table", stats::setNames(list(iv), iv.name), dv, dv.name)
 
-     tables.out = one.way.table.console.and.rtf(iv=iv,dv=dv,iv.name=iv.name,dv.name=dv.name,show.conf.interval = show.conf.interval,table.number)
+     tables.out = one.way.table.console.and.rtf(iv=iv,dv=dv,iv.name=iv.name,dv.name=dv.name,show.conf.interval = show.conf.interval,table.number, show.n = TRUE)
      tbl.console <- tables.out$tbl.console
 
      table.title <- sprintf("Descriptive Statistics for %s by %s", apa_name_to_title(dv.name), apa_name_to_title(iv.name))
-     table.note <- "{\\i M} = mean. {\\i SD} = standard deviation."
-
-     if (show.conf.interval==TRUE) {
-          ci.txt <- "{\\i CI} = confidence interval."
-          table.note <- paste(table.note,ci.txt)
-     }
-
      # Ver 3.0 add ons
-     latex.table.note <- "\\\\textit{Note}. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. "
+     latex.table.note <- "\\\\textit{Note}. \\\\textit{n} = group size. \\\\textit{M} = mean. \\\\textit{SD} = standard deviation. "
      if (show.conf.interval==TRUE) {
-          latex.ci.txt <- "CI = confidence interval."
+          latex.ci.txt <- "CI = 95\\\\% confidence interval for each mean."
           latex.table.note <- paste(latex.table.note, latex.ci.txt)
      }
 
@@ -310,10 +324,14 @@ apa.1way.table <- function(iv, dv, data,filename=NA, table.number=1, show.conf.i
 
 
 
-apa.1way.table.work <- function(iv,dv,iv.name,dv.name, show.conf.interval) {
+# show.n adds each group's size (cases with a dv value) as an n column; the
+# one-way table shows it, the two-way table (which reuses this code for its
+# cells and marginals) does not.
+apa.1way.table.work <- function(iv,dv,iv.name,dv.name, show.conf.interval, show.n = FALSE) {
      iv.levels <- levels(iv)
      iv.level.numbers <- 1:length(iv.levels)
 
+     my.ns <- matrix(" ",length(iv.levels),1)
      my.means <- matrix(" ",length(iv.levels),1)
      my.sds <- matrix(" ",length(iv.levels),1)
      my.ci <- matrix(" ",length(iv.levels),1)
@@ -325,6 +343,8 @@ apa.1way.table.work <- function(iv,dv,iv.name,dv.name, show.conf.interval) {
           cur.cell <- dv[is.iv.level]
           cell.mean <- mean(cur.cell,na.rm=TRUE)
           cell.sd <-  stats::sd(cur.cell,na.rm=TRUE)
+
+          my.ns[r.num.iv,1] <- as.character(sum(!is.na(cur.cell)))
 
           my.means[r.num.iv,1] <- sprintf("%1.2f",cell.mean)
           my.sds[r.num.iv,1] <- sprintf("%1.2f",cell.sd)
@@ -342,12 +362,15 @@ apa.1way.table.work <- function(iv,dv,iv.name,dv.name, show.conf.interval) {
           data.table <- data.frame(my.means,my.ci,my.sds,stringsAsFactors = FALSE)
           names(data.table) <- c("M","CI","SD")
      }
+     if (isTRUE(show.n)) {
+          data.table <- cbind(data.frame(n = my.ns[, 1], stringsAsFactors = FALSE), data.table)
+     }
 
      return(data.table)
 }
 
-one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.interval=FALSE,table.number,add.blank.header=FALSE) {
-     table.out <- apa.1way.table.work(iv=iv,dv=dv,iv.name=iv.name,dv.name=dv.name, show.conf.interval=show.conf.interval)
+one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.interval=FALSE,table.number,add.blank.header=FALSE, show.n = FALSE) {
+     table.out <- apa.1way.table.work(iv=iv,dv=dv,iv.name=iv.name,dv.name=dv.name, show.conf.interval=show.conf.interval, show.n = show.n)
 
      #add first name column
      level.names <- as.data.frame(matrix(levels(iv),ncol=1))
@@ -364,9 +387,9 @@ one.way.table.console.and.rtf <- function(iv,dv,iv.name, dv.name, show.conf.inte
      names(table.body) <- get_oneway_column_names(table.body)
      names(table.body)[1] <- iv.name
 
-     table.note <- "Note. M = mean. SD = standard deviation.\n"
+     table.note <- if (isTRUE(show.n)) "Note. n = group size. M = mean. SD = standard deviation.\n" else "Note. M = mean. SD = standard deviation.\n"
      if (show.conf.interval==TRUE) {
-          ci.txt <- "CI = confidence interval."
+          ci.txt <- "CI = 95% confidence interval for each mean."
           table.note <- paste(table.note,ci.txt,sep="")
      }
      tbl.console <- list()
@@ -394,6 +417,7 @@ oneway_column_width <- function(column_name) {
 
      switch(column_name,
             IV = wide*1.5,
+            n = narrow,
             M = narrow,
             CI = wide*1.25,
             SD = narrow)
@@ -404,6 +428,7 @@ oneway_column_width <- function(column_name) {
 oneway_latex_column_names <- function(column_name) {
      switch(column_name,
             IV = "IV",
+            n = "$n$",
             M = "$M$",
             CI = "95\\% CI",
             SD = "$SD$")
@@ -422,6 +447,7 @@ get_oneway_latex_column_names <- function(df) {
 oneway_column_names <- function(column_name) {
      switch(column_name,
             IV = "IV",
+            n = "n",
             M = "M",
             CI = "M_95%_CI",
             SD = "SD")
@@ -447,10 +473,11 @@ make_markdown_column_alignment <- function(column_names) {
 
 # One-way table note as richtext (no "Note." prefix). Mirrors the console note.
 oneway_spec_note <- function(show_conf_interval) {
-  runs <- list(rt_run("M", italic = TRUE),  rt_run(" = mean. "),
+  runs <- list(rt_run("n", italic = TRUE),  rt_run(" = group size. "),
+               rt_run("M", italic = TRUE),  rt_run(" = mean. "),
                rt_run("SD", italic = TRUE), rt_run(" = standard deviation."))
   if (isTRUE(show_conf_interval)) {
-    runs <- c(runs, list(rt_run(" CI = confidence interval.")))
+    runs <- c(runs, list(rt_run(" CI = 95% confidence interval for each mean.")))
   }
   richtext(runs)
 }

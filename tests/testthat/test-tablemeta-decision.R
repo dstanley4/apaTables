@@ -18,5 +18,9 @@ test_that("the tablemeta filter's precedence decisions are correct", {
   out <- suppressWarnings(system2(
     "pandoc", c("lua", test_path("test-tablemeta-decision.lua")),
     stdout = TRUE, stderr = TRUE))
-  expect_equal(attr(out, "status") %||% 0L, 0L, info = paste(out, collapse = "\n"))
+  # system2() sets a status only on a non-zero exit. (No %||% here: base R
+  # has it only from 4.4.0, and the package supports R 4.1.)
+  status <- attr(out, "status")
+  expect_equal(if (is.null(status)) 0L else status, 0L,
+               info = paste(out, collapse = "\n"))
 })

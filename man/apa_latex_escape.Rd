@@ -7,7 +7,7 @@
 apa_latex_escape(txt)
 }
 \arguments{
-\item{txt}{a length-1 (or vectorised) character string.}
+\item{txt}{a length-1 (or vectorized) character string.}
 }
 \value{
 `txt` with LaTeX special characters escaped.

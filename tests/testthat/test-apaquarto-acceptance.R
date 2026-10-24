@@ -410,13 +410,13 @@ test_that("acceptance: a clobbered project repairs itself, and says so", {
   skip_if_not(file.exists(file.path(proj, "doc.pdf")), "no output to read")
 
   # The repair happened, and it was reported.
-  expect_true(any(grepl("replaced this project's apaquarto extension",
+  expect_true(any(grepl("replaced the apaquarto extension in this project",
                         first$log, fixed = TRUE)),
               info = "the clobbered extension was not repaired")
   # ...including the part that says this render is stale. Without this clause
   # a user gets exit 0, a receipt saying we fixed it, correct table numbers and
   # a note four pages from its table, with nothing said.
-  expect_true(any(grepl("rendered once more before its output is used",
+  expect_true(any(grepl("rendered once more before the output is used",
                         first$log, fixed = TRUE)),
               info = "the repair receipt did not say this render is stale")
 

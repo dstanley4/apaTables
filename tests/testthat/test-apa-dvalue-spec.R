@@ -3,24 +3,25 @@ test_that("apa.d.table attaches a well-formed spec (woven d/CI -> multi-line cel
   s <- tbl$spec
   expect_s3_class(s, "apa_table_spec")
   expect_silent(validate_apa_table_spec(s))
-  expect_length(s$col_labels, 5)
+  expect_length(s$col_labels, 6)
   expect_equal(vapply(s$col_labels, as_plaintext, character(1)),
-               c("Variable", "M", "SD", "1", "2"))
-  expect_equal(s$col_align, c("l", "r", "r", "r", "r"))
+               c("Variable", "n", "M", "SD", "1", "2"))
+  expect_equal(s$col_align, c("l", "r", "r", "r", "r", "r"))
   expect_length(s$body, 3)
   # row 1 Placebo: descriptives present, both d cells blank
   expect_equal(as_plaintext(s$body[[1]][[1]]), "1. Placebo")
-  expect_equal(as_plaintext(s$body[[1]][[2]]), "2.20")
-  expect_equal(trimws(as_plaintext(s$body[[1]][[4]])), "")
+  expect_equal(as_plaintext(s$body[[1]][[2]]), "5")
+  expect_equal(as_plaintext(s$body[[1]][[3]]), "2.20")
+  expect_equal(trimws(as_plaintext(s$body[[1]][[5]])), "")
   # row 2 Low Dose: col "1" stacks d over [CI]
-  cell <- as_plaintext(s$body[[2]][[4]])
+  cell <- as_plaintext(s$body[[2]][[5]])
   expect_match(cell, "0.77", fixed = TRUE)
   expect_match(cell, "[-0.55, 2.04]", fixed = TRUE)
   expect_true(grepl("\n", cell))                 # two lines in one cell
-  expect_equal(trimws(as_plaintext(s$body[[2]][[5]])), "")  # col "2" blank
+  expect_equal(trimws(as_plaintext(s$body[[2]][[6]])), "")  # col "2" blank
   # row 3 High Dose: both d cells populated
-  expect_match(as_plaintext(s$body[[3]][[4]]), "1.93", fixed = TRUE)
-  expect_match(as_plaintext(s$body[[3]][[5]]), "1.24", fixed = TRUE)
+  expect_match(as_plaintext(s$body[[3]][[5]]), "1.93", fixed = TRUE)
+  expect_match(as_plaintext(s$body[[3]][[6]]), "1.24", fixed = TRUE)
   # title carries italic d; note has no "Note." prefix and cites Borenstein
   # Generated from the iv and dv rather than a stock string.
   expect_equal(as_plaintext(s$title),

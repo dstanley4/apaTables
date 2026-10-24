@@ -15,7 +15,7 @@ format: apaquarto-pdf
      Sharing this document:
        * Send the whole folder. The _extensions folder travels with it and
          there is nothing for the person receiving it to do.
-       * Send this .qmd on its own. The person receiving it puts it in a
+       * Send only this .qmd. The person receiving it puts it in a
          folder and runs apa.quarto.setup() in R once, before rendering.
 
      Do not run "quarto add" or "quarto update" in this folder: both replace

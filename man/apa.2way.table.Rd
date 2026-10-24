@@ -32,7 +32,7 @@ without quotation marks.}
 \item{filename}{Optional file name. If supplied, the table is also saved
 as a Word (\code{.docx}) or HTML (\code{.html}) file, according to the
 file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
-\code{.docx}.}
+\code{.docx}. An existing file with that name is replaced.}
 
 \item{table.number}{Number for the "Table N" line of the output. Defaults
 to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
@@ -54,7 +54,7 @@ each level of \code{iv1} and \code{iv2}. Used only when
 \item{landscape}{Whether this table is placed on a rotated (landscape)
 page. The default, \code{NA}, means apaTables decides by measuring the
 table against the page. Pass \code{TRUE} to insist on a rotated page or
-\code{FALSE} to insist on an upright one. An explicit value is honoured
+\code{FALSE} to insist on an upright one. An explicit value is honored
 wherever the destination can carry it out; in a Quarto PDF that means
 the chunk needs a \code{tbl-} label (see \code{\link{apa.quarto.pdf}}).
 A table too wide for the page it is given is shrunk to fit rather
@@ -63,8 +63,8 @@ so it applies to PDF and Word output and is ignored, without complaint,
 for HTML and slides. See \strong{Rotated (landscape) pages} below.}
 }
 \value{
-A table object (class \code{apa_table}). Typing its name at the
-  console displays the table. Pass it to \code{\link{apa.save}} to create
+A table object (class \code{apa_table}). Typing the object name at
+  the console displays the table. Pass it to \code{\link{apa.save}} to create
   a Word or HTML file. Or, if you are working in a Quarto document, use
   \code{\link{apa.quarto.pdf}} or \code{\link{apa.quarto.docx}} to make
   PDF and Word manuscripts, respectively.
@@ -76,8 +76,7 @@ APA style. Optionally, the 95\% confidence interval for each cell mean
 or the marginal means can be displayed. The table prints to the console. The most
 common next step is saving the table as a Word file to use in a
 manuscript:
-}
-\details{
+
 \preformatted{table1 <- apa.2way.table(iv1 = gender, iv2 = alcohol,
                          dv = attractiveness, data = goggles)
 apa.save(filename = "Table1.docx", table1)}
@@ -88,6 +87,29 @@ table can also be placed in a Quarto document, so a rendered manuscript
 comes out with the table already in place -- see the \emph{Quarto
 documents} section below.
 }
+\details{
+The mean and standard deviation for each cell use the cases in that cell
+with a value on \code{dv}; a case with a missing value on \code{dv},
+\code{iv1} or \code{iv2} is left out. With
+\code{show.conf.interval = TRUE}, the 95\% confidence interval for each
+cell mean is the one-sample \emph{t} interval from
+\code{\link[stats]{t.test}}, which uses only the scores in that cell,
+not a pooled error term.
+
+\code{dv} must be numeric (a TRUE/FALSE \code{dv} gives proportions). A
+level of \code{iv1} or \code{iv2} that no row of \code{data} has (for
+example, one left over after \code{subset()}) is left out of the table.
+Every cell needs at least two complete cases, or the function stops with
+a message naming the cell.
+
+The marginal means (\code{show.marginal.means = TRUE}) are the observed
+means of all cases at each level of one factor, across the levels of the
+other, the same means SPSS reports in the Descriptive Statistics
+table. In an unbalanced design, where the cells differ in the number of
+cases, each cell counts in proportion to the number of cases in it, so
+these means can differ from the unweighted means of the cell means that a Type III
+test of a main effect compares.
+}
 \section{Word files (apa.save)}{
 
 \code{\link{apa.save}} writes the finished table to a Word file you can
@@ -97,7 +119,7 @@ table:
 \preformatted{apa.save(filename = "Table1.docx", table1)}
 
 The file appears in your working directory -- the folder R is currently
-pointing at. Several tables can go into one file, each on its own page,
+pointing at. Several tables can go into one file, each on a separate page,
 numbered Table 1, Table 2, and so on in the order you list them:
 
 \preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
@@ -105,8 +127,8 @@ numbered Table 1, Table 2, and so on in the order you list them:
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to
 supply your own wording at this time. Tables are set in 12 point, and a
-table too wide for an upright page gets a rotated (landscape) page of
-its own rather than smaller type -- so a wide table coming out sideways
+table too wide for an upright page gets a rotated (landscape) page
+rather than smaller type -- so a wide table coming out sideways
 is expected, not an error.
 }
 
@@ -158,14 +180,14 @@ format: apaquarto-docx
 There are four format-named functions for this -- \code{\link{apa.quarto.pdf}},
 \code{\link{apa.quarto.docx}}, \code{\link{apa.quarto.html}} and
 \code{\link{apa.quarto.revealjs}} -- one for each Quarto destination, and
-they behave identically: the document's own
-YAML \code{format:} line decides what is actually produced, so the name only
-states intent. This page's examples use \code{apa.quarto.pdf()} to match the
+they behave identically: the YAML
+\code{format:} line in the document decides what is actually produced, so the name only
+states intent. The examples on this page use \code{apa.quarto.pdf()} to match the
 \code{format: apaquarto-pdf} shown above; swap in \code{apa.quarto.docx()} or
 \code{apa.quarto.html()} together with the matching YAML line for Word or HTML.
 
 In the document, the table lives inside a code chunk like this one.
-\code{\link{apa.quarto.pdf}} displays the table body with its title and
+\code{\link{apa.quarto.pdf}} displays the table body with the title and
 note included automatically, so this chunk is complete -- there is no
 title or note line to write, and the wording stays correct when the
 analysis changes. The \code{library(apaTables)} line is part of the
@@ -190,16 +212,16 @@ number, no title, and no note, however you try to supply them.
 (portrait) PDF page, APA style places it on a rotated (landscape) page --
 and apaTables does that for you. It measures the table and asks apaquarto
 for a rotated page when one is needed, whether your tables sit in the text
-or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the document's
+or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the
 YAML header. A table wider still -- wider than even a rotated page -- is
 printed smaller instead, as small as it has to be so
 that no column is cut off. If that takes the type below 6 points, a
 warning in the rendered draft says so and points to \code{\link{apa.save}}
-for a full-size Word version. A table too tall for its page needs nothing
+for a full-size Word version. A table too tall for the page needs nothing
 either: it continues onto the next page by itself, with the column
 headings repeated at the top of each continuation and the note below the
 last piece. None of this applies to \code{\link{apa.save}} files: there, each table
-sits on a page of its own, always at full size.
+sits alone on a page, always at full size.
 
 To see this table (and every apaTables table type) in a complete
 working document, type
@@ -256,9 +278,6 @@ apa.save(filename = file.path(tempdir(), "my_tables.docx"), table2, table3)
 # Quarto documents ----------------------------------------
 # Print a ready-to-paste apaquarto code chunk:
 apa.quarto.template(x = table2)
-
-# Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(x = table2)
 
 # Clean up
 unlink(file.path(tempdir(), "my_tables.docx"))

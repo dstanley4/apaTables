@@ -9,7 +9,7 @@ author:
       - name: Your Institution
 format:
   apaquarto-docx:
-    # floatsintext places each table in the text where its code chunk sits,
+    # floatsintext places each table in the text where the code chunk sits,
     # instead of collecting every table on pages at the end of the
     # manuscript. It is used here so that each table appears on the page
     # that describes it. Either placement works: apaTables tables render
@@ -25,13 +25,13 @@ nothing to install before rendering this file. Full details about
 apaquarto itself are at https://wjschne.github.io/apaquarto/ .
 
 Rendering this file to Word needs no LaTeX -- Quarto writes the .docx
-directly. Its companion file ending in -pdf.qmd renders the same tables to PDF,
+directly. The companion file ending in -pdf.qmd renders the same tables to PDF,
 which does need a LaTeX engine such as TinyTeX.
 
 Sharing this document:
   * Send the whole folder. The _extensions folder travels with it and
     there is nothing for the person receiving it to do.
-  * Send this .qmd on its own. The person receiving it puts it in a
+  * Send only this .qmd. The person receiving it puts it in a
     folder and runs apa.quarto.setup() in R once, before rendering.
 
 Do not run "quarto add" or "quarto update" in this folder: both replace
@@ -47,19 +47,19 @@ Without them the render stops on that page with a message that afex or tidyr
 is missing.
 
 A second file ending in -pdf.qmd was written next to this one: the same
-document set up for PDF. The two differ only in their format line, in
+document set up for PDF. The two differ only in the format line, in
 which apa.quarto.*() function the chunks call, and in prose like this
 that names the output.
 
 Each page below builds one apaTables table using the "write it yourself"
 approach: build the table on one line, then display it with
-apa.quarto.docx() on the next, inside a code chunk whose settings lines you
+apa.quarto.docx() on the next, inside a code chunk with settings lines you
 write by hand --
   #| label: an identifier starting with "tbl-" so you can cross-reference the
             table in text (e.g. @tbl-correlation)
 Every table chunk also carries #| message: false and #| warning: true.
 The first keeps package-loading chatter out of the document; the second
-(knitr's default, set deliberately here) lets apaTables tell you in the
+(the knitr default, set deliberately here) lets apaTables tell you in the
 draft if a table cannot fit.
 
 That #| label line is the only one most chunks below need, and it is not
@@ -68,13 +68,13 @@ chunk at all, so there is no number, no title and no note, however you try
 to supply them.
 
 Nothing in this file types a title or a note. Every one you see in the
-rendered Word document was written by apaTables from the table itself. Let it do that.
-It knows what the table contains, so it describes it correctly and keeps
-the italics right, and it writes the title again every time you render. A
+rendered Word document was written by apaTables from the table itself. Leave it that way.
+Because apaTables builds them from the table, they describe it correctly,
+the italics are right, and the title is written again every time you render. A
 title you type by hand stops being true the moment you change the analysis
 above it.
 
-ONE page, the d-values table, writes its own title and note instead, because
+ONE page, the d-values table, uses a hand-written title and note instead, because
 that is worth knowing about for the times you need your own wording. It comes
 after several ordinary pages on purpose: see how the normal way looks first.
 
@@ -84,14 +84,14 @@ rotated (landscape) page whenever the table is too wide to stand upright on
 an ordinary page. TWO pages get one here -- the wide correlation table and the
 hierarchical regression table; the other seven tables fit upright.
 
-This document's format is apaquarto-docx, so every table below is displayed
+The format of this document is apaquarto-docx, so every table below is displayed
 with apa.quarto.docx() -- the function named for this destination. The
 companion file ending in -pdf.qmd renders the same tables to PDF with
 apa.quarto.pdf(), and an HTML document works the same way with
 format: apaquarto-html and apa.quarto.html(). The YAML format line above is
 what actually decides the output; the call name states intent, and if the
 two ever disagree the rendered draft carries one line saying which YAML
-line would make them match. See ?apa.quarto.pdf for the full behaviour,
+line would make them match. See ?apa.quarto.pdf for the full behavior,
 shared by all three.
 
 Edit the title and author above, and the captions and notes below, to suit your
@@ -103,7 +103,7 @@ own work.
 #| include: false
 library(apaTables)
 # afex is loaded here, out of sight, so the one-time startup notices from
-# its dependencies stay out of the rendered document
+# the afex dependencies stay out of the rendered document
 if (requireNamespace("afex", quietly = TRUE)) library(afex)
 ```
 
@@ -138,7 +138,7 @@ apa.quarto.docx(x = my_table)
 
 The correlation table earlier in this document has seven variables and is
 narrow enough for an ordinary upright page. (Being too TALL is not a problem
-that needs solving: a table simply continues onto the next page with its
+that needs solving: a table simply continues onto the next page with the
 column headings repeated, which is what the earlier one does here if it starts
 part-way down a page.) This one has nine variables and is too WIDE, which is a
 different matter entirely: no amount of continuing onto another page makes a
@@ -148,17 +148,17 @@ out), and an upright page gives a table only 6.5 inches. When this document
 was rendered, apaTables measured the table, found it would not fit, and
 asked apaquarto for a rotated (landscape) page. The table is printed at full size
 there: no column is dropped and nothing is shrunk. A rotated page cannot also
-carry this upright paragraph, which is why the table moved to a page of its
-own.
+carry this upright paragraph, which is why the table moved to a separate
+page.
 
-**There is nothing in this document's `.qmd` source file that asks for the
+**There is nothing in the `.qmd` source file of this document that asks for the
 rotation.** The code chunk that produces the table is an ordinary code chunk,
 and the settings block at the top of the source file says nothing about page
 orientation. You do not have to predict
 which of your tables will need a rotated page -- apaTables measures each one
 as the document renders and asks for a rotated page only when it is needed.
 That is why the earlier correlation table stayed upright while this one
-turned: the decision is made per table, from its actual width.
+turned: the decision is made per table, from the actual width of that table.
 
 The same thing happens to the hierarchical regression table later in this
 document, for the same reason: any apaTables table that measures too wide
@@ -181,7 +181,7 @@ apa.quarto.docx(x = my_table)
 # Regression table
 
 `apa.reg.table()` summarizes one or more `lm()` regression models. Build the
-table, then send it to `apa.quarto.docx()` -- its title and note are
+table, then send it to `apa.quarto.docx()` -- the title and note are
 generated automatically, so the chunk needs nothing beyond the label.
 
 ```{r}
@@ -203,7 +203,7 @@ single-model one -- **and adding more predictors does not widen a regression
 table at all, because predictors are rows.** If you want to see a regression
 table on a rotated page, the blocks form is the one that gets there.
 
-The table for this section is on the next page, and that page is rotated. The table is about 7.3 inches wide (cell padding counted, as Word lays it out); an upright (portrait) page gives a table 6.5 inches. So when this document was rendered, apaTables measured the table, found it would not stand upright, and asked apaquarto for a rotated page. The table is at its full size on that page; no column is cut off and nothing is shrunk. There is nothing in this document's `.qmd` source file that asks for the rotation. The code chunk below is an ordinary code chunk, and the settings block at the top of the source file says nothing about page orientation. A rotated page cannot also carry this upright paragraph, which is why the table moved to a page of its own.
+The table for this section is on the next page, and that page is rotated. The table is about 7.3 inches wide (cell padding counted, as Word lays it out); an upright (portrait) page gives a table 6.5 inches. So when this document was rendered, apaTables measured the table, found it would not stand upright, and asked apaquarto for a rotated page. The table is at full size on that page; no column is cut off and nothing is shrunk. There is nothing in the `.qmd` source file of this document that asks for the rotation. The code chunk below is an ordinary code chunk, and the settings block at the top of the source file says nothing about page orientation. A rotated page cannot also carry this upright paragraph, which is why the table moved to a separate page.
 
 ```{r}
 #| label: tbl-regblocks
@@ -242,7 +242,7 @@ document leaves them alone.
 my_table <- apa.d.table(iv = dose, dv = libido, data = viagra)
 apa.quarto.docx(x = my_table,
     title = "Means, Standard Deviations, and My Own d-Value Title",
-    note  = "*M* = mean. *SD* = standard deviation. My own note describing the *d*-values and confidence intervals.")
+    note  = "*n* = group size. *M* = mean. *SD* = standard deviation. My own note describing the *d*-values and confidence intervals.")
 ```
 
 {{< pagebreak >}}

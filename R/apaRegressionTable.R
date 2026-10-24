@@ -1,10 +1,11 @@
 #' Create an APA-style regression table
 #'
+#' @description
 #' \code{apa.reg.table()} creates a regression table in APA style from one
 #' or more \code{\link[stats]{lm}} results. For each predictor the table
 #' reports the unstandardized regression weight (b), the standardized
-#' regression weight (beta), the semi-partial correlation squared, and the
-#' zero-order correlation, each with its confidence interval, along with
+#' regression weight (beta), and the semi-partial correlation squared, each
+#' with a confidence interval, and the zero-order correlation, along with
 #' model fit (R-squared). When several \code{lm} results are supplied
 #' (blocks in a hierarchical regression), the table also reports the change
 #' in R-squared for each block. The table prints to the console. The most
@@ -23,11 +24,12 @@
 #'
 #' @param ... One or more results from \code{\link[stats]{lm}} -- one for
 #'   each block in a hierarchical regression. All must use the same
-#'   criterion variable.
+#'   criterion variable, and each needs an intercept and at least one
+#'   predictor. Models from \code{glm()} are not supported.
 #' @param filename Optional file name. If supplied, the table is also saved
 #'   as a Word (\code{.docx}) or HTML (\code{.html}) file, according to the
 #'   file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
-#'   \code{.docx}.
+#'   \code{.docx}. An existing file with that name is replaced.
 #' @param table.number Number for the "Table N" line of the output. Defaults
 #'   to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
 #'   no number: none is then shown at the console or written to the Word file.
@@ -40,11 +42,12 @@
 #'   the default) for the intervals around the proportion-of-variance
 #'   measures (semi-partial correlation squared, R-squared, and change in
 #'   R-squared). Using \code{.90} keeps conclusions based on these
-#'   intervals consistent with the p-value for the block.
+#'   intervals consistent with the p-value for the block. Any other value
+#'   stops with a message.
 #' @param landscape Whether this table is placed on a rotated (landscape)
 #'   page. The default, \code{NA}, means apaTables decides by measuring the
 #'   table against the page. Pass \code{TRUE} to insist on a rotated page or
-#'   \code{FALSE} to insist on an upright one. An explicit value is honoured
+#'   \code{FALSE} to insist on an upright one. An explicit value is honored
 #'   wherever the destination can carry it out; in a Quarto PDF that means
 #'   the chunk needs a \code{tbl-} label (see \code{\link{apa.quarto.pdf}}).
 #'   A table too wide for the page it is given is shrunk to fit rather
@@ -58,16 +61,42 @@
 #' two or more predictors, are calculated with the asymptotic approach of
 #' Alf and Graf (1999). Note that Algina, Keselman, and Penfield (2008)
 #' found this approach can under some circumstances lead to inaccurate
-#' confidence intervals on proportion-of-variance values.
+#' confidence intervals on proportion-of-variance values. The interval is
+#' symmetric and, for a small effect, can extend below 0; the limits are
+#' held to the range 0 to 1, so a lower limit can print as .00 where the
+#' formula gave a negative value.
 #'
 #' The confidence interval for R-squared -- and, when a model has a single
-#' predictor, the interval for that predictor's semi-partial correlation
-#' squared, which then equals R-squared -- is computed by
+#' predictor, the interval for the semi-partial correlation squared of
+#' that predictor, which then equals R-squared -- is computed by
 #' \code{MBESS::ci.R2()} using the noncentral F distribution for fixed
 #' predictors.
 #'
-#' @return A table object (class \code{apa_table}). Typing its name at the
-#'   console displays the table. Pass it to \code{\link{apa.save}} to create
+#' The confidence interval for b is the one \code{\link[stats]{confint}}
+#' gives. The interval for beta is that interval rescaled by the ratio of
+#' the standard deviation of the predictor to that of the criterion; it
+#' treats both sample standard deviations as fixed, so it does not reflect
+#' the sampling error in them and can be too narrow (see Jones & Waller, 2013, for
+#' intervals that do).
+#'
+#' beta and r are not shown when any block has a factor (categorical)
+#' predictor or a term that R builds into new model columns, such as
+#' an interaction written \code{a * b} or \code{a:b}, or \code{poly()};
+#' beta is not shown when the models are weighted. A product written with
+#' \code{I()}, such as \code{I(a * b)}, keeps beta, and r for that term
+#' is left blank; a single transformed term such as \code{log(x)} keeps both,
+#' computed on the transformed variable. The table note defines only the
+#' columns shown.
+#'
+#' The table describes the models as \code{lm()} fitted them, so cases that
+#' \code{lm()} dropped for missing values (the default) are not in it, and
+#' the N in the note is the number of cases the models used. Every block
+#' must use the same cases. A model with an offset (an \code{offset()} term,
+#' or the \code{offset} argument of \code{lm()}) is not supported and stops
+#' with a message.
+#'
+#' @return A table object (class \code{apa_table}). Typing the object name at
+#'   the console displays the table. Pass it to \code{\link{apa.save}} to create
 #'   a Word or HTML file. Or, if you are working in a Quarto document, use
 #'   \code{\link{apa.quarto.pdf}} or \code{\link{apa.quarto.docx}} to make
 #'   PDF and Word manuscripts, respectively.
@@ -80,7 +109,7 @@
 #' \preformatted{apa.save(filename = "Table1.docx", table1)}
 #'
 #' The file appears in your working directory -- the folder R is currently
-#' pointing at. Several tables can go into one file, each on its own page,
+#' pointing at. Several tables can go into one file, each on a separate page,
 #' numbered Table 1, Table 2, and so on in the order you list them:
 #'
 #' \preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
@@ -88,8 +117,8 @@
 #' The title above each table and the note below it are written by
 #' apaTables from the table itself; on this route there is no way to
 #' supply your own wording at this time. Tables are set in 12 point, and a
-#' table too wide for an upright page gets a rotated (landscape) page of
-#' its own rather than smaller type -- so a wide table coming out sideways
+#' table too wide for an upright page gets a rotated (landscape) page
+#' rather than smaller type -- so a wide table coming out sideways
 #' is expected, not an error.
 #'
 #' @section Quarto documents:
@@ -139,14 +168,14 @@
 #' There are four format-named functions for this -- \code{\link{apa.quarto.pdf}},
 #' \code{\link{apa.quarto.docx}}, \code{\link{apa.quarto.html}} and
 #' \code{\link{apa.quarto.revealjs}} -- one for each Quarto destination, and
-#' they behave identically: the document's own
-#' YAML \code{format:} line decides what is actually produced, so the name only
-#' states intent. This page's examples use \code{apa.quarto.pdf()} to match the
+#' they behave identically: the YAML
+#' \code{format:} line in the document decides what is actually produced, so the name only
+#' states intent. The examples on this page use \code{apa.quarto.pdf()} to match the
 #' \code{format: apaquarto-pdf} shown above; swap in \code{apa.quarto.docx()} or
 #' \code{apa.quarto.html()} together with the matching YAML line for Word or HTML.
 #'
 #' In the document, the table lives inside a code chunk like this one.
-#' \code{\link{apa.quarto.pdf}} displays the table body with its title and
+#' \code{\link{apa.quarto.pdf}} displays the table body with the title and
 #' note included automatically, so this chunk is complete -- there is no
 #' title or note line to write, and the wording stays correct when the
 #' analysis changes. The \code{library(apaTables)} line is part of the
@@ -171,16 +200,16 @@
 #' (portrait) PDF page, APA style places it on a rotated (landscape) page --
 #' and apaTables does that for you. It measures the table and asks apaquarto
 #' for a rotated page when one is needed, whether your tables sit in the text
-#' or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the document's
+#' or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the
 #' YAML header. A table wider still -- wider than even a rotated page -- is
 #' printed smaller instead, as small as it has to be so
 #' that no column is cut off. If that takes the type below 6 points, a
 #' warning in the rendered draft says so and points to \code{\link{apa.save}}
-#' for a full-size Word version. A table too tall for its page needs nothing
+#' for a full-size Word version. A table too tall for the page needs nothing
 #' either: it continues onto the next page by itself, with the column
 #' headings repeated at the top of each continuation and the note below the
 #' last piece. None of this applies to \code{\link{apa.save}} files: there, each table
-#' sits on a page of its own, always at full size.
+#' sits alone on a page, always at full size.
 #'
 #' To see this table (and every apaTables table type) in a complete
 #' working document, type
@@ -223,6 +252,8 @@
 #'
 #' Algina, J., Keselman, H. J., & Penfield, R. J. (2008). Note on a confidence interval for the squared semipartial correlation coefficient. Educational and Psychological Measurement, 68(5), 734-741.
 #'
+#' Jones, J. A., & Waller, N. G. (2013). Computing confidence intervals for standardized regression coefficients. Psychological Methods, 18(4), 435-453.
+#'
 #' Kelley, K. (2007). Constructing confidence intervals for standardized effect sizes: Theory, application, and implementation. Journal of Statistical Software, 20(8), 1-24.
 #'
 #' Steiger, J. H., & Fouladi, R. T. (1992). R2: A computer program for interval estimation, power calculation, and hypothesis testing for the squared multiple correlation. Behavior Research Methods, Instruments, & Computers, 24, 581-582.
@@ -246,9 +277,6 @@
 #' # Quarto documents ----------------------------------------
 #' # Print a ready-to-paste apaquarto code chunk:
 #' apa.quarto.template(x = table1)
-#'
-#' # Or write your own chunk; apa.quarto.pdf() displays the table body:
-#' apa.quarto.pdf(x = table1)
 #'
 #' # Clean up
 #' unlink(file.path(tempdir(), "table1.docx"))
@@ -294,21 +322,39 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
      table.number <- table_number
      is_random_predictors <- FALSE
 
+     filename <- apa_check_filename(filename)
      if (is.na(filename)) {
           make_file_flag=FALSE
      } else {
           make_file_flag=TRUE
      }
 
-     if (prop.var.conf.level == .90) {
-          prop_var_conf_level <- .90
-     } else {
-          prop_var_conf_level <- .95
-     }
+     apa_check_landscape(landscape)
+     prop_var_conf_level <- apa_check_conf_level(prop.var.conf.level, "prop.var.conf.level")
 
 
 
      L=length(regression_results_list)
+     if (L == 0) {
+          stop("apa.reg.table() needs at least one model fitted with lm().", call. = FALSE)
+     }
+     model_label <- function(i) if (L == 1) "the model" else sprintf("block %d", i)
+     for (i in seq_len(L)) {
+          apa_check_lm("apa.reg.table", regression_results_list[[i]], model_label(i),
+                       allow_aov = FALSE)
+          cur_terms <- stats::terms(regression_results_list[[i]])
+          if (length(attr(cur_terms, "term.labels")) == 0) {
+               stop(sprintf("apa.reg.table() needs at least one predictor in each model, but %s has none.",
+                            model_label(i)), call. = FALSE)
+          }
+          if (attr(cur_terms, "intercept") == 0) {
+               stop(sprintf("apa.reg.table() needs models with an intercept, but %s was fitted without one (a 0 or - 1 in the formula).",
+                            model_label(i)), call. = FALSE)
+          }
+     }
+     if (any(vapply(regression_results_list, apa_model_has_offset, logical(1)))) {
+          stop("apa.reg.table error:\napaTables does not support models with an offset (an offset() term, or the offset argument of lm()).\nFit the model without it.", call. = FALSE)
+     }
      is_same_criterion <- c()
      first_result <- regression_results_list[[1]]
      first_criterion <- colnames(first_result$model)[1]
@@ -326,7 +372,7 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
      n_size <- n
      if (L > 1) {
           # Delta R2 compares blocks fitted to the same cases, in the same
-          # order, with the same weights and offset.
+          # order, with the same weights.
           same_vector <- function(a, b) {
                (is.null(a) && is.null(b)) ||
                     (!is.null(a) && !is.null(b) && length(a) == length(b) &&
@@ -337,16 +383,15 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
                if (!same_vector(stats::model.response(frames[[i]]), stats::model.response(frames[[1]]))) {
                     stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must be fitted to the same cases, in the same order.\nThese blocks were fitted to different rows of data -- usually because a predictor added in a later block has missing values -- or to the same rows in a different order (for example, after merge() or sorting).\n\nFit every block to one data frame, with the incomplete rows removed once:\ncomplete <- na.omit(my_data[, c(\"y\", \"a\", \"b\", \"c\")])\nblock1 <- lm(y ~ a + b, data = complete)\nblock2 <- lm(y ~ a + b + c, data = complete)", call. = FALSE)
                }
-               if (!same_vector(stats::model.weights(frames[[i]]), stats::model.weights(frames[[1]])) ||
-                   !same_vector(stats::model.offset(frames[[i]]), stats::model.offset(frames[[1]]))) {
-                    stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must use the same weights and the same offset.", call. = FALSE)
+               if (!same_vector(stats::model.weights(frames[[i]]), stats::model.weights(frames[[1]]))) {
+                    stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must use the same weights.", call. = FALSE)
                }
           }
 
           # Each block must be able to reproduce every column of the block
           # before it and add at least one more. Comparing the model matrices
           # rather than the formulas accepts a step written as a new
-          # parameterisation (wt, then poly(wt, 2)) and refuses blocks that
+          # parameterization (wt, then poly(wt, 2)) and refuses blocks that
           # share nothing. (An earlier check compared intersect() with the
           # previous block, which is vacuously TRUE for disjoint blocks, and
           # printed a negative Delta R2 with a CI of [NaN, NaN].)
@@ -397,9 +442,6 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
           block_out_latex <- rbind(model_label_line_latex, block_out_latex)
      }
 
-
-     first_block_calculate_cor  <- block_results[[1]]$calculate_cor # use later for table note
-     first_block_calculate_beta <- block_results[[1]]$calculate_beta # use later for table note
 
      last_block_summary <- block_results[[1]]$model_summary_extended
      last_block_lm <- regression_results_list[[1]]
@@ -452,6 +494,10 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
      block_out_latex$predictor <- clean_predictor_names(block_out_latex$predictor)
 
      spec_source_df <- block_out_txt   # raw dplyr keys + clean predictors, before console rename
+     # The note defines beta and r only when the table shows them (factor
+     # predictors, weights, or a later block with either drop them).
+     has_beta <- "beta" %in% names(block_out_txt)
+     has_r    <- "r" %in% names(block_out_txt)
 
 
      #console table
@@ -475,7 +521,7 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
 
      table_body <- block_out_txt
 
-     table_note <- get_reg_table_note_txt(first_block_calculate_cor, first_block_calculate_beta, n_size)
+     table_note <- get_reg_table_note_txt(has_r, has_beta, n_size)
 
      table_block_results <-  block_results
 
@@ -503,7 +549,7 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
                                 table_title_latex, table_number,
                                 landscape = apa_landscape_value(landscape))
 
-     table_note_latex <- get_reg_table_note_latex(first_block_calculate_cor, first_block_calculate_beta, n_size)
+     table_note_latex <- get_reg_table_note_latex(has_r, has_beta, n_size)
 
      block_out_latex$predictor <- gsub("_", " ", block_out_latex$predictor)
 
@@ -830,7 +876,11 @@ output_column_width <- function(column_name) {
 
 get_reg_table_note_txt <- function(calculate_cor,calculate_beta, n_size) {
 
-     table_note <- sprintf("Note. N = %g. b = unstandardized regression weight. beta = standardized regression weight. Unique R2 = semipartial correlation squared. r = zero-order correlation. CI = confidence interval.  \n* indicates p < .05. ** indicates p < .01.\n",n_size)
+     table_note <- paste0(sprintf("Note. N = %g. b = unstandardized regression weight. ", n_size),
+                          if (calculate_beta) "beta = standardized regression weight. " else "",
+                          "Unique R2 = semipartial correlation squared. ",
+                          if (calculate_cor) "r = zero-order correlation. " else "",
+                          "CI = confidence interval.  \n* indicates p < .05. ** indicates p < .01.\n")
 
      return(table_note)
 
@@ -838,7 +888,11 @@ get_reg_table_note_txt <- function(calculate_cor,calculate_beta, n_size) {
 
 
 get_reg_table_note_latex <- function(calculate_cor,calculate_beta, n_size) {
-     table_note <- sprintf("\\\\textit{Note}. $N$ = %g. $b$ = unstandardized regression weight. $beta$ = standardized regression weight. Unique $R^2$ = semipartial correlation squared. $r$ = zero-order correlation. CI = confidence interval. \\\\newline  * indicates $p$ < .05. ** indicates $p$ < .01.", n_size)
+     table_note <- paste0(sprintf("\\\\textit{Note}. $N$ = %g. $b$ = unstandardized regression weight. ", n_size),
+                          if (calculate_beta) "$beta$ = standardized regression weight. " else "",
+                          "Unique $R^2$ = semipartial correlation squared. ",
+                          if (calculate_cor) "$r$ = zero-order correlation. " else "",
+                          "CI = confidence interval. \\\\newline  * indicates $p$ < .05. ** indicates $p$ < .01.")
      return(table_note)
 }
 
@@ -946,14 +1000,14 @@ reg_col_spec <- function(key, prop_var_conf_level = .95) {
 }
 
 # Regression table note as richtext (no "Note." prefix; apaquarto/apa.save add it).
-reg_spec_note <- function(n_size) {
+reg_spec_note <- function(n_size, has_beta = TRUE, has_r = TRUE) {
   runs <- c(
     list(rt_run("N", italic = TRUE), rt_run(sprintf(" = %g. ", n_size))),
     list(rt_run("b", italic = TRUE), rt_run(" = unstandardized regression weight. ")),
-    list(rt_run("\u03b2", italic = TRUE), rt_run(" = standardized regression weight. ")),
+    if (has_beta) list(rt_run("\u03b2", italic = TRUE), rt_run(" = standardized regression weight. ")),
     list(rt_run("Unique ")), unclass(apa_sym("R2")),
     list(rt_run(" = semipartial correlation squared. ")),
-    list(rt_run("r", italic = TRUE), rt_run(" = zero-order correlation. ")),
+    if (has_r) list(rt_run("r", italic = TRUE), rt_run(" = zero-order correlation. ")),
     list(rt_run("CI = confidence interval."))
   )
   richtext(runs)
@@ -1007,7 +1061,8 @@ reg_build_spec <- function(df, prop_var_conf_level, n_size, table_title, table_n
     spec <- apa_col(spec, label = cs$label, align = cs$align, values = vals)
   }
   for (g in row_groups) spec <- apa_row_group(spec, label = g$label, rows = g$rows)
-  spec <- apa_note(spec, reg_spec_note(n_size))
+  spec <- apa_note(spec, reg_spec_note(n_size, has_beta = "beta" %in% keys,
+                                       has_r = "r" %in% keys))
   spec <- apa_note(spec, stars_spec_note())
 
   num <- apa_table_number_value(table_number)

@@ -32,8 +32,10 @@ test_that("the bundled apaquarto is at or above the build the package needs", {
   v <- apa_bundled_version()
   expect_false(is.na(v))
   expect_true(apa_quarto_is_ours(v))
-  expect_gte(numeric_version(sub("[+].*$", "", v)),
-             numeric_version(APA_REQUIRED_EXT_VERSION))
+  # a plain comparison: expect_gte() on numeric_version objects errors under
+  # testthat 3.2.3 ("'-' not defined"), which the package still allows
+  expect_true(numeric_version(sub("[+].*$", "", v)) >=
+                numeric_version(APA_REQUIRED_EXT_VERSION), info = v)
   expect_false(is.na(apa_ext_build(v)))
   expect_gte(apa_ext_build(v), APA_REQUIRED_EXT_BUILD)
 })
@@ -417,4 +419,84 @@ test_that("a mid-render repair's receipt reaches the render log but never the re
              info = paste(res, collapse = "\n"))
   rendered <- paste(readLines(html, warn = FALSE), collapse = "\n")
   expect_false(grepl("replaced", rendered, ignore.case = TRUE))
+})
+
+# During a render, apa.quarto.setup() looks in parent folders for a copy of
+# the extension only inside the Quarto project the render belongs to: a copy
+# above the project folder, or any copy when there is no project at all,
+# belongs to something else and is never changed.
+apa_stock_copy_in <- function(dir) {
+  ext <- file.path(dir, "_extensions", "wjschne", "apaquarto")
+  dir.create(ext, recursive = TRUE)
+  writeLines(c("title: apaquarto", "version: 5.0.18"), file.path(ext, "_extension.yml"))
+  file.path(ext, "_extension.yml")
+}
+
+test_that("mid-render, setup leaves a parent folder's copy alone when there is no Quarto project", {
+  withr::local_options(knitr.in.progress = TRUE)
+  withr::local_envvar(QUARTO_PROJECT_DIR = "")
+  base <- withr::local_tempdir()
+  above <- apa_stock_copy_in(base)
+  doc_dir <- file.path(base, "paper")
+  dir.create(doc_dir)
+  utils::capture.output(r <- apa.quarto.setup(path = doc_dir), type = "message")
+  expect_equal(r$action, "installed")
+  expect_true(any(grepl("^version: 5.0.18$", readLines(above))))
+  expect_true(dir.exists(file.path(doc_dir, "_extensions", "wjschne", "apaquarto")))
+})
+
+test_that("mid-render, setup uses the project's copy in a parent folder of the same project", {
+  withr::local_options(knitr.in.progress = TRUE)
+  withr::local_envvar(QUARTO_PROJECT_DIR = "")
+  base <- withr::local_tempdir()
+  above <- apa_stock_copy_in(base)
+  writeLines("project:\n  type: default", file.path(base, "_quarto.yml"))
+  doc_dir <- file.path(base, "chapters")
+  dir.create(doc_dir)
+  utils::capture.output(r <- apa.quarto.setup(path = doc_dir), type = "message")
+  expect_equal(r$action, "replaced")
+  expect_true(apa_quarto_is_ours(apa_ext_local_info(dirname(above))$full))
+  expect_false(dir.exists(file.path(doc_dir, "_extensions")))
+})
+
+test_that("mid-render, setup never goes above the project folder", {
+  withr::local_options(knitr.in.progress = TRUE)
+  withr::local_envvar(QUARTO_PROJECT_DIR = "")
+  base <- withr::local_tempdir()
+  above <- apa_stock_copy_in(base)
+  project <- file.path(base, "project")
+  dir.create(project)
+  writeLines("project:\n  type: default", file.path(project, "_quarto.yml"))
+  utils::capture.output(r <- apa.quarto.setup(path = project), type = "message")
+  expect_equal(r$action, "installed")
+  expect_true(any(grepl("^version: 5.0.18$", readLines(above))))
+})
+
+test_that("mid-render, QUARTO_PROJECT_DIR is the boundary when Quarto sets it", {
+  withr::local_options(knitr.in.progress = TRUE)
+  base <- withr::local_tempdir()
+  above <- apa_stock_copy_in(base)
+  # the _quarto.yml is ABOVE the folder Quarto names as the project, so only
+  # the QUARTO_PROJECT_DIR boundary keeps the walk from reaching `above`
+  writeLines("project:\n  type: default", file.path(base, "_quarto.yml"))
+  project <- file.path(base, "project")
+  sub <- file.path(project, "sub")
+  dir.create(sub, recursive = TRUE)
+  withr::local_envvar(QUARTO_PROJECT_DIR = project)
+  utils::capture.output(r <- apa.quarto.setup(path = sub), type = "message")
+  expect_equal(r$action, "installed")
+  expect_true(any(grepl("^version: 5.0.18$", readLines(above))))
+})
+
+test_that("mid-render, a _quarto.yaml marks the project folder too", {
+  withr::local_options(knitr.in.progress = TRUE)
+  withr::local_envvar(QUARTO_PROJECT_DIR = "")
+  base <- withr::local_tempdir()
+  above <- apa_stock_copy_in(base)
+  project <- file.path(base, "project")
+  dir.create(project)
+  writeLines("project:\n  type: default", file.path(project, "_quarto.yaml"))
+  utils::capture.output(r <- apa.quarto.setup(path = project), type = "message")
+  expect_equal(r$action, "installed")
+  expect_true(any(grepl("^version: 5.0.18$", readLines(above))))
 })

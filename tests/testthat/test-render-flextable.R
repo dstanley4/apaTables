@@ -50,7 +50,7 @@ test_that("header symbol renders as a styled paragraph (beta), not literal text"
   ft <- apa_flextable(spec)
   # the rendered header should contain the beta glyph, supplied by a chunk
   html <- as.character(flextable::htmltools_value(ft))
-  expect_match(html, "β")
+  expect_match(html, "\u03b2")
 })
 
 test_that("apa_flextable adds a spanner header row", {
@@ -106,8 +106,12 @@ test_that("a superscript run that is also italic keeps both", {
     apa_col(rt, "r", list(richtext("1.0"))) |>
     apa_spec_finish(number = 1L)
   html <- as.character(flextable::htmltools_value(apa_flextable(spec)))
-  expect_match(html, "vertical-align:super")
-  expect_match(html, "font-style:italic")
+  # the "2" run itself must be both raised and italic
+  span <- regmatches(html, gregexpr('class="[^"]*">2</span>', html))[[1]]
+  expect_length(span, 1L)
+  rule <- ft_css_rule(html, sub('class="([^"]*)".*', "\\1", span))
+  expect_true(css_is_superscript(rule), info = rule)
+  expect_match(rule, "font-style:italic", fixed = TRUE)
   expect_match(html, "Times New Roman")
 })
 

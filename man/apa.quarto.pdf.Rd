@@ -35,7 +35,7 @@ in the chunk still takes precedence over this argument. Default
 apaquarto starts a new paragraph wherever the text contains a double
 quote, a comma and a double quote in a row, so a note written with that
 sequence in it is split there. This is long-standing apaquarto
-behaviour, and the same is true of a hand-written \code{apa-note}
+behavior, and the same is true of a hand-written \code{apa-note}
 settings line. A generated note is unaffected. \strong{On
 \code{apa.quarto.revealjs()} this is different}, because a slide reads no
 \code{apa-note}: the default \code{NULL} puts no note on the slide at
@@ -44,9 +44,9 @@ all, and \code{TRUE} (rather than a string) requests the generated note
 
 \item{font.size}{Optional explicit type size in points for the table
 body, overriding the automatic rotate-then-shrink sequence. The title
-above the table and the note below it keep their usual size. PDF, HTML
+above the table and the note below it stay at the usual size. PDF, HTML
 and slides use the size exactly, fractions included. \strong{Word is
-different}: it takes a table's type size from a style in the document
+different}: it takes the type size of a table from a style in the document
 template, so it uses the requested size rounded down to a whole point,
 kept between 6 and 12, and says in
 the rendered draft when it had to adjust. A size below 6 points, where
@@ -60,9 +60,8 @@ The table, ready for the document (a \code{knit_asis} object).
 \description{
 You have made a table, and your manuscript is a Quarto document. Put the
 table in with a short code chunk, using the function named for the
-document's \code{format:} line:
-}
-\details{
+\code{format:} line in the document:
+
 \preformatted{```{r}
 #| label: tbl-correlations
 #| message: false
@@ -79,16 +78,17 @@ text and R code, at \url{https://quarto.org}, and
 \code{\link{apa.quarto.new}(path = "my-paper")} creates a working APA
 manuscript with everything already installed. A slide deck works
 differently; see \strong{Slides are different} below.)
-
+}
+\details{
 There are four of these functions, one named for each destination --
 \code{apa.quarto.pdf()}, \code{apa.quarto.docx()}, \code{apa.quarto.html()},
 \code{apa.quarto.revealjs()}. The first three put a table on a manuscript page
-and behave identically: put one of them on the last line of a table's code
-chunk and the table appears in APA style, number, title and note included,
-with nothing else written. \strong{The name states intent; the document's
-own YAML \code{format:} line decides what is actually produced.} A document
+and behave identically: put one of them on the last line of the code
+chunk for a table and the table appears in APA style, number, title and note included,
+with nothing else written. \strong{The name states intent; the YAML
+\code{format:} line in the document decides what is actually produced.} A document
 rendered with \code{format: apaquarto-docx} gets a correct Word table even from a chunk that calls
-\code{apa.quarto.pdf()}. Quarto's output format is a property of the
+\code{apa.quarto.pdf()}. The Quarto output format is a property of the
 document, not of a chunk, so a function name can only
 ever state what you meant. If the name and the render disagree, the
 rendered draft carries one line saying exactly which YAML line would make
@@ -99,17 +99,17 @@ set `format: apaquarto-docx` in the YAML.}
 
 The table itself is unaffected either way -- the message is guidance
 only. \code{\link{apa.quarto.template}} writes
-the whole chunk for you, and its \code{target} argument picks which of the
+the whole chunk for you, and the \code{target} argument picks which of the
 four names it prints.
 
 \code{apa.quarto.revealjs()} goes on a slide deck rather than a manuscript
 page, and differs from the other three in several ways that matter --
-see its own \strong{Slides are different} section below.
+see the \strong{Slides are different} section below.
 
 The title and note come from the table itself by default on the three
 manuscript destinations. Three things can override them, each winning
-over the one after it: the chunk's own \code{tbl-cap} / \code{apa-note} settings
-lines, then the \code{title} / \code{note} arguments below, then the
+over the one after it: the \code{tbl-cap} / \code{apa-note} settings
+lines in the chunk, then the \code{title} / \code{note} arguments below, then the
 generated value. Supplying both a chunk option and the matching argument is
 not an error, but only the chunk option is used. This is identical across
 the three manuscript destinations; \code{apa.quarto.revealjs()} does not use
@@ -126,7 +126,7 @@ chunk, so there is no number, no title (generated or written by hand), and
 no note, no matter what \code{tbl-cap}, \code{apa-note}, \code{title}, or
 \code{note} say. (This does not apply to \code{apa.quarto.revealjs()}: a slide
 deck builds no float at all, with or without a label, so a table appears
-regardless -- see \strong{Slides are different} below for how its title and
+regardless -- see \strong{Slides are different} below for how the title and
 note are requested instead.)
 
 Nothing needs to be said about the size of the table or the shape of the
@@ -134,7 +134,7 @@ page. When a table is too wide for an upright (portrait) page, it is placed
 on a rotated (landscape) page automatically, at full size. That is what
 APA style asks for: "if a table is too wide to fit on one page, use
 landscape orientation on the page with the wide table." A table too wide to
-fit even at its smallest readable size is printed smaller still instead --
+fit even at the smallest readable size is printed smaller still instead --
 as small as it has to be, so that no column is cut off. When that takes the
 type below 6 points, where an APA table stops being comfortable to read, a
 warning in the rendered draft says so and points to \code{\link{apa.save}}
@@ -143,8 +143,8 @@ taller than the page continues onto the next one, with the column headings
 repeated and the note below the last piece. (On an HTML render there is no
 page at all, so none of this applies: nothing rotates and nothing shrinks
 -- the table renders at full size regardless of width. On a slide render there is no page either, so nothing rotates there. But
-a slide's fixed viewport means shrinking IS meaningful, and \code{apa.quarto.revealjs()} uses
-its own separate automatic sizing to fit the table on the slide rather
+the fixed viewport of a slide means shrinking IS meaningful, and \code{apa.quarto.revealjs()} uses
+separate automatic sizing to fit the table on the slide rather
 than this rotate-then-shrink sequence; see \strong{Slides are different}
 below.)
 
@@ -162,10 +162,10 @@ on an upright page instead. A wide table is then shrunk to fit rather
 than losing a column.
 
 Rotating a page needs a label. Give every table chunk a settings line
-\code{#| label: tbl-something} -- the label a table needs anyway for its
+\code{#| label: tbl-something} -- the label a table needs anyway for the
 number and for references to it. A chunk without one is not a table as far
-as the document is concerned, so its page cannot be turned. A wide table in such a chunk is printed smaller on the upright page
-instead, with every column kept. If the chunk asked for a rotated page,
+as the document is concerned, so the page cannot be turned. A wide table in such a chunk is printed smaller on the upright page
+instead, with every column kept. If a rotated page was requested,
 the rendered draft says the label is what is missing.
 }
 \section{Slides are different}{
@@ -176,16 +176,16 @@ manuscript page, and it differs from \code{apa.quarto.pdf()} /
 before you rely on it.
 
 \strong{revealjs is the supported slide format.} Set \code{format:
-revealjs} in the document's YAML -- everything below describes that
+revealjs} in the YAML header -- everything below describes that
 format. \strong{PowerPoint is not supported yet.} The obstacle is not something a PowerPoint template or setting can fix.
-Quarto renders PowerPoint through pandoc, and pandoc's PowerPoint writer gives no way to
-set a table's text size from the document, so a table placed on a
-PowerPoint slide comes out at PowerPoint's own type size. Even at a
+Quarto renders PowerPoint through pandoc, and the pandoc PowerPoint writer gives no way to
+set the text size of a table from the document, so a table placed on a
+PowerPoint slide comes out at the default PowerPoint type size. Even at a
 smaller size, a larger table (a two-block regression table, for instance)
 is taller than a slide. Support for PowerPoint is planned for a future
 release; apaTables has no working route to a PowerPoint table yet. If a
 document using \code{apa.quarto.revealjs()} renders to PowerPoint anyway,
-the table still appears -- styled only by PowerPoint's own default table
+the table still appears -- styled only by the default PowerPoint table
 look, not APA format -- and a warning says PowerPoint is not yet
 supported and names \code{format: revealjs} as the supported
 destination.
@@ -196,21 +196,21 @@ deck has no such list, so \code{apa.quarto.revealjs()} never adds a
 number.
 
 \strong{Title and note are opt-in, not automatic.}
-\code{apa.quarto.revealjs(x = x)} on its own puts the table alone on the
+\code{apa.quarto.revealjs(x = x)}, with no other arguments, puts the table alone on the
 slide, nothing else. Pass \code{title = TRUE} and/or \code{note = TRUE}
 to add the title and note apaTables generated for the table -- the same
-arguments work here as on \code{apa.quarto.pdf()} and its siblings. This
-matters most for a correlation table: its cells mark a significant
+arguments work here as on \code{apa.quarto.pdf()} and the related functions. This
+matters most for a correlation table: the cells mark a significant
 correlation with \code{**}, and the sentence explaining what \code{**}
 means (\code{* indicates p < .05. ** indicates p < .01.}) lives in the
 note. Left at the
-default, a correlation table on a slide shows the stars with their
-meaning nowhere on the slide -- \code{note = TRUE} is the remedy:
+default, a correlation table on a slide shows the stars with no
+explanation on the slide -- \code{note = TRUE} is the remedy:
 
 \preformatted{my_table <- apa.cor.table(data = attitude)
 apa.quarto.revealjs(x = my_table, note = TRUE)}
 
-\strong{An explicit \code{font.size} is honoured exactly}, the same value
+\strong{An explicit \code{font.size} is honored exactly}, the same value
 you typed, though a size below 6 points -- where an APA table stops being
 comfortable to read -- warns in the rendered draft. Left at the default,
 apaTables shrinks the table automatically to fit the slide.
@@ -228,10 +228,12 @@ apaquarto, so it is unaffected; so are Word and HTML output.
 apaquarto can typeset a manuscript as a printed journal article
 (\code{documentmode: jou}), in two narrow columns. Do not put apaTables
 tables in such a document. A two-column page cannot break a table across
-pages, so rows, columns and whole notes can be missing from the rendered PDF
-with nothing reported anywhere. A document of four ordinary tables came
-out with two of the notes and several variable names simply absent.
-A warning says so during the render, but it is a warning and not a repair:
+pages, so rows, columns and whole notes can be missing from the rendered PDF,
+or the render can stop with a LaTeX error, such as
+\code{longtable not in 1-column mode}, and write no PDF at all. A document of
+four ordinary tables came out with two of the notes and several variable names
+simply absent. When the PDF does render, a warning in it says that journal
+mode is not supported, but it is a warning and not a repair:
 there is no setting that makes journal mode safe. Render the manuscript
 with \code{documentmode: man} instead, which is what a journal is submitted
 in, or save the table as a Word file with \code{\link{apa.save}}.
@@ -239,10 +241,12 @@ in, or save the table as a Word file with \code{\link{apa.save}}.
 
 \examples{
 # Build the table once; display it with the entry point named for the
-# document's own format: line
+# format: line in the document
+# (These calls belong in a Quarto code chunk. At the console each one
+# prints the raw markup that Quarto turns into the finished table.)
 my_table <- apa.cor.table(data = attitude)
 
-# In a document whose YAML says format: apaquarto-pdf
+# In a document with YAML that says format: apaquarto-pdf
 apa.quarto.pdf(x = my_table)
 
 # format: apaquarto-docx
@@ -269,7 +273,7 @@ A table leaves apaTables by one of two routes, and this is one of them.
 \code{apa.quarto.pdf()} / \code{apa.quarto.docx()} /
 \code{apa.quarto.html()} / \code{apa.quarto.revealjs()} put a table
 inside a Quarto document (a manuscript page or a slide deck);
-\code{\link{apa.save}} writes a table in a Word (\code{.docx}) or HTML file of its own.
+\code{\link{apa.save}} writes a table in a separate Word (\code{.docx}) or HTML file.
 \code{\link{apa.quarto.template}} writes the whole code chunk for you to
 copy; \code{\link{apa.quarto.new}} creates a Quarto project that renders an
 APA manuscript on the first try.

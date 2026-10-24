@@ -123,7 +123,7 @@ apa_ext_install <- function(src, dest) {
   if (!ok) {
     unlink(tmp, recursive = TRUE)
     stop("apaTables could not copy the apaquarto extension into ", parent,
-         ", so the project's existing copy was left as it is; check that ",
+         ", so the existing copy in the project was left as it is; check that ",
          "the folder is writable.", call. = FALSE)
   }
 
@@ -159,8 +159,8 @@ apa_ext_install <- function(src, dest) {
     unlink(tmp, recursive = TRUE)
     stop("apaTables could not preserve ", length(failed), " file",
          if (length(failed) == 1) "" else "s",
-         " this project added that apaTables does not ship, because ",
-         if (length(failed) == 1) "its name collides" else "their names collide",
+         " in this project that apaTables does not ship, because ",
+         if (length(failed) == 1) "the name collides" else "the names collide",
          " with a file or folder apaTables does ship (",
          paste(utils::head(failed, 3), collapse = ", "),
          if (length(failed) > 3) ", ..." else "",
@@ -259,26 +259,26 @@ apa_midrender_clause <- function() {
   paste0(" The repair is complete on disk, but this render had already ",
          "started when it happened and Quarto loads part of the extension ",
          "before any R code runs, so this document should be rendered once ",
-         "more before its output is used.")
+         "more before the output is used.")
 }
 
-#' Install or repair this project's apaquarto extension
+#' Install or repair the apaquarto extension in a project
 #'
 #' @description
 #' You already have a project folder, and you want apaTables tables to come
-#' out APA-formatted when its documents render. Run this once, in the R
+#' out APA-formatted when the documents in it render. Run this once, in the R
 #' console, from that folder:
 #'
 #' \preformatted{apa.quarto.setup()}
 #'
 #' It puts the apaquarto extension into an \code{_extensions} folder beside
 #' your document. \strong{What gets installed is not the standard apaquarto
-#' release}: it is apaTables' own tested copy -- apaquarto plus table fixes
+#' release}: it is a copy tested with apaTables -- apaquarto plus table fixes
 #' that are not yet in the standard release. That is also why this command
-#' exists at all. Running Quarto's own \code{quarto add} or
+#' exists at all. Running \code{quarto add} or
 #' \code{quarto update} in a project silently replaces the tested copy with
 #' the standard one -- while reporting \code{[No Change]} -- which brings
-#' back bugs in table numbering and in where a long table's note lands.
+#' back bugs in table numbering and in where the note of a long table lands.
 #' Running \code{apa.quarto.setup()} again puts the tested copy back.
 #'
 #' It is safe to run at any time: on a project that is already correct it does
@@ -286,8 +286,12 @@ apa_midrender_clause <- function() {
 #' the report reaches the render log rather than the manuscript itself, so a
 #' repaired document still renders with nothing extra typeset into it.
 #'
-#' @param path Project folder. Defaults to the current directory, or, during a
-#'   render, the folder whose \code{_extensions} the render is using.
+#' @param path Project folder. Defaults to the current directory. During a
+#'   render, if this folder has no copy of the extension, the copy in a
+#'   parent folder of the same Quarto project is used instead (Quarto finds
+#'   extensions there too). \code{apa.quarto.setup()} never changes a folder
+#'   above the project folder (the one with \code{_quarto.yml}), and outside
+#'   a Quarto project it changes only the folder given here.
 #' @param auto Replace a copy that is not ours (the standard apaquarto, or one
 #'   restored by \code{quarto update})? Defaults to \code{TRUE}.
 #' @param force Overwrite a copy that IS ours but has been edited locally?
@@ -310,7 +314,7 @@ apa_midrender_clause <- function() {
 #' apa.quarto.setup()}
 #'
 #' This puts an \code{_extensions/wjschne/apaquarto} folder next to your
-#' document, and its YAML header -- the settings block between \code{---}
+#' document, and the YAML header -- the settings block between \code{---}
 #' lines at the very top of the document -- can then select an apaquarto
 #' format. apaquarto needs an author in that header -- with no author, or
 #' an empty one, the render stops with a LaTeX error -- and it reports a
@@ -327,13 +331,13 @@ apa_midrender_clause <- function() {
 #' format: apaquarto-pdf
 #' ---}
 #'
-#' \code{apa.quarto.setup()} is safe to run at any time -- on a project
-#' whose copy is already correct, it does nothing and says nothing. Do
+#' \code{apa.quarto.setup()} is safe to run at any time -- when the copy in a
+#' project is already correct, it does nothing and says nothing. Do
 #' \strong{not} run \code{quarto add wjschne/apaquarto} or
 #' \code{quarto update extension wjschne/apaquarto} in one of these
 #' folders: both commands silently replace the patched copy with the plain, unpatched
 #' extension, while reporting \code{[No Change]}. That reintroduces bugs in
-#' table numbering and in where a long table's note lands. If you have already run one of those commands, running
+#' table numbering and in where the note of a long table lands. If you have already run one of those commands, running
 #' \code{apa.quarto.setup()} again puts the tested copy back.
 #'
 #' Sending a coauthor or reviewer the whole project folder carries
@@ -345,7 +349,7 @@ apa_midrender_clause <- function() {
 #'
 #' @seealso
 #' A step-by-step guide to placing apaTables tables in Quarto documents
-#' comes installed with the package -- see its "Installing the apaquarto
+#' comes installed with the package -- see the "Installing the apaquarto
 #' extension" section. To open it, type:
 #'
 #' \preformatted{vignette("apaquarto-usage", package = "apaTables")}
@@ -407,29 +411,29 @@ apa.quarto.setup <- function(path = ".", auto = TRUE, force = FALSE) {
     }
     if (!is.na(cmp) && cmp < 0L) {
       res <- apa_ext_install(src, dest)
-      apa_quarto_notify("apaTables updated this project's apaquarto extension from ",
+      apa_quarto_notify("apaTables updated the apaquarto extension in this project from ",
               found, " to ", ours, apa_ext_preserved_clause(res$preserved),
               ".", apa_midrender_clause())
       return(out("upgraded", found))
     }
     if (is.na(cmp)) {
       if (!force) {
-        apa_quarto_notify("This project's apaquarto extension reports a version ",
+        apa_quarto_notify("The apaquarto extension in this project reports a version ",
                 "apaTables cannot make sense of (", found, "), so nothing ",
                 "was changed; run apa.quarto.setup(force = TRUE) to ",
                 "replace it with the tested copy.")
         return(out("kept-modified", found))
       }
       res <- apa_ext_install(src, dest)
-      apa_quarto_notify("apaTables replaced this project's apaquarto extension (an ",
-              "unrecognised version, ", found, ") with the tested copy it ",
+      apa_quarto_notify("apaTables replaced the apaquarto extension in this project (an ",
+              "unrecognized version, ", found, ") with the tested copy it ",
               "ships, version ", ours, apa_ext_preserved_clause(res$preserved),
               ".", apa_midrender_clause())
       return(out("replaced", found))
     }
     if (!force) {
-      apa_quarto_notify("This project's apaquarto extension is version ", found,
-              " but ", length(differs), " of its files ",
+      apa_quarto_notify("The apaquarto extension in this project is version ", found,
+              " but ", length(differs), " of the files in it ",
               if (length(differs) == 1) "has" else "have",
               " been changed locally (",
               paste(utils::head(differs, 3), collapse = ", "),
@@ -441,7 +445,7 @@ apa.quarto.setup <- function(path = ".", auto = TRUE, force = FALSE) {
     res <- apa_ext_install(src, dest)
     apa_quarto_notify("apaTables restored ", length(differs), " locally changed file",
             if (length(differs) == 1) "" else "s",
-            " of this project's apaquarto extension (version ", ours, ")",
+            " of the apaquarto extension in this project (version ", ours, ")",
             apa_ext_preserved_clause(res$preserved), ".", apa_midrender_clause())
     return(out("replaced", found))
   }
@@ -455,7 +459,7 @@ apa.quarto.setup <- function(path = ".", auto = TRUE, force = FALSE) {
   }
 
   res <- apa_ext_install(src, dest)
-  apa_quarto_notify("apaTables replaced this project's apaquarto extension (version ",
+  apa_quarto_notify("apaTables replaced the apaquarto extension in this project (version ",
           if (is.na(found)) "unknown" else found,
           ") with the tested copy it ships, version ", ours,
           apa_ext_preserved_clause(res$preserved), ".", apa_midrender_clause())
@@ -473,17 +477,40 @@ apa.quarto.setup <- function(path = ".", auto = TRUE, force = FALSE) {
 # a path with no copy yet -- the common "set up a brand-new project" case --
 # must not walk up at all, or a stray _extensions folder anywhere above (as
 # far as the filesystem root) would capture it and the new project would
-# never get its own copy.
+# never get its own copy. And the walk stops at the Quarto project the render
+# belongs to (QUARTO_PROJECT_DIR, or the nearest folder with a _quarto.yml):
+# a copy above that folder belongs to something else, and with no project at
+# all there is no walk.
 apa_setup_root <- function(path = ".") {
   path <- normalizePath(path, mustWork = FALSE)
-  if (dir.exists(file.path(path, "_extensions", "wjschne", "apaquarto")))
-    return(path)
+  has_copy <- function(d) dir.exists(file.path(d, "_extensions", "wjschne", "apaquarto"))
+  if (has_copy(path)) return(path)
   rendering <- nzchar(Sys.getenv("QUARTO_PROJECT_DIR")) ||
     isTRUE(getOption("knitr.in.progress"))
-  if (rendering) {
-    for (d in apa_quarto_search_dirs(path))
-      if (dir.exists(file.path(d, "_extensions", "wjschne", "apaquarto")))
-        return(d)
+  if (!rendering) return(path)
+  dirs <- apa_quarto_search_dirs(path)
+  top <- apa_quarto_project_root(dirs)
+  if (is.na(top)) return(path)
+  for (d in dirs[seq_len(top)]) {
+    if (has_copy(d)) return(d)
   }
   path
+}
+
+# Position, in `dirs` (a folder and then each parent), of the root of the
+# Quarto project the render belongs to: QUARTO_PROJECT_DIR when Quarto set
+# it, otherwise the nearest folder holding a _quarto.yml. NA when there is
+# no project.
+apa_quarto_project_root <- function(dirs) {
+  project <- Sys.getenv("QUARTO_PROJECT_DIR")
+  if (nzchar(project)) {
+    # one path form on both sides: on Windows dirname() returns "/" where
+    # normalizePath() returns "\\"
+    same_form <- function(p) normalizePath(p, winslash = "/", mustWork = FALSE)
+    hit <- match(same_form(project), same_form(dirs))
+    if (!is.na(hit)) return(hit)
+  }
+  is_root <- file.exists(file.path(dirs, "_quarto.yml")) |
+    file.exists(file.path(dirs, "_quarto.yaml"))
+  if (any(is_root)) which(is_root)[1] else NA_integer_
 }

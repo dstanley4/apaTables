@@ -68,7 +68,7 @@ apa_ladder_no_fit_message <- function(content_12, budget, rotate, size) {
   sprintf(paste0(
     "This table has about %d columns, and the space between columns does ",
     "not shrink with the type, so no font size can fit it on the %.1f ",
-    "inch %s page: it has been set at %s pt and its right-hand columns ",
+    "inch %s page: it has been set at %s pt and the right-hand columns ",
     "will still be cut off -- save it as a Word file instead, where ",
     "nothing is cut off: apa.save(filename = \"mytable.docx\", ",
     "your_table)."),
@@ -119,7 +119,7 @@ apa_ladder_no_fit_message <- function(content_12, budget, rotate, size) {
 #'   is whether the page needs to rotate to hold it. `NULL` (default) runs
 #'   the automatic ladder, and the override branch is not reached at all.
 #'   Rotation is decided from the SIZE ACTUALLY EMITTED rather than the
-#'   ladder's own 10 pt guess: without this re-check an explicit `font.size`
+#'   ladder's 10 pt guess: without this re-check an explicit `font.size`
 #'   would reach the LaTeX emitter unchecked -- `apa.cor.table(data = attitude)` at
 #'   20 pt measures 10.26 in against a 6.5 in upright page, and would render
 #'   with no warning and no rotation. When the page the table will land on
@@ -129,7 +129,7 @@ apa_ladder_no_fit_message <- function(content_12, budget, rotate, size) {
 #' @param col_overhead_in fixed per-column overhead in inches that the
 #'   destination adds to every column whatever the type size, and that the
 #'   content model therefore cannot see. `0` (the default) for LaTeX, whose
-#'   own `\\tabcolsep` term is already in the model; the Word render passes
+#'   `\\tabcolsep` term is already in the model; the Word render passes
 #'   `APA_WORD_CELL_PADDING_IN`, the bundled
 #'   styles' fixed `<w:tblCellMar>`. Charged on the WIDTH side -- it is part
 #'   of the space the table really occupies -- so every budget in a warning
@@ -173,7 +173,7 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
   # execute is worse than no rotation at all: the table is priced against the
   # wider page and then printed on the narrower one, and the columns past the
   # right edge are gone with no error and no warning. A rotation the USER
-  # forbade is a different thing entirely -- it is honoured, not worked
+  # forbade is a different thing entirely -- it is honored, not worked
   # around, and it is not a problem to be reported.
   rotate_allowed <- rotated > upright && isTRUE(can_execute_rotation) &&
     !identical(landscape, FALSE)
@@ -230,7 +230,7 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
         best_named <- floor(best * 10) / 10
         sprintf(paste0(
           "This table is about %.1f inches wide at the %s pt requested, ",
-          "wider than the %.1f inch %s page, so its right-hand columns ",
+          "wider than the %.1f inch %s page, so the right-hand columns ",
           "will be cut off -- request font.size = %s or smaller, or remove ",
           "font.size so apaTables chooses a size that fits."),
           w, apa_latex_num(size), budget,
@@ -254,7 +254,7 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
   # ROTATE BEFORE SHRINKING, deliberately, rather than shrinking one notch
   # first. It follows APA's own text -- "if a table is too wide to fit
   # on one page, use landscape orientation on the page with the wide table" --
-  # and it maximises type size, at the cost of more rotated pages.
+  # and it maximizes type size, at the cost of more rotated pages.
   if (!rotate && rotate_allowed) {
     rotate <- TRUE
     budget <- rotated
@@ -323,7 +323,7 @@ apa_layout_decide <- function(plan, geom = NULL, geom_landscape = NULL,
 # THREE call sites push back against this constraint deliberately, each
 # commented in place with why NA and FALSE genuinely behave the same there:
 # apa_layout_decide()'s `isTRUE(landscape)` (used at two positions in that
-# function, both after landscape has been normalised by apa_landscape_value()
+# function, both after landscape has been normalized by apa_landscape_value()
 # on the line above) and apa_quarto_latex_block()'s `isTRUE(requested)`. Anywhere
 # else, isTRUE() on a tri-state IS the defect this constraint names.
 apa_landscape_value <- function(x) {
@@ -381,7 +381,7 @@ apa_chunk_landscape <- function() {
 # Adding "apa-landscape" there puts it in Quarto's `unknown_opts` set, which
 # is forwarded verbatim onto the cell div (quarto/share/rmd/hooks.R) -- the
 # same route "apa-note" and "apa-longtable" already travel. The wrapper hands
-# everything else to the hook it replaced, so Quarto's own behaviour is
+# everything else to the hook it replaced, so Quarto's own behavior is
 # untouched.
 #
 # Labels, not a flag: a chunk that errors after asking would otherwise leave
@@ -392,7 +392,7 @@ apa_landscape_env$labels <- character(0)
 apa_landscape_env$hook <- NULL
 
 # The label of the chunk being knitted, or NA outside a knit / for an
-# unlabelled chunk. ONE reader, used by both the request and the test of
+# unlabeled chunk. ONE reader, used by both the request and the test of
 # whether the request can succeed, so the two cannot drift apart -- and they
 # drifting apart is precisely the defect this prevents: the ladder decides to
 # rotate, the request quietly returns FALSE, and a column goes off the page.
@@ -413,7 +413,7 @@ apa_chunk_label <- function() {
 # `tbl-`, because that prefix is what makes Quarto build a table FLOAT out of
 # the cell; without a float apafloatlatex.lua's landscapewrap has nothing to
 # wrap, so the `apa-landscape` attribute is set on a div that is never turned
-# into a rotated page. Measured on `apa.cor.table(mtcars)` in an unlabelled
+# into a rotated page. Measured on `apa.cor.table(mtcars)` in an unlabeled
 # chunk: the ladder chose rotate at 10 pt for an 8.22 in width, the render
 # exited 0 with no warning, every page came out upright, and the tenth
 # correlation column was simply not in the PDF.
@@ -473,7 +473,7 @@ apa_quarto_warn_below_floor <- function(size) {
 
 # --- The destination policy and the Word rotation decision ---------------
 #
-# The size the ladder or the caller chose. Honour any explicit value, warn
+# The size the ladder or the caller chose. Honor any explicit value, warn
 # below 6 pt, never refuse and never truncate.
 #
 # The floor is judged on the size DELIVERED, not the size requested. Word
@@ -523,7 +523,7 @@ apa_quarto_font_size <- function(plan, font.size = NULL, decision = NULL,
 # The marker below is a class on an EMPTY sibling div, immediately after the
 # table's own grid syntax, in the same block apatablesize.lua later reads
 # (mirroring how apa_meta_div() already rides alongside the LaTeX block for
-# the title/note filter). An empty div with an unrecognised class is
+# the title/note filter). An empty div with an unrecognized class is
 # inert everywhere nothing reads it -- HTML, a bare pandoc render, and a
 # quarto render of any OTHER format all pass it through with no visible
 # effect -- so this can be emitted unconditionally without a format check
@@ -576,12 +576,11 @@ apa_quarto_warn_word_size <- function(requested, delivered) {
   }
   warning(paste0(
     "This Word document sets the table at ", delivered, " points rather than ",
-    "the ", requested, " points requested, because Word takes a table's type ",
-    "size from a style in the document template and the sizes available run ",
+    "the ", requested, " points requested, because Word takes the type size ",
+    "of a table from a style in the document template and the sizes available run ",
     "from ", APA_QUARTO_READABLE_SIZE, " to ", APA_QUARTO_MAX_SIZE,
     " points in whole points; the table is complete and nothing has been cut ",
-    "off, and apa.save(filename = \"mytable.docx\", your_table) writes the ",
-    "table on its own if you need a size outside that range."),
+    "off, and PDF and HTML documents use the requested size exactly."),
     call. = FALSE)
 }
 
@@ -592,7 +591,7 @@ apa_quarto_size_wrap <- function(body, rung) {
 # HTML's marker, and deliberately NOT the class form above. The class pattern
 # apatablesize.lua matches is integers-only (`^apa%-table%-size%-(%d+)$`),
 # while HTML must carry the size EXACTLY, fractions included --
-# CSS can honour 8.5 pt and Word cannot. An attribute expresses what a class
+# CSS can honor 8.5 pt and Word cannot. An attribute expresses what a class
 # cannot, and keeps the docx marker's input untouched.
 #
 # format(..., trim = TRUE) rather than paste0(): as.character(8.5) is "8.5"
@@ -642,12 +641,13 @@ apa_quarto_html_wrap <- function(body, pt = NULL) {
 apa_quarto_warn_floored <- function() {
   warning(paste0(
     "This table has been set at ", APA_QUARTO_READABLE_SIZE, " pt, the ",
-    "smallest of the table styles its automatic sizing can choose from, ",
-    "because a larger size would not have kept its columns at a reasonable ",
-    "width; the table is complete and every column is present, and its ",
+    "smallest of the table styles that automatic sizing can choose from, ",
+    "because a larger size would not have kept the columns at a reasonable ",
+    "width; the table is complete and every column is present, and the ",
     "width is a share of the page rather than a fixed size, so it cannot ",
-    "run off the page -- for full control over type size instead, save the ",
-    "table directly: apa.save(filename = \"mytable.docx\", your_table)."),
+    "run off the page -- apa.save(filename = \"mytable.docx\", your_table) ",
+    "writes the table as a separate Word file instead, on a rotated page when ",
+    "it needs one."),
     call. = FALSE)
 }
 
@@ -732,7 +732,7 @@ apa_quarto_docx_target <- function() {
 #' bundled `apatablemeta.lua`. That filter is registered `at: post-quarto`
 #' in `_extension.yml`'s COMMON filter list, so it already runs on this
 #' destination too (never reimplemented or branched on precedence here; see
-#' that function's own comment for why).
+#' the comment on that function for why).
 #' Unlike the LaTeX path, where `apa_quarto_render()` combines the two
 #' outside `apa_quarto_latex_block()`, here the div is appended INSIDE this
 #' function. This is the one function every non-PDF entry point and every
@@ -760,7 +760,7 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   # drops column spans outright -- a spanner label would otherwise sit over
   # the wrong column, MEASURED on a real render: "alcohol" over the "M" of
   # "None" instead of spanning six columns. A destination apaTables does not
-  # support may get an unstyled table, never a mislabelled one. Gated on the
+  # support may get an unstyled table, never a mislabeled one. Gated on the
   # pptx target alone: docx and HTML both keep their spans (HTML draws them
   # correctly), so flattening must not reach either.
   # apa_slide_flatten_spanners() (R/quarto-slide.R) is a no-op on a plan
@@ -779,15 +779,15 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   # The chunk-label question the LaTeX sibling's apa_landscape_executable()
   # answers does not apply here. LaTeX rotation rides on Quarto's OWN
   # float/crossref machinery (apafloatlatex.lua's landscapewrap fires on a
-  # FloatRefTarget's apa-landscape attribute), and only a `tbl-` labelled
+  # FloatRefTarget's apa-landscape attribute), and only a `tbl-` labeled
   # chunk becomes a float at all. Docx rotation does not use that machinery:
   # apa_landscape_wrap() emits a literal `::: {.apa-table-landscape ...}`
   # div directly in the chunk's own markdown, and apatablelandscape.lua
   # finds and replaces it with a Pandoc-level walk that recurses into a
-  # FloatRefTarget's content when the chunk IS a labelled float, and finds
+  # FloatRefTarget's content when the chunk IS a labeled float, and finds
   # the div sitting in the ordinary block list when it is not -- MEASURED
-  # both ways: a `tbl-` labelled table (deferred to the document's end by
-  # apafloatstoend.lua, as apaquarto does by default) and a plain unlabelled
+  # both ways: a `tbl-` labeled table (deferred to the document's end by
+  # apafloatstoend.lua, as apaquarto does by default) and a plain unlabeled
   # table both came back correctly rotated, with a headerReference on every
   # section, from the same filter with no branch on label at all.
   #
@@ -841,7 +841,7 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
   rung <- apa_quarto_size_rung(size)
   # An explicit size Word cannot deliver is REPORTED, not silently
   # adjusted. Gated on is_docx because it is Word's style mechanism that
-  # imposes the range -- PDF, HTML and slides honour any size exactly -- and
+  # imposes the range -- PDF, HTML and slides honor any size exactly -- and
   # on !is.null(font.size) because the automatic ladder's own out-of-range
   # case is apa_quarto_warn_floored()'s, just below, with its own wording.
   if (is_docx && !is.null(font.size)) {
@@ -923,7 +923,7 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
 # without a knitr session: decide, ask for the page, emit the grid.
 #
 # knitr::asis_output() is NOT a raw-LaTeX guarantee. Pandoc treats a
-# COMPLETE \begin{env}...\end{env} as raw TeX, but it re-parses neighbouring
+# COMPLETE \begin{env}...\end{env} as raw TeX, but it re-parses neighboring
 # lines as markdown -- measured, it turned a trailing "%" into "\%". What
 # apa_latex_table() returns is exactly one self-contained environment with
 # nothing before or after it, which is the condition under which asis_output()
@@ -947,7 +947,7 @@ apa_quarto_markdown_block <- function(x, font.size = NULL,
 # a flextable call reaching this path would bring the underlining back.
 #
 # font.size: optional explicit point size, overriding the ladder.
-# Honoured on the LaTeX path exactly as on the markdown path in what it
+# Honored on the LaTeX path exactly as on the markdown path in what it
 # PROMISES -- a value is used whatever it is, a value below the readable
 # floor warns, nothing is ever refused -- but NOT in how "nothing is cut
 # off" is kept true: the markdown/docx path gets that for free from
@@ -1009,11 +1009,11 @@ apa_quarto_latex_block <- function(x, font.size = NULL) {
   # `isTRUE(landscape)` line: NA means nobody asked (nothing to report) and
   # FALSE means the user explicitly declined and got exactly that (also
   # nothing to report), so only TRUE -- an actual request that could not be
-  # honoured -- is worth a warning, and isTRUE() gives precisely that.
+  # honored -- is worth a warning, and isTRUE() gives precisely that.
   if (isTRUE(requested) && !executable) {
     warning(paste0(
-      "This table asked for a rotated (landscape) page, but only a chunk ",
-      "whose label begins tbl- becomes a table Quarto can rotate, so the ",
+      "A rotated (landscape) page was requested for this table, but only a chunk ",
+      "with a label that begins tbl- becomes a table Quarto can rotate, so the ",
       "table has been fitted to the upright page instead with every column ",
       "kept; add a settings line such as #| label: tbl-mytable to the chunk ",
       "to get the rotated page."),
@@ -1024,7 +1024,7 @@ apa_quarto_latex_block <- function(x, font.size = NULL) {
 }
 
 # The metadata div that carries the generated title/note past Quarto's
-# starring decision (measured): a `tbl-`labelled chunk becomes a float whose
+# starring decision (measured): a `tbl-`labeled chunk becomes a float whose
 # caption is empty and whose apa-note attribute is absent when the user
 # wrote no tbl-cap/apa-note, and a filter can still fill both in AT THAT
 # STAGE, before Quarto decides whether the float is starred. So R's job here
@@ -1088,7 +1088,7 @@ apa_attr_escape <- function(s) {
 # that in utilsapa.lua's make_note(), which strips a leading `["` and a
 # trailing `"]` and then splits what is left on the literal three characters
 # `","`, emitting one FigureNote div per piece.  That is the shape a YAML list
-# serialises to, because the only way to reach make_note() used to be a
+# serializes to, because the only way to reach make_note() used to be a
 # hand-written `#| apa-note: ["...","..."]` chunk option -- which is exactly
 # what apa.quarto.template() printed before this function existed.
 #
@@ -1124,7 +1124,7 @@ apa_attr_escape <- function(s) {
 # this: it is a single value, so it needs no separator, and passing it through
 # would strip a `["`...`"]` a caller had written on purpose.  A caller note
 # containing `","` therefore splits into extra paragraphs too -- the same
-# behaviour a hand-written `#| apa-note` chunk option has always had, since
+# behavior a hand-written `#| apa-note` chunk option has always had, since
 # both end up in the same attribute.  Documented on the `note` argument.
 apa_note_attr <- function(parts) {
   if (!length(parts)) return("")
@@ -1277,7 +1277,7 @@ apa_quarto_html_target <- function() {
 }
 
 # The document's ACTUAL render target, as the raw pandoc token (never
-# normalised here) -- NA_character_ when there is nothing to report: no knit
+# normalized here) -- NA_character_ when there is nothing to report: no knit
 # in progress, knitr unavailable, or the pandoc token itself is empty.
 #
 # A thin, MOCKABLE wrapper around knitr::pandoc_to() rather than an inline
@@ -1305,7 +1305,7 @@ apa_quarto_actual_format <- function() {
 #'   (\code{"pdf"}, \code{"docx"}, \code{"html"}, or \code{"revealjs"}).
 #' @param actual the RAW render-target token, e.g. from
 #'   \code{apa_quarto_actual_format()} (\code{"latex"}, \code{"docx"},
-#'   \code{"html"}, ...) -- not yet normalised to a format key; this function
+#'   \code{"html"}, ...) -- not yet normalized to a format key; this function
 #'   does that itself via \code{apa_quarto_actual_entry()}.
 #' @return A length-1 character string.
 #' @keywords internal
@@ -1329,7 +1329,7 @@ apa_quarto_target_message <- function(called, actual) {
     return(paste0(
       "This document renders to PowerPoint, where apaTables tables are ",
       "not yet supported through Quarto, so the table below is styled ",
-      "only by PowerPoint's own default table look, not APA format; set ",
+      "only by the default PowerPoint table look, not APA format; set ",
       "`format: revealjs` in the YAML for the supported slide destination."))
   }
   actual_entry <- apa_quarto_actual_entry(actual)
@@ -1507,9 +1507,10 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 
 #' Display an apaTables table in a Quarto document
 #'
+#' @description
 #' You have made a table, and your manuscript is a Quarto document. Put the
 #' table in with a short code chunk, using the function named for the
-#' document's \code{format:} line:
+#' \code{format:} line in the document:
 #'
 #' \preformatted{```{r}
 #' #| label: tbl-correlations
@@ -1528,15 +1529,16 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' manuscript with everything already installed. A slide deck works
 #' differently; see \strong{Slides are different} below.)
 #'
+#' @details
 #' There are four of these functions, one named for each destination --
 #' \code{apa.quarto.pdf()}, \code{apa.quarto.docx()}, \code{apa.quarto.html()},
 #' \code{apa.quarto.revealjs()}. The first three put a table on a manuscript page
-#' and behave identically: put one of them on the last line of a table's code
-#' chunk and the table appears in APA style, number, title and note included,
-#' with nothing else written. \strong{The name states intent; the document's
-#' own YAML \code{format:} line decides what is actually produced.} A document
+#' and behave identically: put one of them on the last line of the code
+#' chunk for a table and the table appears in APA style, number, title and note included,
+#' with nothing else written. \strong{The name states intent; the YAML
+#' \code{format:} line in the document decides what is actually produced.} A document
 #' rendered with \code{format: apaquarto-docx} gets a correct Word table even from a chunk that calls
-#' \code{apa.quarto.pdf()}. Quarto's output format is a property of the
+#' \code{apa.quarto.pdf()}. The Quarto output format is a property of the
 #' document, not of a chunk, so a function name can only
 #' ever state what you meant. If the name and the render disagree, the
 #' rendered draft carries one line saying exactly which YAML line would make
@@ -1547,17 +1549,17 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #'
 #' The table itself is unaffected either way -- the message is guidance
 #' only. \code{\link{apa.quarto.template}} writes
-#' the whole chunk for you, and its \code{target} argument picks which of the
+#' the whole chunk for you, and the \code{target} argument picks which of the
 #' four names it prints.
 #'
 #' \code{apa.quarto.revealjs()} goes on a slide deck rather than a manuscript
 #' page, and differs from the other three in several ways that matter --
-#' see its own \strong{Slides are different} section below.
+#' see the \strong{Slides are different} section below.
 #'
 #' The title and note come from the table itself by default on the three
 #' manuscript destinations. Three things can override them, each winning
-#' over the one after it: the chunk's own \code{tbl-cap} / \code{apa-note} settings
-#' lines, then the \code{title} / \code{note} arguments below, then the
+#' over the one after it: the \code{tbl-cap} / \code{apa-note} settings
+#' lines in the chunk, then the \code{title} / \code{note} arguments below, then the
 #' generated value. Supplying both a chunk option and the matching argument is
 #' not an error, but only the chunk option is used. This is identical across
 #' the three manuscript destinations; \code{apa.quarto.revealjs()} does not use
@@ -1574,7 +1576,7 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' no note, no matter what \code{tbl-cap}, \code{apa-note}, \code{title}, or
 #' \code{note} say. (This does not apply to \code{apa.quarto.revealjs()}: a slide
 #' deck builds no float at all, with or without a label, so a table appears
-#' regardless -- see \strong{Slides are different} below for how its title and
+#' regardless -- see \strong{Slides are different} below for how the title and
 #' note are requested instead.)
 #'
 #' Nothing needs to be said about the size of the table or the shape of the
@@ -1582,7 +1584,7 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' on a rotated (landscape) page automatically, at full size. That is what
 #' APA style asks for: "if a table is too wide to fit on one page, use
 #' landscape orientation on the page with the wide table." A table too wide to
-#' fit even at its smallest readable size is printed smaller still instead --
+#' fit even at the smallest readable size is printed smaller still instead --
 #' as small as it has to be, so that no column is cut off. When that takes the
 #' type below 6 points, where an APA table stops being comfortable to read, a
 #' warning in the rendered draft says so and points to \code{\link{apa.save}}
@@ -1591,8 +1593,8 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' repeated and the note below the last piece. (On an HTML render there is no
 #' page at all, so none of this applies: nothing rotates and nothing shrinks
 #' -- the table renders at full size regardless of width. On a slide render there is no page either, so nothing rotates there. But
-#' a slide's fixed viewport means shrinking IS meaningful, and \code{apa.quarto.revealjs()} uses
-#' its own separate automatic sizing to fit the table on the slide rather
+#' the fixed viewport of a slide means shrinking IS meaningful, and \code{apa.quarto.revealjs()} uses
+#' separate automatic sizing to fit the table on the slide rather
 #' than this rotate-then-shrink sequence; see \strong{Slides are different}
 #' below.)
 #'
@@ -1610,10 +1612,10 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' than losing a column.
 #'
 #' Rotating a page needs a label. Give every table chunk a settings line
-#' \code{#| label: tbl-something} -- the label a table needs anyway for its
+#' \code{#| label: tbl-something} -- the label a table needs anyway for the
 #' number and for references to it. A chunk without one is not a table as far
-#' as the document is concerned, so its page cannot be turned. A wide table in such a chunk is printed smaller on the upright page
-#' instead, with every column kept. If the chunk asked for a rotated page,
+#' as the document is concerned, so the page cannot be turned. A wide table in such a chunk is printed smaller on the upright page
+#' instead, with every column kept. If a rotated page was requested,
 #' the rendered draft says the label is what is missing.
 #'
 #' @section Journal mode (a PDF manuscript setting) is not supported:
@@ -1623,10 +1625,12 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' apaquarto can typeset a manuscript as a printed journal article
 #' (\code{documentmode: jou}), in two narrow columns. Do not put apaTables
 #' tables in such a document. A two-column page cannot break a table across
-#' pages, so rows, columns and whole notes can be missing from the rendered PDF
-#' with nothing reported anywhere. A document of four ordinary tables came
-#' out with two of the notes and several variable names simply absent.
-#' A warning says so during the render, but it is a warning and not a repair:
+#' pages, so rows, columns and whole notes can be missing from the rendered PDF,
+#' or the render can stop with a LaTeX error, such as
+#' \code{longtable not in 1-column mode}, and write no PDF at all. A document of
+#' four ordinary tables came out with two of the notes and several variable names
+#' simply absent. When the PDF does render, a warning in it says that journal
+#' mode is not supported, but it is a warning and not a repair:
 #' there is no setting that makes journal mode safe. Render the manuscript
 #' with \code{documentmode: man} instead, which is what a journal is submitted
 #' in, or save the table as a Word file with \code{\link{apa.save}}.
@@ -1648,7 +1652,7 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #'   apaquarto starts a new paragraph wherever the text contains a double
 #'   quote, a comma and a double quote in a row, so a note written with that
 #'   sequence in it is split there. This is long-standing apaquarto
-#'   behaviour, and the same is true of a hand-written \code{apa-note}
+#'   behavior, and the same is true of a hand-written \code{apa-note}
 #'   settings line. A generated note is unaffected. \strong{On
 #'   \code{apa.quarto.revealjs()} this is different}, because a slide reads no
 #'   \code{apa-note}: the default \code{NULL} puts no note on the slide at
@@ -1656,9 +1660,9 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #'   -- see \strong{Slides are different} below.
 #' @param font.size Optional explicit type size in points for the table
 #'   body, overriding the automatic rotate-then-shrink sequence. The title
-#'   above the table and the note below it keep their usual size. PDF, HTML
+#'   above the table and the note below it stay at the usual size. PDF, HTML
 #'   and slides use the size exactly, fractions included. \strong{Word is
-#'   different}: it takes a table's type size from a style in the document
+#'   different}: it takes the type size of a table from a style in the document
 #'   template, so it uses the requested size rounded down to a whole point,
 #'   kept between 6 and 12, and says in
 #'   the rendered draft when it had to adjust. A size below 6 points, where
@@ -1679,16 +1683,18 @@ apa_quarto_dispatch <- function(x, called, title = NULL, note = NULL,
 #' \code{apa.quarto.pdf()} / \code{apa.quarto.docx()} /
 #' \code{apa.quarto.html()} / \code{apa.quarto.revealjs()} put a table
 #' inside a Quarto document (a manuscript page or a slide deck);
-#' \code{\link{apa.save}} writes a table in a Word (\code{.docx}) or HTML file of its own.
+#' \code{\link{apa.save}} writes a table in a separate Word (\code{.docx}) or HTML file.
 #' \code{\link{apa.quarto.template}} writes the whole code chunk for you to
 #' copy; \code{\link{apa.quarto.new}} creates a Quarto project that renders an
 #' APA manuscript on the first try.
 #' @examples
 #' # Build the table once; display it with the entry point named for the
-#' # document's own format: line
+#' # format: line in the document
+#' # (These calls belong in a Quarto code chunk. At the console each one
+#' # prints the raw markup that Quarto turns into the finished table.)
 #' my_table <- apa.cor.table(data = attitude)
 #'
-#' # In a document whose YAML says format: apaquarto-pdf
+#' # In a document with YAML that says format: apaquarto-pdf
 #' apa.quarto.pdf(x = my_table)
 #'
 #' # format: apaquarto-docx

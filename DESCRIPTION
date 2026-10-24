@@ -16,7 +16,7 @@ Description: A common task faced by researchers is the creation of APA style
     analysis output. A single command saves a finished table as a
     'Microsoft Word' (.docx) file, ready for a manuscript. Tables can also be
     placed in 'Quarto' documents (via the bundled 'apaquarto' extension), so a
-    rendered 'Word' or PDF manuscript comes out with its tables already in
+    rendered 'Word' or PDF manuscript comes out with the tables already in
     place — numbered, titled, and with notes. The same tables can be shown
     on 'reveal.js' slides, and HTML output is also supported. Using this
     package minimizes transcription errors and reduces the number of commands
@@ -46,8 +46,9 @@ Suggests:
     withr
 VignetteBuilder: knitr
 Encoding: UTF-8
+Language: en-US
 License: MIT + file LICENSE
-Copyright: See the file inst/COPYRIGHTS for the copyright and licence of
+Copyright: See the file inst/COPYRIGHTS for the copyright and license of
     the bundled third-party components.
 LazyData: true
 Date: 2026-08-09

@@ -65,7 +65,7 @@ apa_docx_xml_attr <- function(xml, name) {
 # threading them through here. Reading the page geometry back out of the
 # same file both functions ultimately answer from is what keeps the two
 # questions independent: a reference-document edit that only moves a
-# margin cannot silently desynchronise from a hardcoded R constant, because
+# margin cannot silently desynchronize from a hardcoded R constant, because
 # there is no hardcoded R constant for it.
 #
 # Returns NULL when the file cannot be found or does not have the single
@@ -181,7 +181,7 @@ apa_warn_no_docx_geometry <- function(ref = apa_docx_reference_path()) {
            "still present -- run apa.quarto.setup() to restore that file ",
            "from the copy apaTables ships.")
   } else {
-    paste0("its own bundled apaquarto.docx, ", ref$path,
+    paste0("the apaquarto.docx bundled with apaTables, ", ref$path,
            ", so it has been kept upright instead of guessing a page size ",
            "that might not match this document; every column is still ",
            "present -- if this keeps happening, reinstall apaTables.")

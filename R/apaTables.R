@@ -1,6 +1,6 @@
 utils::globalVariables(c("difference", "predictor","SE","p", "DFd","DFn","Effect","GGe","HFe","SSd","SSn","ges","r","beta_CI","beta","Epsilon","F"))
 
-#' @description A common task faced by researchers is the creation of APA style (i.e., \emph{American Psychological Association} style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table, and manually re-creating that table in a word processor is prone to transcription errors. This package builds complete APA style tables directly from analysis output. A single command saves a finished table as a Microsoft Word (.docx) file, ready for a manuscript. Tables can also be placed in Quarto documents (via the bundled apaquarto extension), so a rendered Word or PDF manuscript comes out with its tables already in place -- numbered, titled, and with notes. The same tables can be shown on reveal.js slides, and HTML output is also supported. Using this package minimizes transcription errors and reduces the number of commands needed by the user.
+#' @description A common task faced by researchers is the creation of APA style (i.e., \emph{American Psychological Association} style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table, and manually re-creating that table in a word processor is prone to transcription errors. This package builds complete APA style tables directly from analysis output. A single command saves a finished table as a Microsoft Word (.docx) file, ready for a manuscript. Tables can also be placed in Quarto documents (via the bundled apaquarto extension), so a rendered Word or PDF manuscript comes out with the tables already in place -- numbered, titled, and with notes. The same tables can be shown on reveal.js slides, and HTML output is also supported. Using this package minimizes transcription errors and reduces the number of commands needed by the user.
 #'
 #'  Bugs and feature requests can be reported at: \url{https://github.com/dstanley4/apaTables/issues}
 #'
@@ -165,6 +165,7 @@ print.apa_table <- function(x,...) {
      cat("\n")
      cat(tbl$table_note,"\n")
      cat("\n")
+     invisible(x)
 }
 
 
@@ -177,6 +178,14 @@ get.ci.mean <- function(x.vector) {
      output$lower.conf.limit <- sprintf("%1.2f",lower)
      output$upper.conf.limit <- sprintf("%1.2f",upper)
      return(output)
+}
+
+# TRUE when a fitted model carries an offset, as an offset() term in its
+# formula or through lm()'s offset argument. apaTables refuses such models:
+# the offset would print as a predictor row with no estimate, and R2 is then
+# not the usual proportion of variance explained.
+apa_model_has_offset <- function(model) {
+     !is.null(attr(stats::terms(model), "offset")) || !is.null(model$offset)
 }
 
 #check if valid names used
@@ -197,10 +206,12 @@ add.sig.stars <- function(string.in,p.values.in) {
      for (i in 1:L) {
           cur.p.value<-p.values.in[i]
           if (!is.na(cur.p.value)) {
-               if ((cur.p.value<.05) & (cur.p.value>.01)) {
-                    string.out[i]<-paste(string.in[i],"*",sep="")
-               } else if (cur.p.value<.01) {
+               # Two stars below .01, else one below .05: p = .01 exactly
+               # is below .05 and takes one star.
+               if (cur.p.value < .01) {
                     string.out[i]<-paste(string.in[i],"**",sep="")
+               } else if (cur.p.value < .05) {
+                    string.out[i]<-paste(string.in[i],"*",sep="")
                }
           }
      }
@@ -213,10 +224,12 @@ add.sig.stars.latex <- function(string.in,p.values.in) {
      for (i in 1:L) {
           cur.p.value<-p.values.in[i]
           if (!is.na(cur.p.value)) {
-               if ((cur.p.value<.05) & (cur.p.value>.01)) {
-                    string.out[i]<-paste(string.in[i],"$^{*}$",sep="")
-               } else if (cur.p.value<.01) {
+               # Two stars below .01, else one below .05: p = .01 exactly
+               # is below .05 and takes one star.
+               if (cur.p.value < .01) {
                     string.out[i]<-paste(string.in[i],"$^{**}$",sep="")
+               } else if (cur.p.value < .05) {
+                    string.out[i]<-paste(string.in[i],"$^{*}$",sep="")
                }
           }
      }

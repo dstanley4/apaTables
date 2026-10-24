@@ -7,7 +7,7 @@
 apaTables Version 4.0.0
 =======================
 
-A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table, and manually re-creating that table in a word processor is prone to transcription errors. This package builds complete APA style tables directly from analysis output. A single command saves a finished table as a Microsoft Word (.docx) file, ready for a manuscript. Tables can also be placed in Quarto documents (via the bundled apaquarto extension), so a rendered Word or PDF manuscript comes out with its tables already in place — numbered, titled, and with notes. The same tables can be shown on reveal.js slides, and HTML output is also supported. Using this package minimizes transcription errors and reduces the number of commands needed by the user.
+A common task faced by researchers is the creation of APA style (i.e., American Psychological Association style) tables from statistical output. In R a large number of function calls are often needed to obtain all of the desired information for a single APA style table, and manually re-creating that table in a word processor is prone to transcription errors. This package builds complete APA style tables directly from analysis output. A single command saves a finished table as a Microsoft Word (.docx) file, ready for a manuscript. Tables can also be placed in Quarto documents (via the bundled apaquarto extension), so a rendered Word or PDF manuscript comes out with the tables already in place — numbered, titled, and with notes. The same tables can be shown on reveal.js slides, and HTML output is also supported. Using this package minimizes transcription errors and reduces the number of commands needed by the user.
 
 The development version of the apaTables R package is hosted here on GitHub. The current stable version is on CRAN, see apaTables [here.](https://cran.r-project.org/package=apaTables)
 
@@ -15,7 +15,30 @@ The development version of the apaTables R package is hosted here on GitHub. The
 `install.packages("apaTables")` still delivers the CRAN version (2.0.8), which
 has none of the Version 4.0.0 features described on this page — including
 everything in the quick start below. To use them now, install the development
-version from GitHub (the second install command near the end of this page).
+version from GitHub (the commands under "Install the Development Version",
+just below).
+
+Installation
+------------
+
+### Install the CRAN Version
+
+``` r
+install.packages("apaTables")
+
+library(apaTables)
+```
+
+### Install the Development Version
+
+``` r
+install.packages("remotes")
+
+remotes::install_github("dstanley4/apaTables")
+
+library(apaTables)
+```
+
 
 Quick start — the common cases
 ------------------------------
@@ -61,9 +84,9 @@ only comes out in APA style if the **apaquarto extension** is installed in an
 table into an APA table. In your own projects, that installation is what
 `apa.quarto.new()` (a new manuscript) and `apa.quarto.setup()` (a folder you
 already have) are for, and every new project needs it done once. What they
-install is apaTables' own tested copy of apaquarto — apaquarto plus a few
+install is a copy of apaquarto tested with apaTables — apaquarto plus a few
 table fixes not yet in the standard release — so use these functions rather
-than Quarto's own `quarto add`, which gets the standard release instead. Both
+than `quarto add`, which gets the standard release instead. Both
 functions used below install it for you, so there is no separate setup step
 in this quick start.
 
@@ -112,16 +135,16 @@ apa.quarto.new(path = "my-paper")
 
 This creates a `my-paper` folder holding a working APA manuscript with the
 apaquarto extension already installed — the setup from above, done for you —
-so the very first render works. The installed extension is apaTables' own
-tested copy of apaquarto, with table fixes not yet in the standard release,
-so do not run Quarto's `quarto add` or `quarto update` in this folder — both
+so the very first render works. The installed extension is a copy of
+apaquarto tested with apaTables, with table fixes not yet in the standard release,
+so do not run `quarto add` or `quarto update` in this folder — both
 replace it with the standard release. Details in section 1b below.
 
 Where do you want your table to end up?
 ---------------------------------------
 
 Start with the kind of document you are writing, and read only that section —
-each one is complete on its own.
+each one is complete without the others.
 
 1. [Microsoft Word](#1-how-do-i-make-tables-for-microsoft-word)
 2. [PDF](#2-how-do-i-make-tables-in-a-pdf)
@@ -134,7 +157,7 @@ And if you need to change what the table shows:
 
 7. [Writing your own title or note](#7-how-do-i-write-my-own-table-title-or-note)
 8. [Putting a table on a landscape page](#8-how-do-i-put-a-table-on-a-landscape-page)
-9. [Changing a table's font size](#9-how-do-i-change-a-tables-font-size)
+9. [Changing the font size of a table](#9-how-do-i-change-the-font-size-of-a-table)
 
 ### 1. How do I make tables for Microsoft Word?
 
@@ -184,8 +207,8 @@ apa.quarto.new(path = "my-paper")
 > **Do not skip this step, and do not replace it by writing the settings block
 > yourself.** `apa.quarto.new()` writes the starter document *and* installs the
 > **apaquarto extension** into an `_extensions` folder beside it. The extension
-> is the part that turns your table into an APA table — the settings block on
-> its own does nothing without it. A document whose settings say
+> is the part that turns your table into an APA table — the settings block
+> alone does nothing without it. A document with settings that say
 > `apaquarto-docx` with no extension installed does not render at all: Quarto
 > stops with
 >
@@ -194,27 +217,27 @@ apa.quarto.new(path = "my-paper")
 > ```
 >
 > before any of your R code runs, and produces no file. **If you already have a
-> project**, run `apa.quarto.setup()` once in its folder instead — it installs
+> project**, run `apa.quarto.setup()` once in the project folder instead — it installs
 > the same thing into a folder you already have.
 >
-> What these functions install is **apaTables' own tested copy of apaquarto** —
+> What these functions install is **a copy of apaquarto tested with apaTables** —
 > apaquarto plus a few table fixes that are not yet in the standard release. So
-> use these functions to install it; Quarto's own `quarto add` gets the
+> use these functions to install it; `quarto add` gets the
 > standard release instead — and do not run `quarto update` in the
 > folder afterwards, which quietly puts the standard release back.
 
 That creates a folder called `my-paper` with a starter document inside it, and
 an `_extensions` folder holding the apaquarto extension. Open the document in
 Positron. Near the top is a block of settings between two rows
-of dashes. The starter arrives set up for PDF, so its format line says
+of dashes. The starter arrives set up for PDF, so the format line says
 `format: apaquarto-pdf` — for a Word manuscript, change that line to:
 
 ```
 format: apaquarto-docx
 ```
 
-That line is what makes the finished file a Word document. (The starter's own
-worked table block calls `apa.quarto.pdf()` — change that to
+That line is what makes the finished file a Word document. (The worked table
+block in the starter calls `apa.quarto.pdf()` — change that to
 `apa.quarto.docx()` too, so the call and the format line agree.) Further down,
 wherever you want a table, put your analysis in a block like this one:
 
@@ -246,8 +269,8 @@ apa.quarto.new(path = "my-paper")
 > **Do not skip this step, and do not replace it by writing the settings block
 > yourself.** `apa.quarto.new()` writes the starter document *and* installs the
 > **apaquarto extension** into an `_extensions` folder beside it. The extension
-> is the part that turns your table into an APA table — the settings block on
-> its own does nothing without it. A document whose settings name an apaquarto
+> is the part that turns your table into an APA table — the settings block
+> alone does nothing without it. A document with settings that name an apaquarto
 > format with no extension installed does not render at all: Quarto stops with
 >
 > ```
@@ -255,12 +278,12 @@ apa.quarto.new(path = "my-paper")
 > ```
 >
 > before any of your R code runs, and produces no file. **If you already have a
-> project**, run `apa.quarto.setup()` once in its folder instead — it installs
+> project**, run `apa.quarto.setup()` once in the project folder instead — it installs
 > the same thing into a folder you already have.
 >
-> What these functions install is **apaTables' own tested copy of apaquarto** —
+> What these functions install is **a copy of apaquarto tested with apaTables** —
 > apaquarto plus a few table fixes that are not yet in the standard release. So
-> use these functions to install it; Quarto's own `quarto add` gets the
+> use these functions to install it; `quarto add` gets the
 > standard release instead — and do not run `quarto update` in the
 > folder afterwards, which quietly puts the standard release back.
 
@@ -285,7 +308,7 @@ the block as a table, and it gets no number and no title. Then render the
 document (the Preview button in Positron), and you get `my-paper.pdf`.
 
 A table too wide to stand upright is turned sideways for you, and a table taller
-than the page continues onto the next one with its column headings repeated.
+than the page continues onto the next one with the column headings repeated.
 
 `apa.save()` does not write PDF files. If you ask it to, it tells you so and
 points you back here.
@@ -349,8 +372,8 @@ apa.quarto.new(path = "my-paper")
 > **Do not skip this step, and do not replace it by writing the settings block
 > yourself.** `apa.quarto.new()` writes the starter document *and* installs the
 > **apaquarto extension** into an `_extensions` folder beside it. The extension
-> is the part that turns your table into an APA table — the settings block on
-> its own does nothing without it. A document whose settings name an apaquarto
+> is the part that turns your table into an APA table — the settings block
+> alone does nothing without it. A document with settings that name an apaquarto
 > format with no extension installed does not render at all: Quarto stops with
 >
 > ```
@@ -358,12 +381,12 @@ apa.quarto.new(path = "my-paper")
 > ```
 >
 > before any of your R code runs, and produces no file. **If you already have a
-> project**, run `apa.quarto.setup()` once in its folder instead — it installs
+> project**, run `apa.quarto.setup()` once in the project folder instead — it installs
 > the same thing into a folder you already have.
 >
-> What these functions install is **apaTables' own tested copy of apaquarto** —
+> What these functions install is **a copy of apaquarto tested with apaTables** —
 > apaquarto plus a few table fixes that are not yet in the standard release. So
-> use these functions to install it; Quarto's own `quarto add` gets the
+> use these functions to install it; `quarto add` gets the
 > standard release instead — and do not run `quarto update` in the
 > folder afterwards, which quietly puts the standard release back.
 
@@ -465,7 +488,7 @@ apa.quarto.pdf(x = my_table,
 > type the symbol; in a note, mark it up as normal.**
 
 **A note that is really several notes** — a general note, then a probability
-note — is written as a list, so that each part starts on its own line as APA
+note — is written as a list, so that each part starts on a new line as APA
 requires:
 
 ````
@@ -522,26 +545,26 @@ apa.quarto.pdf(x = my_table)
 ```
 ````
 
-**LaTeX maths notation such as `$\Delta$` also works**, in PDF, Word and HTML
-alike — but prefer the plain character anyway. Maths is set in a *maths* font,
+**LaTeX math notation such as `$\Delta$` also works**, in PDF, Word and HTML
+alike — but prefer the plain character anyway. Math is set in a *math* font,
 so `$\mu$` comes out in a slightly different typeface from a μ standing next to
 it in the same sentence, which is visible in all three. In HTML it is also
 rendered by a script: one fetched from the internet on an ordinary render, or
 built into the file itself when the document is rendered self-contained. A
 typed character needs none of that.
 
-#### Starting from apaTables' own wording
+#### Starting from the apaTables wording
 
 If you want to *extend* the generated wording rather than replace it, two
-helpers hand it to you as ordinary text: `apa_caption()` gives the title and
-`apa_note_text()` gives the note.
+helpers hand it to you as ordinary text: `apa.caption()` gives the title and
+`apa.note.text()` gives the note.
 
 **With function arguments**, you can build the new text in the call:
 
 ``` r
 my_table <- apa.cor.table(data = attitude)
 apa.quarto.pdf(x = my_table,
-               note = paste(apa_note_text(x = my_table),
+               note = paste(apa.note.text(x = my_table),
                             "Data collected in 2026."))
 ```
 
@@ -550,9 +573,9 @@ result in — a settings line is plain text and cannot run R code:
 
 ``` r
 my_table <- apa.cor.table(data = attitude)
-apa_caption(x = my_table)
+apa.caption(x = my_table)
 #> Descriptive Statistics and Correlations
-apa_note_text(x = my_table)
+apa.note.text(x = my_table)
 #> N = number of cases. M = mean. SD = standard deviation. ...
 ```
 
@@ -611,12 +634,12 @@ and the argument said `TRUE`.
 
 **The `#| label:` line is required for this to work in PDF.** Without a label
 starting `tbl-`, Quarto does not build a table float, and a page can only be
-turned for a float. A wide table in an unlabelled block is printed smaller on
-an upright page instead, complete — and if it had asked for a rotated page
+turned for a float. A wide table in an unlabeled block is printed smaller on
+an upright page instead, complete — and if a rotated page was requested
 (`landscape = TRUE`, or the settings line), the rendered draft says the label
 is what is missing.
 
-### 9. How do I change a table's font size?
+### 9. How do I change the font size of a table?
 
 **You usually do not need to.** apaTables sizes each table as the document
 renders: a table too wide for the page is turned landscape first, and shrunk
@@ -631,7 +654,7 @@ apa.quarto.pdf(x = my_table, font.size = 10)
 ```
 
 The size applies to the body of the table. The title above it and the note
-below it keep their usual size.
+below it stay at the usual size.
 
 **What arrives on the page differs by destination:**
 
@@ -640,7 +663,7 @@ below it keep their usual size.
 | PDF, HTML, reveal.js slides | your size exactly, fractions included — `font.size = 9.5` really is 9.5 pt |
 | Word (`apa.quarto.docx()`) | whole points only, kept between 6 and 12 |
 
-Word is different because it takes a table's type size from a named style in
+Word is different because it takes the type size of a table from a named style in
 the document template, so the request is rounded down to a whole point and
 held inside the 6–12 range — and the rendered draft tells you when the size
 delivered is not the size you asked for.
@@ -661,47 +684,44 @@ Two warnings to know about; neither stops the render:
 **On the `apa.save()` route (section 1a) there is no font size setting at
 this time** — those tables are always 12 point Times New Roman, matching the
 manuscript body type APA style expects. If a table is too wide at 12 points,
-`apa.save()` turns its page landscape first; only a table too wide even for
+`apa.save()` turns the page landscape first; only a table too wide even for
 that (or kept upright with `landscape = FALSE`) is set in smaller type, so
 that every column is kept.
 
 ### What's new in Version 4.0.0
 
-- **One-command APA manuscript**: apaTables now ships its own patched copy of the [apaquarto](https://wjschne.github.io/apaquarto/) extension and can install it for you. `apa.quarto.new(path = "my-paper")` creates a folder with a working Quarto document and the extension already installed, so the first render produces a real APA manuscript:
+- **One-command APA manuscript**: apaTables now ships a patched copy of the [apaquarto](https://wjschne.github.io/apaquarto/) extension and can install it for you. `apa.quarto.new(path = "my-paper")` creates a folder with a working Quarto document and the extension already installed, so the first render produces a real APA manuscript:
   ``` r
   library(apaTables)
   apa.quarto.new(path = "my-paper")
   ```
   `apa.quarto.setup()` installs or repairs the extension in a project you already have, and does nothing on a project that is already correct.
-- **Quarto / apaquarto support**: build the table on one line, then pass it to `apa.quarto.pdf()`, `apa.quarto.docx()`, `apa.quarto.html()` or `apa.quarto.revealjs()` (named for the document's own destination) on the next, and the apaquarto extension formats it as an APA table in PDF, Word, HTML or reveal.js slides:
+- **Quarto / apaquarto support**: build the table on one line, then pass it to `apa.quarto.pdf()`, `apa.quarto.docx()`, `apa.quarto.html()` or `apa.quarto.revealjs()` (named for the output format) on the next, and the apaquarto extension formats it as an APA table in PDF, Word, HTML or reveal.js slides:
   ``` r
   my_table <- apa.cor.table(data = attitude)
   apa.quarto.pdf(x = my_table)
   ```
   The helper `apa.quarto.template()` prints a ready-to-paste block of code for you.
-- **Wide and tall tables in PDF handled for you**: a table too wide to stand upright is placed on a rotated (landscape) page automatically, at full size, and a table taller than the page continues onto the next one with its column headings repeated. You do not have to work out in advance which of your tables need this — apaTables measures each one as the document renders. If you ever need to overrule that decision, every table function takes a `landscape` argument: `landscape = TRUE` forces a rotated page, `landscape = FALSE` forbids one, and the default measures.
+- **Wide and tall tables in PDF handled for you**: a table too wide to stand upright is placed on a rotated (landscape) page automatically, at full size, and a table taller than the page continues onto the next one with the column headings repeated. You do not have to work out in advance which of your tables need this — apaTables measures each one as the document renders. If you ever need to overrule that decision, every table function takes a `landscape` argument: `landscape = TRUE` forces a rotated page, `landscape = FALSE` forbids one, and the default measures.
 - **Word and HTML output**: `apa.save()` writes Microsoft Word (.docx) and HTML files (chosen by the file extension) via the flextable and officer packages.
 - **`apa.ezANOVA.table()` removed**: The ez package was archived on CRAN. Use `apa.afex.table()` with `afex::aov_ez()` output for repeated-measures and mixed designs instead.
 - **`apa.reg.boot.table()` removed**: bootstrapped regression tables are not part of this release. `apa.reg.table()` still makes the standard regression table.
 - **Upgrading from 2.0.8**: the [migration guide](https://dstanley4.github.io/apaTables/articles/migrating-to-4.0.html) lists what to change -- Word files are now `.docx`, tables are numbered 1 by default, a table now prints sideways only when it needs to, correlation tables show *p* values, and some ANOVA and hierarchical regression numbers are corrected.
 
-### Install the CRAN Version
+Citing apaTables
+----------------
 
-``` r
-install.packages("apaTables")
+If you use apaTables in published work, please cite the article that
+describes it:
 
-library(apaTables)
-```
+Stanley, D. J., & Spence, J. R. (2018). Reproducible tables in psychology
+using the apaTables package. *Advances in Methods and Practices in
+Psychological Science, 1*(3), 415–431.
+<https://doi.org/10.1177/2515245918773743>
 
-### Install the Development Version
-
-``` r
-install.packages("remotes")
-
-remotes::install_github("dstanley4/apaTables")
-
-library(apaTables)
-```
+To credit the version of the package you used as well, run
+`citation(package = "apaTables")` in R; it prints both references, ready to
+copy.
 
 Tutorial
 --------

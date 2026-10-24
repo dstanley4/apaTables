@@ -82,8 +82,8 @@ test_that("as_spec unwraps a legacy apa_table carrying $spec", {
 })
 
 test_that("as_spec errors on an object that is neither", {
-  expect_error(as_spec(structure(list(), class = "apa_table")), "spec")
-  expect_error(as_spec(42), "spec")
+  expect_error(as_spec(structure(list(), class = "apa_table")), "needs a table made by an apaTables function", fixed = TRUE)
+  expect_error(as_spec(42), "needs a table made by an apaTables function", fixed = TRUE)
 })
 
 test_that("apa_spanner records a level (default 1)", {

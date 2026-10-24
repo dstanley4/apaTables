@@ -94,6 +94,7 @@ apa_sym <- function(name) {
   it <- function(t) rt_run(t, italic = TRUE)
   defs <- list(
     N     = list(runs = list(it("N")),                                   plain = "N"),
+    n     = list(runs = list(it("n")),                                   plain = "n"),
     M     = list(runs = list(it("M")),                                   plain = "M"),
     SD    = list(runs = list(it("SD")),                                  plain = "SD"),
     b     = list(runs = list(it("b")),                                   plain = "b"),

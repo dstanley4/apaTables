@@ -236,7 +236,7 @@ test_that("type = \"III\" gives main effects under treatment contrasts", {
 })
 
 test_that("the refit uses the fitted model, not the workspace as it is now", {
-     # The refit is built from the model's stored frame, weights and offset.
+     # The refit is built from the model's stored frame and weights.
      # Re-running the model's call instead would pick up whatever the
      # workspace holds now: here, weights reused for another analysis.
      withr::local_options(contrasts = c("contr.sum", "contr.poly"))
@@ -294,4 +294,14 @@ test_that("a model already fitted with sum-to-zero contrasts is used as it is", 
      withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      m <- lm(attractiveness ~ gender * alcohol, data = goggles)
      expect_identical(aov_sum_contrasts(m), m)
+})
+
+test_that("a model with an offset is refused, in either form", {
+     msg <- "does not support models with an offset"
+     expect_error(apa.aov.table(lm(attractiveness ~ gender * alcohol + offset(rep(1, 48)),
+                                   data = goggles)), msg)
+     expect_error(apa.aov.table(lm(attractiveness ~ gender * alcohol, data = goggles,
+                                   offset = rep(1, 48))), msg)
+     expect_error(apa.aov.table(lm(attractiveness ~ gender, data = goggles,
+                                   offset = rep(1, 48)), type = 2), msg)
 })

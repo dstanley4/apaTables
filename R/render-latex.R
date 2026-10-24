@@ -123,7 +123,7 @@ apa_latex_escape_map <- c(
 #' Not safe under double application -- see the source comment above this
 #' function for the confirmed counter-example. Call exactly once, on raw
 #' text only.
-#' @param txt a length-1 (or vectorised) character string.
+#' @param txt a length-1 (or vectorized) character string.
 #' @return `txt` with LaTeX special characters escaped.
 #' @keywords internal
 apa_latex_escape <- function(txt) {
@@ -230,7 +230,7 @@ rt_to_latex <- function(rt) {
 # relationship, not a noisy fit -- and its value is 0.1851852 in
 # (13.33333 pt), i.e. exactly **5/27 in**, not 10/72 in = 0.1389 in. The
 # extra ~3.33 pt/column is real and reproducible (flextable/gdtools internal
-# margin or minimum-width behaviour beyond the documented padding.left/right
+# margin or minimum-width behavior beyond the documented padding.left/right
 # API; not investigated further since the fit already isolates it exactly),
 # so `K` below is that MEASURED regression intercept, not the theoretical
 # padding sum -- treat it as "the font-independent constant `autofit()`
@@ -340,7 +340,7 @@ APA_LATEX_MAX_FONT_SIZE <- APA_LATEX_WIDTH_REFERENCE_SIZE
 # emitted at 5, 3, 1, 0.5 and 0.1 pt, rendered through the full apaquarto ->
 # xelatex path, and read back out of the PDF. All five produced a COMPLETE table
 # (12 of 12 markers each) and, by pdftotext -bbox on a marker word, all five
-# were HONOURED rather than substituted: rendered word width is linear in the
+# were HONORED rather than substituted: rendered word width is linear in the
 # requested size right down to 0.1 pt (26.007, 15.437, 5.202, 2.573 and 0.503 pt
 # -- 5.03 to 5.20 pt of width per requested pt). No "size not available /
 # substituted" warning at any of them. Do not raise it to 0.5 pt on the theory
@@ -389,7 +389,7 @@ apa_latex_width_from_content <- function(content_12, size) {
 #' The width a table will occupy as a native LaTeX longtable
 #'
 #' Measures the plan's cell strings ONCE, at 12 pt, with the same
-#' font metrics flextable's own `autofit()` depends on, then scales
+#' font metrics flextable's `autofit()` depends on, then scales
 #' the CONTENT term (only) to `size` and applies the corrected `K`
 #' (empirically fit -- see the block comment above this function in
 #' `R/render-latex.R`; NOT the theoretical 10/72 in), the
@@ -416,8 +416,8 @@ apa_latex_natural_width <- function(plan, size) {
 #' algebraic inverse (solving the un-rounded linear formula for `size`) can
 #' land fractionally past where the ROUNDED forward function actually still
 #' fits. `apa_size_for_width()` is defined as the largest size, no bigger
-#' than `APA_LATEX_MAX_FONT_SIZE` (12 pt -- see that constant: neither APA's
-#' own body type nor the model's own measurement ever goes above it), whose
+#' than `APA_LATEX_MAX_FONT_SIZE` (12 pt -- see that constant: neither APA
+#' body type nor the range the model was measured over goes above it), whose
 #' predicted width -- by `apa_latex_natural_width()`, the exact same
 #' function every other caller uses, not the un-rounded approximation used
 #' only to seed the search -- still fits `target`. It gets there by solving
@@ -817,11 +817,11 @@ apa_latex_foot_reserve <- function(n_col, size) {
 #' @section Why there is no caption (measured):
 #' Quarto's \code{main.lua} rewrites any raw-LaTeX \code{longtable} that
 #' contains no \code{\\caption} into \code{longtable*}, and every later fixup
-#' -- Quarto's own and apaquarto's \code{apalongtablenote.lua} alike -- matches
+#' -- those in Quarto and \code{apalongtablenote.lua} in apaquarto alike -- matches
 #' the literal UNSTARRED name, so a starred environment becomes invisible to
 #' all of them. Measured on two byte-identical documents differing only in that
 #' one string: the unstarred form kept 60 of 60 marked rows with the note
-#' spliced into the table's own foot; the starred form kept 45, \strong{rows
+#' spliced into the foot of the table; the starred form kept 45, \strong{rows
 #' 46-60 vanished with no error}, and the note printed on another page. Writing
 #' our own \code{\\caption} is not an escape route either -- the render then
 #' dies inside Quarto's filter chain (\code{main.lua:3237}, \code{refType}).
@@ -839,7 +839,7 @@ apa_latex_foot_reserve <- function(n_col, size) {
 #' no rule may appear at a page break in the middle of a table -- but it is not
 #' EMPTY: it carries an invisible zero-width strut that reserves the room
 #' \code{longtable} needs for the last foot, without which that foot can break
-#' onto a page of its own, carrying the note away from the last row.
+#' onto a separate page, carrying the note away from the last row.
 #' \code{\\bottomrule} belongs to \code{\\endlastfoot}, which must exist
 #' because \code{apalongtablenote.lua} splices the note into it. Row groups are a
 #' full-width bold \code{\\multicolumn} preceded by \code{\\addlinespace};

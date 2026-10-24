@@ -15,7 +15,7 @@ A \code{flextable} object that displays the table body.
 }
 \description{
 Internal. Its one caller is \code{\link{apa.save}}, when it writes a
-\code{.docx} or \code{.html} file of its own. The Quarto entry points
+separate \code{.docx} or \code{.html} file. The Quarto entry points
 (\code{\link{apa.quarto.pdf}}, \code{\link{apa.quarto.docx}},
 \code{\link{apa.quarto.html}}) never reach it: PDF gets native LaTeX and
 every other destination gets a pandoc grid table

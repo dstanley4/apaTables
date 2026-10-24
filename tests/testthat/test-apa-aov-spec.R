@@ -36,25 +36,7 @@ test_that("apa.aov.table spec CI label tracks conf.level", {
   expect_equal(labs[8], "95% CI")
 })
 
-test_that("out-of-range conf.level: CI label matches the interval computed", {
-  op <- options(contrasts = c("contr.helmert", "contr.poly"))
-  on.exit(options(op))
+test_that("out-of-range conf.level is refused, not replaced", {
   lm_output <- lm(libido ~ dose, data = viagra)
-
-  # .85 is not supported; the builder silently computes a .90 interval.
-  # The column header and the note must say 90, not 85.
-  tbl_85 <- apa.aov.table(lm_output, conf.level = .85)
-  tbl_90 <- apa.aov.table(lm_output, conf.level = .90)
-
-  labs <- vapply(tbl_85$spec$col_labels, as_plaintext, character(1))
-  expect_equal(labs[8], "90% CI")
-
-  # ... and the values under that header really are the .90 interval.
-  ci_85 <- vapply(tbl_85$spec$body, function(r) as_plaintext(r[[8]]), character(1))
-  ci_90 <- vapply(tbl_90$spec$body, function(r) as_plaintext(r[[8]]), character(1))
-  expect_equal(ci_85, ci_90)
-
-  expect_equal(tbl_85$ci.conf.level, .90)
-  # console header carries the level too
-  expect_true("CI_90_partial_eta2" %in% names(tbl_85$table_body))
+  expect_error(apa.aov.table(lm_output, conf.level = .85), "conf.level must be .90 or .95")
 })

@@ -31,8 +31,8 @@ two adjacent sizes can round to the same summed width, and the naive
 algebraic inverse (solving the un-rounded linear formula for `size`) can
 land fractionally past where the ROUNDED forward function actually still
 fits. `apa_size_for_width()` is defined as the largest size, no bigger
-than `APA_LATEX_MAX_FONT_SIZE` (12 pt -- see that constant: neither APA's
-own body type nor the model's own measurement ever goes above it), whose
+than `APA_LATEX_MAX_FONT_SIZE` (12 pt -- see that constant: neither APA
+body type nor the range the model was measured over goes above it), whose
 predicted width -- by `apa_latex_natural_width()`, the exact same
 function every other caller uses, not the un-rounded approximation used
 only to seed the search -- still fits `target`. It gets there by solving

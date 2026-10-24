@@ -120,7 +120,7 @@ test_that("an explicit font.size reaches an HTML table exactly, via the wrapper 
   expect_false(grepl("apa-table-size-[0-9]", html))
 
   # and Word's range warning must NOT have leaked into an HTML render
-  expect_false(grepl("takes a table's type size from a style", html, fixed = TRUE))
+  expect_false(grepl("takes the type size of a table from a style", html, fixed = TRUE))
 })
 
 test_that("the new Word rungs are selected on a real docx render", {

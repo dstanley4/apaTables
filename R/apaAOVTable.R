@@ -14,7 +14,7 @@ aov_spec_note <- function() {
 # which Type III tests need for a factor's row to be its main effect. A model
 # whose factors already sum to zero (contr.sum, contr.helmert, contr.poly)
 # comes back unchanged. The refit uses only what the model object stores --
-# its model frame, weights and offset -- never the workspace, so it is the
+# its model frame and weights -- never the workspace, so it is the
 # model the user fitted whatever has happened to their data since. Its
 # fitted values must equal the original's (the same model in a different
 # coding); a model stored without its frame (lm(..., model = FALSE)) cannot
@@ -49,11 +49,12 @@ aov_sum_contrasts <- function(lm_output) {
   x <- stats::model.matrix(stats::terms(lm_output), mf, contrasts.arg = new_ctr)
   y <- stats::model.response(mf, "numeric")
   w <- stats::model.weights(mf)
-  offset <- stats::model.offset(mf)
+  # (A model with an offset never reaches this point: apa.aov.table()
+  # refuses it.)
   fit <- if (is.null(w)) {
-    stats::lm.fit(x, y, offset = offset)
+    stats::lm.fit(x, y)
   } else {
-    stats::lm.wfit(x, y, w, offset = offset)
+    stats::lm.wfit(x, y, w)
   }
   refit <- lm_output
   refit[names(fit)] <- fit
@@ -90,10 +91,11 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 
 #' Create an APA-style fixed-effects ANOVA table
 #'
+#' @description
 #' \code{apa.aov.table()} creates a fixed-effects ANOVA table in APA style
 #' from an \code{\link[stats]{lm}} result. For each predictor the table
 #' reports the sum of squares, degrees of freedom, mean square, F, p, and
-#' partial eta-squared with its confidence interval. The table prints to the console. The most
+#' partial eta-squared with a confidence interval. The table prints to the console. The most
 #' common next step is saving the table as a Word file to use in a
 #' manuscript:
 #'
@@ -108,12 +110,13 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' comes out with the table already in place -- see the \emph{Quarto
 #' documents} section below.
 #'
-#' @param lm_output A result from \code{\link[stats]{lm}} in which all
-#'   predictors are factors (categorical variables).
+#' @param lm_output A result from \code{\link[stats]{lm}} (or
+#'   \code{aov()}) in which all predictors are factors (categorical
+#'   variables). Models from \code{glm()} are not supported.
 #' @param filename Optional file name. If supplied, the table is also saved
 #'   as a Word (\code{.docx}) or HTML (\code{.html}) file, according to the
 #'   file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
-#'   \code{.docx}.
+#'   \code{.docx}. An existing file with that name is replaced.
 #' @param table.number Number for the "Table N" line of the output. Defaults
 #'   to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
 #'   no number: none is then shown at the console or written to the Word file.
@@ -125,13 +128,13 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' @param conf.level Confidence level (\code{.90}, the default, or
 #'   \code{.95}) for the interval around partial eta-squared. Using
 #'   \code{.90} keeps conclusions based on this interval consistent with
-#'   the p-value.
+#'   the p-value. Any other value stops with a message.
 #' @param type Sum-of-squares type: \code{2} (Type II) or \code{3}
 #'   (Type III, the default).
 #' @param landscape Whether this table is placed on a rotated (landscape)
 #'   page. The default, \code{NA}, means apaTables decides by measuring the
 #'   table against the page. Pass \code{TRUE} to insist on a rotated page or
-#'   \code{FALSE} to insist on an upright one. An explicit value is honoured
+#'   \code{FALSE} to insist on an upright one. An explicit value is honored
 #'   wherever the destination can carry it out; in a Quarto PDF that means
 #'   the chunk needs a \code{tbl-} label (see \code{\link{apa.quarto.pdf}}).
 #'   A table too wide for the page it is given is shrunk to fit rather
@@ -144,7 +147,7 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' noncentral approach described by Smithson (2001) and Fidler and Thompson
 #' (2001). For Type III sums of squares to match programs such as SPSS,
 #' factor contrasts must sum to zero. \code{apa.aov.table()} sees to this
-#' itself: when \code{type = 3} and a factor uses R's default treatment
+#' itself: when \code{type = 3} and a factor uses the R default treatment
 #' contrasts, it refits the model with sum-to-zero contrasts, from the
 #' data stored in the model object, before computing the table, so the
 #' table is the same whether or not you set them. The examples still set
@@ -152,8 +155,13 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' the coefficients of your own \code{lm()} model consistent with the
 #' table.
 #'
-#' @return A table object (class \code{apa_table}). Typing its name at the
-#'   console displays the table. Pass it to \code{\link{apa.save}} to create
+#' The table describes the model as \code{lm()} fitted it, so cases that
+#' \code{lm()} dropped for missing values (the default) are not in it. A
+#' model with an offset (an \code{offset()} term, or the \code{offset}
+#' argument of \code{lm()}) is not supported and stops with a message.
+#'
+#' @return A table object (class \code{apa_table}). Typing the object name at
+#'   the console displays the table. Pass it to \code{\link{apa.save}} to create
 #'   a Word or HTML file. Or, if you are working in a Quarto document, use
 #'   \code{\link{apa.quarto.pdf}} or \code{\link{apa.quarto.docx}} to make
 #'   PDF and Word manuscripts, respectively.
@@ -166,7 +174,7 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' \preformatted{apa.save(filename = "Table1.docx", table1)}
 #'
 #' The file appears in your working directory -- the folder R is currently
-#' pointing at. Several tables can go into one file, each on its own page,
+#' pointing at. Several tables can go into one file, each on a separate page,
 #' numbered Table 1, Table 2, and so on in the order you list them:
 #'
 #' \preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
@@ -174,8 +182,8 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' The title above each table and the note below it are written by
 #' apaTables from the table itself; on this route there is no way to
 #' supply your own wording at this time. Tables are set in 12 point, and a
-#' table too wide for an upright page gets a rotated (landscape) page of
-#' its own rather than smaller type -- so a wide table coming out sideways
+#' table too wide for an upright page gets a rotated (landscape) page
+#' rather than smaller type -- so a wide table coming out sideways
 #' is expected, not an error.
 #'
 #' @section Quarto documents:
@@ -225,14 +233,14 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' There are four format-named functions for this -- \code{\link{apa.quarto.pdf}},
 #' \code{\link{apa.quarto.docx}}, \code{\link{apa.quarto.html}} and
 #' \code{\link{apa.quarto.revealjs}} -- one for each Quarto destination, and
-#' they behave identically: the document's own
-#' YAML \code{format:} line decides what is actually produced, so the name only
-#' states intent. This page's examples use \code{apa.quarto.pdf()} to match the
+#' they behave identically: the YAML
+#' \code{format:} line in the document decides what is actually produced, so the name only
+#' states intent. The examples on this page use \code{apa.quarto.pdf()} to match the
 #' \code{format: apaquarto-pdf} shown above; swap in \code{apa.quarto.docx()} or
 #' \code{apa.quarto.html()} together with the matching YAML line for Word or HTML.
 #'
 #' In the document, the table lives inside a code chunk like this one.
-#' \code{\link{apa.quarto.pdf}} displays the table body with its title and
+#' \code{\link{apa.quarto.pdf}} displays the table body with the title and
 #' note included automatically, so this chunk is complete -- there is no
 #' title or note line to write, and the wording stays correct when the
 #' analysis changes. The \code{library(apaTables)} line is easy to leave
@@ -241,7 +249,7 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' \code{options(contrasts = ...)} line sets sum-to-zero contrasts before
 #' the model is fitted. \code{apa.aov.table()} uses those contrasts for a
 #' Type III table whether or not the line is there, so the table is right
-#' either way; the line keeps your own model's coefficients in the same
+#' either way; the line keeps the coefficients of your own model in the same
 #' coding as the table:
 #'
 #' \preformatted{```{r}
@@ -263,16 +271,16 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' (portrait) PDF page, APA style places it on a rotated (landscape) page --
 #' and apaTables does that for you. It measures the table and asks apaquarto
 #' for a rotated page when one is needed, whether your tables sit in the text
-#' or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the document's
+#' or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the
 #' YAML header. A table wider still -- wider than even a rotated page -- is
 #' printed smaller instead, as small as it has to be so
 #' that no column is cut off. If that takes the type below 6 points, a
 #' warning in the rendered draft says so and points to \code{\link{apa.save}}
-#' for a full-size Word version. A table too tall for its page needs nothing
+#' for a full-size Word version. A table too tall for the page needs nothing
 #' either: it continues onto the next page by itself, with the column
 #' headings repeated at the top of each continuation and the note below the
 #' last piece. None of this applies to \code{\link{apa.save}} files: there, each table
-#' sits on a page of its own, always at full size.
+#' sits alone on a page, always at full size.
 #'
 #' To see this table (and every apaTables table type) in a complete
 #' working document, type
@@ -350,9 +358,6 @@ aov_build_spec <- function(latex_body, conf_level, table_title, table_number, la
 #' # Print a ready-to-paste apaquarto code chunk:
 #' apa.quarto.template(x = table1)
 #'
-#' # Or write your own chunk; apa.quarto.pdf() displays the table body:
-#' apa.quarto.pdf(x = table1)
-#'
 #' # Clean up
 #' unlink(file.path(tempdir(), "my_tables.docx"))
 #' options(op)
@@ -362,14 +367,19 @@ apa.aov.table<-function(lm_output,filename=NA,table.number=1, conf.level=.90,typ
      table_number_explicit <- !missing(table.number)
      table_number <- apa_table_number_value(table.number)
      table.number <- table_number
-     conf_level <- conf.level
+     apa_check_landscape(landscape)
+     conf_level <- apa_check_conf_level(conf.level, "conf.level")
 
-     if ((conf_level!=.90)&(conf_level!=.95)) {conf_level=.90}
-
+     apa_check_lm("apa.aov.table", lm_output)
+     filename <- apa_check_filename(filename)
      if (is.na(filename)) {
           make_file_flag <- FALSE
      } else {
           make_file_flag <- TRUE
+     }
+
+     if (apa_model_has_offset(lm_output)) {
+          stop("apa.aov.table() does not support models with an offset (an offset() term, or the offset argument of lm()); fit the model without it.", call. = FALSE)
      }
 
      dv_name <- names(lm_output$model)[1]

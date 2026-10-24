@@ -15,12 +15,13 @@ apa.reg.table(
 \arguments{
 \item{...}{One or more results from \code{\link[stats]{lm}} -- one for
 each block in a hierarchical regression. All must use the same
-criterion variable.}
+criterion variable, and each needs an intercept and at least one
+predictor. Models from \code{glm()} are not supported.}
 
 \item{filename}{Optional file name. If supplied, the table is also saved
 as a Word (\code{.docx}) or HTML (\code{.html}) file, according to the
 file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
-\code{.docx}.}
+\code{.docx}. An existing file with that name is replaced.}
 
 \item{table.number}{Number for the "Table N" line of the output. Defaults
 to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
@@ -35,12 +36,13 @@ the order they appear in the document.}
 the default) for the intervals around the proportion-of-variance
 measures (semi-partial correlation squared, R-squared, and change in
 R-squared). Using \code{.90} keeps conclusions based on these
-intervals consistent with the p-value for the block.}
+intervals consistent with the p-value for the block. Any other value
+stops with a message.}
 
 \item{landscape}{Whether this table is placed on a rotated (landscape)
 page. The default, \code{NA}, means apaTables decides by measuring the
 table against the page. Pass \code{TRUE} to insist on a rotated page or
-\code{FALSE} to insist on an upright one. An explicit value is honoured
+\code{FALSE} to insist on an upright one. An explicit value is honored
 wherever the destination can carry it out; in a Quarto PDF that means
 the chunk needs a \code{tbl-} label (see \code{\link{apa.quarto.pdf}}).
 A table too wide for the page it is given is shrunk to fit rather
@@ -49,8 +51,8 @@ so it applies to PDF and Word output and is ignored, without complaint,
 for HTML and slides. See \strong{Rotated (landscape) pages} below.}
 }
 \value{
-A table object (class \code{apa_table}). Typing its name at the
-  console displays the table. Pass it to \code{\link{apa.save}} to create
+A table object (class \code{apa_table}). Typing the object name at
+  the console displays the table. Pass it to \code{\link{apa.save}} to create
   a Word or HTML file. Or, if you are working in a Quarto document, use
   \code{\link{apa.quarto.pdf}} or \code{\link{apa.quarto.docx}} to make
   PDF and Word manuscripts, respectively.
@@ -59,15 +61,14 @@ A table object (class \code{apa_table}). Typing its name at the
 \code{apa.reg.table()} creates a regression table in APA style from one
 or more \code{\link[stats]{lm}} results. For each predictor the table
 reports the unstandardized regression weight (b), the standardized
-regression weight (beta), the semi-partial correlation squared, and the
-zero-order correlation, each with its confidence interval, along with
+regression weight (beta), and the semi-partial correlation squared, each
+with a confidence interval, and the zero-order correlation, along with
 model fit (R-squared). When several \code{lm} results are supplied
 (blocks in a hierarchical regression), the table also reports the change
 in R-squared for each block. The table prints to the console. The most
 common next step is saving the table as a Word file to use in a
 manuscript:
-}
-\details{
+
 \preformatted{blk1 <- lm(sales ~ adverts + airplay, data = album)
 table1 <- apa.reg.table(blk1)
 apa.save(filename = "Table1.docx", table1)}
@@ -77,20 +78,46 @@ pointing at. See the \emph{Word files (apa.save)} section below. The
 table can also be placed in a Quarto document, so a rendered manuscript
 comes out with the table already in place -- see the \emph{Quarto
 documents} section below.
-
-
+}
+\details{
 Confidence intervals for the change in R-squared, and for the
 semi-partial correlation squared of each predictor when the model has
 two or more predictors, are calculated with the asymptotic approach of
 Alf and Graf (1999). Note that Algina, Keselman, and Penfield (2008)
 found this approach can under some circumstances lead to inaccurate
-confidence intervals on proportion-of-variance values.
+confidence intervals on proportion-of-variance values. The interval is
+symmetric and, for a small effect, can extend below 0; the limits are
+held to the range 0 to 1, so a lower limit can print as .00 where the
+formula gave a negative value.
 
 The confidence interval for R-squared -- and, when a model has a single
-predictor, the interval for that predictor's semi-partial correlation
-squared, which then equals R-squared -- is computed by
+predictor, the interval for the semi-partial correlation squared of
+that predictor, which then equals R-squared -- is computed by
 \code{MBESS::ci.R2()} using the noncentral F distribution for fixed
 predictors.
+
+The confidence interval for b is the one \code{\link[stats]{confint}}
+gives. The interval for beta is that interval rescaled by the ratio of
+the standard deviation of the predictor to that of the criterion; it
+treats both sample standard deviations as fixed, so it does not reflect
+the sampling error in them and can be too narrow (see Jones & Waller, 2013, for
+intervals that do).
+
+beta and r are not shown when any block has a factor (categorical)
+predictor or a term that R builds into new model columns, such as
+an interaction written \code{a * b} or \code{a:b}, or \code{poly()};
+beta is not shown when the models are weighted. A product written with
+\code{I()}, such as \code{I(a * b)}, keeps beta, and r for that term
+is left blank; a single transformed term such as \code{log(x)} keeps both,
+computed on the transformed variable. The table note defines only the
+columns shown.
+
+The table describes the models as \code{lm()} fitted them, so cases that
+\code{lm()} dropped for missing values (the default) are not in it, and
+the N in the note is the number of cases the models used. Every block
+must use the same cases. A model with an offset (an \code{offset()} term,
+or the \code{offset} argument of \code{lm()}) is not supported and stops
+with a message.
 }
 \section{Word files (apa.save)}{
 
@@ -101,7 +128,7 @@ table:
 \preformatted{apa.save(filename = "Table1.docx", table1)}
 
 The file appears in your working directory -- the folder R is currently
-pointing at. Several tables can go into one file, each on its own page,
+pointing at. Several tables can go into one file, each on a separate page,
 numbered Table 1, Table 2, and so on in the order you list them:
 
 \preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
@@ -109,8 +136,8 @@ numbered Table 1, Table 2, and so on in the order you list them:
 The title above each table and the note below it are written by
 apaTables from the table itself; on this route there is no way to
 supply your own wording at this time. Tables are set in 12 point, and a
-table too wide for an upright page gets a rotated (landscape) page of
-its own rather than smaller type -- so a wide table coming out sideways
+table too wide for an upright page gets a rotated (landscape) page
+rather than smaller type -- so a wide table coming out sideways
 is expected, not an error.
 }
 
@@ -162,14 +189,14 @@ format: apaquarto-docx
 There are four format-named functions for this -- \code{\link{apa.quarto.pdf}},
 \code{\link{apa.quarto.docx}}, \code{\link{apa.quarto.html}} and
 \code{\link{apa.quarto.revealjs}} -- one for each Quarto destination, and
-they behave identically: the document's own
-YAML \code{format:} line decides what is actually produced, so the name only
-states intent. This page's examples use \code{apa.quarto.pdf()} to match the
+they behave identically: the YAML
+\code{format:} line in the document decides what is actually produced, so the name only
+states intent. The examples on this page use \code{apa.quarto.pdf()} to match the
 \code{format: apaquarto-pdf} shown above; swap in \code{apa.quarto.docx()} or
 \code{apa.quarto.html()} together with the matching YAML line for Word or HTML.
 
 In the document, the table lives inside a code chunk like this one.
-\code{\link{apa.quarto.pdf}} displays the table body with its title and
+\code{\link{apa.quarto.pdf}} displays the table body with the title and
 note included automatically, so this chunk is complete -- there is no
 title or note line to write, and the wording stays correct when the
 analysis changes. The \code{library(apaTables)} line is part of the
@@ -194,16 +221,16 @@ is no number, no title, and no note, however you try to supply them.
 (portrait) PDF page, APA style places it on a rotated (landscape) page --
 and apaTables does that for you. It measures the table and asks apaquarto
 for a rotated page when one is needed, whether your tables sit in the text
-or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the document's
+or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the
 YAML header. A table wider still -- wider than even a rotated page -- is
 printed smaller instead, as small as it has to be so
 that no column is cut off. If that takes the type below 6 points, a
 warning in the rendered draft says so and points to \code{\link{apa.save}}
-for a full-size Word version. A table too tall for its page needs nothing
+for a full-size Word version. A table too tall for the page needs nothing
 either: it continues onto the next page by itself, with the column
 headings repeated at the top of each continuation and the note below the
 last piece. None of this applies to \code{\link{apa.save}} files: there, each table
-sits on a page of its own, always at full size.
+sits alone on a page, always at full size.
 
 To see this table (and every apaTables table type) in a complete
 working document, type
@@ -254,9 +281,6 @@ apa.save(filename = file.path(tempdir(), "table1.docx"), table1)
 # Print a ready-to-paste apaquarto code chunk:
 apa.quarto.template(x = table1)
 
-# Or write your own chunk; apa.quarto.pdf() displays the table body:
-apa.quarto.pdf(x = table1)
-
 # Clean up
 unlink(file.path(tempdir(), "table1.docx"))
 
@@ -297,6 +321,8 @@ unlink(file.path(tempdir(), "regression_tables.docx"))
 Alf Jr, E. F., & Graf, R. G. (1999). Asymptotic confidence limits for the difference between two squared multiple correlations: A simplified approach. Psychological Methods, 4(1), 70-75.
 
 Algina, J., Keselman, H. J., & Penfield, R. J. (2008). Note on a confidence interval for the squared semipartial correlation coefficient. Educational and Psychological Measurement, 68(5), 734-741.
+
+Jones, J. A., & Waller, N. G. (2013). Computing confidence intervals for standardized regression coefficients. Psychological Methods, 18(4), 435-453.
 
 Kelley, K. (2007). Constructing confidence intervals for standardized effect sizes: Theory, application, and implementation. Journal of Statistical Software, 20(8), 1-24.
 

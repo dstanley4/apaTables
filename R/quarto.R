@@ -19,9 +19,9 @@
 #' \preformatted{vignette("apaquarto-usage", package = "apaTables")}
 #' @examples
 #' my_table <- apa.cor.table(data = attitude)
-#' apa_caption(x = my_table)
+#' apa.caption(x = my_table)
 #' @export
-apa_caption <- function(x) {
+apa.caption <- function(x) {
   x <- as_spec(x)
   if (is.null(x$title)) "" else as_plaintext(x$title)
 }
@@ -47,12 +47,12 @@ apa_caption <- function(x) {
 #' \preformatted{vignette("apaquarto-usage", package = "apaTables")}
 #' @examples
 #' my_table <- apa.cor.table(data = attitude)
-#' apa_note_text(x = my_table)
+#' apa.note.text(x = my_table)
 #'
 #' # Extend the generated wording rather than replace it
-#' paste(apa_note_text(x = my_table), "Data collected in 2026.")
+#' paste(apa.note.text(x = my_table), "Data collected in 2026.")
 #' @export
-apa_note_text <- function(x) {
+apa.note.text <- function(x) {
   x <- as_spec(x)
   if (!length(x$notes)) return("")
   vapply(x$notes, as_plaintext, character(1)) |> paste(collapse = " ")
@@ -99,7 +99,7 @@ APA_TYPE_BUILDER <- c(
   afex         = "apa.afex.table")
 
 # What to show on the commented build line: the builder that made this table,
-# or a bare "..." when the type is absent or unrecognised.
+# or a bare "..." when the type is absent or unrecognized.
 #
 # THE FALLBACK IS NOT DEFENSIVE PADDING -- it is reached by ordinary use. A
 # spec assembled by hand through apa_spec_start()/apa_col()/apa_spec_finish()
@@ -145,6 +145,7 @@ apa_builder_hint <- function(spec) {
 
 #' Print a ready-to-paste apaquarto chunk for a table
 #'
+#' @description
 #' You have made a table and want it in your Quarto document, but you would
 #' rather not write the code chunk yourself. Ask for it, in the R console:
 #'
@@ -163,18 +164,19 @@ apa_builder_hint <- function(spec) {
 #'
 #' Copy it into your \code{.qmd} document, replace the comment with the
 #' line that builds \code{table1} -- \code{library(apaTables)} with it --
-#' and render. The chunk needs nothing more: the table's title and note are
+#' and render. The chunk needs nothing more: the title and note are
 #' written from the table itself, every time you render, so there is no
 #' \code{tbl-cap} or \code{apa-note} line to fill in and nothing that can
 #' quietly stop matching your analysis.
 #'
-#' The display line matches your document's \code{format:} line -- the
+#' @details
+#' The display line matches the \code{format:} line in your document -- the
 #' \code{target} argument below picks \code{\link{apa.quarto.pdf}} (the
 #' default), \code{\link{apa.quarto.docx}}, \code{\link{apa.quarto.html}},
 #' or \code{\link{apa.quarto.revealjs}}. \code{target = "revealjs"} prints
 #' a chunk showing the table alone, because a slide adds no title or note
-#' unless asked (see \strong{Slides are different} on
-#' \code{\link{apa.quarto.revealjs}}'s page). The
+#' unless asked (see \strong{Slides are different} on the
+#' \code{\link{apa.quarto.revealjs}} help page). The
 #' printed output is self-documenting either way: it says where to put the
 #' chunk. Call this function in the R console -- not inside the Quarto
 #' document itself -- and copy the chunk it prints into your \code{.qmd} file.
@@ -187,7 +189,7 @@ apa_builder_hint <- function(spec) {
 #' belongs; replace it with that line, or delete it if the table is built in
 #' an earlier chunk.
 #'
-#' \strong{The chunk's \code{#| label:} line is not optional} on the three
+#' \strong{The \code{#| label:} line in the chunk is not optional} on the three
 #' manuscript destinations, unlike the optional \code{tbl-cap} and \code{apa-note} lines this
 #' function no longer prints. A chunk without a label beginning \code{tbl-}
 #' is not a table as far as
@@ -214,7 +216,7 @@ apa_builder_hint <- function(spec) {
 #' format: apaquarto-pdf
 #' ---}
 #'
-#' In the R console, create the table and then ask for its Quarto code:
+#' In the R console, create the table and then ask for the Quarto code:
 #'
 #' \preformatted{library(apaTables)
 #' table1 <- apa.cor.table(data = attitude)
@@ -241,12 +243,12 @@ apa_builder_hint <- function(spec) {
 #' to: \code{apa.quarto.pdf()} writes both from the table itself, with the
 #' text styling intact (italics and super/subscripts render as they would
 #' anywhere else in the document, and a multi-part note starts each part,
-#' such as the significance-star sentence, on its own line). They are written
+#' such as the significance-star sentence, on a new line). They are written
 #' again on every render, so they stay correct when the analysis changes.
 #' To use your own wording instead, add a \code{tbl-cap} line for the title
 #' or an \code{apa-note} line for the note, or pass \code{title =} /
 #' \code{note =} to the entry point function -- whichever is supplied wins
-#' over the generated version. \code{\link{apa_caption}} returns the
+#' over the generated version. \code{\link{apa.caption}} returns the
 #' generated title if you would rather start from it than write one from
 #' scratch.
 #'
@@ -256,8 +258,8 @@ apa_builder_hint <- function(spec) {
 #' the chunk will use, and asks apaquarto for a rotated page when one is
 #' needed. This works whether your tables sit in the text or are collected at
 #' the end of the manuscript, and there is nothing to add to the chunk and
-#' nothing to add to the document's YAML header. When the table given here is
-#' a wide one, this function says so and reports its width, so you know why a
+#' nothing to add to the YAML header. When the table given here is
+#' a wide one, this function says so and reports the width, so you know why a
 #' page in your document will be turned. A document that already wraps a chunk
 #' in \code{::: {.landscape}} markers keeps rendering exactly as before.
 #'
@@ -271,16 +273,16 @@ apa_builder_hint <- function(spec) {
 #' Quarto document.
 #'
 #' Every chunk in a Quarto document must have a different name, so the
-#' chunk's name is built from the name of the table you asked for:
+#' chunk name is built from the name of the table you asked for:
 #' \code{apa.quarto.template(x = table3)} names the chunk \code{tbl-table3}.
 #' Two different tables therefore give two chunks that can both be pasted
-#' into the same document. Dots and underscores in the table's name become
+#' into the same document. Dots and underscores in the table name become
 #' hyphens (\code{my.table} gives \code{tbl-my-table}), because a dot inside
-#' a name would break the \code{@tbl-} reference that produces the table's
+#' a name would break the \code{@tbl-} reference that produces the table
 #' number in your text. When there is no name to use -- because the table
 #' was written out in full rather than stored under a name -- the chunk is
 #' named \code{tbl-mytable}, and a second such chunk in the same document
-#' needs its name changed by hand. Give the \code{label} argument to choose
+#' needs a new name, given by hand. Give the \code{label} argument to choose
 #' the name yourself.
 #'
 #' @param x An apaTables table (an \code{apa.*.table()} result or an
@@ -291,21 +293,21 @@ apa_builder_hint <- function(spec) {
 #'   when \code{x} is not a stored table but an expression written out in
 #'   full, the name is \code{tbl-mytable}. A label you supply yourself is
 #'   used exactly as given, so make it begin with \code{"tbl-"} -- Quarto
-#'   only treats a chunk as a table when its label does. Writing
+#'   only treats a chunk as a table when the label does. Writing
 #'   \code{@tbl-table3} in your document text then produces that
-#'   table's number (for example, "Table 1").
+#'   table number (for example, "Table 1").
 #' @param code A length-1 character string with the R code that produces the
 #'   table, used in the display line of the chunk. You can usually ignore
 #'   this argument: by default the chunk is built from what you typed for
 #'   \code{x}, with the arguments of an apaTables call written by name -- so
 #'   \code{apa.quarto.template(x = table1)} prints the line
-#'   \code{apa.quarto.pdf(x = table1)}; a table function's call given as
-#'   \code{x} is printed with each of its arguments named.
+#'   \code{apa.quarto.pdf(x = table1)}; a call to a table function given as
+#'   \code{x} is printed with every argument named.
 #' @param target Which of the format-named entry points to print the chunk
 #'   for -- \code{"pdf"} (the default), \code{"docx"}, \code{"html"}, or
 #'   \code{"revealjs"}. This only picks which name the printed chunk uses;
 #'   because that name is forgiving, the chunk still renders correctly
-#'   however the document's own YAML \code{format:} line is actually set.
+#'   however the YAML \code{format:} line in the document is actually set.
 #'   Picking the matching name simply keeps the printed chunk consistent
 #'   with the YAML, and changes the wide-table advice below to name
 #'   the right page (a docx table rotates like a PDF one; an HTML table has
@@ -355,7 +357,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
   spec <- as_spec(x)
   # NO TITLE LINE AND NO apa-note LINE, and nothing computes either: there
   # is no `#| tbl-cap:` line to fill, so the caption is not computed on this
-  # path at all. apa_caption() remains exported and documented -- it is how
+  # path at all. apa.caption() remains exported and documented -- it is how
   # an author gets the generated wording when they DO want to start from
   # it -- it is simply not called here. The entry point
   # (apa.quarto.pdf()/docx()/html()) supplies the title and note from the
@@ -576,7 +578,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
     # note are coming and how to override them, rather than handing over
     # wording to maintain.
     cat(sprintf(paste0(
-      "\nThe table's title and note need no lines here.\n",
+      "\nThe title and note need no lines here.\n",
       "%s() writes both from the table itself, every time\n",
       "you render, so they stay correct when your analysis changes.\n",
       "To use your own wording instead, add an #| tbl-cap line for the title\n",
@@ -593,8 +595,8 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
   # target != "html" check above, and is_revealjs forces both FALSE -- so this
   # switch() never has to answer for html or slide. It is written as an
   # explicit match with no default-to-"PDF" precisely so that stays true: a
-  # target this switch does not recognise raises an error naming the target,
-  # rather than silently mislabelling the page the way `if (target == "docx")
+  # target this switch does not recognize raises an error naming the target,
+  # rather than silently mislabeling the page the way `if (target == "docx")
   # "Word" else "PDF"` would for every OTHER target, including "html".
   if (needs_landscape || shrunk_upright) {
     page_word <- switch(target,
@@ -617,7 +619,7 @@ apa.quarto.template <- function(x, label = NULL, code = NULL,
       "\nThis table is about %.1f inches wide -- too wide for an upright ",
       "(portrait)\n%s page. It will be placed on a rotated (landscape) ",
       "page automatically,\nat full size. There is nothing to add to the ",
-      "chunk or to your document's\nYAML header.\n"),
+      "chunk or to the YAML header of\nyour document.\n"),
       tbl_w, page_word))
   } else if (shrunk_upright) {
     # FORBIDDEN: spec$landscape is FALSE on a table that would otherwise
@@ -678,7 +680,7 @@ apa_quarto_label <- function(expr) {
 #' Called automatically by knitr when an `apa_table_spec` object is returned
 #' from a chunk. Delegates to the same rendering \code{\link{apa.quarto.pdf}}
 #' / \code{\link{apa.quarto.docx}} / \code{\link{apa.quarto.html}} share, so a
-#' bare `table1` on its own line in a chunk takes exactly the same path as the
+#' bare `table1` alone on a line in a chunk takes exactly the same path as the
 #' explicit call the template writes -- including the automatic rotated page
 #' for a table too wide to stand upright. "Rendering" the document turns it
 #' into the finished Word, PDF, or HTML file; this method supplies the table's

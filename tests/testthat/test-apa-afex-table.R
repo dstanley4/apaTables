@@ -308,14 +308,14 @@ test_that("apa.afex.table table.title reaches the Word/HTML/Quarto title", {
      goggles_results <- suppressMessages(make_goggles_afex())
      t_default <- apa.afex.table(goggles_results)
      expect_equal(t_default$latex.table.title, "ANOVA Results")
-     expect_equal(apa_caption(t_default), "ANOVA Results")
+     expect_equal(apa.caption(t_default), "ANOVA Results")
      t_custom <- apa.afex.table(goggles_results,
                                 table.title = "Effect of Alcohol on Attractiveness Ratings")
      expect_equal(t_custom$table_title,
                   "Effect of Alcohol on Attractiveness Ratings")
      expect_equal(t_custom$latex.table.title,
                   "Effect of Alcohol on Attractiveness Ratings")
-     expect_equal(apa_caption(t_custom),
+     expect_equal(apa.caption(t_custom),
                   "Effect of Alcohol on Attractiveness Ratings")
 })
 

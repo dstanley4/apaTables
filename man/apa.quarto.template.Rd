@@ -21,23 +21,23 @@ name is built from the name of the table given for \code{x}, so
 when \code{x} is not a stored table but an expression written out in
 full, the name is \code{tbl-mytable}. A label you supply yourself is
 used exactly as given, so make it begin with \code{"tbl-"} -- Quarto
-only treats a chunk as a table when its label does. Writing
+only treats a chunk as a table when the label does. Writing
 \code{@tbl-table3} in your document text then produces that
-table's number (for example, "Table 1").}
+table number (for example, "Table 1").}
 
 \item{code}{A length-1 character string with the R code that produces the
 table, used in the display line of the chunk. You can usually ignore
 this argument: by default the chunk is built from what you typed for
 \code{x}, with the arguments of an apaTables call written by name -- so
 \code{apa.quarto.template(x = table1)} prints the line
-\code{apa.quarto.pdf(x = table1)}; a table function's call given as
-\code{x} is printed with each of its arguments named.}
+\code{apa.quarto.pdf(x = table1)}; a call to a table function given as
+\code{x} is printed with every argument named.}
 
 \item{target}{Which of the format-named entry points to print the chunk
 for -- \code{"pdf"} (the default), \code{"docx"}, \code{"html"}, or
 \code{"revealjs"}. This only picks which name the printed chunk uses;
 because that name is forgiving, the chunk still renders correctly
-however the document's own YAML \code{format:} line is actually set.
+however the YAML \code{format:} line in the document is actually set.
 Picking the matching name simply keeps the printed chunk consistent
 with the YAML, and changes the wide-table advice below to name
 the right page (a docx table rotates like a PDF one; an HTML table has
@@ -57,8 +57,7 @@ The chunk text as a single character string, returned invisibly
 \description{
 You have made a table and want it in your Quarto document, but you would
 rather not write the code chunk yourself. Ask for it, in the R console:
-}
-\details{
+
 \preformatted{table1 <- apa.cor.table(data = attitude)
 apa.quarto.template(x = table1)}
 
@@ -74,18 +73,19 @@ apa.quarto.pdf(x = table1)
 
 Copy it into your \code{.qmd} document, replace the comment with the
 line that builds \code{table1} -- \code{library(apaTables)} with it --
-and render. The chunk needs nothing more: the table's title and note are
+and render. The chunk needs nothing more: the title and note are
 written from the table itself, every time you render, so there is no
 \code{tbl-cap} or \code{apa-note} line to fill in and nothing that can
 quietly stop matching your analysis.
-
-The display line matches your document's \code{format:} line -- the
+}
+\details{
+The display line matches the \code{format:} line in your document -- the
 \code{target} argument below picks \code{\link{apa.quarto.pdf}} (the
 default), \code{\link{apa.quarto.docx}}, \code{\link{apa.quarto.html}},
 or \code{\link{apa.quarto.revealjs}}. \code{target = "revealjs"} prints
 a chunk showing the table alone, because a slide adds no title or note
-unless asked (see \strong{Slides are different} on
-\code{\link{apa.quarto.revealjs}}'s page). The
+unless asked (see \strong{Slides are different} on the
+\code{\link{apa.quarto.revealjs}} help page). The
 printed output is self-documenting either way: it says where to put the
 chunk. Call this function in the R console -- not inside the Quarto
 document itself -- and copy the chunk it prints into your \code{.qmd} file.
@@ -98,7 +98,7 @@ first line is a \emph{comment} showing where your own table-building line
 belongs; replace it with that line, or delete it if the table is built in
 an earlier chunk.
 
-\strong{The chunk's \code{#| label:} line is not optional} on the three
+\strong{The \code{#| label:} line in the chunk is not optional} on the three
 manuscript destinations, unlike the optional \code{tbl-cap} and \code{apa-note} lines this
 function no longer prints. A chunk without a label beginning \code{tbl-}
 is not a table as far as
@@ -125,7 +125,7 @@ author:
 format: apaquarto-pdf
 ---}
 
-In the R console, create the table and then ask for its Quarto code:
+In the R console, create the table and then ask for the Quarto code:
 
 \preformatted{library(apaTables)
 table1 <- apa.cor.table(data = attitude)
@@ -152,12 +152,12 @@ Nothing in that chunk mentions the title or the note, and nothing needs
 to: \code{apa.quarto.pdf()} writes both from the table itself, with the
 text styling intact (italics and super/subscripts render as they would
 anywhere else in the document, and a multi-part note starts each part,
-such as the significance-star sentence, on its own line). They are written
+such as the significance-star sentence, on a new line). They are written
 again on every render, so they stay correct when the analysis changes.
 To use your own wording instead, add a \code{tbl-cap} line for the title
 or an \code{apa-note} line for the note, or pass \code{title =} /
 \code{note =} to the entry point function -- whichever is supplied wins
-over the generated version. \code{\link{apa_caption}} returns the
+over the generated version. \code{\link{apa.caption}} returns the
 generated title if you would rather start from it than write one from
 scratch.
 
@@ -167,8 +167,8 @@ happens by itself: apaTables measures the table with the same calculation
 the chunk will use, and asks apaquarto for a rotated page when one is
 needed. This works whether your tables sit in the text or are collected at
 the end of the manuscript, and there is nothing to add to the chunk and
-nothing to add to the document's YAML header. When the table given here is
-a wide one, this function says so and reports its width, so you know why a
+nothing to add to the YAML header. When the table given here is
+a wide one, this function says so and reports the width, so you know why a
 page in your document will be turned. A document that already wraps a chunk
 in \code{::: {.landscape}} markers keeps rendering exactly as before.
 
@@ -182,16 +182,16 @@ Run this function in the R console and copy the printed chunk into your
 Quarto document.
 
 Every chunk in a Quarto document must have a different name, so the
-chunk's name is built from the name of the table you asked for:
+chunk name is built from the name of the table you asked for:
 \code{apa.quarto.template(x = table3)} names the chunk \code{tbl-table3}.
 Two different tables therefore give two chunks that can both be pasted
-into the same document. Dots and underscores in the table's name become
+into the same document. Dots and underscores in the table name become
 hyphens (\code{my.table} gives \code{tbl-my-table}), because a dot inside
-a name would break the \code{@tbl-} reference that produces the table's
+a name would break the \code{@tbl-} reference that produces the table
 number in your text. When there is no name to use -- because the table
 was written out in full rather than stored under a name -- the chunk is
 named \code{tbl-mytable}, and a second such chunk in the same document
-needs its name changed by hand. Give the \code{label} argument to choose
+needs a new name, given by hand. Give the \code{label} argument to choose
 the name yourself.
 }
 \examples{

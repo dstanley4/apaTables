@@ -1,18 +1,18 @@
-test_that("apa_caption and apa_note_text return clean strings", {
+test_that("apa.caption and apa.note.text return clean strings", {
   s <- apa_spec_start(1) |>
     apa_col("Var", "l", list("A")) |>
     apa_note("N = 200.", "* p < .05.") |>
     apa_spec_finish(title = "Means and SDs", number = 1L)
-  expect_equal(apa_caption(s), "Means and SDs")
-  expect_equal(apa_note_text(s), "N = 200. * p < .05.")
-  expect_false(grepl("Note\\.", apa_note_text(s)))
+  expect_equal(apa.caption(s), "Means and SDs")
+  expect_equal(apa.note.text(s), "N = 200. * p < .05.")
+  expect_false(grepl("Note\\.", apa.note.text(s)))
 })
 
-test_that("apa_note_text is empty when there are no notes", {
+test_that("apa.note.text is empty when there are no notes", {
   s <- apa_spec_start(1) |>
     apa_col("Var", "l", list("A")) |>
     apa_spec_finish(number = 1L)
-  expect_equal(apa_note_text(s), "")
+  expect_equal(apa.note.text(s), "")
 })
 
 test_that("apa.quarto.template emits NEITHER a tbl-cap NOR an apa-note line", {
@@ -208,12 +208,12 @@ test_that("knit_print.apa_table_spec delegates to the flextable knit_print", {
   expect_s3_class(out, "knit_asis")
 })
 
-test_that("apa_caption / apa_note_text accept a legacy wrapper", {
+test_that("apa.caption / apa.note.text accept a legacy wrapper", {
   s <- apa_spec_start(1) |> apa_col("A", "l", list("x")) |>
     apa_note("N = 10.") |> apa_spec_finish(title = "T", number = 1L)
   legacy <- structure(list(spec = s), class = "apa_table")
-  expect_equal(apa_caption(legacy), "T")
-  expect_equal(apa_note_text(legacy), "N = 10.")
+  expect_equal(apa.caption(legacy), "T")
+  expect_equal(apa.note.text(legacy), "N = 10.")
 })
 
 test_that("knit_print.apa_table renders a spec-carrying object as a markdown grid table (no flextable)", {

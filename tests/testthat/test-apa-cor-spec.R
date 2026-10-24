@@ -38,7 +38,7 @@ test_that("correlation note has no 'Note.' prefix and mentions M, SD, CI", {
   expect_length(s$notes, 2L)
   expect_match(as_plaintext(s$notes[[2]]), "^\\* indicates")
   expect_match(as_plaintext(s$notes[[2]]), "p < \\.01\\.$")
-  expect_match(apa_note_text(s), "p < \\.01\\.$")   # apaquarto string still ends with stars
+  expect_match(apa.note.text(s), "p < \\.01\\.$")   # apaquarto string still ends with stars
 })
 
 test_that("correlation spec number is 1 by default and NA when suppressed", {

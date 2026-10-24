@@ -1,7 +1,8 @@
 #' Create an APA-style correlation table
 #'
+#' @description
 #' \code{apa.cor.table()} creates a table of means, standard deviations, and
-#' Pearson correlations in APA style. Each correlation is reported with its
+#' Pearson correlations in APA style. Each correlation is reported with a
 #' 95\% confidence interval and, optionally, significance stars and a
 #' p-value. Typing \code{apa.cor.table(data = attitude)} prints the finished table
 #' at the console. The most common next step is saving the table as a Word
@@ -17,11 +18,12 @@
 #' documents} section below.
 #'
 #' @param data A data frame. Non-numeric columns are dropped before the
-#'   table is constructed.
+#'   table is constructed. At least two numeric columns must remain, and
+#'   each needs at least two different values.
 #' @param filename Optional file name. If supplied, the table is also saved
 #'   as a Word (\code{.docx}) or HTML (\code{.html}) file, according to the
 #'   file extension. Legacy \code{.doc}/\code{.rtf} names are saved as
-#'   \code{.docx}.
+#'   \code{.docx}. An existing file with that name is replaced.
 #' @param table.number Number for the "Table N" line of the output. Defaults
 #'   to \code{1}. Use \code{0} (or \code{NA}, or \code{NULL}) for a table with
 #'   no number: none is then shown at the console or written to the Word file.
@@ -37,7 +39,7 @@
 #' @param landscape Whether this table is placed on a rotated (landscape)
 #'   page. The default, \code{NA}, means apaTables decides by measuring the
 #'   table against the page. Pass \code{TRUE} to insist on a rotated page or
-#'   \code{FALSE} to insist on an upright one. An explicit value is honoured
+#'   \code{FALSE} to insist on an upright one. An explicit value is honored
 #'   wherever the destination can carry it out; in a Quarto PDF that means
 #'   the chunk needs a \code{tbl-} label (see \code{\link{apa.quarto.pdf}}).
 #'   A table too wide for the page it is given is shrunk to fit rather
@@ -45,20 +47,24 @@
 #'   so it applies to PDF and Word output and is ignored, without complaint,
 #'   for HTML and slides. See \strong{Rotated (landscape) pages} below.
 #' @param show.pvalue If \code{TRUE} (the default), the p-value for each
-#'   correlation is displayed below its confidence interval. It comes last
+#'   correlation is displayed below the confidence interval. It comes last
 #'   among the arguments so that a call written for an earlier version,
-#'   which passed \code{landscape} by position, keeps its meaning.
+#'   which passed \code{landscape} by position, works as before.
 #'
 #' @details
 #' For each variable the table reports the number of cases (\emph{N}), mean
 #' (\emph{M}), and standard deviation (\emph{SD}), computed after removing
-#' missing values for that variable. Correlations and their confidence
-#' intervals are computed pairwise with \code{\link[stats]{cor.test}}, so
+#' missing values for that variable. Correlations and the confidence
+#' intervals for them are computed pairwise with \code{\link[stats]{cor.test}}, so
 #' each correlation uses all cases that are complete for that pair of
-#' variables.
+#' variables (pairwise deletion). With missing values, a correlation can
+#' rest on fewer cases than the \emph{N} for either variable; the table note then
+#' gives the range of these pairwise sample sizes. Each confidence interval
+#' is the Fisher r-to-z interval that \code{\link[stats]{cor.test}}
+#' computes.
 #'
-#' @return A table object (class \code{apa_table}). Typing its name at the
-#'   console displays the table. Pass it to \code{\link{apa.save}} to create
+#' @return A table object (class \code{apa_table}). Typing the object name at
+#'   the console displays the table. Pass it to \code{\link{apa.save}} to create
 #'   a Word or HTML file. Or, if you are working in a Quarto document, use
 #'   \code{\link{apa.quarto.pdf}} or \code{\link{apa.quarto.docx}} to make
 #'   PDF and Word manuscripts, respectively.
@@ -72,7 +78,7 @@
 #' apa.save(filename = "Table1.docx", table1)}
 #'
 #' The file appears in your working directory -- the folder R is currently
-#' pointing at. Several tables can go into one file, each on its own page,
+#' pointing at. Several tables can go into one file, each on a separate page,
 #' numbered Table 1, Table 2, and so on in the order you list them:
 #'
 #' \preformatted{apa.save(filename = "AllTables.docx", table1, table2)}
@@ -80,8 +86,8 @@
 #' The title above each table and the note below it are written by
 #' apaTables from the table itself; on this route there is no way to
 #' supply your own wording at this time. Tables are set in 12 point, and a
-#' table too wide for an upright page gets a rotated (landscape) page of
-#' its own rather than smaller type -- so a wide correlation table coming
+#' table too wide for an upright page gets a rotated (landscape) page
+#' rather than smaller type -- so a wide correlation table coming
 #' out sideways is expected, not an error.
 #'
 #' @section Quarto documents:
@@ -131,14 +137,14 @@
 #' There are four format-named functions for this -- \code{\link{apa.quarto.pdf}},
 #' \code{\link{apa.quarto.docx}}, \code{\link{apa.quarto.html}} and
 #' \code{\link{apa.quarto.revealjs}} -- one for each Quarto destination, and
-#' they behave identically: the document's own
-#' YAML \code{format:} line decides what is actually produced, so the name only
-#' states intent. This page's examples use \code{apa.quarto.pdf()} to match the
+#' they behave identically: the YAML
+#' \code{format:} line in the document decides what is actually produced, so the name only
+#' states intent. The examples on this page use \code{apa.quarto.pdf()} to match the
 #' \code{format: apaquarto-pdf} shown above; swap in \code{apa.quarto.docx()} or
 #' \code{apa.quarto.html()} together with the matching YAML line for Word or HTML.
 #'
 #' In the document, the table lives inside a code chunk like this one.
-#' \code{\link{apa.quarto.pdf}} displays the table body with its title and
+#' \code{\link{apa.quarto.pdf}} displays the table body with the title and
 #' note included automatically, so this chunk is complete -- there is no
 #' title or note line to write, and the wording stays correct when the
 #' analysis changes. The \code{library(apaTables)} line is part of the
@@ -162,16 +168,16 @@
 #' (portrait) PDF page, APA style places it on a rotated (landscape) page --
 #' and apaTables does that for you. It measures the table and asks apaquarto
 #' for a rotated page when one is needed, whether your tables sit in the text
-#' or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the document's
+#' or are collected at the end of the manuscript. There is nothing to add to the chunk and nothing to add to the
 #' YAML header. A table wider still -- wider than even a rotated page -- is
 #' printed smaller instead, as small as it has to be so
 #' that no column is cut off. If that takes the type below 6 points, a
 #' warning in the rendered draft says so and points to \code{\link{apa.save}}
-#' for a full-size Word version. A table too tall for its page needs nothing
+#' for a full-size Word version. A table too tall for the page needs nothing
 #' either: it continues onto the next page by itself, with the column
 #' headings repeated at the top of each continuation and the note below the
 #' last piece. None of this applies to \code{\link{apa.save}} files: there, each table
-#' sits on a page of its own, always at full size.
+#' sits alone on a page, always at full size.
 #'
 #' To see this table (and every apaTables table type) in a complete
 #' working document, type
@@ -237,13 +243,15 @@
 #' # Print a ready-to-paste apaquarto code chunk:
 #' apa.quarto.template(x = table1)
 #'
-#' # Or write your own chunk; apa.quarto.pdf() displays the table body:
-#' apa.quarto.pdf(x = table1)
-#'
 #' # Clean up
 #' unlink(file.path(tempdir(), "table1.docx"))
 #' @export
 apa.cor.table<-function(data, filename = NA, table.number = 1, show.conf.interval = TRUE, show.sig.stars = TRUE, landscape = NA, show.pvalue = TRUE) {
+     apa_check_landscape(landscape)
+     show.conf.interval <- apa_check_flag(show.conf.interval, "show.conf.interval")
+     show.sig.stars <- apa_check_flag(show.sig.stars, "show.sig.stars")
+     show.pvalue <- apa_check_flag(show.pvalue, "show.pvalue")
+     filename <- apa_check_filename(filename)
 
      data <- as.data.frame(data)
      table_number_explicit <- !missing(table.number)
@@ -265,12 +273,17 @@ apa.cor.table<-function(data, filename = NA, table.number = 1, show.conf.interva
           make_file_flag <-TRUE
      }
 
-     df_col <- dim(data)[2]
-     column_is_numeric <- c()
-     for (i in 1:df_col) {
-          column_is_numeric[i] <- is.numeric(data[,i])
+     column_is_numeric <- vapply(data, is.numeric, logical(1))
+     data <- data[, column_is_numeric, drop = FALSE]
+     if (ncol(data) < 2) {
+          stop(sprintf("apa.cor.table() needs at least two numeric columns in data, but data has %d. Columns that are not numbers (for example text, factors, or TRUE/FALSE values) are left out.",
+                       ncol(data)), call. = FALSE)
      }
-     data <- data[,column_is_numeric]
+     no_variation <- vapply(data, function(x) length(unique(x[!is.na(x)])) < 2, logical(1))
+     if (any(no_variation)) {
+          stop(sprintf("apa.cor.table() cannot correlate a column with fewer than two different values: %s. Leave it out of data.",
+                       paste(names(data)[no_variation], collapse = ", ")), call. = FALSE)
+     }
 
 
      number_variables <- ncol(data)
@@ -287,6 +300,8 @@ apa.cor.table<-function(data, filename = NA, table.number = 1, show.conf.interva
      output_ci_latex <- matrix(" ", number_variables, number_columns)
 
      output_descriptives   <- matrix(" ",number_variables,3)
+     # cases behind each correlation (complete on both variables)
+     pair_n <- c()
      output_variable_names <- paste(as.character(1:number_variables),". ",names(data),sep="")
 
      for (i in 1:number_variables) {
@@ -299,6 +314,7 @@ apa.cor.table<-function(data, filename = NA, table.number = 1, show.conf.interva
                     x <- data[,i]
                     y <- data[,j]
                     ctest      <- cor.test(x, y)
+                    pair_n     <- c(pair_n, sum(!is.na(x) & !is.na(y)))
 
                     cor_string <- txt.r(ctest, show_stars)
                     output_cor[i,j]        <- cor_string
@@ -400,11 +416,17 @@ apa.cor.table<-function(data, filename = NA, table.number = 1, show.conf.interva
      rownames(output_matrix_console) <- rep(" ", length((rownames(output_matrix_console))))
      table_body <- output_matrix_console
 
+     # With missing values, a correlation can rest on fewer cases than either
+     # variable's N; the note then says so and gives the range.
+     pair_n_text <- cor_pair_n_text(pair_n, any(is.na(data)))
+
      #make console output
+     table_note <- "Note. N = number of cases. M = mean. SD = standard deviation.\n"
+     if (nzchar(pair_n_text)) {
+          table_note <- paste0(table_note, pair_n_text, "\n")
+     }
      if (show_conf_interval == TRUE) {
-          table_note <- "Note. N = number of cases. M = mean. SD = standard deviation.\nValues in square brackets indicate the 95% confidence interval.\n"
-     } else {
-          table_note <- "Note. N = number of cases. M = mean. SD = standard deviation.\n"
+          table_note <- paste0(table_note, "Values in square brackets indicate the 95% confidence interval.\n")
      }
 
      if (show_stars == TRUE) {
@@ -452,6 +474,7 @@ apa.cor.table<-function(data, filename = NA, table.number = 1, show.conf.interva
           show_conf_interval = show_conf_interval,
           show_pvalue        = show_pvalue,
           show_stars         = show_stars,
+          pair_n_text        = pair_n_text,
           table_title        = tbl.console$latex.table.title,
           table_number       = table_number,
           landscape          = landscape)
@@ -465,15 +488,34 @@ apa.cor.table<-function(data, filename = NA, table.number = 1, show.conf.interva
      return(tbl.console)
 }#end function
 
+# The note sentence on the cases behind each correlation, or "" when the data
+# have no missing values (every correlation then uses all N cases).
+cor_pair_n_text <- function(pair_n, has_missing) {
+  if (!has_missing || length(pair_n) == 0) return("")
+  range_text <- if (min(pair_n) == max(pair_n)) {
+    sprintf("= %d for every correlation.", min(pair_n))
+  } else {
+    sprintf("ranged from %d to %d.", min(pair_n), max(pair_n))
+  }
+  paste0("Missing data were handled with pairwise deletion; n ",
+         range_text)
+}
+
 # Correlation-table note as richtext (no "Note." prefix). Mirrors the console
 # note: N/M/SD definitions, the CI sentence iff show_conf_interval, the stars
 # sentence iff show_stars. The console note does not mention p-values.
-cor_spec_note <- function(show_conf_interval) {
+cor_spec_note <- function(show_conf_interval, pair_n_text = "") {
   runs <- list(
     rt_run("N", italic = TRUE),  rt_run(" = number of cases. "),
     rt_run("M", italic = TRUE),  rt_run(" = mean. "),
     rt_run("SD", italic = TRUE), rt_run(" = standard deviation. ")
   )
+  if (nzchar(pair_n_text)) {
+    # the sentence's one symbol, n, is italic
+    parts <- strsplit(pair_n_text, "; n ", fixed = TRUE)[[1]]
+    runs <- c(runs, list(rt_run(paste0(parts[1], "; ")), rt_run("n", italic = TRUE),
+                         rt_run(paste0(" ", parts[2], " "))))
+  }
   if (isTRUE(show_conf_interval)) {
     runs <- c(runs, list(rt_run("Values in square brackets indicate the 95% confidence interval.")))
   }
@@ -509,6 +551,7 @@ cor_pvalue_richtext <- function(p_str) {
 # line. Lower-triangle blanks become empty cells.
 cor_build_spec <- function(variable_names, descriptives, cor_mat, ci_mat, pvalue_mat,
                            show_conf_interval, show_pvalue, show_stars,
+                           pair_n_text = "",
                            table_title, table_number, landscape) {
   n_var  <- length(variable_names)
   n_corr <- ncol(cor_mat)                 # number_variables - 1
@@ -539,7 +582,7 @@ cor_build_spec <- function(variable_names, descriptives, cor_mat, ci_mat, pvalue
     spec <- apa_col(spec, label = richtext(as.character(j)), align = "r", values = cells)
   }
 
-  spec <- apa_note(spec, cor_spec_note(show_conf_interval))
+  spec <- apa_note(spec, cor_spec_note(show_conf_interval, pair_n_text))
   if (isTRUE(show_stars)) spec <- apa_note(spec, stars_spec_note())
 
   num <- apa_table_number_value(table_number)

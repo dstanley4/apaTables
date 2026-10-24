@@ -156,12 +156,12 @@
       
       Descriptive Statistics for Libido by Dose 
       
-            dose    M   SD
-         Placebo 2.20 1.30
-        Low Dose 3.20 1.30
-       High Dose 5.00 1.58
+            dose n    M   SD
+         Placebo 5 2.20 1.30
+        Low Dose 5 3.20 1.30
+       High Dose 5 5.00 1.58
       
-      Note. M = mean. SD = standard deviation.
+      Note. n = group size. M = mean. SD = standard deviation.
        
       
 
@@ -198,18 +198,19 @@
       Means, Standard Deviations, and d-Values for Libido by Dose
        
       
-        Variable     M    SD   1             2            
-        1. Placebo   2.20 1.30                            
-                                                          
-        2. Low Dose  3.20 1.30 0.77                       
-                               [-0.55, 2.04]              
-                                                          
-        3. High Dose 5.00 1.58 1.93          1.24         
-                               [0.34, 3.44]  [-0.17, 2.59]
-                                                          
+        Variable     n M    SD   1             2            
+        1. Placebo   5 2.20 1.30                            
+                                                            
+        2. Low Dose  5 3.20 1.30 0.77                       
+                                 [-0.55, 2.04]              
+                                                            
+        3. High Dose 5 5.00 1.58 1.93          1.24         
+                                 [0.34, 3.44]  [-0.17, 2.59]
+                                                            
       
-      Note. M indicates mean. SD indicates standard deviation. d-values are estimates calculated using formulas 4.18 and 4.19
-      from Borenstein, Hedges, Higgins, & Rothstein (2009). d-values not calculated if unequal variances prevented pooling.
+      Note. n indicates group size. M indicates mean. SD indicates standard deviation. d-values are absolute values;
+      the direction of each difference can be read from the means. d-values are estimates calculated with the pooled
+      standard deviation, using formulas 4.18 and 4.19 from Borenstein, Hedges, Higgins, & Rothstein (2009).
       Values in square brackets indicate the 95% confidence interval for each d-value. 
        
       

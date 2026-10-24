@@ -16,7 +16,7 @@ width in inches.
 }
 \description{
 Measures the plan's cell strings ONCE, at 12 pt, with the same
-font metrics flextable's own `autofit()` depends on, then scales
+font metrics flextable's `autofit()` depends on, then scales
 the CONTENT term (only) to `size` and applies the corrected `K`
 (empirically fit -- see the block comment above this function in
 `R/render-latex.R`; NOT the theoretical 10/72 in), the

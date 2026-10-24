@@ -146,13 +146,26 @@ test_that("a step written as a new parameterisation is accepted", {
      expect_identical(delta(t_poly), delta(t_raw))
 })
 
-test_that("blocks with different weights or offsets are refused", {
+test_that("blocks with different weights are refused", {
      expect_error(apa.reg.table(lm(mpg ~ wt, data = mtcars, weights = cyl),
                                 lm(mpg ~ wt + qsec, data = mtcars)),
-                  "same weights and the same offset")
-     expect_error(apa.reg.table(lm(mpg ~ wt + offset(hp / 20), data = mtcars),
-                                lm(mpg ~ wt + qsec, data = mtcars)),
-                  "same weights and the same offset")
+                  "same weights")
+})
+
+test_that("a model with an offset is refused, in either form and any block", {
+     msg <- "does not support models with an offset"
+     expect_error(apa.reg.table(lm(mpg ~ wt + offset(hp / 20), data = mtcars)), msg)
+     expect_error(apa.reg.table(lm(mpg ~ wt, data = mtcars, offset = hp / 20)), msg)
+     expect_error(apa.reg.table(lm(mpg ~ wt, data = mtcars),
+                                lm(mpg ~ wt + qsec + offset(hp / 20), data = mtcars)), msg)
+     # stored without its model frame, the offset is still seen
+     expect_error(apa.reg.table(lm(mpg ~ wt + offset(hp / 20), data = mtcars, model = FALSE)), msg)
+     # a wrapper whose offset argument is NULL fits no offset, and is accepted
+     fit <- function(o = NULL) lm(mpg ~ wt, data = mtcars, offset = o)
+     expect_s3_class(apa.reg.table(fit()), "apa_table")
+     withr::local_options(contrasts = c("contr.sum", "contr.poly"))
+     fit_aov <- function(o = NULL) lm(mpg ~ factor(cyl), data = mtcars, offset = o)
+     expect_s3_class(apa.aov.table(fit_aov()), "apa_table")
 })
 
 test_that("blocks fitted to different cases are refused with a named message", {

@@ -21,14 +21,15 @@ test_that("apa.d.table has correct dimensions", {
      col_names <- colnames(t1$table_body)
      expect_true("1" %in% col_names)
      expect_true("2" %in% col_names)
-     expect_equal(ncol(t1$table_body), 5) # Variable, M, SD, 1, 2
+     expect_equal(ncol(t1$table_body), 6) # Variable, n, M, SD, 1, 2
 })
 
 test_that("apa.d.table returns correct M and SD for first group", {
      t1 <- apa.d.table(iv = dose, dv = libido, data = viagra)
      # First group (Placebo): M = 2.20, SD = 1.30
-     expect_equal(t1$table_body[1,2], "2.20")
-     expect_equal(t1$table_body[1,3], "1.30")
+     expect_equal(t1$table_body[1,2], "5")
+     expect_equal(t1$table_body[1,3], "2.20")
+     expect_equal(t1$table_body[1,4], "1.30")
 })
 
 test_that("apa.d.table first variable name starts with 1.", {

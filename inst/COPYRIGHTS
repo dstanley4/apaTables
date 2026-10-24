@@ -4,14 +4,14 @@ inst/_extensions/wjschne/apaquarto/.
 apaquarto
   Copyright (c) W. Joel Schneider
   https://github.com/wjschne/apaquarto
-  Licence: CC0 1.0 Universal (public domain dedication)
+  License: CC0 1.0 Universal (public domain dedication)
   CC0 requires no attribution; the author is nonetheless credited in
-  DESCRIPTION's Authors@R with the 'ctb' role as a courtesy ('cph' would
+  the Authors@R field of DESCRIPTION with the 'ctb' role as a courtesy ('cph' would
   be inaccurate -- a CC0 dedication retains no copyright to hold).
   Local modifications are listed in
   inst/_extensions/wjschne/apaquarto/PATCHES.md. The bundled Word reference
-  document apaquarto.docx is modified too; it is binary, so its changes do
-  not appear in that diff: its Table style sets 10 pt type, six cloned
+  document apaquarto.docx is modified too; it is binary, so the changes to it do
+  not appear in that diff: the Table style in it sets 10 pt type, six cloned
   table styles (Table6 to Table9, Table11, Table12) carry the other sizes
   that apatablesize.lua selects per table, a paragraph style (ApaTableRule)
   draws the rule under a column spanner, and the fixed cell padding of every
@@ -22,12 +22,12 @@ apaquarto
 apa.csl (inst/_extensions/wjschne/apaquarto/apa.csl)
   Copyright (c) Brenton M. Wiernik
   From the Citation Style Language project, https://citationstyles.org/
-  Licence: Creative Commons Attribution-ShareAlike 3.0 Unported
+  License: Creative Commons Attribution-ShareAlike 3.0 Unported
            https://creativecommons.org/licenses/by-sa/3.0/
-  ATTRIBUTION IS A CONDITION OF THIS LICENCE, unlike the CC0 dedication
-  above, so the author is named here AND credited in DESCRIPTION's
-  Authors@R with 'ctb' and 'cph' roles. The style file names him in its
-  own <author> element.
-  Included unmodified. It cannot be omitted: apaquarto's citeprocr.lua calls
+  ATTRIBUTION IS A CONDITION OF THIS LICENSE, unlike the CC0 dedication
+  above, so the author is named here AND credited in the
+  Authors@R field of DESCRIPTION with 'ctb' and 'cph' roles. The style file names him in an
+  <author> element.
+  Included unmodified. It cannot be omitted: the apaquarto filter citeprocr.lua calls
   citeproc unconditionally, so a document with no citations at all fails to
   render without it.

@@ -26,7 +26,7 @@ test_that("the scaffolded document records both versions and repairs itself", {
   expect_false(any(grepl("@APATABLES_VERSION@", txt, fixed = TRUE)))
   # the sharing rule keeps BOTH cases, not a blanket instruction
   expect_true(any(grepl("whole folder", txt)))
-  expect_true(any(grepl("on its own", txt)))
+  expect_true(any(grepl("Send only this .qmd", txt, fixed = TRUE)))
 })
 
 test_that("new() refuses to overwrite an existing document unless told", {

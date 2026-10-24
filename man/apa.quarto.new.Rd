@@ -9,7 +9,7 @@ apa.quarto.new(path, filename = NULL, overwrite = FALSE)
 \arguments{
 \item{path}{Folder to create. It is created if it does not exist.}
 
-\item{filename}{Name for the document. Defaults to the folder's own name
+\item{filename}{Name for the document. Defaults to the name of the folder
 with a \code{.qmd} extension.}
 
 \item{overwrite}{Overwrite an existing document of that name?}
@@ -30,18 +30,18 @@ the rendered document follow APA style. Open \code{my-paper.qmd} and
 click Render (the Preview button in Positron), or run
 \code{quarto render} in that folder: the very first render produces a
 complete APA PDF. The starter is set up for PDF; for a Word manuscript,
-change its \code{format: apaquarto-pdf} line to
+change the \code{format: apaquarto-pdf} line to
 \code{format: apaquarto-docx}.
 
 \strong{What gets installed is not the standard apaquarto release.} It
-is apaTables' own tested copy: apaquarto plus table fixes that are not
+is a copy tested with apaTables: apaquarto plus table fixes that are not
 yet in the standard release. So always install it with this function (or
 \code{\link{apa.quarto.setup}} for a folder you already have), never
-with Quarto's own \code{quarto add}, which gets the standard release
+with the \code{quarto add} command, which gets the standard release
 instead.
 
 The \code{_extensions} folder is the part you cannot write by hand: a
-document's settings block only names a format, and the folder is what
+settings block in a document only names a format, and the folder is what
 supplies it. Without it the document does not render at all -- Quarto
 stops with \code{Unable to read the extension 'apaquarto'} before any R
 code runs, so apaTables never gets the chance to install it for you.
@@ -50,15 +50,15 @@ code runs, so apaTables never gets the chance to install it for you.
 
 Quarto (\url{https://quarto.org}) is a free system for writing documents
 that combine text and R code. apaquarto is a Quarto extension that makes
-such a document follow APA style -- tables get their number, italic
-title, and \emph{Note.} line automatically, in Word, PDF, or HTML. In
+such a document follow APA style -- tables get a number, an italic
+title, and a \emph{Note.} line automatically, in Word, PDF, or HTML. In
 the R console, type:
 
 \preformatted{library(apaTables)
 apa.quarto.new(path = "my-paper")}
 
 This creates a folder called \code{my-paper} containing \code{my-
-paper.qmd}. The document's YAML header (the settings block between
+paper.qmd}. The YAML header of that document (the settings block between
 \code{---} lines at the top) already has everything apaquarto needs to
 render: a title, an author with
 \code{corresponding: true} and an affiliation (apaquarto stops with a
@@ -89,7 +89,7 @@ Do \strong{not} run \code{quarto add wjschne/apaquarto} or
 \code{quarto update extension wjschne/apaquarto} in the folder this
 creates: both commands silently replace the patched extension with the plain,
 unpatched one, while reporting \code{[No Change]}. That reintroduces bugs
-in table numbering and in where a long table's note lands. If you have already run one of those commands, running
+in table numbering and in where the note of a long table lands. If you have already run one of those commands, running
 \code{\link{apa.quarto.setup}}\code{()} again puts the tested copy back.
 
 Sending a coauthor or reviewer the whole project folder carries
@@ -109,7 +109,7 @@ unlink(proj, recursive = TRUE)
 }
 \seealso{
 A step-by-step guide to placing apaTables tables in Quarto documents
-comes installed with the package -- see its "Installing the apaquarto
+comes installed with the package -- see the "Installing the apaquarto
 extension" section. To open it, type:
 
 \preformatted{vignette("apaquarto-usage", package = "apaTables")}

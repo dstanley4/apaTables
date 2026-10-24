@@ -12,7 +12,7 @@ apa_quarto_target_message(called, actual)
 
 \item{actual}{the RAW render-target token, e.g. from
 \code{apa_quarto_actual_format()} (\code{"latex"}, \code{"docx"},
-\code{"html"}, ...) -- not yet normalised to a format key; this function
+\code{"html"}, ...) -- not yet normalized to a format key; this function
 does that itself via \code{apa_quarto_actual_entry()}.}
 }
 \value{

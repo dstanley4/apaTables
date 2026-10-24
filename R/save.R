@@ -1,8 +1,9 @@
 #' Save apaTables tables to a Word (.docx) or HTML (.html) file
 #'
+#' @description
 #' \code{apa.save()} writes one or more finished tables to a single file --
 #' the way to get an apaTables table into a manuscript you write in Word,
-#' or to give a journal its tables as a file of their own:
+#' or to give a journal the tables as a separate file:
 #'
 #' \preformatted{table1 <- apa.cor.table(data = attitude)
 #' apa.save(filename = "Table1.docx", table1)}
@@ -15,12 +16,18 @@
 #' for a web page (a legacy \code{.doc}/\code{.rtf} name is written as
 #' \code{.docx}). \code{apa.save()} does not write PDF files.
 #'
-#' Several tables can go into one file, each on a page of its own, in the
+#' If a file with that name already exists, \code{apa.save()} replaces it,
+#' as \code{write.csv()} does, so running your script again updates the
+#' file. Make any hand edits in a copy, under another name: edits to the
+#' file the script writes are lost the next time the script runs.
+#'
+#' @details
+#' Several tables can go into one file, each on a separate page, in the
 #' order you list them:
 #'
 #' \preformatted{apa.save(filename = "AllTables.docx", table1, table2, table3)}
 #'
-#' A number set when a table was built is kept. A table left with its
+#' A number set when a table was built is kept. A table left at the
 #' default number takes the next number after the last numbered table before it, starting
 #' at 1: the three tables above become Table 1, Table 2 and Table 3, and if
 #' \code{table2} had been built with \code{table.number = 5} they would
@@ -36,6 +43,10 @@
 #' \code{landscape} argument of the function that built the table -- for
 #' example \code{apa.cor.table(data = attitude, landscape = TRUE)}; an explicit
 #' value always wins over measurement.
+#'
+#' An \code{.html} file is written with the help of pandoc, a free program.
+#' If R cannot find it, \code{apa.save()} stops and says so; a \code{.docx}
+#' file does not need pandoc.
 #'
 #' \strong{The title and the note are written from the table itself}, so
 #' they stay correct when the analysis changes; there is no \code{title}
@@ -76,9 +87,22 @@
 apa.save <- function(filename, ..., paper = "us") {
      tables <- list(...)
 
+     if (missing(filename) || inherits(filename, c("apa_table", "apa.table"))) {
+          stop("apa.save() needs a file name and then the tables: for example, apa.save(filename = \"Table1.docx\", my_table).",
+               call. = FALSE)
+     }
+     if (!is.character(filename) || length(filename) != 1L || is.na(filename) ||
+         !nzchar(filename)) {
+          stop("filename must be one file name, such as \"Table1.docx\".", call. = FALSE)
+     }
+     if (length(tables) == 0) {
+          stop("apa.save() needs at least one table to save: for example, apa.save(filename = \"Table1.docx\", my_table).",
+               call. = FALSE)
+     }
      for (i in seq_along(tables)) {
           if (!inherits(tables[[i]], "apa_table")) {
-               stop(sprintf("Argument %d is not an apa_table object. Use a function like apa.afex.table() or apa.reg.table() to create a table object first, then pass it to apa.save().", i + 1L))
+               stop(sprintf("apa.save() needs tables made by an apaTables function such as apa.cor.table() or apa.reg.table(), but one of the tables given is %s.",
+                            apa_describe_object(tables[[i]])), call. = FALSE)
           }
      }
 
@@ -225,7 +249,7 @@ apa_save_docx <- function(filename, tables, paper = "us") {
                     officer::ftext(sprintf("Table %d", numbers[i]), number_fp)))
                doc <- officer::body_add_fpar(doc, blank_par)
           }
-          doc <- officer::body_add_fpar(doc, officer::fpar(officer::ftext(apa_caption(tb), title_fp)))
+          doc <- officer::body_add_fpar(doc, officer::fpar(officer::ftext(apa.caption(tb), title_fp)))
           ft <- apa_flextable(tb)
           width <- flextable::flextable_dim(ft)$widths
           rotate <- apa_save_rotate(width, tb$landscape, paper)
@@ -270,7 +294,7 @@ apa_note_fpar <- function(tb, note_fp, body_fp) {
                parts <- c(parts, lapply(runs, rt_run_to_ftext))
           }
      } else {
-          parts <- c(parts, list(officer::ftext(apa_note_text(tb), body_fp)))
+          parts <- c(parts, list(officer::ftext(apa.note.text(tb), body_fp)))
      }
      do.call(officer::fpar, parts)
 }
@@ -295,11 +319,28 @@ rt_run_to_ftext <- function(r) {
 # the same numbers.
 apa_save_html <- function(filename, tables) {
   apa_require_flextable()
+     # flextable writes HTML through rmarkdown, which needs pandoc. Without
+     # it flextable stops with "pandoc_available() is not TRUE", which tells a
+     # user nothing they can act on.
+     if (!apa_pandoc_available()) {
+          stop("Saving a table as an .html file needs pandoc, a free program ",
+               "that R could not find. Install it from ",
+               "https://pandoc.org/installing.html and then restart R, or ",
+               "save the table as a Word file instead, which does not need ",
+               "pandoc: apa.save(filename = \"mytable.docx\", your_table).",
+               call. = FALSE)
+     }
      numbers <- apa_document_numbers(tables)
      args <- lapply(seq_along(tables),
                     function(i) apa_html_flextable(tables[[i]], numbers[i]))
      args$path <- filename
      do.call(flextable::save_as_html, args)
+}
+
+# Whether rmarkdown can find pandoc: the check flextable::save_as_html() makes.
+apa_pandoc_available <- function() {
+     requireNamespace("rmarkdown", quietly = TRUE) &&
+          rmarkdown::pandoc_available()
 }
 
 # One table as a flextable with its caption and note attached.

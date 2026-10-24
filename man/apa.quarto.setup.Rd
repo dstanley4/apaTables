@@ -2,13 +2,17 @@
 % Please edit documentation in R/quarto-setup.R
 \name{apa.quarto.setup}
 \alias{apa.quarto.setup}
-\title{Install or repair this project's apaquarto extension}
+\title{Install or repair the apaquarto extension in a project}
 \usage{
 apa.quarto.setup(path = ".", auto = TRUE, force = FALSE)
 }
 \arguments{
-\item{path}{Project folder. Defaults to the current directory, or, during a
-render, the folder whose \code{_extensions} the render is using.}
+\item{path}{Project folder. Defaults to the current directory. During a
+render, if this folder has no copy of the extension, the copy in a
+parent folder of the same Quarto project is used instead (Quarto finds
+extensions there too). \code{apa.quarto.setup()} never changes a folder
+above the project folder (the one with \code{_quarto.yml}), and outside
+a Quarto project it changes only the folder given here.}
 
 \item{auto}{Replace a copy that is not ours (the standard apaquarto, or one
 restored by \code{quarto update})? Defaults to \code{TRUE}.}
@@ -22,19 +26,19 @@ Invisibly, a list with \code{action}, \code{version}, \code{found}
 }
 \description{
 You already have a project folder, and you want apaTables tables to come
-out APA-formatted when its documents render. Run this once, in the R
+out APA-formatted when the documents in it render. Run this once, in the R
 console, from that folder:
 
 \preformatted{apa.quarto.setup()}
 
 It puts the apaquarto extension into an \code{_extensions} folder beside
 your document. \strong{What gets installed is not the standard apaquarto
-release}: it is apaTables' own tested copy -- apaquarto plus table fixes
+release}: it is a copy tested with apaTables -- apaquarto plus table fixes
 that are not yet in the standard release. That is also why this command
-exists at all. Running Quarto's own \code{quarto add} or
+exists at all. Running \code{quarto add} or
 \code{quarto update} in a project silently replaces the tested copy with
 the standard one -- while reporting \code{[No Change]} -- which brings
-back bugs in table numbering and in where a long table's note lands.
+back bugs in table numbering and in where the note of a long table lands.
 Running \code{apa.quarto.setup()} again puts the tested copy back.
 
 It is safe to run at any time: on a project that is already correct it does
@@ -57,7 +61,7 @@ the R console, from the folder that contains -- or will contain -- your
 apa.quarto.setup()}
 
 This puts an \code{_extensions/wjschne/apaquarto} folder next to your
-document, and its YAML header -- the settings block between \code{---}
+document, and the YAML header -- the settings block between \code{---}
 lines at the very top of the document -- can then select an apaquarto
 format. apaquarto needs an author in that header -- with no author, or
 an empty one, the render stops with a LaTeX error -- and it reports a
@@ -74,13 +78,13 @@ author:
 format: apaquarto-pdf
 ---}
 
-\code{apa.quarto.setup()} is safe to run at any time -- on a project
-whose copy is already correct, it does nothing and says nothing. Do
+\code{apa.quarto.setup()} is safe to run at any time -- when the copy in a
+project is already correct, it does nothing and says nothing. Do
 \strong{not} run \code{quarto add wjschne/apaquarto} or
 \code{quarto update extension wjschne/apaquarto} in one of these
 folders: both commands silently replace the patched copy with the plain, unpatched
 extension, while reporting \code{[No Change]}. That reintroduces bugs in
-table numbering and in where a long table's note lands. If you have already run one of those commands, running
+table numbering and in where the note of a long table lands. If you have already run one of those commands, running
 \code{apa.quarto.setup()} again puts the tested copy back.
 
 Sending a coauthor or reviewer the whole project folder carries
@@ -105,7 +109,7 @@ unlink(proj, recursive = TRUE)
 }
 \seealso{
 A step-by-step guide to placing apaTables tables in Quarto documents
-comes installed with the package -- see its "Installing the apaquarto
+comes installed with the package -- see the "Installing the apaquarto
 extension" section. To open it, type:
 
 \preformatted{vignette("apaquarto-usage", package = "apaTables")}

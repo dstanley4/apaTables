@@ -136,6 +136,7 @@ test_that("a rotated Word page gives a wide table more room to fit into", {
 })
 
 test_that("apa.save writes a valid .html", {
+     skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
      t1 <- apa.1way.table(iv = dose, dv = libido, data = viagra, table.number = 1)
      tmp <- tempfile(fileext = ".html")
      apa.save(filename = tmp, t1)
@@ -236,7 +237,7 @@ test_that("apa.save's Word output does not vary with knit context (regression ne
 
 test_that("apa.save rejects non-apa_table arguments", {
      expect_error(apa.save(filename = tempfile(fileext = ".docx"), 42),
-                  "apa_table")
+                  "needs tables made by an apaTables function", fixed = TRUE)
 })
 
 
@@ -270,6 +271,7 @@ html_style_of <- function(h, fragment, txt) {
 }
 
 test_that("apa.save .html carries the table number, italic title, and note", {
+     skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
      t1 <- apa.cor.table(attitude[, 1:3], table.number = 1)
      tmp <- tempfile(fileext = ".html")
      apa.save(filename = tmp, t1)
@@ -299,6 +301,7 @@ test_that("apa.save .html carries the table number, italic title, and note", {
 })
 
 test_that("apa.save .html gives every table in a multi-table file its furniture", {
+     skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
      t1 <- apa.cor.table(attitude[, 1:3])
      t2 <- apa.reg.table(lm(sales ~ adverts, data = album))
      tmp <- tempfile(fileext = ".html")
@@ -318,25 +321,42 @@ test_that("apa.save .html numbering agrees with the Word file", {
      t2 <- apa.cor.table(attitude[, 1:3], table.number = 7)   # explicit -> kept
      expect_equal(apa_document_numbers(list(t1, t2)), c(1L, 7L))
 
-     html <- tempfile(fileext = ".html")
+     # the Word half first: it needs no pandoc, so it runs everywhere
      docx <- tempfile(fileext = ".docx")
-     apa.save(filename = html, t1, t2)
      apa.save(filename = docx, t1, t2)
-
-     h <- html_text(html)
-     expect_equal(sort(unique(regmatches(h, gregexpr("Table [0-9]+", h))[[1]])),
-                  c("Table 1", "Table 7"))
-
      xml_dir <- tempfile(); dir.create(xml_dir)
+     on.exit(unlink(c(docx, xml_dir), recursive = TRUE), add = TRUE)
      utils::unzip(docx, files = "word/document.xml", exdir = xml_dir)
      w <- paste(readLines(file.path(xml_dir, "word", "document.xml"), warn = FALSE),
                 collapse = "")
      expect_equal(sort(unique(regmatches(w, gregexpr("Table [0-9]+", w))[[1]])),
                   c("Table 1", "Table 7"))
-     unlink(c(html, docx)); unlink(xml_dir, recursive = TRUE)
+
+     skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
+     html <- tempfile(fileext = ".html")
+     on.exit(unlink(html), add = TRUE)
+     apa.save(filename = html, t1, t2)
+     h <- html_text(html)
+     expect_equal(sort(unique(regmatches(h, gregexpr("Table [0-9]+", h))[[1]])),
+                  c("Table 1", "Table 7"))
+})
+
+test_that("apa.save .html without pandoc stops with a message that names it", {
+     # mocked one level down, at rmarkdown, so that apa.save()'s own check
+     # runs: a check that wrongly said "found" would fail here
+     local_mocked_bindings(pandoc_available = function(...) FALSE,
+                           .package = "rmarkdown")
+     expect_false(apa_pandoc_available())
+     tmp <- tempfile(fileext = ".html")
+     err <- tryCatch(apa.save(filename = tmp, apa.cor.table(attitude[, 1:3])),
+                     error = conditionMessage)
+     expect_match(err, "needs pandoc", fixed = TRUE)
+     expect_match(err, "apa.save(filename = \"mytable.docx\"", fixed = TRUE)
+     expect_false(file.exists(tmp))
 })
 
 test_that("apa.save .html writes no number when the number is suppressed", {
+     skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
      t1 <- apa.cor.table(attitude[, 1:3], table.number = 0)
      tmp <- tempfile(fileext = ".html")
      apa.save(filename = tmp, t1)
@@ -354,6 +374,7 @@ test_that("apa.save .html writes no number when the number is suppressed", {
 })
 
 test_that("apa.save .html keeps rich text in the note (italics, superscripts)", {
+     skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
      t1 <- apa.reg.table(lm(sales ~ adverts, data = album))
      tmp <- tempfile(fileext = ".html")
      apa.save(filename = tmp, t1)
@@ -367,7 +388,7 @@ test_that("apa.save .html keeps rich text in the note (italics, superscripts)", 
           r <- regmatches(h, regexpr(paste0("\\.", cl, "\\{[^}]*\\}"), h))
           if (length(r)) r else ""
      }, character(1))
-     expect_true(any(grepl("vertical-align:super", rules, fixed = TRUE)))
+     expect_true(any(vapply(rules, css_is_superscript, logical(1))))
      expect_true(any(grepl("font-style:italic", rules, fixed = TRUE)))
      unlink(tmp)
 })

@@ -171,7 +171,7 @@ test_that("when the reference geometry cannot be read, the table is left UPRIGHT
 
 test_that("the no-geometry warning names the file it actually tried and gives advice that fits it", {
   # There are two candidate files (the project's copy, preferred, and the
-  # bundled one), so "its own bundled apaquarto.docx ... reinstall
+  # bundled one), so "the apaquarto.docx bundled with apaTables ... reinstall
   # apaTables" is not true by construction, and the refuse-branch test above
   # pins only "kept upright". A wrong instruction printed into a rendered
   # manuscript is release-relevant.
@@ -196,7 +196,7 @@ test_that("the no-geometry warning names the file it actually tried and gives ad
                project = FALSE)
   msg2 <- tryCatch(apa_warn_no_docx_geometry(inst),
                    warning = function(w) conditionMessage(w))
-  expect_match(msg2, "its own bundled apaquarto.docx", fixed = TRUE)
+  expect_match(msg2, "the apaquarto.docx bundled with apaTables", fixed = TRUE)
   expect_match(msg2, inst$path, fixed = TRUE)
   expect_match(msg2, "reinstall apaTables", fixed = TRUE)
   expect_false(grepl("apa.quarto.setup()", msg2, fixed = TRUE))

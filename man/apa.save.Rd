@@ -22,9 +22,8 @@ Invisibly returns the \code{filename} actually written.
 \description{
 \code{apa.save()} writes one or more finished tables to a single file --
 the way to get an apaTables table into a manuscript you write in Word,
-or to give a journal its tables as a file of their own:
-}
-\details{
+or to give a journal the tables as a separate file:
+
 \preformatted{table1 <- apa.cor.table(data = attitude)
 apa.save(filename = "Table1.docx", table1)}
 
@@ -36,12 +35,18 @@ is chosen by the file extension: \code{.docx} for Word, \code{.html}
 for a web page (a legacy \code{.doc}/\code{.rtf} name is written as
 \code{.docx}). \code{apa.save()} does not write PDF files.
 
-Several tables can go into one file, each on a page of its own, in the
+If a file with that name already exists, \code{apa.save()} replaces it,
+as \code{write.csv()} does, so running your script again updates the
+file. Make any hand edits in a copy, under another name: edits to the
+file the script writes are lost the next time the script runs.
+}
+\details{
+Several tables can go into one file, each on a separate page, in the
 order you list them:
 
 \preformatted{apa.save(filename = "AllTables.docx", table1, table2, table3)}
 
-A number set when a table was built is kept. A table left with its
+A number set when a table was built is kept. A table left at the
 default number takes the next number after the last numbered table before it, starting
 at 1: the three tables above become Table 1, Table 2 and Table 3, and if
 \code{table2} had been built with \code{table.number = 5} they would
@@ -57,6 +62,10 @@ is cut off. To decide the orientation yourself, use the
 \code{landscape} argument of the function that built the table -- for
 example \code{apa.cor.table(data = attitude, landscape = TRUE)}; an explicit
 value always wins over measurement.
+
+An \code{.html} file is written with the help of pandoc, a free program.
+If R cannot find it, \code{apa.save()} stops and says so; a \code{.docx}
+file does not need pandoc.
 
 \strong{The title and the note are written from the table itself}, so
 they stay correct when the analysis changes; there is no \code{title}

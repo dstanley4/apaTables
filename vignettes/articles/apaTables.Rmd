@@ -15,7 +15,7 @@ library(apaTables)
 
 ```{r show-quarto-chunk-helper, echo=FALSE}
 # Prints a four-backtick-fenced, non-executed example Quarto chunk. Built
-# line-by-line (each argument is its own quoted string) so no raw line in
+# line-by-line (each argument is a separate quoted string) so no raw line in
 # this .Rmd file begins with a bare code-fence -- otherwise knitr would try
 # to treat the example chunk as real, executable R code.
 show_quarto_chunk <- function(...) {
@@ -26,7 +26,7 @@ show_quarto_chunk <- function(...) {
 
 ## Context
 
-Reproducible research is research for which the numbers reported in the paper can be obtained by others using the original data and analysis scripts. (Note that this differs from replicability - the extent to which findings are consistent across samples.) Recent research has revealed a problem with the reproducibility of analyses in many fields. For example, in psychology Nuijten et al. (2016) found that about half of the psychology articles reporting null-hypothesis significance tests contained at least one reported test statistic (e.g., *t*(24)=22.71) that was inconsistent with its reported *p*-value. One in eight articles contained an inconsistency large enough to change the statistical conclusion. This inconsistency rate suggests there is a major problem with reproducibility in the psychological literature.
+Reproducible research is research for which the numbers reported in the paper can be obtained by others using the original data and analysis scripts. (Note that this differs from replicability - the extent to which findings are consistent across samples.) Recent research has revealed a problem with the reproducibility of analyses in many fields. For example, in psychology Nuijten et al. (2016) found that about half of the psychology articles reporting null-hypothesis significance tests contained at least one reported test statistic (e.g., *t*(24)=22.71) that was inconsistent with the reported *p*-value. One in eight articles contained an inconsistency large enough to change the statistical conclusion. This inconsistency rate suggests there is a major problem with reproducibility in the psychological literature.
 
 My objective in creating the *apaTables* package was to automate the process through which tables are created from analyses when using R. Using *apaTables* ensures that the tables in your manuscript are reproducible.
 
@@ -60,7 +60,7 @@ apa.save(filename = "table1.docx",
          table1)
 ```
 
-![](Table1.png){width=87%}
+![](Table1.png){width=86%}
 
 [Quarto](https://quarto.org) is a free system for writing documents that combine text and R code. The [apaquarto](https://wjschne.github.io/apaquarto/) extension (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)) makes a Quarto document follow APA style. Place this table in such a document and it appears as a fully formatted APA table -- number, title, and note included -- in Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -80,7 +80,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -93,7 +93,7 @@ apa.quarto.template(x = table1)
 
 This prints a ready-made Quarto code chunk. It carries no title or note line and needs none: `apa.quarto.pdf()` writes both from the table itself, every time you render. Copy the printed chunk into your Quarto document, add the lines that create `table1` to the chunk -- `library(apaTables)` among them; without it the document cannot find the apaTables commands and the render stops. Then render the document.
 
-**Advanced way.** Write the code chunk yourself, directly in your Quarto document. `apa.quarto.pdf()` displays the table body with its title and note included automatically, so nothing more than the label is required:
+**Advanced way.** Write the code chunk yourself, directly in your Quarto document. `apa.quarto.pdf()` displays the table body with the title and note included automatically, so nothing more than the label is required:
 
 ```{r, echo=FALSE, results='asis'}
 show_quarto_chunk(
@@ -113,9 +113,9 @@ show_quarto_chunk(
 That `#| label: tbl-correlations` line is not optional: without a label starting `tbl-`, Quarto builds no float for the chunk, so there is no number, no title, and no note, however you try to supply them.
 
 
-One caution for PDF: a correlation table with many variables can be wider than the upright (portrait) PDF page. This one is not -- Table 1 measures about 5.4 inches against the 6.5 inches an upright page gives a table -- but a table with more variables in it would be. APA style places such a table on a rotated (landscape) page, and apaTables does that for you: it measures the table, and when it will not fit upright it asks apaquarto for a rotated page. Nothing has to be added to the chunk and nothing has to be added to the document's YAML header -- the display line is simply `apa.quarto.pdf(x = table1)`, and it works whether your tables sit in the text or are collected at the end of the manuscript. (Documents that already wrap a chunk in `::: {.landscape}` markers keep rendering exactly as before; the markers are just no longer something you have to write.) Word output needs none of this either: `apa.save()` turns the page to landscape automatically.
+One caution for PDF: a correlation table with many variables can be wider than the upright (portrait) PDF page. This one is not -- Table 1 measures about 5.4 inches against the 6.5 inches an upright page gives a table -- but a table with more variables in it would be. APA style places such a table on a rotated (landscape) page, and apaTables does that for you: it measures the table, and when it will not fit upright it asks apaquarto for a rotated page. Nothing has to be added to the chunk and nothing has to be added to the YAML header -- the display line is simply `apa.quarto.pdf(x = table1)`, and it works whether your tables sit in the text or are collected at the end of the manuscript. (Documents that already wrap a chunk in `::: {.landscape}` markers keep rendering exactly as before; the markers are just no longer something you have to write.) Word output needs none of this either: `apa.save()` turns the page to landscape automatically.
 
-**The automatic title and note work identically in PDF, Word, and HTML.** A chunk rendered to `apaquarto-docx` or `apaquarto-html` shows the same generated (or your own) title and note a PDF render would -- use `apa.quarto.docx()` or `apa.quarto.html()` in place of `apa.quarto.pdf()` to match the document's YAML `format:` line. `apa.save()`, shown above, remains the way to write a Word or HTML file of its own, outside any Quarto document.
+**The automatic title and note work identically in PDF, Word, and HTML.** A chunk rendered to `apaquarto-docx` or `apaquarto-html` shows the same generated (or your own) title and note a PDF render would -- use `apa.quarto.docx()` or `apa.quarto.html()` in place of `apa.quarto.pdf()` to match the YAML `format:` line. `apa.save()`, shown above, remains the way to write a separate Word or HTML file, outside any Quarto document.
 
 `apa.quarto.template(x = table1)` prints one plain chunk -- no title line, no note line, no wrapper lines, and nothing to add to the YAML header. It names the chunk after your table object (`tbl-table1`); shown here with the build lines filled in:
 
@@ -134,7 +134,7 @@ show_quarto_chunk(
 )
 ```
 
-If a table is still too wide for its page -- even a rotated one -- apaTables prints it smaller during PDF rendering, as small as it has to be, so that nothing is cut off. This is automatic; the chunk needs nothing extra, and there is no setting to change:
+If a table is still too wide for the page -- even a rotated one -- apaTables prints it smaller during PDF rendering, as small as it has to be, so that nothing is cut off. This is automatic; the chunk needs nothing extra, and there is no setting to change:
 
 ```{r, eval=FALSE}
 apa.quarto.pdf(x = table1)
@@ -145,7 +145,7 @@ If fitting the table takes the type below 6 points -- where an APA table stops b
 
 ## Regression table overview
 
-Regression tables can be constructed using the **apa.reg.table()** function. The constructed table includes the unstandardized regression coefficient (*b* with CI), standardized regression coefficient (*beta* with CI), semi-partial correlation squared (labelled *Unique R*^2^ in the table, with CI), the correlation ($r$), and the overall fit of the model (indexed by $R^2$ with CI). The *album* sales dataset from Field et al. (2012) is used to illustrate the **apa.reg.table()** function.
+Regression tables can be constructed using the **apa.reg.table()** function. The constructed table includes the unstandardized regression coefficient (*b* with CI), standardized regression coefficient (*beta* with CI), semi-partial correlation squared (labeled *Unique R*^2^ in the table, with CI), the correlation ($r$), and the overall fit of the model (indexed by $R^2$ with CI). The *album* sales dataset from Field et al. (2012) is used to illustrate the **apa.reg.table()** function.
 
 ## Basic regression table
 The **apa.reg.table()** function creates a regression table with confidence intervals based on **lm()** output; see Table 2.
@@ -164,7 +164,7 @@ table2 <- apa.reg.table(basic.reg,
 apa.save(filename = "table2.docx",
          table2)
 ```
-![](Table2.png){width=100%}
+![](Table2.png){width=99%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -184,7 +184,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -223,7 +223,7 @@ show_quarto_chunk(
 
 In many cases, it is more useful for psychology researchers to compare the results of two regression models with common variables. This approach is known to many psychology researchers as block-based regression (likely due to the labeling used in popular software packages). Using regression to "control" for certain variables (e.g., demographic or socio-economic variables) is a common use case. In this scenario, the researcher conducts a regression with the "control" variables that is referred to as *block 1*. Following this, the researcher conducts a second regression with the "control" variables and the substantive variables that is referred to as *block 2*. If *block 2* accounts for significant variance in the criterion above and beyond *block 1* then substantive variables are deemed to be meaningful predictors.
 
-A second common use of block-based regression in psychology is testing for continuous-variable interactions. Consider a scenario in which a researcher is testing for an interaction between two continuous variables and two regressions are conducted. The first regression includes the two predictors of interest (*block 1*). The second regression includes the two predictors of interest as well as their product term (*block 2*). If *block 2* accounts for significant variance in the criterion above and beyond *block 1* an interaction is deemed to be present. Admittedly interactions could be tested in a single regression; however, using a block-based regression for this analysis is common in psychology. The example below examines whether advertisements and amount of airplay for a song interact to predict album sales. The resulting table is presented in Table 3. Although this example only uses two blocks, note that any number of blocks can be used with the **apa.reg.table()** function. As well, if the predictors in any of the blocks are a product-term, the zero-order correlation will be omitted from the output to prevent interpretation errors common in psychology.
+A second common use of block-based regression in psychology is testing for continuous-variable interactions. Consider a scenario in which a researcher is testing for an interaction between two continuous variables and two regressions are conducted. The first regression includes the two predictors of interest (*block 1*). The second regression includes the two predictors of interest as well as the product term for them (*block 2*). If *block 2* accounts for significant variance in the criterion above and beyond *block 1* an interaction is deemed to be present. Admittedly interactions could be tested in a single regression; however, using a block-based regression for this analysis is common in psychology. The example below examines whether advertisements and amount of airplay for a song interact to predict album sales. The resulting table is presented in Table 3. Although this example only uses two blocks, note that any number of blocks can be used with the **apa.reg.table()** function. As well, if the predictors in any of the blocks are a product-term, the zero-order correlation will be omitted from the output to prevent interpretation errors common in psychology.
 
 The **apa.reg.table()** function allows for multiple (i.e., 2 or more) blocks as per below; see Table 3.
 
@@ -241,7 +241,7 @@ table3 <- apa.reg.table(block1, block2,
 apa.save(filename = "table3.docx",
          table3)
 ```
-![](Table3.png){width=100%}
+![](Table3.png){width=99%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -261,7 +261,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -296,7 +296,7 @@ show_quarto_chunk(
 )
 ```
 
-One caution for PDF: a regression table with several blocks is wider than the upright (portrait) PDF page. APA style places such a table on a rotated (landscape) page, and apaTables does that for you: it measures the table and asks apaquarto for a rotated page when one is needed. Nothing has to be added to the chunk or to the document's YAML header -- the display line is simply `apa.quarto.pdf(x = table3)`. This two-block table (Table 3) measures about 7.1 inches: more than the 6.5 inches an upright page gives a table, but well within the 9 inches of a rotated one. So it lands on a rotated page at full size with every column present. A table wider still -- wider than even a rotated page -- is printed smaller instead, as small as it has to be so that every column is kept. If that takes the type below 6 points the rendered draft carries a warning saying so, and `apa.save()` Word output turns the page to landscape first, using smaller type only when even that is too narrow.
+One caution for PDF: a regression table with several blocks is wider than the upright (portrait) PDF page. APA style places such a table on a rotated (landscape) page, and apaTables does that for you: it measures the table and asks apaquarto for a rotated page when one is needed. Nothing has to be added to the chunk or to the YAML header -- the display line is simply `apa.quarto.pdf(x = table3)`. This two-block table (Table 3) measures about 7.1 inches: more than the 6.5 inches an upright page gives a table, but well within the 9 inches of a rotated one. So it lands on a rotated page at full size with every column present. A table wider still -- wider than even a rotated page -- is printed smaller instead, as small as it has to be so that every column is kept. If that takes the type below 6 points the rendered draft carries a warning saying so, and `apa.save()` Word output turns the page to landscape first, using smaller type only when even that is too narrow.
 
 This table is wide enough to be rotated, and `apa.quarto.template(x = table3)` still prints one plain chunk (named `tbl-table3` after the object) -- the rotation is worked out when the document is rendered, not written into the chunk. Shown with the build lines filled in:
 
@@ -322,8 +322,8 @@ Alongside the chunk it prints the reason, in the words it actually uses:
 ```
 This table is about 7.1 inches wide -- too wide for an upright (portrait)
 PDF page. It will be placed on a rotated (landscape) page automatically,
-at full size. There is nothing to add to the chunk or to your document's
-YAML header.
+at full size. There is nothing to add to the chunk or to the YAML header of
+your document.
 ```
 
 
@@ -350,7 +350,7 @@ apa.save(filename = "table4.docx",
          table4)
 ```
 
-![](Table4.png){width=76%}
+![](Table4.png){width=75%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -370,7 +370,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -443,7 +443,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -490,7 +490,7 @@ table6 <- apa.d.table(iv = dose,
 apa.save(filename = "table6.docx",
          table6)
 ```
-![](Table6.png){width=99%}
+![](Table6.png){width=73%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -510,7 +510,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -565,7 +565,7 @@ table7 <- apa.aov.table(lm_output = lm_output,
 apa.save(filename = "table7.docx",
          table7)
 ```
-![](Table7.png){width=76%}
+![](Table7.png){width=75%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -585,7 +585,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -639,7 +639,7 @@ table8 <- apa.2way.table(iv1 = gender,
 apa.save(filename = "table8.docx",
          table8)
 ```
-![](Table8.png){width=83%}
+![](Table8.png){width=74%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -659,7 +659,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -722,7 +722,7 @@ apa.save(filename = "tables9and10.docx",
          table9, table10)
 ```
 
-![](Tables9and10.png){width=99%}
+![](Tables9and10.png){width=73%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -742,7 +742,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the tables and then ask for their Quarto code:
+**Easy way.** In the R console, create the tables and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -787,8 +787,8 @@ show_quarto_chunk(
 )
 ```
 
-The chunk for Table 10 carries its own label, its own line creating
-`goggles.women`, and its own call to **apa.d.table()**:
+The chunk for Table 10 contains a label, a line creating
+`goggles.women`, and a call to **apa.d.table()**:
 
 ```{r, echo=FALSE, results='asis'}
 show_quarto_chunk(
@@ -887,7 +887,7 @@ apa.save(filename = "table11.docx",
 ```
 
 
-![](Table11.png){width=99%}
+![](Table11.png){width=75%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -907,7 +907,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)
@@ -1043,7 +1043,7 @@ apa.save(filename = "table12.docx",
          table12)
 ```
 
-![](Table12.png){width=99%}
+![](Table12.png){width=75%}
 
 This table can also be placed in a [Quarto](https://quarto.org) document -- Quarto is a free system for writing documents that combine text and R code. With the [apaquarto](https://wjschne.github.io/apaquarto/) extension installed (one command; see the [installation instructions](apaquarto-usage.html#installing-the-apaquarto-extension)), the table appears fully formatted -- number, title, and note included -- when the document is rendered to Word, PDF, or HTML. Tables go into the document inside a "code chunk": a small block of R code with a few settings lines at the top. "Rendering" the document turns it into the finished Word, PDF, or HTML file.
 
@@ -1063,7 +1063,7 @@ format: apaquarto-pdf
 
 There are two ways to produce the chunk that holds the table; most users only need the first.
 
-**Easy way.** In the R console, create the table and then ask for its Quarto code:
+**Easy way.** In the R console, create the table and then ask for the Quarto code:
 
 ```{r, eval=FALSE}
 library(apaTables)

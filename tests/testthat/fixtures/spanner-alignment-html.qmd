@@ -33,7 +33,7 @@ library(apaTables)
 twoway_tbl <- apa.2way.table(iv1 = gender, iv2 = alcohol, dv = attractiveness,
                              data = goggles, table.number = 1)
 blkA <- lm(sales ~ adverts + airplay, data = album)
-blkB <- lm(sales ~ adverts + airplay + I(adverts + airplay), data = album)
+blkB <- lm(sales ~ adverts + airplay + attract, data = album)
 blocks_tbl <- apa.reg.table(blkA, blkB, table.number = 2)
 ```
 
