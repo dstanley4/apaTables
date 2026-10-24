@@ -21,7 +21,7 @@ library(apaTables)
 # also assert the normalized default).
 
 test_that("every lm/data builder's filename argument writes through apa.save and still returns the table", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm_viagra <- lm(libido ~ dose, data = viagra)
      builders <- list(
           cor  = function(fn) apa.cor.table(attitude[, 1:3], filename = fn),

@@ -1,7 +1,7 @@
 library(apaTables)
 
 test_that("apa.aov.table 1-way returns correct class and type", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1, table.number = 4)
      expect_s3_class(t1, "apa_table")
@@ -15,7 +15,7 @@ test_that("apa.aov.table 1-way returns correct class and type", {
 })
 
 test_that("apa.aov.table 1-way has correct structure", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1, table.number = 4)
      expect_equal(t1$table_number, 4)
@@ -31,7 +31,7 @@ test_that("apa.aov.table 1-way has correct structure", {
 })
 
 test_that("apa.aov.table 1-way has dose and Error rows", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1)
      predictors <- t1$table_body$Predictor
@@ -41,7 +41,7 @@ test_that("apa.aov.table 1-way has dose and Error rows", {
 })
 
 test_that("apa.aov.table Error row has empty F and p", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1)
      error_row <- t1$table_body[t1$table_body$Predictor == "Error", ]
@@ -50,7 +50,7 @@ test_that("apa.aov.table Error row has empty F and p", {
 })
 
 test_that("apa.aov.table 1-way returns correct F and p values", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1)
      dose_row <- t1$table_body[t1$table_body$Predictor == "dose", ]
@@ -59,7 +59,7 @@ test_that("apa.aov.table 1-way returns correct F and p values", {
 })
 
 test_that("apa.aov.table 2-way has main effects and interaction", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm2 <- lm(dv ~ a*b, data = fidler_thompson)
      t2 <- apa.aov.table(lm2)
      predictors <- t2$table_body$Predictor
@@ -71,7 +71,7 @@ test_that("apa.aov.table 2-way has main effects and interaction", {
 })
 
 test_that("apa.aov.table 2-way goggles has correct predictors", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm3 <- lm(attractiveness ~ gender*alcohol, data = goggles)
      t3 <- apa.aov.table(lm3)
      predictors <- t3$table_body$Predictor
@@ -81,7 +81,7 @@ test_that("apa.aov.table 2-way goggles has correct predictors", {
 })
 
 test_that("apa.aov.table conf.level parameter changes CI labels", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t90 <- apa.aov.table(lm1, conf.level = .90)
      t95 <- apa.aov.table(lm1, conf.level = .95)
@@ -90,14 +90,14 @@ test_that("apa.aov.table conf.level parameter changes CI labels", {
 })
 
 test_that("apa.aov.table table.number parameter works", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1, table.number = 9)
      expect_equal(t1$table_number, 9)
 })
 
 test_that("apa.aov.table has LaTeX components", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1)
      expect_false(is.null(t1$latex.body))
@@ -105,7 +105,7 @@ test_that("apa.aov.table has LaTeX components", {
 })
 
 test_that("apa.aov.table title mentions DV name", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1)
      expect_true(grepl("Libido", t1$table_title))
@@ -117,7 +117,7 @@ test_that("apa.aov.table filename defaults to NA like every other builder (docs 
      # Normalized 2026-08-09: default NA, is.na() guard, same as the
      # other five builders. Explicit NA must mean "no file" too, which
      # the old missing() guard got wrong.
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      expect_identical(formals(apa.aov.table)$filename, NA)
      withr::with_tempdir({
@@ -272,11 +272,11 @@ test_that("models whose call can no longer be run are still refitted", {
                       ref$table_body)
 })
 
-test_that("a model stored without its data is refused with the line to add", {
+test_that("a model stored without its data is refused, naming model = FALSE", {
      withr::local_options(contrasts = c("contr.treatment", "contr.poly"))
      m <- lm(attractiveness ~ gender * alcohol, data = goggles)
      m$model <- NULL
-     expect_error(aov_sum_contrasts(m), "options\\(contrasts = c\\(\"contr.sum\"")
+     expect_error(aov_sum_contrasts(m), "fit it again without model = FALSE")
 })
 
 test_that("the CI comes from the unrounded F", {
@@ -305,3 +305,33 @@ test_that("a model with an offset is refused, in either form", {
      expect_error(apa.aov.table(lm(attractiveness ~ gender, data = goggles,
                                    offset = rep(1, 48)), type = 2), msg)
 })
+
+test_that("a Type III table from a model fitted with model = FALSE names that cause", {
+     withr::local_options(contrasts = c("contr.treatment", "contr.poly"))
+     g <- goggles
+     contrasts(g$alcohol) <- contr.treatment(3)
+     # with the data stored, the refit works however the contrasts were set
+     on_var <- apa.aov.table(lm_output = lm(attractiveness ~ gender * alcohol, data = g))$table_body
+     expect_identical(on_var$F[on_var$Predictor == "alcohol"], "20.07")
+     with_c <- apa.aov.table(lm_output = lm(attractiveness ~ gender * C(alcohol, treatment), data = goggles))$table_body
+     expect_identical(with_c$F[with_c$Predictor == "C(alcohol, treatment)"], "20.07")
+     # without it, the message names model = FALSE, the one fix that works
+     expect_error(apa.aov.table(lm_output = lm(attractiveness ~ gender * alcohol, data = g, model = FALSE)),
+                  "fitted with model = FALSE")
+     # a table that needs no recoding works without the stored data, as in 2.0.8
+     t2 <- apa.aov.table(lm_output = lm(attractiveness ~ gender * alcohol, data = g, model = FALSE), type = 2)
+     expect_match(t2$table_title, "^ANOVA Results for Attractiveness")
+     s3 <- apa.aov.table(lm_output = lm(attractiveness ~ gender * alcohol, data = goggles, model = FALSE,
+                                       contrasts = list(gender = "contr.sum", alcohol = "contr.sum")))
+     expect_identical(s3$table_body$F[s3$table_body$Predictor == "alcohol"], "20.07")
+     # a coding the refit cannot reproduce (a reduced contrast) names a fix that works
+     gr <- goggles
+     contrasts(gr$alcohol, how.many = 1) <- contr.treatment(3)
+     expect_error(apa.aov.table(lm_output = lm(attractiveness ~ gender * alcohol, data = gr)),
+                  "contrasts = list\\(gender = \"contr.sum\", alcohol = \"contr.sum\"\\)")
+     # and the fix it names, applied to each factor, works
+     fixed <- apa.aov.table(lm_output = lm(attractiveness ~ gender * alcohol, data = gr,
+                                           contrasts = list(gender = "contr.sum", alcohol = "contr.sum")))
+     expect_identical(fixed$table_body$F[fixed$table_body$Predictor == "alcohol"], "20.07")
+})
+

@@ -18,7 +18,7 @@ aov_spec_note <- function() {
 # model the user fitted whatever has happened to their data since. Its
 # fitted values must equal the original's (the same model in a different
 # coding); a model stored without its frame (lm(..., model = FALSE)) cannot
-# be refitted, and the user is told how to set the contrasts instead.
+# be refitted, and the user is told to fit it again without model = FALSE.
 aov_sum_contrasts <- function(lm_output) {
   ctr <- lm_output$contrasts
   if (length(ctr) == 0) return(lm_output)
@@ -38,12 +38,21 @@ aov_sum_contrasts <- function(lm_output) {
   for (name in names(ctr)[needs_sum]) new_ctr[[name]] <- "contr.sum"
 
   cannot_refit <- function() {
+    # name every factor that needs recoding: naming only one leaves the
+    # others, and following the advice would end in the same refusal
+    names_needed <- names(ctr)[needs_sum]
+    quoted <- ifelse(make.names(names_needed) == names_needed, names_needed, paste0("`", names_needed, "`"))
     stop("apa.aov.table() needs sum-to-zero contrasts for a Type III table and could not refit this model to use them; ",
-         "add options(contrasts = c(\"contr.sum\", \"contr.poly\")) before the lm() line, fit the model again, ",
-         "and run apa.aov.table() again.", call. = FALSE)
+         "fit it again with lm(..., contrasts = list(", paste0(quoted, " = \"contr.sum\"", collapse = ", "),
+         ")) and run apa.aov.table() again.", call. = FALSE)
   }
   mf <- lm_output$model
-  if (is.null(mf)) cannot_refit()
+  # The refit needs the stored data; it works however the contrasts were
+  # set (session option, C() in the formula, or on the variable).
+  if (is.null(mf)) {
+    stop("apa.aov.table() needs the data stored in the model to use sum-to-zero contrasts for a Type III table, ",
+         "but the model was fitted with model = FALSE; fit it again without model = FALSE.", call. = FALSE)
+  }
 
   # The same steps lm() itself takes after building its model frame.
   x <- stats::model.matrix(stats::terms(lm_output), mf, contrasts.arg = new_ctr)
@@ -382,7 +391,10 @@ apa.aov.table<-function(lm_output,filename=NA,table.number=1, conf.level=.90,typ
           stop("apa.aov.table() does not support models with an offset (an offset() term, or the offset argument of lm()); fit the model without it.", call. = FALSE)
      }
 
-     dv_name <- names(lm_output$model)[1]
+     # the outcome name comes from the formula, which a model fitted with
+     # model = FALSE still carries
+     dv_name <- paste(deparse(stats::formula(lm_output)[[2]], width.cutoff = 500L, backtick = FALSE),
+                      collapse = " ")
 
      # Type III tests of a factor in an interaction are only main effects
      # when the factor's contrasts sum to zero; under R's default treatment

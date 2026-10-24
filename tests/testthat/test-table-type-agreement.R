@@ -15,7 +15,7 @@
 # here rather than in a user's document.
 
 apa_type_pairs <- function() {
-  options(contrasts = c("contr.sum", "contr.poly"))
+  withr::local_options(contrasts = c("contr.sum", "contr.poly"))
   list(
     "apa.cor.table"  = apa.cor.table(attitude[, 1:3]),
     "apa.reg.table"  = apa.reg.table(lm(sales ~ adverts, data = album)),

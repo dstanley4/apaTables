@@ -408,6 +408,18 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
                if (!same_vector(stats::model.response(frames[[i]]), stats::model.response(frames[[1]]))) {
                     stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must be fitted to the same cases, in the same order.\nThese blocks were fitted to different rows of data -- usually because a predictor added in a later block has missing values -- or to the same rows in a different order (for example, after merge() or sorting).\n\nFit every block to one data frame, with the incomplete rows removed once:\ncomplete <- na.omit(my_data[, c(\"y\", \"a\", \"b\", \"c\")])\nblock1 <- lm(y ~ a + b, data = complete)\nblock2 <- lm(y ~ a + b + c, data = complete)", call. = FALSE)
                }
+               # The same outcome values in the same order can still be
+               # different rows when outcomes are tied (sorted Likert data). A
+               # predictor in both blocks then holds the same values in a
+               # different order. Values that differ (a variable recoded
+               # between blocks under one name) are not a reordering and are
+               # left to the checks below.
+               shared <- setdiff(intersect(names(frames[[i]])[-1], names(frames[[i - 1]])[-1]), "(weights)")
+               reordered <- vapply(shared, function(v)
+                    reg_reordered(frames[[i]][[v]], frames[[i - 1]][[v]]), logical(1))
+               if (any(reordered)) {
+                    stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must be fitted to the same cases, in the same order.\nThese blocks have the same outcome values, but a predictor in both blocks holds the same values in a different row order (for example, after merge() or sorting).\n\nFit every block to one data frame:\nblock1 <- lm(y ~ a + b, data = my_data)\nblock2 <- lm(y ~ a + b + c, data = my_data)", call. = FALSE)
+               }
                if (!same_vector(stats::model.weights(frames[[i]]), stats::model.weights(frames[[1]]))) {
                     stop("apa.reg.table error:\nAll regression objects (i.e., blocks) must use the same weights.", call. = FALSE)
                }
@@ -1089,6 +1101,25 @@ reg_dummy_coding <- function(spec, levels) {
           all(colSums(cm) == 1) && all(rowSums(cm) <= 1)
      if (!is_dummy) return("other")
      if (!is.null(colnames(cm)) && all(colnames(cm) %in% levels)) "named" else "unnamed"
+}
+
+# TRUE when two model-frame columns hold the same values in a different row
+# order. Factors and characters compare as text, logicals and numbers as
+# numbers, so TRUE/FALSE in one block and 1/0 in the next match.
+reg_reordered <- function(a, b) {
+     as_values <- function(x) {
+          if (is.factor(x) || is.character(x)) as.matrix(as.character(x)) else
+               suppressWarnings(matrix(as.numeric(as.matrix(x)), nrow = NROW(x)))
+     }
+     a <- as_values(a)
+     b <- as_values(b)
+     if (!identical(dim(a), dim(b)) || !identical(typeof(a), typeof(b))) return(FALSE)
+     in_order <- if (is.character(a)) identical(unname(a), unname(b)) else
+          isTRUE(all.equal(unname(a), unname(b)))
+     if (in_order) return(FALSE)
+     sort_rows <- function(m) m[do.call(order, as.data.frame(m)), , drop = FALSE]
+     if (is.character(a)) identical(unname(sort_rows(a)), unname(sort_rows(b))) else
+          isTRUE(all.equal(unname(sort_rows(a)), unname(sort_rows(b))))
 }
 
 # The coefficients named exactly as a model term, such as log(wt) or

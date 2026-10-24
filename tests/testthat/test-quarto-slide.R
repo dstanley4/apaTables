@@ -331,7 +331,7 @@ test_that("the per-column padding term is real: a FEW-column table is not oversi
   # single character coefficient fitted on the regression tables predicts a
   # 54.5px limit against a MEASURED 34px, i.e. it would set this table half
   # again too large and run it off the side of the slide.
-  options(contrasts = c("contr.sum", "contr.poly"))
+  withr::local_options(contrasts = c("contr.sum", "contr.poly"))
   p <- apa_display_plan(as_spec(apa.2way.table(
     iv1 = gender, iv2 = alcohol, dv = attractiveness,
     data = goggles, show.marginal.means = TRUE)))
@@ -374,7 +374,7 @@ test_that("the wrap cap is not blind to spanner labels", {
   # tables differing ONLY in the length of their group labels ("A"/"B"/"C"
   # versus these) both return char_width 48 and font_pt 25.43, despite one
   # having ~45 more characters to draw.
-  options(contrasts = c("contr.sum", "contr.poly"))
+  withr::local_options(contrasts = c("contr.sum", "contr.poly"))
   short <- goggles
   levels(short$alcohol) <- c("A", "B", "C")
   long <- goggles

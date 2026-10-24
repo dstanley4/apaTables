@@ -351,3 +351,23 @@ test_that("coding chosen for one model is kept if dummy coding and refused other
      expect_error(apa.reg.table(lm(mpg ~ cyl + wt, data = d, model = FALSE)), "model = FALSE")
 })
 
+test_that("blocks whose rows are reordered among tied outcomes are refused as reordered", {
+     # sorted outcome with ties: swapping two rows that share an outcome value
+     # leaves the outcome identical, so only a shared predictor shows the order
+     withr::local_seed(11)
+     d <- data.frame(y = rep(1:5, each = 4), a = stats::rnorm(20), b = stats::rnorm(20))
+     d2 <- d[c(2, 1, 3:20), ]
+     expect_error(apa.reg.table(lm(y ~ a, data = d), lm(y ~ a + b, data = d2)),
+                  "same values in a different row order")
+     # the same rows in the same order, from a tibble (row names 1..n), pass
+     expect_s3_class(apa.reg.table(lm(y ~ a, data = d), lm(y ~ a + b, data = dplyr::as_tibble(d))),
+                     "apa_table")
+     # a variable recoded between blocks under one name is not a reordering
+     dc <- d
+     dc$a <- dc$a - mean(dc$a)
+     expect_s3_class(apa.reg.table(lm(y ~ a, data = d), lm(y ~ a + b, data = dc)), "apa_table")
+     dl <- transform(d, g = a > 0)
+     dl2 <- transform(dl, g = as.integer(g))
+     expect_s3_class(apa.reg.table(lm(y ~ g, data = dl), lm(y ~ g + b, data = dl2)), "apa_table")
+})
+

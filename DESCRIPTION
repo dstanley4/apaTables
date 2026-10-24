@@ -37,7 +37,7 @@ Imports:
     knitr,
     officer
 Suggests:
-    testthat,
+    testthat (>= 3.1.9),
     afex,
     tidyr,
     rmarkdown,
@@ -53,4 +53,4 @@ Copyright: See the file inst/COPYRIGHTS for the copyright and license of
 LazyData: true
 Date: 2026-08-09
 Config/testthat/edition: 3
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

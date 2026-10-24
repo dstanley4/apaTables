@@ -14,7 +14,7 @@ test_that("print.apa_table outputs table note for 1way", {
 })
 
 test_that("print.apa_table outputs Table N and title", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1, table.number = 5)
      out <- capture.output(print(t1))
@@ -38,7 +38,7 @@ test_that("print.apa_table with table.number = 0 does not error for 1way", {
 })
 
 test_that("print.apa_table with table.number = 0 does not error", {
-     options(contrasts = c("contr.helmert", "contr.poly"))
+     withr::local_options(contrasts = c("contr.helmert", "contr.poly"))
      lm1 <- lm(libido ~ dose, data = viagra)
      t1 <- apa.aov.table(lm1, table.number = 0)
      out <- capture.output(print(t1))
