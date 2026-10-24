@@ -217,6 +217,11 @@ below describes what changed for someone upgrading from that version. Versions
   `apa.table`; the class is now `apa_table` throughout. A regression table's
   `sr2` and `sr2_95%_CI` columns are now `Unique_R2` and `Unique_95%_CI`.
   Titles and notes are generated in APA title case.
+* A regression table labels each predictor row with the term as
+  `summary()` prints it, with three changes: a product such as
+  `I(wt * qsec)` reads `wt x qsec` (2.0.8 printed `I(wt * qsec)`), a term such as
+  `I(wt^2)` loses the wrapper (`wt^2`), and names have no backticks. A
+  factor level prints as R gives it (`agegrp26-35`).
 * Dependencies have changed. R 4.1.0 or later is required (2.0.8 needed R
   3.1.2). `boot`, `tibble` and `methods` are no longer imported
   (`boot` and `tibble` are unused). `flextable` and `officer` are new imports, used by `apa.save()` to
@@ -278,6 +283,34 @@ below describes what changed for someone upgrading from that version. Versions
   already did from the cells. 2.0.8 counted a case missing one factor in
   the marginal mean of the other, so a marginal mean could differ from the
   cells beside it.
+* `apa.reg.table()` leaves out the *r* column for a weighted model, as
+  2.0.8 already left out beta. 2.0.8 printed the unweighted correlation
+  there, beside the weighted *b*, semi-partial correlation squared and
+  R-squared. A table for weighted models no longer stops with an R error
+  when a later block adds a factor predictor or an interaction written
+  `a * b` or `a:b`.
+* `apa.reg.table()` shows the beta and *r* columns when R writes a
+  predictor name in backticks, as it does for a name with a space or a
+  hyphen (`` `pre-test` ``). 2.0.8 left both columns out of the whole
+  table for such a name without saying why; in a table with several
+  blocks, the note still defined them. The name now prints without the
+  backticks. A variable with `*` or `:` in the name is no longer taken
+  for a product term, so the *r* for it is shown.
+* `apa.reg.table()` no longer stops with an R error ("numbers of columns
+  of arguments do not match") when an earlier block cannot show beta and
+  *r* and a later block can -- for example, an interaction written
+  `wt * qsec` in block 1 and `I(wt * qsec)` in block 2. As the help page
+  says, beta and *r* are then left out of every block.
+* `apa.reg.table()` shows an unordered categorical predictor with each
+  level compared with the first level even when `options(contrasts =
+  c("contr.sum", "contr.poly"))` was set before the model was fitted, as is
+  common for an ANOVA. 2.0.8 used the sum-to-zero coding that line sets:
+  the rows read `factor(cyl)1`, `factor(cyl)2`, and each b compared one
+  group with the mean of the group means, with nothing in the table to say
+  so. In `lm(mpg ~ factor(cyl) + wt, data = mtcars)`, 6 cylinders printed
+  as -0.81 (not significant) instead of -4.26 (*p* < .01). Coding chosen for
+  one model is kept when it is dummy coding (such as `contr.SAS`); other
+  coding, such as effect coding, stops with a message.
 * A *p* value of exactly .01 is now marked with one significance star. In
   2.0.8 it was unmarked; one star was given only for .01 < p < .05.
 * The confidence intervals for the semi-partial correlation squared of

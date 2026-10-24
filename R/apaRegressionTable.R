@@ -6,7 +6,8 @@
 #' reports the unstandardized regression weight (b), the standardized
 #' regression weight (beta), and the semi-partial correlation squared, each
 #' with a confidence interval, and the zero-order correlation, along with
-#' model fit (R-squared). When several \code{lm} results are supplied
+#' model fit (R-squared). The Details section below describes when beta and
+#' the zero-order correlation (r) are left out. When several \code{lm} results are supplied
 #' (blocks in a hierarchical regression), the table also reports the change
 #' in R-squared for each block. The table prints to the console. The most
 #' common next step is saving the table as a Word file to use in a
@@ -81,12 +82,25 @@
 #'
 #' beta and r are not shown when any block has a factor (categorical)
 #' predictor or a term that R builds into new model columns, such as
-#' an interaction written \code{a * b} or \code{a:b}, or \code{poly()};
-#' beta is not shown when the models are weighted. A product written with
-#' \code{I()}, such as \code{I(a * b)}, keeps beta, and r for that term
-#' is left blank; a single transformed term such as \code{log(x)} keeps both,
-#' computed on the transformed variable. The table note defines only the
-#' columns shown.
+#' an interaction written \code{a * b} or \code{a:b}, or \code{poly()},
+#' and they are not shown when the models are weighted. Otherwise, a
+#' product written with \code{I()}, such as \code{I(a * b)}, keeps beta,
+#' and r for that term is left blank; a single transformed term such as
+#' \code{log(x)} keeps both, computed on the transformed variable. The
+#' table note defines only the columns shown.
+#'
+#' An unordered categorical predictor is shown with each level compared with
+#' the first level (the default coding in R), so the rows are labeled by
+#' level, such as \code{factor(cyl)6}. This holds even when
+#' \code{options(contrasts = c("contr.sum", "contr.poly"))} was set before
+#' the model was fitted, as is common for an ANOVA: \code{apa.reg.table()}
+#' fits the model again with the default coding, which gives the same fit
+#' and R-squared. Coding chosen for one model -- in
+#' \code{lm(contrasts = ...)}, with \code{C()} in the formula, or set on
+#' the variable -- is kept when it compares each level with one reference
+#' level; other coding, such as effect coding, stops with a message. An
+#' ordered factor keeps the polynomial rows (\code{.L}, \code{.Q}) that R
+#' gives it.
 #'
 #' The table describes the models as \code{lm()} fitted them, so cases that
 #' \code{lm()} dropped for missing values (the default) are not in it, and
@@ -355,6 +369,17 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
      if (any(vapply(regression_results_list, apa_model_has_offset, logical(1)))) {
           stop("apa.reg.table error:\napaTables does not support models with an offset (an offset() term, or the offset argument of lm()).\nFit the model without it.", call. = FALSE)
      }
+     for (i in seq_len(L)) {
+          if (is.null(regression_results_list[[i]]$model)) {
+               stop(sprintf("apa.reg.table() needs the data stored in the model, but %s was fitted with model = FALSE; fit it again without model = FALSE.",
+                            model_label(i)), call. = FALSE)
+          }
+     }
+     # A categorical predictor is shown with each level compared with the
+     # first level, whatever options(contrasts = ...) said when the model was
+     # fitted; done before the block checks so they compare like with like.
+     regression_results_list <- lapply(seq_len(L), function(i)
+          reg_treatment_contrasts(regression_results_list[[i]], model_label(i)))
      is_same_criterion <- c()
      first_result <- regression_results_list[[1]]
      first_criterion <- colnames(first_result$model)[1]
@@ -467,9 +492,14 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
                last_block_summary <- cur_block_summary
                last_block_lm <- cur_block_lm
 
-               if (has_beta_cols(block_out_txt) == TRUE & (has_beta_cols(cur_block_out_txt) == FALSE)) {
-                    block_out_txt <- select(block_out_txt, -beta, -beta_CI, -r)
-                    block_out_latex <- select(block_out_latex, -beta, -beta_CI, -r)
+               # beta and r are shown only when every block can show them,
+               # whichever block is the one that cannot
+               if (has_beta_cols(block_out_txt) != has_beta_cols(cur_block_out_txt)) {
+                    no_beta <- c("beta", "beta_CI", "r")
+                    block_out_txt       <- block_out_txt[, setdiff(names(block_out_txt), no_beta), drop = FALSE]
+                    block_out_latex     <- block_out_latex[, setdiff(names(block_out_latex), no_beta), drop = FALSE]
+                    cur_block_out_txt   <- cur_block_out_txt[, setdiff(names(cur_block_out_txt), no_beta), drop = FALSE]
+                    cur_block_out_latex <- cur_block_out_latex[, setdiff(names(cur_block_out_latex), no_beta), drop = FALSE]
                }
 
                cur_block_label <- sprintf("Model %g",i)
@@ -490,12 +520,13 @@ apa.reg.table<-function(...,filename=NA,table.number=1, prop.var.conf.level = .9
      }
 
 
-     block_out_txt$predictor <- clean_predictor_names(block_out_txt$predictor)
-     block_out_latex$predictor <- clean_predictor_names(block_out_latex$predictor)
+     term_coefs <- unique(unlist(lapply(regression_results_list, term_coef_names)))
+     block_out_txt$predictor <- clean_predictor_names(block_out_txt$predictor, term_coefs)
+     block_out_latex$predictor <- clean_predictor_names(block_out_latex$predictor, term_coefs)
 
      spec_source_df <- block_out_txt   # raw dplyr keys + clean predictors, before console rename
      # The note defines beta and r only when the table shows them (factor
-     # predictors, weights, or a later block with either drop them).
+     # predictors, weights, or any block with either drop them).
      has_beta <- "beta" %in% names(block_out_txt)
      has_r    <- "r" %in% names(block_out_txt)
 
@@ -584,8 +615,11 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      is_var_factor  <- is_variable_factor(reg_table_data)
      calculate_beta <- TRUE
      calculate_cor  <- TRUE
+     # A weighted model drops r as well as beta: cor() of the raw variables
+     # is unweighted and would sit beside weighted b, sr2 and R2.
      if (is_weighted == TRUE) {
           calculate_beta <- FALSE
+          calculate_cor  <- FALSE
      }
      if (is_var_factor == TRUE) {
           calculate_beta <- FALSE
@@ -659,7 +693,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      #Check if predictors not data table
      all_predictor_have_data <- TRUE
      for (i in 1:length(reg_table_lower$predictor)) {
-          p_name  <- reg_table_lower$predictor[i]
+          p_name  <- reg_data_name(reg_table_lower$predictor[i])
           is_present <- p_name %in% names(reg_table_data)
           if (is_present == FALSE) {
                all_predictor_have_data <- FALSE
@@ -675,6 +709,10 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
      #correlation
      if (calculate_cor==TRUE) {
           r_with_criterion <- correlations_with_criterion(reg_table_data)
+          # the correlations carry the data column names; give them the
+          # term names (backticks included) so the join finds every row
+          term_idx <- match(r_with_criterion$predictor, reg_data_name(reg_table_lower$predictor))
+          r_with_criterion$predictor[!is.na(term_idx)] <- reg_table_lower$predictor[term_idx[!is.na(term_idx)]]
           reg_table_lower  <- dplyr::full_join(reg_table_lower,r_with_criterion,by="predictor")
      }
 
@@ -708,7 +746,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
                ULb     <- reg_table_lower$ULb[i]
 
                sd_crit <- stats::sd(reg_table_data[,1],na.rm = TRUE)
-               sd_pred <- stats::sd(reg_table_data[,p_name],na.rm = TRUE)
+               sd_pred <- stats::sd(reg_table_data[,reg_data_name(p_name)],na.rm = TRUE)
 
 
                beta   <- convert_b_to_beta(b = b  , sd_pred = sd_pred, sd_crit = sd_crit)
@@ -776,7 +814,7 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
           model_details$r     <- strip.leading.zero(add.sig.stars(sprintf("%1.2f",model_details_extended$r), model_details_extended$r_pvalue)) #intercept row issue
           model_details$r[1]  <- ""
 
-          product_rows <- is_product_row(model_details$predictor)
+          product_rows <- is_product_row(model_details$predictor, term_coef_names(cur_blk))
           model_details$r[product_rows] <- ""
 
      }
@@ -813,11 +851,22 @@ apa_single_block<-function(cur_blk,is_random_predictors, prop_var_conf_level) {
 }
 
 
-is_product_row <- function(row_names) {
-     is_a_colon   <- grep(":",row_names)
-     is_a_star    <- grep("\\*",row_names)
-     is_a_product <- unique(sort(c(is_a_colon,is_a_star)))
-     return(is_a_product)
+# A row is a product when its term multiplies, e.g. I(a * b). The term is
+# read as R code rather than searched for "*" or ":", so a variable named
+# `a*b` is not a product. Only a coefficient named as a model term is R
+# code; any other row is not a product.
+is_product_row <- function(row_names, term_coefs) {
+     multiplies <- function(e) {
+          if (!is.call(e)) return(FALSE)
+          if (identical(e[[1]], as.name("*")) || identical(e[[1]], as.name(":"))) return(TRUE)
+          any(vapply(as.list(e)[-1], multiplies, logical(1)))
+     }
+     is_a_product <- vapply(row_names, function(x) {
+          if (!x %in% term_coefs) return(FALSE)
+          e <- tryCatch(str2lang(x), error = function(err) NULL)
+          !is.null(e) && multiplies(e)
+     }, logical(1), USE.NAMES = FALSE)
+     return(which(is_a_product))
 }
 
 
@@ -945,34 +994,142 @@ has_beta_cols <- function(df) {
      return("beta" %in% names(df))
 }
 
-clean_predictor_names <- function(x) {
+clean_predictor_names <- function(x, term_coefs) {
      N <- length(x)
      for (i in 1:N) {
-          x[i] <- remove_product_chars(x[i])
+          x[i] <- reg_predictor_label(x[i], x[i] %in% term_coefs)
      }
  return(x)
 }
 
+# Return the model with every unordered categorical predictor in the default
+# coding (treatment), each level compared with the first, which is what a
+# regression table's factor rows are read as. Coding that came from the
+# session setting -- options(contrasts = ...), usually typed for an ANOVA --
+# is refitted from the model frame and weights stored in the model, never the
+# workspace, and the refit's fitted values must equal the original's (the
+# same model in another coding). Coding chosen for one model is kept when it
+# is dummy coding with level-named columns and refused otherwise. R records
+# a choice in one of two places: the contrasts list written in the lm()
+# call, or an attribute on the model-frame column (C() in the formula, or
+# contrasts() set on the variable). The session setting leaves both empty.
+reg_treatment_contrasts <- function(model, label) {
+     ctr <- model$contrasts
+     if (length(ctr) == 0) return(model)
+     mf <- model$model
+     call_ctr <- model$call$contrasts
+     call_readable <- is.null(call_ctr) ||
+          (is.call(call_ctr) && identical(call_ctr[[1]], as.name("list")))
+     call_names <- if (!is.null(call_ctr) && call_readable) names(call_ctr)[-1] else character(0)
+     r_name <- function(name) if (make.names(name) == name) name else paste0("`", name, "`")
 
-remove_product_chars <- function(original_string) {
-     # R wraps non-syntactic variable names in backticks (e.g. `v one`); those
-     # are real names -> strip only the backticks and keep the content. The
-     # cleanup below is for interaction / poly-term syntax, not variable names.
-     if (grepl("^`[^`]*`$", original_string)) {
+     new_ctr <- ctr
+     for (name in names(ctr)) {
+          if (is.ordered(mf[[name]])) next
+          spec <- ctr[[name]]
+          if (identical(spec, "contr.treatment")) next
+          chosen <- name %in% call_names || !is.null(attr(mf[[name]], "contrasts"))
+          if (!chosen && is.character(spec)) {
+               if (!call_readable) {
+                    stop(sprintf(paste0("In %s, the contrasts argument of lm() was given as an object, so ",
+                                        "apa.reg.table() cannot tell which predictors it sets and which ",
+                                        "follow options(contrasts = ...). Write the list inside lm(), such ",
+                                        "as lm(..., contrasts = list(%s = \"contr.treatment\"))."),
+                                 label, r_name(name)), call. = FALSE)
+               }
+               new_ctr[[name]] <- "contr.treatment"
+               next
+          }
+          dummy <- reg_dummy_coding(spec, model$xlevels[[name]])
+          if (identical(dummy, "named")) next
+          fix <- if (grepl("^C\\(", name)) {
+               "remove C() from the formula and fit the model again"
+          } else {
+               sprintf("fit the model again with lm(..., contrasts = list(%s = \"contr.treatment\"))",
+                       r_name(name))
+          }
+          if (identical(dummy, "unnamed")) {
+               stop(sprintf(paste0("In %s, %s is dummy coded, but the coding columns are not named by ",
+                                   "level, so the rows cannot be labeled; %s."), label, name, fix),
+                    call. = FALSE)
+          }
+          stop(sprintf(paste0("apa.reg.table() shows a categorical predictor with each level compared ",
+                              "with one reference level (dummy coding). In %s, %s is coded another way, ",
+                              "such as effect coding, set for this model; %s."), label, name, fix),
+               call. = FALSE)
+     }
+     if (identical(new_ctr, ctr)) return(model)
+
+     x <- stats::model.matrix(stats::terms(model), mf, contrasts.arg = new_ctr)
+     y <- stats::model.response(mf, "numeric")
+     w <- stats::model.weights(mf)
+     fit <- if (is.null(w)) stats::lm.fit(x, y) else stats::lm.wfit(x, y, w)
+     refit <- model
+     refit[names(fit)] <- fit
+     refit$contrasts <- attr(x, "contrasts")
+     if (!is.null(model$x)) refit$x <- x
+     same_model <- length(refit$fitted.values) == length(model$fitted.values) &&
+          isTRUE(all.equal(unname(refit$fitted.values), unname(model$fitted.values)))
+     if (!same_model) {
+          stop(sprintf(paste0("apa.reg.table() could not refit %s with each level of a categorical ",
+                              "predictor compared with the first level; fit it again after ",
+                              "options(contrasts = c(\"contr.treatment\", \"contr.poly\"))."), label),
+               call. = FALSE)
+     }
+     refit
+}
+
+# "named" for dummy coding whose columns are named by level (each column
+# marks one level with a 1, the rest 0), "unnamed" for dummy coding without
+# level names, and "other" for anything else.
+reg_dummy_coding <- function(spec, levels) {
+     cm <- tryCatch(if (is.character(spec) || is.function(spec)) do.call(spec, list(levels)) else spec,
+                    error = function(e) NULL)
+     is_dummy <- is.matrix(cm) && is.numeric(cm) && all(cm %in% c(0, 1)) &&
+          all(colSums(cm) == 1) && all(rowSums(cm) <= 1)
+     if (!is_dummy) return("other")
+     if (!is.null(colnames(cm)) && all(colnames(cm) %in% levels)) "named" else "unnamed"
+}
+
+# The coefficients named exactly as a model term, such as log(wt) or
+# I(wt * qsec). Those names are R code. Any other coefficient name is a
+# term plus a level or a column number (agegrp26-35, poly(wt, 2)1) and is
+# not R code, even when the text happens to parse.
+term_coef_names <- function(model) {
+     intersect(names(stats::coef(model)), attr(stats::terms(model), "term.labels"))
+}
+
+
+# A non-syntactic variable name such as `pre-test` carries backticks in the
+# model terms but not in the model frame; this gives the model frame name.
+reg_data_name <- function(term_name) {
+     sub("^`([^`]*)`$", "\\1", term_name)
+}
+
+# The row label is the term as R's summary() prints it, with three changes:
+# a product reads "a x b", the I( ) wrapper is dropped, and names carry no
+# backticks. Only a coefficient named exactly as a model term is parsed;
+# any other (a factor level such as factor(cyl)6 or agegrp26-35) keeps its
+# text, less the backticks R adds around a name.
+reg_predictor_label <- function(original_string, is_term) {
+     if (!isTRUE(is_term)) {
           return(gsub("`", "", original_string))
      }
-     modified_string <- gsub("I\\(", "", original_string)
-     modified_string <- gsub("\\)", "", modified_string)
-     modified_string <- gsub("\\(", "", modified_string)
-     modified_string <- gsub("\\s", "", modified_string)
-     modified_string <- gsub("\\*", " x ", modified_string)
-     modified_string <- gsub("Intercept", "(Intercept)", modified_string)
+     e <- tryCatch(str2lang(original_string), error = function(err) NULL)
+     if (is.null(e)) {
+          return(gsub("`", "", original_string))
+     }
+     if (is.call(e) && identical(e[[1]], as.name("I")) && length(e) == 2) {
+          e <- e[[2]]
+     }
+     reg_format_term(e)
+}
 
-     pattern <- "Model(\\d+)"
-     replacement <- "Model \\1"
-     modified_string <- gsub(pattern = pattern, replacement = replacement, modified_string)
-
-     return(modified_string)
+reg_format_term <- function(e) {
+     if (is.call(e) && identical(e[[1]], as.name("*")) && length(e) == 3) {
+          return(paste(reg_format_term(e[[2]]), "x", reg_format_term(e[[3]])))
+     }
+     paste(deparse(e, width.cutoff = 500L, backtick = FALSE), collapse = " ")
 }
 
 

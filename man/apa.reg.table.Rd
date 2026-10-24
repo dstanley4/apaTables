@@ -63,7 +63,8 @@ or more \code{\link[stats]{lm}} results. For each predictor the table
 reports the unstandardized regression weight (b), the standardized
 regression weight (beta), and the semi-partial correlation squared, each
 with a confidence interval, and the zero-order correlation, along with
-model fit (R-squared). When several \code{lm} results are supplied
+model fit (R-squared). The Details section below describes when beta and
+the zero-order correlation (r) are left out. When several \code{lm} results are supplied
 (blocks in a hierarchical regression), the table also reports the change
 in R-squared for each block. The table prints to the console. The most
 common next step is saving the table as a Word file to use in a
@@ -105,12 +106,25 @@ intervals that do).
 
 beta and r are not shown when any block has a factor (categorical)
 predictor or a term that R builds into new model columns, such as
-an interaction written \code{a * b} or \code{a:b}, or \code{poly()};
-beta is not shown when the models are weighted. A product written with
-\code{I()}, such as \code{I(a * b)}, keeps beta, and r for that term
-is left blank; a single transformed term such as \code{log(x)} keeps both,
-computed on the transformed variable. The table note defines only the
-columns shown.
+an interaction written \code{a * b} or \code{a:b}, or \code{poly()},
+and they are not shown when the models are weighted. Otherwise, a
+product written with \code{I()}, such as \code{I(a * b)}, keeps beta,
+and r for that term is left blank; a single transformed term such as
+\code{log(x)} keeps both, computed on the transformed variable. The
+table note defines only the columns shown.
+
+An unordered categorical predictor is shown with each level compared with
+the first level (the default coding in R), so the rows are labeled by
+level, such as \code{factor(cyl)6}. This holds even when
+\code{options(contrasts = c("contr.sum", "contr.poly"))} was set before
+the model was fitted, as is common for an ANOVA: \code{apa.reg.table()}
+fits the model again with the default coding, which gives the same fit
+and R-squared. Coding chosen for one model -- in
+\code{lm(contrasts = ...)}, with \code{C()} in the formula, or set on
+the variable -- is kept when it compares each level with one reference
+level; other coding, such as effect coding, stops with a message. An
+ordered factor keeps the polynomial rows (\code{.L}, \code{.Q}) that R
+gives it.
 
 The table describes the models as \code{lm()} fitted them, so cases that
 \code{lm()} dropped for missing values (the default) are not in it, and

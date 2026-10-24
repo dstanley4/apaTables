@@ -127,10 +127,22 @@ test_that("the regression note defines beta and r only when the table shows them
     }
     expect_identical("beta" %in% names(t1$table_body), beta)
     expect_identical("r" %in% names(t1$table_body), r)
+    # the spec is what apa.save() and Quarto draw
+    labs <- vapply(t1$spec$col_labels, as_plaintext, "")
+    expect_identical("r" %in% labs, r)
+    expect_identical("r" %in% names(t1$latex.body), r)
+    expect_identical(grepl("zero-order correlation", t1$latex.table.note), r)
   }
   check(apa.reg.table(lm(mpg ~ wt + qsec, mtcars)), TRUE, TRUE)
   check(apa.reg.table(lm(mpg ~ wt + factor(cyl), mtcars)), FALSE, FALSE)
-  check(apa.reg.table(lm(mpg ~ wt + qsec, mtcars, weights = cyl)), FALSE, TRUE)
+  # r would be the unweighted cor() beside weighted b, sr2 and R2
+  check(apa.reg.table(lm(mpg ~ wt + qsec, mtcars, weights = cyl)), FALSE, FALSE)
+  check(apa.reg.table(lm(mpg ~ wt, mtcars, weights = cyl),
+                      lm(mpg ~ wt + qsec, mtcars, weights = cyl)), FALSE, FALSE)
+  # a weighted block 1 and a block 2 with a factor once stopped in rbind()
+  d <- transform(mtcars, f = factor(gear))
+  check(apa.reg.table(lm(mpg ~ wt, d, weights = cyl),
+                      lm(mpg ~ wt + f, d, weights = cyl)), FALSE, FALSE)
   check(apa.reg.table(lm(mpg ~ wt, mtcars), lm(mpg ~ wt + factor(cyl), mtcars)), FALSE, FALSE)
 })
 
